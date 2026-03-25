@@ -1,4 +1,4 @@
-package mx.fei.beans;
+package mx.fei.logic.dto;
 
 public class IndicatorReport {
     private int indicatorReportId;

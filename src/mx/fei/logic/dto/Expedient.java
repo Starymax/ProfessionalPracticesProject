@@ -1,4 +1,4 @@
-package mx.fei.beans;
+package mx.fei.logic.dto;
 
 public class Expedient {
     private int expedientId;

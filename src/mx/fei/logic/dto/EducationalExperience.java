@@ -1,6 +1,4 @@
-package mx.fei.beans;
-
-import java.util.List;
+package mx.fei.logic.dto;
 
 public class EducationalExperience {
     private String nrc;
