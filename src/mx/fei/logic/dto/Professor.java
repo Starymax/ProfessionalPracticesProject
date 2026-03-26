@@ -1,20 +1,20 @@
 package mx.fei.logic.dto;
 
 public class Professor extends User{
-    private int UserId;
+    private int userId;
     private String name;
     private int personalNumber;
-    private boolean idCoordinator;
-    private boolean idAdmin;
+    private boolean isCoordinator;
+    private boolean isAdmin;
     private String shift;
 
-    public Professor(int userId, String name, String lastName, String email, String password, String gender, boolean active_status, int userId1, String name1, int personalNumber, boolean idCoordinator, boolean idAdmin, String shift) {
+    public Professor(int userId, String name, String lastName, String email, String password, String gender, boolean active_status, int personalNumber, boolean isCoordinator, boolean isAdmin, String shift) {
         super(userId, name, lastName, email, password, gender, active_status);
-        UserId = userId1;
-        this.name = name1;
+        this.userId = userId;
+        this.name = name;
         this.personalNumber = personalNumber;
-        this.idCoordinator = idCoordinator;
-        this.idAdmin = idAdmin;
+        this.isCoordinator = isCoordinator;
+        this.isAdmin = isAdmin;
         this.shift = shift;
     }
 
@@ -26,20 +26,20 @@ public class Professor extends User{
         this.personalNumber = personalNumber;
     }
 
-    public boolean isIdCoordinator() {
-        return idCoordinator;
+    public boolean isCoordinator() {
+        return isCoordinator;
     }
 
-    public void setIdCoordinator(boolean idCoordinator) {
-        this.idCoordinator = idCoordinator;
+    public void setCoordinator(boolean coordinator) {
+        this.isCoordinator = coordinator;
     }
 
-    public boolean isIdAdmin() {
-        return idAdmin;
+    public boolean isAdmin() {
+        return isAdmin;
     }
 
-    public void setIdAdmin(boolean idAdmin) {
-        this.idAdmin = idAdmin;
+    public void setAdmin(boolean admin) {
+        this.isAdmin = admin;
     }
 
     public String getShift() {
