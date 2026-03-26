@@ -1,7 +1,6 @@
 package mx.fei.logic.dto;
 
 public class Student extends User{
-    private int userId;
     private String enrollment;
     private String period;
     private boolean indigenousLanguage;
@@ -9,9 +8,8 @@ public class Student extends User{
     private Project assignedProject;
     private EducationalExperience educationalExperience;
 
-    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status, int userId1, String enrollment, String period, boolean indigenousLanguage, float grade, Project asignedProject) {
+    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status,  String enrollment, String period, boolean indigenousLanguage, float grade, Project asignedProject) {
         super(userId, name, lastName, email, password, gender, active_status);
-        this.userId = userId1;
         this.enrollment = enrollment;
         this.period = period;
         this.indigenousLanguage = indigenousLanguage;
@@ -58,4 +56,6 @@ public class Student extends User{
     public void setAssignedProject(Project assignedProject) {
         this.assignedProject = assignedProject;
     }
+
+    public EducationalExperience getEducationalExperience() {return educationalExperience;}
 }

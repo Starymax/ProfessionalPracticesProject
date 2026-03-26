@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Date;
+
 public class Project {
     private int projectId;
     private String nameProject;
@@ -9,12 +11,12 @@ public class Project {
     private String immediateObjectives;
     private String methodology;
     private String resources;
-    private String startDate;
-    private String finalDate;
-    private String activeStatus;
+    private Date startDate;
+    private Date finalDate;
+    private boolean activeStatus;
     private Enterprise enterprise;
 
-    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String resources, String startDate, String finalDate, String activeStatus, Enterprise enterprise) {
+    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String resources, Date startDate, Date finalDate, boolean activeStatus, Enterprise enterprise) {
         this.projectId = projectId;
         this.nameProject = nameProject;
         this.descriptionProject = descriptionProject;
@@ -93,27 +95,27 @@ public class Project {
         this.resources = resources;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getFinalDate() {
+    public Date getFinalDate() {
         return finalDate;
     }
 
-    public void setFinalDate(String finalDate) {
+    public void setFinalDate(Date finalDate) {
         this.finalDate = finalDate;
     }
 
-    public String getActiveStatus() {
+    public boolean getActiveStatus() {
         return activeStatus;
     }
 
-    public void setActiveStatus(String activeStatus) {
+    public void setActiveStatus(boolean activeStatus) {
         this.activeStatus = activeStatus;
     }
 

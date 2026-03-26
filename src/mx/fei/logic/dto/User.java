@@ -1,7 +1,7 @@
 package mx.fei.logic.dto;
 
 public class User {
-    private int UserId;
+    private int userId;
     private String name;
     private String lastName;
     private String email;
@@ -10,7 +10,7 @@ public class User {
     private boolean activeStatus;
 
     public User(int userId, String name, String lastName, String email, String password, String gender, boolean activeStatus) {
-        UserId = userId;
+        this.userId = userId;
         this.name = name;
         this.lastName = lastName;
         this.email = email;
@@ -20,11 +20,11 @@ public class User {
     }
 
     public int getUserId() {
-        return UserId;
+        return userId;
     }
 
     public void setUserId(int userId) {
-        UserId = userId;
+        this.userId = userId;
     }
 
     public String getName() {
