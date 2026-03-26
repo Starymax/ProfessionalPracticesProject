@@ -32,18 +32,18 @@ public class UserDAO implements IDAOUser {
     }
 
     @Override
-    public int registerUser(Student student) {
+    public int registerUser(User user) {
         int generatedID = -1;
         try {
             DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
             String query = "INSERT INTO usuario (nombre,apellidos,correo,contrasena,estado_activo,genero) VALUES (?,?,?,?,?,?);";
             PreparedStatement preparedStatement = connection.preparedStatement(query, Statement.RETURN_GENERATED_KEYS);
-            preparedStatement.setString(1, student.getName());
-            preparedStatement.setString(2, student.getLastName());
-            preparedStatement.setString(3, student.getEmail());
-            preparedStatement.setString(4, student.getPassword());
-            preparedStatement.setBoolean(5, student.isActive());
-            preparedStatement.setString(6, student.getGender());
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getLastName());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setBoolean(5, user.isActive());
+            preparedStatement.setString(6, user.getGender());
             preparedStatement.executeUpdate();
             ResultSet keys = preparedStatement.getGeneratedKeys();
             if (keys.next()) {
@@ -77,6 +77,8 @@ public class UserDAO implements IDAOUser {
             connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
+        } finally {
+
         }
         return updated;
     }

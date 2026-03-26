@@ -1,14 +1,14 @@
 package mx.fei.logic.dto;
 
 public class WeeklyLog {
-    private int weeklyLogId;
+    private int id;
     private String week;
     private float workedHours;
     private float plannedHours;
     private Activity activity;
 
     public WeeklyLog(int weeklyLogId, String week, float workedHours, float plannedHours, Activity activity) {
-        this.weeklyLogId = weeklyLogId;
+        this.id = weeklyLogId;
         this.week = week;
         this.workedHours = workedHours;
         this.plannedHours = plannedHours;
@@ -16,11 +16,11 @@ public class WeeklyLog {
     }
 
     public int getWeeklyLogId() {
-        return weeklyLogId;
+        return id;
     }
 
     public void setWeeklyLogId(int weeklyLogId) {
-        this.weeklyLogId = weeklyLogId;
+        this.id = weeklyLogId;
     }
 
     public String getWeek() {

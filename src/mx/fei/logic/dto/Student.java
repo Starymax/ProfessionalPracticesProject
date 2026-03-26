@@ -8,13 +8,14 @@ public class Student extends User{
     private Project assignedProject;
     private EducationalExperience educationalExperience;
 
-    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status,  String enrollment, String period, boolean indigenousLanguage, float grade, Project asignedProject) {
+    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status,  String enrollment, String period, boolean indigenousLanguage, float grade, Project asignedProject, EducationalExperience educationalExperience) {
         super(userId, name, lastName, email, password, gender, active_status);
         this.enrollment = enrollment;
         this.period = period;
         this.indigenousLanguage = indigenousLanguage;
         this.grade = grade;
         this.assignedProject = asignedProject;
+        this.educationalExperience = educationalExperience;
     }
 
     public String getEnrollment() {

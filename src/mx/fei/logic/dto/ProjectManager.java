@@ -1,16 +1,16 @@
 package mx.fei.logic.dto;
 
 public class ProjectManager {
-    private int projectManagerId;
-    private String nameProjectManager;
+    private int id;
+    private String name;
     private String emailProjectManager;
     private String phoneNumberProjectManager;
     private String rol;
     private Project project;
 
-    public ProjectManager(int projectManagerId, String nameProjectManager, String emailProjectManager, String phoneNumberProjectManager, String rol, Project project) {
-        this.projectManagerId = projectManagerId;
-        this.nameProjectManager = nameProjectManager;
+    public ProjectManager(int projectManagerId, String name, String emailProjectManager, String phoneNumberProjectManager, String rol, Project project) {
+        this.id = projectManagerId;
+        this.name = name;
         this.emailProjectManager = emailProjectManager;
         this.phoneNumberProjectManager = phoneNumberProjectManager;
         this.rol = rol;
@@ -18,19 +18,19 @@ public class ProjectManager {
     }
 
     public int getProjectManagerId() {
-        return projectManagerId;
+        return id;
     }
 
     public void setProjectManagerId(int projectManagerId) {
-        this.projectManagerId = projectManagerId;
+        this.id = projectManagerId;
     }
 
-    public String getNameProjectManager() {
-        return nameProjectManager;
+    public String getName() {
+        return name;
     }
 
-    public void setNameProjectManager(String nameProjectManager) {
-        this.nameProjectManager = nameProjectManager;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmailProjectManager() {

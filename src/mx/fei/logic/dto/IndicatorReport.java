@@ -1,7 +1,7 @@
 package mx.fei.logic.dto;
 
 public class IndicatorReport {
-    private int indicatorReportId;
+    private int id;
     private String periodFilter;
     private String shiftFilter;
     private String genderFilter;
@@ -10,7 +10,7 @@ public class IndicatorReport {
     private String indigenousLanguageFilter;
 
     public IndicatorReport(int indicatorReportId, String periodFilter, String shiftFilter, String genderFilter, String ageFilter, String sectorSocialFilter, String indigenousLanguageFilter) {
-        this.indicatorReportId = indicatorReportId;
+        this.id = indicatorReportId;
         this.periodFilter = periodFilter;
         this.shiftFilter = shiftFilter;
         this.genderFilter = genderFilter;
@@ -20,11 +20,11 @@ public class IndicatorReport {
     }
 
     public int getIndicatorReportId() {
-        return indicatorReportId;
+        return id;
     }
 
     public void setIndicatorReportId(int indicatorReportId) {
-        this.indicatorReportId = indicatorReportId;
+        this.id = indicatorReportId;
     }
 
     public String getPeriodFilter() {

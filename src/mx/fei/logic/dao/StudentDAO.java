@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 public class StudentDAO implements IDAOStudent {
     private  Logger logger = Logger.getLogger(StudentDAO.class.getName());
+
     @Override
     public Student getStudentByEnrollment(String enrollment) {
         Student student = null;
@@ -34,10 +35,12 @@ public class StudentDAO implements IDAOStudent {
                 String gender = resultSet.getString("genero");
                 Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
                 Float grade = resultSet.getFloat("calificacion");
-                int studentProjectId = resultSet.getInt("proyecto_asignado");
+                int studentProjectId = resultSet.getInt("proyecto");
                 ProjectDAO projectDAO = new ProjectDAO();
                 Project project = projectDAO.getProjectById(studentProjectId);
-                student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project);
+                EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+                EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(resultSet.getString("nrc"));
+                student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
             }
             connection.close();
         } catch (SQLException e) {
@@ -62,15 +65,15 @@ public class StudentDAO implements IDAOStudent {
                 logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
                 return false;
             }
-            DatabaseConnectionManager connectionManager = DatabaseConnectionManager.buildConnection();
+            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
             String queryRegisterStudent = "INSERT INTO alumno (id_usuario,matricula,periodo,lengua_indigena) VALUES (?,?,?,?);";
-            PreparedStatement preparedStatement = connectionManager.preparedStatement(queryRegisterStudent);
+            PreparedStatement preparedStatement = connection.preparedStatement(queryRegisterStudent);
             preparedStatement.setInt(1,idUser);
             preparedStatement.setString(2,student.getEnrollment());
             preparedStatement.setString(3,student.getPeriod());
             preparedStatement.setBoolean(4,student.isIndigenousLanguage());
             preparedStatement.executeUpdate();
-            connectionManager.close();
+            connection.close();
             return true;
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());

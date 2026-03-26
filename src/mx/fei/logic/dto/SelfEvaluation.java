@@ -1,22 +1,22 @@
 package mx.fei.logic.dto;
 
 public class SelfEvaluation {
-    private int selfEvaluationId;
+    private int id;
     private String results;
     private Expedient expedient;
 
     public SelfEvaluation(int selfEvaluationId, String results, Expedient expedient) {
-        this.selfEvaluationId = selfEvaluationId;
+        this.id = selfEvaluationId;
         this.results = results;
         this.expedient = expedient;
     }
 
     public int getSelfEvaluationId() {
-        return selfEvaluationId;
+        return id;
     }
 
     public void setSelfEvaluationId(int selfEvaluationId) {
-        this.selfEvaluationId = selfEvaluationId;
+        this.id = selfEvaluationId;
     }
 
     public String getResults() {

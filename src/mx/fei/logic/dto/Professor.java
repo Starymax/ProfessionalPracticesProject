@@ -1,8 +1,6 @@
 package mx.fei.logic.dto;
 
 public class Professor extends User{
-    private int userId;
-    private String name;
     private int personalNumber;
     private boolean isCoordinator;
     private boolean isAdmin;
@@ -10,8 +8,6 @@ public class Professor extends User{
 
     public Professor(int userId, String name, String lastName, String email, String password, String gender, boolean active_status, int personalNumber, boolean isCoordinator, boolean isAdmin, String shift) {
         super(userId, name, lastName, email, password, gender, active_status);
-        this.userId = userId;
-        this.name = name;
         this.personalNumber = personalNumber;
         this.isCoordinator = isCoordinator;
         this.isAdmin = isAdmin;

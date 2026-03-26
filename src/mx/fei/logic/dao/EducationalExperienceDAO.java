@@ -1,4 +1,4 @@
-/*package mx.fei.logic.dao;
+package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
@@ -15,7 +15,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     private Logger logger = Logger.getLogger(EducationalExperienceDAO.class.getName());
 
     @Override
-    public EducationalExperience getEEByNrc(String nrc) {
+    public EducationalExperience getEducationalExperienceByNrc(String nrc) {
         EducationalExperience experience = null;
         try {
             DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
@@ -29,15 +29,15 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 String career = resultSet.getString("programa_educativo");
                 String period = resultSet.getString("periodo_escolar");
                 int idProfessor = resultSet.getInt("id_profesor");
-                PrfessorDAO professorDAO = new ProfessorDAO();
-                Professor professor = professorDAO.getProfessorByPersonalNumber(int id_professor);
-
+                ProfessorDAO professorDAO = new ProfessorDAO();
+                Professor professor = professorDAO.getProfessorByPersonalNumber(idProfessor);
                 experience = new EducationalExperience(nrcEE,name,career,period,professor);
             }
             connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
+        } finally {
+            return experience;
         }
-        return experience;
     }
-}*/
+}

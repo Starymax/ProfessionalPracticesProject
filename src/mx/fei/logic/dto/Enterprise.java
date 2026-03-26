@@ -1,7 +1,7 @@
 package mx.fei.logic.dto;
 
 public class Enterprise {
-    private int enterpriseId;
+    private int id;
     private String name;
     private String sector;
     private String phoneNumber;
@@ -12,7 +12,7 @@ public class Enterprise {
     private boolean activeStatus;
 
     public Enterprise(int enterpriseId, String name, String sector, String phoneNumber, String contactEmail, String address, int directUsers, int indirectUsers, boolean activeStatus) {
-        this.enterpriseId = enterpriseId;
+        this.id = enterpriseId;
         this.name = name;
         this.sector = sector;
         this.phoneNumber = phoneNumber;
@@ -24,11 +24,11 @@ public class Enterprise {
     }
 
     public int getEnterpriseId() {
-        return enterpriseId;
+        return id;
     }
 
     public void setEnterpriseId(int enterpriseId) {
-        this.enterpriseId = enterpriseId;
+        this.id = enterpriseId;
     }
 
     public String getName() {

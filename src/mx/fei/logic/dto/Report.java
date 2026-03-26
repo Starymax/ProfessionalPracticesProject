@@ -3,7 +3,7 @@ package mx.fei.logic.dto;
 import java.util.Date;
 
 public class Report {
-    private int reportId;
+    private int id;
     private float workedHours;
     private String reportType;
     private Date date;
@@ -11,7 +11,7 @@ public class Report {
     private Student student;
 
     public Report(int reportId, float workedHours, String reportType, Date date, String observationsReport, Student student) {
-        this.reportId = reportId;
+        this.id = reportId;
         this.workedHours = workedHours;
         this.reportType = reportType;
         this.date = date;
@@ -20,11 +20,11 @@ public class Report {
     }
 
     public int getReportId() {
-        return reportId;
+        return id;
     }
 
     public void setReportId(int reportId) {
-        this.reportId = reportId;
+        this.id = reportId;
     }
 
     public float getWorkedHours() {

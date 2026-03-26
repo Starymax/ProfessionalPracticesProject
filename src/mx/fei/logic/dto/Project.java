@@ -3,7 +3,7 @@ package mx.fei.logic.dto;
 import java.util.Date;
 
 public class Project {
-    private int projectId;
+    private int id;
     private String nameProject;
     private String descriptionProject;
     private String generalObjective;
@@ -17,7 +17,7 @@ public class Project {
     private Enterprise enterprise;
 
     public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String resources, Date startDate, Date finalDate, boolean activeStatus, Enterprise enterprise) {
-        this.projectId = projectId;
+        this.id = projectId;
         this.nameProject = nameProject;
         this.descriptionProject = descriptionProject;
         this.generalObjective = generalObjective;
@@ -32,11 +32,11 @@ public class Project {
     }
 
     public int getProjectId() {
-        return projectId;
+        return id;
     }
 
     public void setProjectId(int projectId) {
-        this.projectId = projectId;
+        this.id = projectId;
     }
 
     public String getNameProject() {

@@ -1,7 +1,7 @@
 package mx.fei.logic.dto;
 
 public class Expedient {
-    private int expedientId;
+    private int id;
     private boolean liberationLetter;
     private boolean acceptationOffice;
     private boolean workPlan;
@@ -10,7 +10,7 @@ public class Expedient {
     private Student student;
 
     public Expedient(int expedientId, boolean liberationLetter, boolean acceptationOffice, boolean workPlan, boolean schelude, boolean competenceEvaluation, Student student) {
-        this.expedientId = expedientId;
+        this.id = expedientId;
         this.liberationLetter = liberationLetter;
         this.acceptationOffice = acceptationOffice;
         this.workPlan = workPlan;
@@ -20,11 +20,11 @@ public class Expedient {
     }
 
     public int getExpedientId() {
-        return expedientId;
+        return id;
     }
 
     public void setExpedientId(int expedientId) {
-        this.expedientId = expedientId;
+        this.id = expedientId;
     }
 
     public boolean isLiberationLetter() {

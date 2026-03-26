@@ -1,32 +1,32 @@
 package mx.fei.logic.dto;
 
 public class Activity {
-    private int activityId;
-    private String nameActivity;
+    private int id;
+    private String name;
     private String observationsActivity;
     private Project project;
 
-    public Activity(int activityId, String nameActivity, String observationsActivity, Project project) {
-        this.activityId = activityId;
-        this.nameActivity = nameActivity;
+    public Activity(int activityId, String name, String observationsActivity, Project project) {
+        this.id = activityId;
+        this.name = name;
         this.observationsActivity = observationsActivity;
         this.project = project;
     }
 
     public int getActivityId() {
-        return activityId;
+        return id;
     }
 
     public void setActivityId(int activityId) {
-        this.activityId = activityId;
+        this.id = activityId;
     }
 
-    public String getNameActivity() {
-        return nameActivity;
+    public String getName() {
+        return name;
     }
 
-    public void setNameActivity(String nameActivity) {
-        this.nameActivity = nameActivity;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getObservationsActivity() {

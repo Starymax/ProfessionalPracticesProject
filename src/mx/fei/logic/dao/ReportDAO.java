@@ -24,14 +24,15 @@ public class ReportDAO implements IReportDAO {
         }
         String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
         try {
-            DatabaseConnectionManager databaseConnectionManager = DatabaseConnectionManager.buildConnection();
-            PreparedStatement preparedStatement = databaseConnectionManager.preparedStatement(queryReport);
+            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
+            PreparedStatement preparedStatement = connection.preparedStatement(queryReport);
             preparedStatement.setFloat(1, report.getWorkedHours());
             preparedStatement.setString(2, report.getReportType());
             preparedStatement.setDate(3, (Date) report.getDate());
             preparedStatement.setString(4, report.getObservationsReport());
             preparedStatement.setInt(5, report.getStudent().getUserId());
             preparedStatement.executeUpdate();
+            connection.close();
             return true;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al crear reporte", e);
@@ -44,11 +45,12 @@ public class ReportDAO implements IReportDAO {
         String queryViewReport = "SELECT * FROM vw_reportes";
         List<Report> reports = new ArrayList<>();
         try {
-            DatabaseConnectionManager databaseConnectionManager = DatabaseConnectionManager.buildConnection();
-            PreparedStatement preparedStatement = databaseConnectionManager.preparedStatement(queryViewReport);
+            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
+            PreparedStatement preparedStatement = connection.preparedStatement(queryViewReport);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Student student = StudentDAO.getStudentByEnrollment(resultSet.getString("matricula"));
+                StudentDAO studentDAO = new StudentDAO();
+                Student student = studentDAO.getStudentByEnrollment(resultSet.getString("matricula"));
                 int reportId = resultSet.getInt("id_reporte");
                 float workedHours = resultSet.getFloat("horas_realizadas");
                 String reportType = resultSet.getString("tipo_reporte");
@@ -57,6 +59,7 @@ public class ReportDAO implements IReportDAO {
                 Report report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
                 reports.add(report);
             }
+            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar reportes", e);
         }
@@ -68,17 +71,19 @@ public class ReportDAO implements IReportDAO {
         String queryViewReport = "SELECT * FROM vw_reportes";
         Report report = null;
         try {
-            DatabaseConnectionManager databaseConnectionManager = DatabaseConnectionManager.buildConnection();
-            PreparedStatement preparedStatement = databaseConnectionManager.preparedStatement(queryViewReport);
+            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
+            PreparedStatement preparedStatement = connection.preparedStatement(queryViewReport);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                Student student = StudentDAO.getStudentByEnrollment(resultSet.getString("matricula"));
+                StudentDAO studentDAO = new StudentDAO();
+                Student student = studentDAO.getStudentByEnrollment(resultSet.getString("matricula"));
                 float workedHours = resultSet.getFloat("horas_realizadas");
                 String reportType = resultSet.getString("tipo_reporte");
                 Date reportDate = resultSet.getDate("fecha");
                 String observations = resultSet.getString("observaciones_reporte");
                 report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
             }
+            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar reportes", e);
         }
