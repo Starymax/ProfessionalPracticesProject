@@ -1,9 +1,12 @@
 package mx.fei.dataaccess;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,21 +16,38 @@ public class DatabaseConnectionManager {
     private Connection connection;
     private String driver;
     private String url;
-    private String host = "localhost";
-    private String port = "3306";
-    private String dataBase = "practicas_profesionales";
-    private String username = "administradorGeneral";
-    private String password = "Admin12345";
+    private String username;
+    private String password;
 
     private DatabaseConnectionManager() throws SQLException {
-        driver = "com.mysql.cj.jdbc.Driver";
-        url = "jdbc:mysql://" + host + ":" + port + "/" + dataBase + "?useTimezone=true&serverTimezone=UTC";
+        loadProperties();
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
             logger.log(Level.SEVERE,"No se encontro el driver JDBC" + driver,e);
         }
         connect();
+    }
+
+    private void loadProperties() throws SQLException {
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new SQLException("Archivo db.properties no encontrado");
+            }
+            properties.load(input);
+            driver = properties.getProperty("db.driver");
+            username = properties.getProperty("db.username");
+            password = properties.getProperty("db.password");
+            String host = properties.getProperty("db.host");
+            String port = properties.getProperty("db.port");
+            String dataBase = properties.getProperty("db.name");
+
+            url = "jdbc:mysql://" + host + ":" + port + "/" + dataBase + "?useTimezone=true&serverTimezone=UTC";
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error al leer db.properties", e);
+        }
     }
 
     private void connect() throws SQLException {
