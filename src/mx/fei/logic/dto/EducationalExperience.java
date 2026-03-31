@@ -2,14 +2,14 @@ package mx.fei.logic.dto;
 
 public class EducationalExperience {
     private String nrc;
-    private String nameEducationalExperience;
+    private String name;
     private String educationalProgram;
     private String escolarPeriod;
     private Professor professor;
 
-    public EducationalExperience(String nrc, String nameEducationalExperience, String educationalProgram, String escolarPeriod, Professor professor) {
+    public EducationalExperience(String nrc, String name, String educationalProgram, String escolarPeriod, Professor professor) {
         this.nrc = nrc;
-        this.nameEducationalExperience = nameEducationalExperience;
+        this.name = name;
         this.educationalProgram = educationalProgram;
         this.escolarPeriod = escolarPeriod;
         this.professor = professor;
@@ -23,12 +23,12 @@ public class EducationalExperience {
         this.nrc = nrc;
     }
 
-    public String getNameEducationalExperience() {
-        return nameEducationalExperience;
+    public String getName() {
+        return name;
     }
 
-    public void setNameEducationalExperience(String nameEducationalExperience) {
-        this.nameEducationalExperience = nameEducationalExperience;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEducationalProgram() {
