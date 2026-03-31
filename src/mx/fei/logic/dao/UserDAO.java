@@ -5,10 +5,7 @@ import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
 import mx.fei.logic.idao.IDAOUser;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,10 +13,9 @@ public class UserDAO implements IDAOUser {
     private Logger logger = Logger.getLogger(UserDAO.class.getName());
     @Override
     public boolean userExist(int idUser) {
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String queryUserExist = "SELECT id_usuario FROM  usuario where id_usuario=?;";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryUserExist);
+        String queryUserExist = "SELECT id_usuario FROM  usuario where id_usuario=?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryUserExist);) {
             preparedStatement.setInt(1,idUser);
             ResultSet resultSet = preparedStatement.executeQuery();
             boolean exist = resultSet.next();
@@ -34,10 +30,9 @@ public class UserDAO implements IDAOUser {
     @Override
     public int registerUser(User user) {
         int generatedID = -1;
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String query = "INSERT INTO usuario (nombre,apellidos,correo,contrasena,estado_activo,genero) VALUES (?,?,?,?,?,?);";
-            PreparedStatement preparedStatement = connection.preparedStatement(query, Statement.RETURN_GENERATED_KEYS);
+        String query = "INSERT INTO usuario (nombre,apellidos,correo,contrasena,estado_activo,genero) VALUES (?,?,?,?,?,?);";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getLastName());
             preparedStatement.setString(3, user.getEmail());
@@ -49,7 +44,6 @@ public class UserDAO implements IDAOUser {
             if (keys.next()) {
                 generatedID = keys.getInt(1);
             }
-            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
@@ -57,28 +51,24 @@ public class UserDAO implements IDAOUser {
     }
 
     @Override
-    public boolean updateUser(Student student) {
+    public boolean updateUser(User user) {
         boolean updated = false;
-        if (student == null) {
+        if (user == null) {
             return false;
         }
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String queryModifyStudent = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryModifyStudent);
-            preparedStatement.setString(1, student.getName());
-            preparedStatement.setString(2, student.getLastName());
-            preparedStatement.setString(3, student.getEmail());
-            preparedStatement.setString(4, student.getPassword());
-            preparedStatement.setBoolean(5, student.isActive());
-            preparedStatement.setString(6, student.getGender());
-            preparedStatement.setInt(7, student.getUserId());
+        String queryModifyStudent = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent);) {
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getLastName());
+            preparedStatement.setString(3, user.getEmail());
+            preparedStatement.setString(4, user.getPassword());
+            preparedStatement.setBoolean(5, user.isActive());
+            preparedStatement.setString(6, user.getGender());
+            preparedStatement.setInt(7, user.getUserId());
             updated = preparedStatement.executeUpdate()>0;
-            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
-        } finally {
-
         }
         return updated;
     }

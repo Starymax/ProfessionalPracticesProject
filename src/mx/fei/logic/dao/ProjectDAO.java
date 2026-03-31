@@ -5,6 +5,7 @@ import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.idao.IDAOProject;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,10 +15,9 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public Project getProjectById(int idProject) {
         Project project = null;
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String query = "SELECT * FROM proyecto WHERE id_proyecto = ?";
-            PreparedStatement preparedStatement = connection.preparedStatement(query);
+        String query = "SELECT * FROM proyecto WHERE id_proyecto = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, idProject);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -38,7 +38,6 @@ public class ProjectDAO implements IDAOProject {
                         immediateObjectives, mediateObjectives, methodology, resources,
                         startDate, endDate, activeStatus, enterprise);
             }
-            connection.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

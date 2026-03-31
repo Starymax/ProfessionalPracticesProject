@@ -5,10 +5,7 @@ import mx.fei.logic.dto.Report;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IReportDAO;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,9 +20,8 @@ public class ReportDAO implements IReportDAO {
             return false;
         }
         String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            PreparedStatement preparedStatement = connection.preparedStatement(queryReport);
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryReport);) {
             preparedStatement.setFloat(1, report.getWorkedHours());
             preparedStatement.setString(2, report.getReportType());
             preparedStatement.setDate(3, (Date) report.getDate());
@@ -44,9 +40,8 @@ public class ReportDAO implements IReportDAO {
     public List<Report> consultReports() {
         String queryViewReport = "SELECT * FROM vw_reportes";
         List<Report> reports = new ArrayList<>();
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            PreparedStatement preparedStatement = connection.preparedStatement(queryViewReport);
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryViewReport);) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 StudentDAO studentDAO = new StudentDAO();
@@ -59,7 +54,6 @@ public class ReportDAO implements IReportDAO {
                 Report report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
                 reports.add(report);
             }
-            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar reportes", e);
         }
@@ -70,9 +64,8 @@ public class ReportDAO implements IReportDAO {
     public Report getReportById(int reportId) {
         String queryViewReport = "SELECT * FROM vw_reportes";
         Report report = null;
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            PreparedStatement preparedStatement = connection.preparedStatement(queryViewReport);
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryViewReport);) {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 StudentDAO studentDAO = new StudentDAO();
@@ -83,7 +76,6 @@ public class ReportDAO implements IReportDAO {
                 String observations = resultSet.getString("observaciones_reporte");
                 report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
             }
-            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar reportes", e);
         }

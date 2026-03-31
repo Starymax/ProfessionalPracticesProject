@@ -6,6 +6,7 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IDAOStudent;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +19,9 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public Student getStudentByEnrollment(String enrollment) {
         Student student = null;
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String querygetStudentByEnrollment = "SELECT * FROM vw_alumnos where matricula=?;";
-            PreparedStatement preparedStatement = connection.preparedStatement(querygetStudentByEnrollment);
+        String querygetStudentByEnrollment = "SELECT * FROM vw_alumnos where matricula=?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentByEnrollment);) {
             preparedStatement.setString(1,enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -42,7 +42,6 @@ public class StudentDAO implements IDAOStudent {
                 EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(resultSet.getString("nrc"));
                 student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
             }
-            connection.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -51,6 +50,7 @@ public class StudentDAO implements IDAOStudent {
 
     @Override
     public boolean registerStudent(Student student) {
+        boolean registered = false;
         if (student == null) {
             return false;
         }
@@ -65,32 +65,33 @@ public class StudentDAO implements IDAOStudent {
                 logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
                 return false;
             }
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
             String queryRegisterStudent = "INSERT INTO alumno (id_usuario,matricula,periodo,lengua_indigena) VALUES (?,?,?,?);";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryRegisterStudent);
-            preparedStatement.setInt(1,idUser);
-            preparedStatement.setString(2,student.getEnrollment());
-            preparedStatement.setString(3,student.getPeriod());
-            preparedStatement.setBoolean(4,student.isIndigenousLanguage());
-            preparedStatement.executeUpdate();
-            connection.close();
-            return true;
+            try (Connection connection=DatabaseConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterStudent)) {
+                preparedStatement.setInt(1,idUser);
+                preparedStatement.setString(2,student.getEnrollment());
+                preparedStatement.setString(3,student.getPeriod());
+                preparedStatement.setBoolean(4,student.isIndigenousLanguage());
+                int rowsAffected = preparedStatement.executeUpdate();
+                if (rowsAffected > 0) {
+                    registered = true;
+                }
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
-        return false;
+        return registered;
     }
 
     @Override
     public boolean modifyStudent(Student student) {
         boolean updated = false;
+        String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=?, proyecto_asignado=?, nrc=? where id_usuario=?;";
         if (student == null) {
             return false;
         }
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=?, proyecto_asignado=?, nrc=? where id_usuario=?;";
-            PreparedStatement preparedStatement= connection.preparedStatement(queryModifyStudent);
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent)) {
             preparedStatement.setString(1, student.getPeriod());
             preparedStatement.setBoolean(2, student.isIndigenousLanguage());
             preparedStatement.setFloat(3, student.getGrade());
@@ -98,7 +99,6 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(5, student.getEducationalExperience().getNrc());
             preparedStatement.setInt(6, student.getUserId());
             updated = preparedStatement.executeUpdate()>0;
-            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }

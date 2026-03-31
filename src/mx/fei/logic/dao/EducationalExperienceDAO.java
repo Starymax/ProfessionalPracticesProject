@@ -5,6 +5,7 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.idao.IDAOEducationalExperience;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -17,10 +18,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public EducationalExperience getEducationalExperienceByNrc(String nrc) {
         EducationalExperience experience = null;
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryEEByNrc);
+        String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryEEByNrc);) {
             preparedStatement.setString(1,nrc);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -33,11 +33,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 Professor professor = professorDAO.getProfessorByPersonalNumber(idProfessor);
                 experience = new EducationalExperience(nrcEE,name,career,period,professor);
             }
-            connection.close();
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
-        } finally {
-            return experience;
         }
+        return experience;
     }
 }

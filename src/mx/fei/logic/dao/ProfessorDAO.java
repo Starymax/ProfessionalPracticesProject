@@ -4,6 +4,7 @@ import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.idao.IProfessorDAO;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,10 +19,9 @@ public class ProfessorDAO implements IProfessorDAO {
     @Override
     public Professor getProfessorByPersonalNumber(int personalNumber) {
         Professor professor = null;
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String queryProfessor = "SELECT * FROM vw_profesor WHERE numero_de_personal = ?;";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryProfessor);
+        String queryProfessor = "SELECT * FROM vw_profesor WHERE numero_de_personal = ?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryProfessor);) {
             preparedStatement.setInt(1, personalNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -36,7 +36,6 @@ public class ProfessorDAO implements IProfessorDAO {
                 boolean isAdmin = resultSet.getBoolean("es_administrador");
                 String shift = resultSet.getString("turno");
                 professor = new Professor(idUser, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
-                connection.close();
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el profesor: ", e);
@@ -60,17 +59,17 @@ public class ProfessorDAO implements IProfessorDAO {
                 logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
                 return false;
             }
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
             String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryRegisterProfessor);
-            preparedStatement.setInt(1, idUser);
-            preparedStatement.setInt(2, professor.getPersonalNumber());
-            preparedStatement.setBoolean(3, professor.isCoordinator());
-            preparedStatement.setBoolean(4, professor.isAdmin());
-            preparedStatement.setString(5, professor.getShift());
-            preparedStatement.executeUpdate();
-            connection.close();
-            return true;
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor);) {
+                preparedStatement.setInt(1, idUser);
+                preparedStatement.setInt(2, professor.getPersonalNumber());
+                preparedStatement.setBoolean(3, professor.isCoordinator());
+                preparedStatement.setBoolean(4, professor.isAdmin());
+                preparedStatement.setString(5, professor.getShift());
+                preparedStatement.executeUpdate();
+                return true;
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());
         }
@@ -80,15 +79,13 @@ public class ProfessorDAO implements IProfessorDAO {
     @Override
     public List<Professor> consultProfessors() {
         List<Professor> professors = new ArrayList<>();
-        try {
-            DatabaseConnectionManager connection = DatabaseConnectionManager.buildConnection();
-            String queryRegisterProfessor = "SELECT numero_de_personal FROM profesor;";
-            PreparedStatement preparedStatement = connection.preparedStatement(queryRegisterProfessor);
+        String queryRegisterProfessor = "SELECT numero_de_personal FROM profesor;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor);) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 professors.add(getProfessorByPersonalNumber(resultSet.getInt("numero_de_personal")));
             }
-            connection.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
