@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,10 +38,11 @@ public class StudentDAO implements IDAOStudent {
                 Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
                 Float grade = resultSet.getFloat("calificacion");
                 int studentProjectId = resultSet.getInt("proyecto");
+                String nrc = resultSet.getString("nrc");
                 ProjectDAO projectDAO = new ProjectDAO();
                 Project project = projectDAO.getProjectById(studentProjectId);
                 EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(resultSet.getString("nrc"));
+                EducationalExperience educationalExperience=educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
                 student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
             }
         } catch (SQLException e) {
@@ -98,10 +101,26 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setInt(4, student.getAssignedProject().getProjectId());
             preparedStatement.setString(5, student.getEducationalExperience().getNrc());
             preparedStatement.setInt(6, student.getUserId());
-            updated = preparedStatement.executeUpdate()>0;
+            updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }
         return updated;
+    }
+
+    @Override
+    public List<Student> consultStudents() {
+        List<Student> students = new ArrayList<>();
+        String queryConsultStudent = "SELECT * FROM alumno";
+        try (Connection connection =DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                students.add(getStudentByEnrollment(resultSet.getString("matricula")));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+        return students;
     }
 }

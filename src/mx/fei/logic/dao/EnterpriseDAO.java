@@ -8,8 +8,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class EnterpriseDAO implements IDAOEnterprise {
+    private Logger logger = Logger.getLogger(EnterpriseDAO.class.getName());
     @Override
     public Enterprise getEnterpriseById(int idEnterprise) {
         Enterprise enterprise = null;
@@ -31,8 +34,32 @@ public class EnterpriseDAO implements IDAOEnterprise {
                         address, directUsers, indirectUsers, activeStatus);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
         }
         return enterprise;
+    }
+
+    @Override
+    public int registerEnterprise(Enterprise enterprise) {
+        int generatedId = -1;
+        String queryRegisterEnterprise = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, direccion, usuarios_directos, usuarios_indirectos, estado_activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEnterprise)) {
+            preparedStatement.setString(1,enterprise.getName());
+            preparedStatement.setString(2,enterprise.getSector());
+            preparedStatement.setString(3,enterprise.getPhoneNumber());
+            preparedStatement.setString(4,enterprise.getContactEmail());
+            preparedStatement.setString(5,enterprise.getAddress());
+            preparedStatement.setInt(6,enterprise.getDirectUsers());
+            preparedStatement.setInt(7,enterprise.getIndirectUsers());
+            preparedStatement.setBoolean(8,enterprise.isActiveStatus());
+            ResultSet keys = preparedStatement.getGeneratedKeys();
+            if (keys.next()) {
+                generatedId = keys.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return generatedId;
     }
 }

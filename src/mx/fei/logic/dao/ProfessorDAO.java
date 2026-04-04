@@ -15,7 +15,6 @@ import java.util.logging.Logger;
 
 public class ProfessorDAO implements IProfessorDAO {
     private final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
-
     @Override
     public Professor getProfessorByPersonalNumber(int personalNumber) {
         Professor professor = null;
@@ -90,5 +89,24 @@ public class ProfessorDAO implements IProfessorDAO {
             throw new RuntimeException(e);
         }
         return professors;
+    }
+
+    @Override
+    public boolean modifyProfessor(Professor professor) {
+        boolean updated = false;
+        String queryModifyProfessor = "UPDATE profesor set es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
+        if (professor == null) {
+            updated = false;
+        }
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProfessor)) {
+            preparedStatement.setBoolean(1,professor.isCoordinator());
+            preparedStatement.setBoolean(2,professor.isAdmin());
+            preparedStatement.setString(3,professor.getShift());
+            updated = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return updated;
     }
 }

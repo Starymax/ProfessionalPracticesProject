@@ -10,4 +10,6 @@ public interface IProfessorDAO {
     public boolean registerProfessor(Professor professor);
 
     public List<Professor> consultProfessors();
+
+    public boolean modifyProfessor(Professor professor);
 }
