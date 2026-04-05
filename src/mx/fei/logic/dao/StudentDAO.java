@@ -111,8 +111,40 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public List<Student> consultStudents() {
         List<Student> students = new ArrayList<>();
-        String queryConsultStudent = "SELECT * FROM alumno";
+        String queryConsultStudent = "SELECT matricula FROM alumno";
         try (Connection connection =DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                students.add(getStudentByEnrollment(resultSet.getString("matricula")));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+        return students;
+    }
+
+    @Override
+    public List<Student> consultStudentsWithoutProject() {
+        List<Student> students = new ArrayList<>();
+        String queryConsultStudent = "SELECT matricula FROM alumno WHERE proyecto_asignado = NULL";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                students.add(getStudentByEnrollment(resultSet.getString("matricula")));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+        return students;
+    }
+
+    @Override
+    public List<Student> consultActiveStudents() {
+        List<Student> students = new ArrayList<>();
+        String queryConsultStudent = "SELECT matricula FROM alumno join usuario USING(id_usuario) WHERE estado_activo = true";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
