@@ -1,11 +1,20 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Activity;
+import mx.fei.logic.dto.WeeklyLog;
 
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface IDAOActivity {
-    boolean registerActivity(Activity activity, int idProject);
+    Activity getActivityById(int activityId);
 
     List<Activity> getActivitiesByProjectId(int idActivity);
+
+    boolean insertActivity(Activity activity, int projectId, ArrayList<WeeklyLog> weeklyLogs);
+
+    boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId);
+
+    List<WeeklyLog> getWeeklyLogsByActivityId(int activityId);
 }

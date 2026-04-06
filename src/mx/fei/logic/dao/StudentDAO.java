@@ -47,7 +47,7 @@ public class StudentDAO implements IDAOStudent {
                 student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage());
         }
         return student;
     }

@@ -14,9 +14,10 @@ public class Project {
     private Date startDate;
     private Date finalDate;
     private boolean activeStatus;
+    private int availablePlaces;
     private Enterprise enterprise;
 
-    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String resources, Date startDate, Date finalDate, boolean activeStatus, Enterprise enterprise) {
+    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String resources, Date startDate, Date finalDate, boolean activeStatus, int available_places, Enterprise enterprise) {
         this.id = projectId;
         this.nameProject = nameProject;
         this.descriptionProject = descriptionProject;
@@ -28,6 +29,7 @@ public class Project {
         this.startDate = startDate;
         this.finalDate = finalDate;
         this.activeStatus = activeStatus;
+        this.availablePlaces = available_places;
         this.enterprise = enterprise;
     }
 
@@ -109,6 +111,14 @@ public class Project {
 
     public void setFinalDate(Date finalDate) {
         this.finalDate = finalDate;
+    }
+
+    public int getAvailablePlaces() {
+        return availablePlaces;
+    }
+
+    public void setAvailablePlaces(int available_places) {
+        this.availablePlaces = available_places;
     }
 
     public boolean getActiveStatus() {

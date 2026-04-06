@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,12 +36,13 @@ public class ProjectDAO implements IDAOProject {
                 Date startDate = resultSet.getDate("fecha_inicio");
                 Date endDate = resultSet.getDate("fecha_final");
                 boolean activeStatus = resultSet.getBoolean("estado_activo");
+                int available_places = resultSet.getInt("lugares_disponibles");
                 int idCompany = resultSet.getInt("id_empresa");
                 EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
                 Enterprise enterprise = enterpriseDAO.getEnterpriseById(idCompany);
                 project = new Project(idProject, projectName, description, generalObjective,
                         immediateObjectives, mediateObjectives, methodology, resources,
-                        startDate, endDate, activeStatus, enterprise);
+                        startDate, endDate, activeStatus, available_places, enterprise);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());
@@ -51,7 +53,7 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public int registerProject(Project project) {
         int generatedID = -1;
-        String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, recursos, fecha_inicio, fecha_final, estado_activo, id_empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProject)) {
             preparedStatement.setString(1,project.getNameProject());
@@ -64,7 +66,8 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setDate(8, project.getStartDate());
             preparedStatement.setDate(9,project.getFinalDate());
             preparedStatement.setBoolean(10,project.getActiveStatus());
-            preparedStatement.setInt(11,project.getEnterprise().getEnterpriseId());
+            preparedStatement.setInt(11,project.getAvailablePlaces());
+            preparedStatement.setInt(12,project.getEnterprise().getEnterpriseId());
             ResultSet keys = preparedStatement.getGeneratedKeys();
             if (keys.next()) {
                 generatedID = keys.getInt(1);
@@ -77,11 +80,56 @@ public class ProjectDAO implements IDAOProject {
 
     @Override
     public List<Project> getActiveProjects() {
-        return List.of();
+        List<Project> projects = new ArrayList<>();
+        String queryActiveProjects = "SELECT id_proyecto FROM proyecto WHERE estado_activo = true";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryActiveProjects)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                projects.add(getProjectById(resultSet.getInt("id_proyecto")));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return projects;
     }
 
     @Override
     public List<Project> getAvailableProjects() {
-        return List.of();
+        List<Project> availableProjects = new ArrayList<>();
+        List<Project> activeProjects = getActiveProjects();
+        for (Project project : activeProjects) {
+            if (project.getAvailablePlaces() != 0) {
+                modifyProject(project);
+                availableProjects.add(project);
+            }
+        }
+        return availableProjects;
+    }
+
+    @Override
+    public boolean modifyProject(Project project) {
+        boolean updated = false;
+        String queryModifyProject = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ? WHERE id_proyecto = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProject)) {
+            preparedStatement.setString(1, project.getNameProject());
+            preparedStatement.setString(2, project.getDescriptionProject());
+            preparedStatement.setString(3, project.getGeneralObjective());
+            preparedStatement.setString(4, project.getImmediateObjectives());
+            preparedStatement.setString(5, project.getMediatesObjectives());
+            preparedStatement.setString(6, project.getMethodology());
+            preparedStatement.setString(7, project.getResources());
+            preparedStatement.setDate(8, project.getStartDate());
+            preparedStatement.setDate(9, project.getFinalDate());
+            preparedStatement.setBoolean(10, project.getActiveStatus());
+            preparedStatement.setInt(11, project.getAvailablePlaces());
+            preparedStatement.setInt(12, project.getEnterprise().getEnterpriseId());
+            preparedStatement.setInt(13, project.getProjectId());
+            updated = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return updated;
     }
 }
