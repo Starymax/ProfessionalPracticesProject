@@ -109,7 +109,7 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public List<Student> consultStudents() {
+    public List<Student> getStudents() {
         List<Student> students = new ArrayList<>();
         String queryConsultStudent = "SELECT matricula FROM alumno";
         try (Connection connection =DatabaseConnectionManager.getConnection();
@@ -125,11 +125,11 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public List<Student> consultStudentsWithoutProject() {
+    public List<Student> getStudentsWithoutProject() {
         List<Student> students = new ArrayList<>();
-        String queryConsultStudent = "SELECT matricula FROM alumno WHERE proyecto_asignado = NULL";
+        String queryConsultStudents = "SELECT matricula FROM alumno WHERE proyecto_asignado = NULL";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudents)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 students.add(getStudentByEnrollment(resultSet.getString("matricula")));
@@ -141,11 +141,11 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public List<Student> consultActiveStudents() {
+    public List<Student> getActiveStudents() {
         List<Student> students = new ArrayList<>();
-        String queryConsultStudent = "SELECT matricula FROM alumno join usuario USING(id_usuario) WHERE estado_activo = true";
+        String queryConsultActiveStudent = "SELECT matricula FROM alumno join usuario USING(id_usuario) WHERE estado_activo = true";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultActiveStudent)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 students.add(getStudentByEnrollment(resultSet.getString("matricula")));
@@ -154,5 +154,20 @@ public class StudentDAO implements IDAOStudent {
             logger.log(Level.SEVERE,e.getMessage());
         }
         return students;
+    }
+
+    @Override
+    public void saveSelectedProjects(List<Project> selectedProjects) {
+
+    }
+
+    @Override
+    public List<Project> getSelectedProjects() {
+        return List.of();
+    }
+
+    @Override
+    public boolean assignProject(Project project) {
+        return false;
     }
 }

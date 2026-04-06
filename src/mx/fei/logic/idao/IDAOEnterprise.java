@@ -2,8 +2,12 @@ package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Enterprise;
 
-public interface IDAOEnterprise {
-    public Enterprise getEnterpriseById(int idEnterprise);
+import java.util.List;
 
-     public int registerEnterprise(Enterprise enterprise);
+public interface IDAOEnterprise {
+    Enterprise getEnterpriseById(int idEnterprise);
+
+    int registerEnterprise(Enterprise enterprise);
+
+    List<Enterprise> getActiveEnterprises();
 }

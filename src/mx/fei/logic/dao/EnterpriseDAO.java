@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,5 +62,10 @@ public class EnterpriseDAO implements IDAOEnterprise {
             logger.log(Level.SEVERE, e.getMessage());
         }
         return generatedId;
+    }
+
+    @Override
+    public List<Enterprise> getActiveEnterprises() {
+        return List.of();
     }
 }

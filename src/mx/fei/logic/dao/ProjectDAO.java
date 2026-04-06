@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,5 +73,15 @@ public class ProjectDAO implements IDAOProject {
             logger.log(Level.SEVERE, e.getMessage());
         }
         return generatedID;
+    }
+
+    @Override
+    public List<Project> getActiveProjects() {
+        return List.of();
+    }
+
+    @Override
+    public List<Project> getAvailableProjects() {
+        return List.of();
     }
 }

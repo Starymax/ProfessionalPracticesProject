@@ -1,24 +1,25 @@
 package mx.fei.logic.idao;
 
+import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import java.util.List;
 
 public interface IDAOStudent {
-    public Student getStudentByEnrollment(String enrollment);
+    Student getStudentByEnrollment(String enrollment);
 
-    public boolean registerStudent(Student student);
+    boolean registerStudent(Student student);
 
-    public boolean modifyStudent(Student student);
+    boolean modifyStudent(Student student);
 
-    public List<Student> consultStudents();
+    List<Student> getStudents();
 
-    List<Student> consultStudentsWithoutProject();
+    List<Student> getStudentsWithoutProject();
 
-    List<Student> consultActiveStudents();
-    //public void choseProject();
-    //public void createReport();
-    //public void addReport();
-    //public void createSelfEvaluation();
-    //public void addSelfEvaluation();
-    //public void uploadInitialFormats();
+    List<Student> getActiveStudents();
+
+    void saveSelectedProjects(List<Project> selectedProjects);
+
+    List<Project> getSelectedProjects();
+
+    boolean assignProject(Project project);
 }

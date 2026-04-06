@@ -2,12 +2,14 @@ package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Professor;
 
+import java.util.List;
+
 public interface IDAOProfessor {
-    public Professor getProfessorByPersonalNumber();
+    Professor getProfessorByPersonalNumber(int personalNumber);
 
-    public void registerProfessor();
+    boolean registerProfessor(Professor professor);
 
-    public void modifyProfessor();
+    List<Professor> getProfessors();
 
-    public void convertToCordinator();
+    boolean modifyProfessor(Professor professor);
 }

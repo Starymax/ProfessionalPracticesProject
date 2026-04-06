@@ -2,7 +2,7 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Professor;
-import mx.fei.logic.idao.IProfessorDAO;
+import mx.fei.logic.idao.IDAOProfessor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class ProfessorDAO implements IProfessorDAO {
+public class ProfessorDAO implements IDAOProfessor {
     private final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
     @Override
     public Professor getProfessorByPersonalNumber(int personalNumber) {
@@ -76,7 +76,7 @@ public class ProfessorDAO implements IProfessorDAO {
     }
 
     @Override
-    public List<Professor> consultProfessors() {
+    public List<Professor> getProfessors() {
         List<Professor> professors = new ArrayList<>();
         String queryRegisterProfessor = "SELECT numero_de_personal FROM profesor;";
         try (Connection connection = DatabaseConnectionManager.getConnection();

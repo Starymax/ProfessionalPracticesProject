@@ -1,9 +1,16 @@
 package mx.fei.logic.idao;
 
+import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Project;
 
-public interface IDAOProject {
-    public Project getProjectById(int idProject);
+import java.util.List;
 
-    public int registerProject(Project project);
+public interface IDAOProject {
+    Project getProjectById(int idProject);
+
+    int registerProject(Project project);
+
+    List<Project> getActiveProjects();
+
+    List<Project> getAvailableProjects();
 }

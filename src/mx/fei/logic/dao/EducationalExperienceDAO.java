@@ -9,11 +9,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EducationalExperienceDAO implements IDAOEducationalExperience {
     private Logger logger = Logger.getLogger(EducationalExperienceDAO.class.getName());
+
+    @Override
+    public boolean registerEducationalExperience(EducationalExperience educationalExperience) {
+        return false;
+    }
 
     @Override
     public EducationalExperience getEducationalExperienceByNrc(String nrc) {
@@ -37,5 +43,15 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             logger.log(Level.SEVERE,e.getMessage());
         }
         return experience;
+    }
+
+    @Override
+    public List<EducationalExperience> getEducationalExperiences() {
+        return List.of();
+    }
+
+    @Override
+    public boolean addStudentByNrc(String nrc) {
+        return false;
     }
 }

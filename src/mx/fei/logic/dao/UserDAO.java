@@ -1,7 +1,6 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
 import mx.fei.logic.idao.IDAOUser;
 
