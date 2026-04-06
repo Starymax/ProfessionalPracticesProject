@@ -86,7 +86,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 professors.add(getProfessorByPersonalNumber(resultSet.getInt("numero_de_personal")));
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            logger.log(Level.SEVERE, e.getMessage());
         }
         return professors;
     }
