@@ -1,5 +1,6 @@
 package mx.fei.logic.dao;
 
+import com.mysql.cj.jdbc.PreparedStatementWrapper;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Project;
@@ -89,7 +90,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean modifyStudent(Student student) {
         boolean updated = false;
-        String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=?, proyecto_asignado=?, nrc=? where id_usuario=?;";
+        String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=? where id_usuario=?;";
         if (student == null) {
             return false;
         }
@@ -98,9 +99,7 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(1, student.getPeriod());
             preparedStatement.setBoolean(2, student.isIndigenousLanguage());
             preparedStatement.setFloat(3, student.getGrade());
-            preparedStatement.setInt(4, student.getAssignedProject().getProjectId());
-            preparedStatement.setString(5, student.getEducationalExperience().getNrc());
-            preparedStatement.setInt(6, student.getUserId());
+            preparedStatement.setInt(4, student.getUserId());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
@@ -157,17 +156,71 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public void saveSelectedProjects(List<Project> selectedProjects) {
-
+    public void saveSelectedProjects(List<Project> selectedProjects, Student student) {
+        String querySaveSelectedProjects = "INSERT INTO seleccion (matricula, proyecto_seleccionado) values (?,?);";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(querySaveSelectedProjects)) {
+            for (Project project : selectedProjects) {
+                preparedStatement.setString(1,student.getEnrollment());
+                preparedStatement.setInt(2, project.getProjectId());
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
     }
 
     @Override
-    public List<Project> getSelectedProjects() {
-        return List.of();
+    public List<Project> getSelectedProjects(Student student) {
+        ArrayList<Project> selectedProjects = new ArrayList<>();
+        String queryGetSelectedProjects = "SELECT proyecto_seleccionado FROM seleccion WHERE matricula = ?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryGetSelectedProjects)){
+            preparedStatement.setString(1,student.getEnrollment());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            ProjectDAO projectDAO = new ProjectDAO();
+            while (resultSet.next()) {
+                int idProject = resultSet.getInt("proyecto_seleccionado");
+                Project project = projectDAO.getProjectById(idProject);
+                selectedProjects.add(project);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+        return selectedProjects;
     }
 
     @Override
-    public boolean assignProject(Project project) {
-        return false;
+    public boolean assignProject(Student student, Project project) {
+        boolean assigned = false;
+        String queryAssignProject = "UPDATE alumno set proyecto_asignado = ? where matricula = ?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryAssignProject)) {
+            ProjectDAO projectDAO = new ProjectDAO();
+            preparedStatement.setInt(1,project.getProjectId());
+            preparedStatement.setString(2,student.getEnrollment());
+            project.setAvailablePlaces(Project.getAvailablePlaces()-1);
+            projectDAO.modifyProject(project);
+            assigned = preparedStatement.executeQuery() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+        return assigned;
+    }
+
+    @Override
+    public boolean assignEducationalExperience(Student student, EducationalExperience experience) {
+        boolean assigned = false;
+        String queryAssignEE = "UPDATE alumno SET nrc = ? where matricula = ?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryAssignEE)) {
+            preparedStatement.setString(1,experience.getNrc());
+            preparedStatement.setString(2,student.getEnrollment());
+            assigned = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,e.getMessage());
+        }
+        return assigned;
     }
 }

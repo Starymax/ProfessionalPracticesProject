@@ -3,12 +3,14 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
+import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IDAOEducationalExperience;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +20,19 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
 
     @Override
     public boolean registerEducationalExperience(EducationalExperience educationalExperience) {
-        return false;
+        boolean registered = false;
+        String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, periodo_escolar) values (?,?,?,?);";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEE)) {
+            preparedStatement.setString(1,educationalExperience.getNrc());
+            preparedStatement.setString(2,educationalExperience.getName());
+            preparedStatement.setString(3,educationalExperience.getEducationalProgram());
+            preparedStatement.setString(4,educationalExperience.getEscolarPeriod());
+            registered = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return registered;
     }
 
     @Override
@@ -47,11 +61,21 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
 
     @Override
     public List<EducationalExperience> getEducationalExperiences() {
-        return List.of();
-    }
-
-    @Override
-    public boolean addStudentByNrc(String nrc) {
-        return false;
+        ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
+        String queryGetEducationalExperiences = "SELECT nrc FROM experiencia_educativa;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryGetEducationalExperiences)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<String> nrcs = new ArrayList<>();
+            while (resultSet.next()) {
+                nrcs.add(resultSet.getString("NRC"));
+            }
+            for (String nrc : nrcs) {
+                educationalExperiences.add(getEducationalExperienceByNrc(nrc));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage());
+        }
+        return educationalExperiences;
     }
 }
