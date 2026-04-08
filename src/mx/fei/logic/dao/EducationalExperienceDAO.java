@@ -3,7 +3,6 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
-import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IDAOEducationalExperience;
 
 import java.sql.Connection;

@@ -5,7 +5,11 @@ import mx.fei.logic.dto.Report;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IDAOReport;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;

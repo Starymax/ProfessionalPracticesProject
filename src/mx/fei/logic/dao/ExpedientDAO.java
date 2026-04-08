@@ -30,7 +30,7 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean isLoaded(String enrollment, String documentType) {
         boolean isLoaded = false;
-        String queryIsLoaded = "SELECT" + documentType + "FROM expediente_practicas WHERE matricula = ?;";
+        String queryIsLoaded = "SELECT " + documentType + " FROM expediente_practicas WHERE matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryIsLoaded)) {
             preparedStatement.setString(1,enrollment);

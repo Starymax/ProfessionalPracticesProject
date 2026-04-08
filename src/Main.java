@@ -1,16 +1,9 @@
-import mx.fei.dataaccess.DatabaseConnectionManager;
-
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.SQLException;
 import mx.fei.logic.dao.*;
 import mx.fei.logic.dto.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
     static Scanner scanner = new Scanner(System.in);
@@ -106,9 +99,9 @@ public class Main {
 
     static void probarModificarEstudiante() {
         System.out.print("Matrícula del estudiante a modificar: ");
-        String matricula = scanner.nextLine();
+        String enrollment = scanner.nextLine();
         StudentDAO dao = new StudentDAO();
-        Student student = dao.getStudentByEnrollment(matricula);
+        Student student = dao.getStudentByEnrollment(enrollment);
         if (student == null) { System.out.println("No encontrado."); return; }
         student.setGrade(9.5f);
         student.setPeriod("2025-02");
@@ -335,4 +328,10 @@ public class Main {
             logs.forEach(System.out::println);
         }
     }
+
+    /*
+    evitar varios return en un mismo método
+    revisar excepciones
+    validacion de registerUser en registerProfessor y Student creo non (cambiar lo del numero magico -1)
+     */
 }

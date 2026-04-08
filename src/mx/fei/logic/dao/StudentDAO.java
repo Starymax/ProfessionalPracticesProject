@@ -1,6 +1,5 @@
 package mx.fei.logic.dao;
 
-import com.mysql.cj.jdbc.PreparedStatementWrapper;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Project;
