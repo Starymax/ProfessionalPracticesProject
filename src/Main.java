@@ -79,8 +79,8 @@ public class Main {
     static void probarRegistrarEstudiante() {
         StudentDAO dao = new StudentDAO();
         Student student = new Student(
-                0, "Ana", "Torres", "ana@uv.mx", "pass123",
-                "Mujer", true, "s24099999", "2025-02",
+                0, "Diego", "Leon", "diegoLeon@uv.mx", "pass456",
+                "Hombre", true, "s24014150", "2025-01",
                 false, 0.0f, null, null
         );
         boolean result = dao.registerStudent(student);
@@ -89,17 +89,19 @@ public class Main {
 
     static void probarBuscarEstudiante() {
         System.out.print("Matrícula: ");
-        String matricula = scanner.nextLine();
+        String enrollment = scanner.nextLine();
         StudentDAO dao = new StudentDAO();
-        Student student = dao.getStudentByEnrollment(matricula);
-        System.out.println("Estudiante encontrado: " + student);
+        Student student = dao.getStudentByEnrollment(enrollment);
+        System.out.println("Estudiante encontrado: " + student.getName());
     }
 
     static void probarListarEstudiantes() {
         StudentDAO dao = new StudentDAO();
         List<Student> students = dao.getStudents();
         System.out.println("Total estudiantes: " + students.size());
-        students.forEach(System.out::println);
+        for (Student student : students) {
+            System.out.println(student.getName());
+        }
     }
 
     static void probarModificarEstudiante() {
@@ -117,8 +119,8 @@ public class Main {
     static void probarRegistrarProfesor() {
         ProfessorDAO dao = new ProfessorDAO();
         Professor professor = new Professor(
-                0, "Carlos", "Ruiz", "cruiz@uv.mx", "pass456",
-                "Hombre", true, 98765, false, false, "Matutino"
+                0, "Juan Carlos", "Arriaga", "juanca@uv.mx", "pass789",
+                "Hombre", true, 32514, true, false, "Vespertino"
         );
         boolean result = dao.registerProfessor(professor);
         System.out.println("Registrar profesor: " + result);
@@ -129,14 +131,16 @@ public class Main {
         int num = Integer.parseInt(scanner.nextLine());
         ProfessorDAO dao = new ProfessorDAO();
         Professor professor = dao.getProfessorByPersonalNumber(num);
-        System.out.println("Profesor: " + professor);
+        System.out.println("Profesor: " + professor.getName());
     }
 
     static void probarListarProfesores() {
         ProfessorDAO dao = new ProfessorDAO();
         List<Professor> list = dao.getProfessors();
         System.out.println("Total profesores: " + list.size());
-        list.forEach(System.out::println);
+        for (Professor professor : list) {
+            System.out.println(professor.getName());
+        }
     }
 
     static void probarRegistrarEmpresa() {
@@ -154,7 +158,7 @@ public class Main {
         int id = Integer.parseInt(scanner.nextLine());
         EnterpriseDAO dao = new EnterpriseDAO();
         Enterprise enterprise = dao.getEnterpriseById(id);
-        System.out.println("Empresa: " + enterprise);
+        System.out.println("Empresa: " + enterprise.getName());
     }
 
     static void probarRegistrarProyecto() {
@@ -181,21 +185,25 @@ public class Main {
         int id = Integer.parseInt(scanner.nextLine());
         ProjectDAO dao = new ProjectDAO();
         Project project = dao.getProjectById(id);
-        System.out.println("Proyecto: " + project);
+        System.out.println("Proyecto: " + project.getNameProject());
     }
 
     static void probarListarProyectosActivos() {
         ProjectDAO dao = new ProjectDAO();
         List<Project> list = dao.getActiveProjects();
         System.out.println("Proyectos activos: " + list.size());
-        list.forEach(System.out::println);
+        for (Project project : list) {
+            System.out.println(project.getNameProject());
+        }
     }
 
     static void probarListarProyectosDisponibles() {
         ProjectDAO dao = new ProjectDAO();
         List<Project> list = dao.getAvailableProjects();
         System.out.println("Proyectos disponibles: " + list.size());
-        list.forEach(System.out::println);
+        for (Project project : list) {
+            System.out.println(project.getNameProject());
+        }
     }
 
     static void probarAsignarProyecto() {
@@ -228,7 +236,7 @@ public class Main {
         String nrc = scanner.nextLine();
         EducationalExperienceDAO dao = new EducationalExperienceDAO();
         EducationalExperience ee = dao.getEducationalExperienceByNrc(nrc);
-        System.out.println("EE: " + ee);
+        System.out.println("EE: " + ee.getName());
     }
 
     static void probarAsignarEE() {
@@ -247,7 +255,6 @@ public class Main {
         System.out.println("Asignar EE: " + result);
     }
 
-    // ───────────── PROJECT MANAGER ─────────────
     static void probarRegistrarResponsable() {
         System.out.print("ID del proyecto: ");
         int idProyecto = Integer.parseInt(scanner.nextLine());
@@ -268,7 +275,7 @@ public class Main {
         int id = Integer.parseInt(scanner.nextLine());
         ProjectManagerDAO dao = new ProjectManagerDAO();
         ProjectManager pm = dao.getProjectManagerById(id);
-        System.out.println("Responsable: " + pm);
+        System.out.println("Responsable: " + pm.getName());
     }
 
     static void probarCrearReporte() {
@@ -293,7 +300,9 @@ public class Main {
         ReportDAO dao = new ReportDAO();
         List<Report> reports = dao.getReportsByStudentEnrollment(matricula);
         System.out.println("Reportes encontrados: " + reports.size());
-        reports.forEach(System.out::println);
+        for (Report report : reports) {
+            System.out.println(report.getReportType());
+        }
     }
 
     static void probarInsertarActividad() {
@@ -306,8 +315,8 @@ public class Main {
         Activity activity = new Activity(0, "Análisis de requerimientos", "Sin observaciones", project);
 
         ArrayList<WeeklyLog> logs = new ArrayList<>();
-        logs.add(new WeeklyLog(0, "Semana 1", 8.0f, 10.0f, activity));
-        logs.add(new WeeklyLog(0, "Semana 2", 9.0f, 10.0f, activity));
+        logs.add(new WeeklyLog(0,  1, 8.0f, 10.0f, activity));
+        logs.add(new WeeklyLog(0,  2, 9.0f, 10.0f, activity));
 
         ActivityDAO dao = new ActivityDAO();
         boolean result = dao.insertActivity(activity, idProyecto, logs);
@@ -319,7 +328,7 @@ public class Main {
         int id = Integer.parseInt(scanner.nextLine());
         ActivityDAO dao = new ActivityDAO();
         Activity activity = dao.getActivityById(id);
-        System.out.println("Actividad: " + activity);
+        System.out.println("Actividad: " + activity.getName());
         if (activity != null) {
             List<WeeklyLog> logs = dao.getWeeklyLogsByActivityId(id);
             System.out.println("Registros semanales: " + logs.size());

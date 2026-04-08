@@ -5,11 +5,7 @@ import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.idao.IDAOProject;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Date;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -55,7 +51,7 @@ public class ProjectDAO implements IDAOProject {
         int generatedID = -1;
         String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProject)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProject, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,project.getNameProject());
             preparedStatement.setString(2,project.getDescriptionProject());
             preparedStatement.setString(3,project.getGeneralObjective());
@@ -68,6 +64,7 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setBoolean(10,project.getActiveStatus());
             preparedStatement.setInt(11,project.getAvailablePlaces());
             preparedStatement.setInt(12,project.getEnterprise().getEnterpriseId());
+            preparedStatement.executeUpdate();
             ResultSet keys = preparedStatement.getGeneratedKeys();
             if (keys.next()) {
                 generatedID = keys.getInt(1);
@@ -85,8 +82,13 @@ public class ProjectDAO implements IDAOProject {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryActiveProjects)) {
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> projectIDs = new ArrayList<>();
             while (resultSet.next()) {
-                projects.add(getProjectById(resultSet.getInt("id_proyecto")));
+                projectIDs.add((resultSet.getInt("id_proyecto")));
+            }
+            resultSet.close();
+            for (Integer projectID : projectIDs) {
+                projects.add(getProjectById(projectID));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());

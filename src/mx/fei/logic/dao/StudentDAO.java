@@ -27,7 +27,7 @@ public class StudentDAO implements IDAOStudent {
              PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentByEnrollment);) {
             preparedStatement.setString(1,enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
+            if (resultSet.next()) {
                 int idUser = resultSet.getInt("id_usuario");
                 String name = resultSet.getString("nombre");
                 String lastName = resultSet.getString("apellidos");
@@ -40,6 +40,7 @@ public class StudentDAO implements IDAOStudent {
                 Float grade = resultSet.getFloat("calificacion");
                 int studentProjectId = resultSet.getInt("proyecto");
                 String nrc = resultSet.getString("nrc");
+                resultSet.close();
                 ProjectDAO projectDAO = new ProjectDAO();
                 Project project = projectDAO.getProjectById(studentProjectId);
                 EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
@@ -114,8 +115,13 @@ public class StudentDAO implements IDAOStudent {
         try (Connection connection =DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<String> enrollmetns = new ArrayList<>();
             while (resultSet.next()) {
-                students.add(getStudentByEnrollment(resultSet.getString("matricula")));
+                enrollmetns.add((resultSet.getString("matricula")));
+            }
+            resultSet.close();
+            for(String enrollment : enrollmetns) {
+                students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
@@ -197,12 +203,15 @@ public class StudentDAO implements IDAOStudent {
         String queryAssignProject = "UPDATE alumno set proyecto_asignado = ? where matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryAssignProject)) {
-            ProjectDAO projectDAO = new ProjectDAO();
             preparedStatement.setInt(1,project.getProjectId());
             preparedStatement.setString(2,student.getEnrollment());
-            project.setAvailablePlaces(project.getAvailablePlaces()-1);
-            projectDAO.modifyProject(project);
             assigned = preparedStatement.executeUpdate() > 0;
+            if(assigned) {
+                project.setAvailablePlaces(project.getAvailablePlaces()-1);
+                ProjectDAO projectDAO = new ProjectDAO();
+                projectDAO.modifyProject(project);
+
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }

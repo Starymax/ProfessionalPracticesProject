@@ -82,8 +82,13 @@ public class ProfessorDAO implements IDAOProfessor {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> personalNumbers = new ArrayList<>();
             while (resultSet.next()) {
-                professors.add(getProfessorByPersonalNumber(resultSet.getInt("numero_de_personal")));
+                personalNumbers.add(resultSet.getInt("numero_de_personal"));
+            }
+            resultSet.close();
+            for (Integer personalNumer : personalNumbers) {
+                professors.add(getProfessorByPersonalNumber(personalNumer));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage());

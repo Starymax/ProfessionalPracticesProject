@@ -26,7 +26,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
             return false;
         }
         try {
-            String queryRegisterProfessor = "INSERT INTO profesor (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_proyecto) VALUES (?, ?, ?, ?, ?);";
+            String queryRegisterProfessor = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_proyecto) VALUES (?, ?, ?, ?, ?);";
             try (Connection connection = DatabaseConnectionManager.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
                 preparedStatement.setString(1, projectManager.getName());
@@ -55,7 +55,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 String name = resultSet.getString("nombre_responsable");
                 String email = resultSet.getString("correo_responsable");
                 String phoneNumber = resultSet.getString("telefono_responsable");
-                String rol = resultSet.getString("cargo_responsable");
+                String rol = resultSet.getString("cargo");
                 ProjectDAO projectDao = new ProjectDAO();
                 Project project = projectDao.getProjectById(resultSet.getInt("id_proyecto"));
                 projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol, project);

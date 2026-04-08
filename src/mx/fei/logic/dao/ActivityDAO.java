@@ -46,7 +46,7 @@ public class ActivityDAO implements IDAOActivity {
         String queryWeeklyLog = "INSERT INTO registro_semanal (semana, horas_realizadas, horas_planificadas, id_actividad) VALUES (?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLog);) {
             for (WeeklyLog log : logs) {
-                preparedStatement.setString(1, log.getWeek());
+                preparedStatement.setInt(1, log.getWeek());
                 preparedStatement.setFloat(2, log.getWorkedHours());
                 preparedStatement.setFloat(3, log.getPlannedHours());
                 preparedStatement.setInt(4, activityId);
@@ -106,13 +106,21 @@ public class ActivityDAO implements IDAOActivity {
              PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLogs)) {
             preparedStatement.setInt(1, activityId);
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<int[]> rawLogs = new ArrayList<>();
+            List<Integer> weeks = new ArrayList<>();
+            List<Float> workedHoursList = new ArrayList<>();
+            List<Float> plannedHoursList = new ArrayList<>();
+            List<Integer> logIds = new ArrayList<>();
             while (resultSet.next()) {
                 int weeklyLogId = resultSet.getInt("id_registro");
-                String week = resultSet.getString("semana");
+                int week = resultSet.getInt("semana");
                 float workedHours = resultSet.getFloat("horas_realizadas");
                 float plannedHours = resultSet.getFloat("horas_planificadas");
-                Activity activity = getActivityById(activityId);
-                WeeklyLog log = new WeeklyLog(weeklyLogId, week, workedHours, plannedHours, activity);
+            }
+            resultSet.close();
+            Activity activity = getActivityById(activityId);
+            for (int i = 1; i <= weeklyLogs.size(); i++) {
+                WeeklyLog log = new WeeklyLog(logIds.get(i),weeks.get(i),workedHoursList.get(i),plannedHoursList.get(i),activity);weeklyLogs.add(log);
                 weeklyLogs.add(log);
             }
         } catch (SQLException e) {

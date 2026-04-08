@@ -4,10 +4,7 @@ import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.idao.IDAOEnterprise;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,7 +42,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
         int generatedId = -1;
         String queryRegisterEnterprise = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, direccion, usuarios_directos, usuarios_indirectos, estado_activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEnterprise)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEnterprise, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,enterprise.getName());
             preparedStatement.setString(2,enterprise.getSector());
             preparedStatement.setString(3,enterprise.getPhoneNumber());

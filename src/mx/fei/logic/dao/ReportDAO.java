@@ -1,6 +1,7 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
+import mx.fei.logic.dto.Report;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IDAOReport;
 
@@ -37,15 +38,20 @@ public class ReportDAO implements IDAOReport {
     }
 
     @Override
-    public List<mx.fei.logic.dto.Report> getReportsByStudentEnrollment(String enrollment) {
+    public List<Report> getReportsByStudentEnrollment(String enrollment) {
         String queryViewReport = "SELECT id_reporte FROM vw_reportes WHERE matricula = ?";
-        List<mx.fei.logic.dto.Report> reports = new ArrayList<>();
+        List<Report> reports = new ArrayList<>();
+        List<Integer> idReports = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryViewReport);) {
             preparedStatement.setString(1, enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                reports.add(getReportById(resultSet.getInt("id_reporte")));
+                idReports.add(resultSet.getInt("id_reporte"));
+            }
+            resultSet.close();
+            for (int idReport : idReports) {
+                reports.add(getReportById(idReport));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar reportes", e);
@@ -54,20 +60,23 @@ public class ReportDAO implements IDAOReport {
     }
 
     @Override
-    public mx.fei.logic.dto.Report getReportById(int reportId) {
-        String queryViewReport = "SELECT * FROM vw_reportes";
-        mx.fei.logic.dto.Report report = null;
+    public Report getReportById(int reportId) {
+        String queryViewReport = "SELECT * FROM vw_reportes where id_reporte = ?";
+        Report report = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryViewReport);) {
+            preparedStatement.setInt(1, reportId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                StudentDAO studentDAO = new StudentDAO();
-                Student student = studentDAO.getStudentByEnrollment(resultSet.getString("matricula"));
+                String enrollment = resultSet.getString("matricula");
                 float workedHours = resultSet.getFloat("horas_realizadas");
                 String reportType = resultSet.getString("tipo_reporte");
                 Date reportDate = resultSet.getDate("fecha");
                 String observations = resultSet.getString("observaciones_reporte");
-                report = new mx.fei.logic.dto.Report(reportId, workedHours, reportType, reportDate, observations, student);
+                resultSet.close();
+                StudentDAO studentDao = new StudentDAO();
+                Student student = studentDao.getStudentByEnrollment(enrollment);
+                report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al consultar reportes", e);
