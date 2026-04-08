@@ -200,9 +200,9 @@ public class StudentDAO implements IDAOStudent {
             ProjectDAO projectDAO = new ProjectDAO();
             preparedStatement.setInt(1,project.getProjectId());
             preparedStatement.setString(2,student.getEnrollment());
-            project.setAvailablePlaces(Project.getAvailablePlaces()-1);
+            project.setAvailablePlaces(project.getAvailablePlaces()-1);
             projectDAO.modifyProject(project);
-            assigned = preparedStatement.executeQuery() > 0;
+            assigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
         }

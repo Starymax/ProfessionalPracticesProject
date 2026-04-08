@@ -54,6 +54,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
             preparedStatement.setInt(6,enterprise.getDirectUsers());
             preparedStatement.setInt(7,enterprise.getIndirectUsers());
             preparedStatement.setBoolean(8,enterprise.isActiveStatus());
+            preparedStatement.executeUpdate();
             ResultSet keys = preparedStatement.getGeneratedKeys();
             if (keys.next()) {
                 generatedId = keys.getInt(1);
