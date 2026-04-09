@@ -3,6 +3,7 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Project;
+import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.idao.IDAOStudent;
 
@@ -55,34 +56,30 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean registerStudent(Student student) {
         boolean registered = false;
-        if (student == null) {
-            return false;
-        }
-        if (this.getStudentByEnrollment(student.getEnrollment())!=null) {
-            logger.log(Level.WARNING,"El estudiante con la matricula ingresada ya existe");
-            return false;
-        }
-        try {
-            UserDAO userDAO = new UserDAO();
-            int idUser = userDAO.registerUser(student);
-            if (idUser == -1) {
-                logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
-                return false;
-            }
-            String queryRegisterStudent = "INSERT INTO alumno (id_usuario,matricula,periodo,lengua_indigena) VALUES (?,?,?,?);";
-            try (Connection connection=DatabaseConnectionManager.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterStudent)) {
-                preparedStatement.setInt(1,idUser);
-                preparedStatement.setString(2,student.getEnrollment());
-                preparedStatement.setString(3,student.getPeriod());
-                preparedStatement.setBoolean(4,student.isIndigenousLanguage());
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    registered = true;
+        if (student != null && getStudentByEnrollment(student.getEnrollment()) == null) {
+            try {
+                UserDAO userDAO = new UserDAO();
+                int idUser = userDAO.registerUser(student);
+                if (idUser != RegistrationStatus.FAILURE.getValue()) {
+                    String queryRegisterStudent = "INSERT INTO alumno (id_usuario,matricula,periodo,lengua_indigena) VALUES (?,?,?,?);";
+                    try (Connection connection = DatabaseConnectionManager.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterStudent)) {
+                        preparedStatement.setInt(1, idUser);
+                        preparedStatement.setString(2, student.getEnrollment());
+                        preparedStatement.setString(3, student.getPeriod());
+                        preparedStatement.setBoolean(4, student.isIndigenousLanguage());
+                        registered = preparedStatement.executeUpdate() > 0;
+                    }
+                } else {
+                    logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
                 }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, e.getMessage(),e);
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE,e.getMessage());
+        } else if (student == null) {
+            logger.log(Level.WARNING, "El estudiante es nulo");
+        } else {
+            logger.log(Level.WARNING, "El estudiante con la matricula ingresada ya existe");
         }
         return registered;
     }
@@ -131,12 +128,17 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public List<Student> getStudentsWithoutProject() {
         List<Student> students = new ArrayList<>();
-        String queryConsultStudents = "SELECT matricula FROM alumno WHERE proyecto_asignado = NULL";
+        String queryConsultStudents = "SELECT matricula FROM alumno WHERE proyecto_asignado IS NULL";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudents)) {
+            List<String> enrollmetns = new ArrayList<>();
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                students.add(getStudentByEnrollment(resultSet.getString("matricula")));
+                enrollmetns.add(resultSet.getString("matricula"));
+            }
+            resultSet.close();
+            for (String enrollment : enrollmetns) {
+                students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());
@@ -151,8 +153,13 @@ public class StudentDAO implements IDAOStudent {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultActiveStudent)) {
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<String> enrollmetns = new ArrayList<>();
             while (resultSet.next()) {
-                students.add(getStudentByEnrollment(resultSet.getString("matricula")));
+                enrollmetns.add(resultSet.getString("matricula"));
+            }
+            resultSet.close();
+            for(String enrollment : enrollmetns) {
+                students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());

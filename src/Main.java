@@ -35,6 +35,8 @@ public class Main {
             System.out.println("21. Ver reportes de estudiante");
             System.out.println("22. Insertar actividad con registros semanales");
             System.out.println("23. Buscar actividad por ID");
+            System.out.println("24. Listar todos los estudiantes activos");
+            System.out.println("25. Listar todos los estudiantes sin proyecto");
             System.out.println("0.  Salir");
             System.out.print("Opción: ");
             opcion = Integer.parseInt(scanner.nextLine());
@@ -63,6 +65,8 @@ public class Main {
                 case 21 -> probarReportesPorEstudiante();
                 case 22 -> probarInsertarActividad();
                 case 23 -> probarBuscarActividad();
+                case 24 -> probarListarEstudiantesActivos();
+                case 25 -> probarListarEstudiantesSinProyecto();
                 case 0  -> System.out.println("Saliendo...");
                 default -> System.out.println("Opción no válida.");
             }
@@ -72,8 +76,8 @@ public class Main {
     static void probarRegistrarEstudiante() {
         StudentDAO dao = new StudentDAO();
         Student student = new Student(
-                0, "Diego", "Leon", "diegoLeon@uv.mx", "pass456",
-                "Hombre", true, "s24014150", "2025-01",
+                0, "Ian", "Diaz", "psd@uv.mx", "punt325",
+                "Hombre", false, "s24736217", "2024-01",
                 false, 0.0f, null, null
         );
         boolean result = dao.registerStudent(student);
@@ -97,6 +101,24 @@ public class Main {
         }
     }
 
+    static void probarListarEstudiantesActivos() {
+        StudentDAO dao = new StudentDAO();
+        List<Student> students = dao.getActiveStudents();
+        System.out.println("Total estudiantes: " + students.size());
+        for (Student student : students) {
+            System.out.println(student.getName());
+        }
+    }
+
+    static void probarListarEstudiantesSinProyecto() {
+        StudentDAO dao = new StudentDAO();
+        List<Student> students = dao.getStudentsWithoutProject();
+        System.out.println("Total estudiantes: " + students.size());
+        for (Student student : students) {
+            System.out.println(student.getName());
+        }
+    }
+
     static void probarModificarEstudiante() {
         System.out.print("Matrícula del estudiante a modificar: ");
         String enrollment = scanner.nextLine();
@@ -112,8 +134,8 @@ public class Main {
     static void probarRegistrarProfesor() {
         ProfessorDAO dao = new ProfessorDAO();
         Professor professor = new Professor(
-                0, "Juan Carlos", "Arriaga", "juanca@uv.mx", "pass789",
-                "Hombre", true, 32514, true, false, "Vespertino"
+                0, "Angel Juan", "Perez", "juangel@uv.mx", "ang321",
+                "Hombre", true, 93745, false, false, "Matutino"
         );
         boolean result = dao.registerProfessor(professor);
         System.out.println("Registrar profesor: " + result);

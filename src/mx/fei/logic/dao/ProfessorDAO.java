@@ -2,6 +2,7 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Professor;
+import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.idao.IDAOProfessor;
 
 import java.sql.Connection;
@@ -44,35 +45,34 @@ public class ProfessorDAO implements IDAOProfessor {
 
     @Override
     public boolean registerProfessor(Professor professor) {
-        if (professor == null) {
-            return false;
-        }
-        if (this.getProfessorByPersonalNumber(professor.getPersonalNumber()) != null) {
-            logger.log(Level.WARNING, "El profesor con el número de personal ingresado ya existe");
-            return false;
-        }
-        try {
-            UserDAO userDAO = new UserDAO();
-            int idUser = userDAO.registerUser(professor);
-            if (idUser == -1) {
-                logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
-                return false;
+        boolean registered = false;
+        if (professor != null && getProfessorByPersonalNumber(professor.getPersonalNumber()) == null) {
+            try {
+                UserDAO userDAO = new UserDAO();
+                int idUser = userDAO.registerUser(professor);
+                if (idUser != RegistrationStatus.FAILURE.getValue()) {
+                        String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
+                        try (Connection connection = DatabaseConnectionManager.getConnection();
+                             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+                            preparedStatement.setInt(1, idUser);
+                            preparedStatement.setInt(2, professor.getPersonalNumber());
+                            preparedStatement.setBoolean(3, professor.isCoordinator());
+                            preparedStatement.setBoolean(4, professor.isAdmin());
+                            preparedStatement.setString(5, professor.getShift());
+                            registered = preparedStatement.executeUpdate() > 0;
+                    }
+                } else {
+                    logger.log(Level.WARNING, "No se logro registrar el usuario en la base de datos");
+                }
+            }catch (SQLException e) {
+                logger.log(Level.SEVERE,e.getMessage(), e);
             }
-            String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
-                preparedStatement.setInt(1, idUser);
-                preparedStatement.setInt(2, professor.getPersonalNumber());
-                preparedStatement.setBoolean(3, professor.isCoordinator());
-                preparedStatement.setBoolean(4, professor.isAdmin());
-                preparedStatement.setString(5, professor.getShift());
-                preparedStatement.executeUpdate();
-                return true;
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+        } else if (professor == null) {
+            logger.log(Level.WARNING, "El profesor es nulo");
+        } else {
+            logger.log(Level.WARNING, "El profesor con el numero de personal ya existe");
         }
-        return false;
+        return registered;
     }
 
     @Override
