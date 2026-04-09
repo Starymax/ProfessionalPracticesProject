@@ -91,18 +91,17 @@ public class StudentDAO implements IDAOStudent {
     public boolean modifyStudent(Student student) {
         boolean updated = false;
         String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=? where id_usuario=?;";
-        if (student == null) {
-            return false;
-        }
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent)) {
-            preparedStatement.setString(1, student.getPeriod());
-            preparedStatement.setBoolean(2, student.isIndigenousLanguage());
-            preparedStatement.setFloat(3, student.getGrade());
-            preparedStatement.setInt(4, student.getUserId());
-            updated = preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE,e.getMessage());
+        if (student != null) {
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent)) {
+                preparedStatement.setString(1, student.getPeriod());
+                preparedStatement.setBoolean(2, student.isIndigenousLanguage());
+                preparedStatement.setFloat(3, student.getGrade());
+                preparedStatement.setInt(4, student.getUserId());
+                updated = preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
         }
         return updated;
     }
@@ -114,12 +113,12 @@ public class StudentDAO implements IDAOStudent {
         try (Connection connection =DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<String> enrollmetns = new ArrayList<>();
+            List<String> enrollments = new ArrayList<>();
             while (resultSet.next()) {
-                enrollmetns.add((resultSet.getString("matricula")));
+                enrollments.add((resultSet.getString("matricula")));
             }
             resultSet.close();
-            for(String enrollment : enrollmetns) {
+            for(String enrollment : enrollments) {
                 students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
@@ -209,7 +208,6 @@ public class StudentDAO implements IDAOStudent {
                 project.setAvailablePlaces(project.getAvailablePlaces()-1);
                 ProjectDAO projectDAO = new ProjectDAO();
                 projectDAO.modifyProject(project);
-
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,e.getMessage());

@@ -56,22 +56,21 @@ public class UserDAO implements IDAOUser {
     @Override
     public boolean updateUser(User user) {
         boolean updated = false;
-        if (user == null) {
-            return false;
-        }
-        String queryModifyStudent = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent);) {
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getLastName());
-            preparedStatement.setString(3, user.getEmail());
-            preparedStatement.setString(4, user.getPassword());
-            preparedStatement.setBoolean(5, user.isActive());
-            preparedStatement.setString(6, user.getGender());
-            preparedStatement.setInt(7, user.getUserId());
-            updated = preparedStatement.executeUpdate()>0;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE,e.getMessage());
+        if (user != null) {
+            String queryModifyStudent = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent);) {
+                preparedStatement.setString(1, user.getName());
+                preparedStatement.setString(2, user.getLastName());
+                preparedStatement.setString(3, user.getEmail());
+                preparedStatement.setString(4, user.getPassword());
+                preparedStatement.setBoolean(5, user.isActive());
+                preparedStatement.setString(6, user.getGender());
+                preparedStatement.setInt(7, user.getUserId());
+                updated = preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
         }
         return updated;
     }

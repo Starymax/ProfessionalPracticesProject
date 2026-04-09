@@ -17,15 +17,20 @@ public class DatabaseConnectionManager {
     private String username;
     private String password;
 
-    private DatabaseConnectionManager() throws SQLException {
-        loadProperties();
+    private DatabaseConnectionManager() {
+        try {
+            loadProperties();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "No se pudo cargar la configuración de la BD", e);
+            throw new RuntimeException("Error fatal al inicializar DatabaseConnectionManager", e);
+        }
     }
 
-    private void loadProperties() throws SQLException {
+    private void loadProperties() throws IOException {
         Properties properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
             if (input == null) {
-                throw new SQLException("Archivo db.properties no encontrado");
+                throw new IOException("Archivo db.properties no encontrado");
             }
             properties.load(input);
             username = properties.getProperty("db.username");
@@ -34,8 +39,6 @@ public class DatabaseConnectionManager {
             String port = properties.getProperty("db.port");
             String dataBase = properties.getProperty("db.name");
             url = "jdbc:mysql://" + host + ":" + port + "/" + dataBase + "?useTimezone=true&serverTimezone=UTC";
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error al leer db.properties", e);
         }
     }
 

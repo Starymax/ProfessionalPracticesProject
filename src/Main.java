@@ -331,7 +331,6 @@ public class Main {
 
     /*
     evitar varios return en un mismo método
-    revisar excepciones
     validacion de registerUser en registerProfessor y Student creo non (cambiar lo del numero magico -1)
      */
 }

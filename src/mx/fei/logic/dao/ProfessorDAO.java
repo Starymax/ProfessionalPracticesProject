@@ -44,35 +44,33 @@ public class ProfessorDAO implements IDAOProfessor {
 
     @Override
     public boolean registerProfessor(Professor professor) {
-        if (professor == null) {
-            return false;
-        }
-        if (this.getProfessorByPersonalNumber(professor.getPersonalNumber()) != null) {
+        boolean isRegistered = false;
+        if (professor != null && this.getProfessorByPersonalNumber(professor.getPersonalNumber()) == null) {
+            try {
+                UserDAO userDAO = new UserDAO();
+                int idUser = userDAO.registerUser(professor);
+                if (idUser != -1) {
+                    String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) VALUES (?, ?, ?, ?, ?);";
+                    try (Connection connection = DatabaseConnectionManager.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+                        preparedStatement.setInt(1, idUser);
+                        preparedStatement.setInt(2, professor.getPersonalNumber());
+                        preparedStatement.setBoolean(3, professor.isCoordinator());
+                        preparedStatement.setBoolean(4, professor.isAdmin());
+                        preparedStatement.setString(5, professor.getShift());
+                        int rowsAffected = preparedStatement.executeUpdate();
+                        isRegistered = (rowsAffected > 0);
+                    }
+                } else {
+                    logger.log(Level.SEVERE, "No se logró registrar el usuario en la base");
+                }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Error en la base de datos: " + e.getMessage());
+            }
+        } else if (professor != null) {
             logger.log(Level.WARNING, "El profesor con el número de personal ingresado ya existe");
-            return false;
         }
-        try {
-            UserDAO userDAO = new UserDAO();
-            int idUser = userDAO.registerUser(professor);
-            if (idUser == -1) {
-                logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
-                return false;
-            }
-            String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
-                preparedStatement.setInt(1, idUser);
-                preparedStatement.setInt(2, professor.getPersonalNumber());
-                preparedStatement.setBoolean(3, professor.isCoordinator());
-                preparedStatement.setBoolean(4, professor.isAdmin());
-                preparedStatement.setString(5, professor.getShift());
-                preparedStatement.executeUpdate();
-                return true;
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
-        }
-        return false;
+        return isRegistered;
     }
 
     @Override
@@ -100,17 +98,16 @@ public class ProfessorDAO implements IDAOProfessor {
     public boolean modifyProfessor(Professor professor) {
         boolean updated = false;
         String queryModifyProfessor = "UPDATE profesor set es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
-        if (professor == null) {
-            updated = false;
-        }
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProfessor)) {
-            preparedStatement.setBoolean(1,professor.isCoordinator());
-            preparedStatement.setBoolean(2,professor.isAdmin());
-            preparedStatement.setString(3,professor.getShift());
-            updated = preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+        if (professor != null) {
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProfessor)) {
+                preparedStatement.setBoolean(1, professor.isCoordinator());
+                preparedStatement.setBoolean(2, professor.isAdmin());
+                preparedStatement.setString(3, professor.getShift());
+                updated = preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
         }
         return updated;
     }
