@@ -21,22 +21,21 @@ public class ReportDAO implements IDAOReport {
     @Override
     public boolean createReport(mx.fei.logic.dto.Report report) {
         boolean sucess = false;
-        if (report == null) {
-            return sucess;
-        }
-        String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryReport);) {
-            preparedStatement.setFloat(1, report.getWorkedHours());
-            preparedStatement.setString(2, report.getReportType());
-            preparedStatement.setDate(3, (Date) report.getDate());
-            preparedStatement.setString(4, report.getObservationsReport());
-            preparedStatement.setInt(5, report.getStudent().getUserId());
-            preparedStatement.executeUpdate();
-            connection.close();
-            sucess = true;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al crear reporte", e);
+        if (report != null) {
+            String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryReport);) {
+                preparedStatement.setFloat(1, report.getWorkedHours());
+                preparedStatement.setString(2, report.getReportType());
+                preparedStatement.setDate(3, (Date) report.getDate());
+                preparedStatement.setString(4, report.getObservationsReport());
+                preparedStatement.setInt(5, report.getStudent().getUserId());
+                preparedStatement.executeUpdate();
+                connection.close();
+                sucess = true;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Error al crear reporte", e);
+            }
         }
         return sucess;
     }

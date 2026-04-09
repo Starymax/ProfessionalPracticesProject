@@ -100,17 +100,16 @@ public class ProfessorDAO implements IDAOProfessor {
     public boolean modifyProfessor(Professor professor) {
         boolean updated = false;
         String queryModifyProfessor = "UPDATE profesor set es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
-        if (professor == null) {
-            updated = false;
-        }
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProfessor)) {
-            preparedStatement.setBoolean(1,professor.isCoordinator());
-            preparedStatement.setBoolean(2,professor.isAdmin());
-            preparedStatement.setString(3,professor.getShift());
-            updated = preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+        if (professor != null) {
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProfessor)) {
+                preparedStatement.setBoolean(1, professor.isCoordinator());
+                preparedStatement.setBoolean(2, professor.isAdmin());
+                preparedStatement.setString(3, professor.getShift());
+                updated = preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, e.getMessage());
+            }
         }
         return updated;
     }
