@@ -51,15 +51,15 @@ public class ProfessorDAO implements IDAOProfessor {
                 UserDAO userDAO = new UserDAO();
                 int idUser = userDAO.registerUser(professor);
                 if (idUser != RegistrationStatus.FAILURE.getValue()) {
-                        String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
-                        try (Connection connection = DatabaseConnectionManager.getConnection();
-                             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
-                            preparedStatement.setInt(1, idUser);
-                            preparedStatement.setInt(2, professor.getPersonalNumber());
-                            preparedStatement.setBoolean(3, professor.isCoordinator());
-                            preparedStatement.setBoolean(4, professor.isAdmin());
-                            preparedStatement.setString(5, professor.getShift());
-                            registered = preparedStatement.executeUpdate() > 0;
+                    String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
+                    try (Connection connection = DatabaseConnectionManager.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+                        preparedStatement.setInt(1, idUser);
+                        preparedStatement.setInt(2, professor.getPersonalNumber());
+                        preparedStatement.setBoolean(3, professor.isCoordinator());
+                        preparedStatement.setBoolean(4, professor.isAdmin());
+                        preparedStatement.setString(5, professor.getShift());
+                        registered = preparedStatement.executeUpdate() > 0;
                     }
                 } else {
                     logger.log(Level.WARNING, "No se logro registrar el usuario en la base de datos");

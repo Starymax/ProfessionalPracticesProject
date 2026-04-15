@@ -16,5 +16,7 @@ public interface IDAOActivity {
 
     boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId);
 
+    WeeklyLog getWeeklyLogById(int weeklyLogId);
+
     List<WeeklyLog> getWeeklyLogsByActivityId(int activityId);
 }

@@ -35,7 +35,7 @@ public class ActivityDAO implements IDAOActivity {
                 success = insertWeeklyLogs(connection, weeklyLogs, activityId);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+            logger.log(Level.SEVERE, "Error en la conexión a la base de datos", e);
         }
         return success;
     }
@@ -76,7 +76,7 @@ public class ActivityDAO implements IDAOActivity {
                 activity = new Activity(activityId, nameActivity, observationsActivity, project);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error getting activity by id", e);
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return activity;
     }
@@ -99,29 +99,41 @@ public class ActivityDAO implements IDAOActivity {
     }
 
     @Override
+    public WeeklyLog getWeeklyLogById(int weeklyLogId) {
+        String queryWeeklyLog = "SELECT semana, horas_realizadas, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
+        WeeklyLog weeklyLog = null;
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLog)) {
+            preparedStatement.setInt(1, weeklyLogId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int week = resultSet.getInt("semana");
+                float workedHours = resultSet.getFloat("horas_realizadas");
+                float plannedHours = resultSet.getFloat("horas_planificadas");
+                Activity activity = getActivityById(resultSet.getInt("id_actividad"));
+                weeklyLog = new WeeklyLog(weeklyLogId, week, workedHours, plannedHours, activity);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+        return weeklyLog;
+    }
+
+    @Override
     public List<WeeklyLog> getWeeklyLogsByActivityId(int activityId) {
-        String queryWeeklyLogs = "SELECT id_registro, semana, horas_realizadas, horas_planificadas FROM registro_semanal WHERE id_actividad = ?";
+        String queryWeeklyLogs = "SELECT id_registro FROM registro_semanal WHERE id_actividad = ?";
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLogs)) {
             preparedStatement.setInt(1, activityId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            List<int[]> rawLogs = new ArrayList<>();
-            List<Integer> weeks = new ArrayList<>();
-            List<Float> workedHoursList = new ArrayList<>();
-            List<Float> plannedHoursList = new ArrayList<>();
-            List<Integer> logIds = new ArrayList<>();
+            List<Integer> weeklyLogIds = new ArrayList<>();
             while (resultSet.next()) {
-                int weeklyLogId = resultSet.getInt("id_registro");
-                int week = resultSet.getInt("semana");
-                float workedHours = resultSet.getFloat("horas_realizadas");
-                float plannedHours = resultSet.getFloat("horas_planificadas");
+                weeklyLogIds.add(resultSet.getInt("id_registro"));
             }
             resultSet.close();
-            Activity activity = getActivityById(activityId);
-            for (int i = 1; i <= weeklyLogs.size(); i++) {
-                WeeklyLog log = new WeeklyLog(logIds.get(i),weeks.get(i),workedHoursList.get(i),plannedHoursList.get(i),activity);weeklyLogs.add(log);
-                weeklyLogs.add(log);
+            for (Integer weeklyLogId: weeklyLogIds) {
+                weeklyLogs.add(getWeeklyLogById(weeklyLogId));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

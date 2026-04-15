@@ -48,7 +48,7 @@ public class UserDAO implements IDAOUser {
                 generatedID = keys.getInt(1);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return  generatedID;
     }

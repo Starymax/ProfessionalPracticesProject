@@ -21,7 +21,7 @@ public class DatabaseConnectionManager {
         try {
             loadProperties();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "No se pudo cargar la configuración de la BD", e);
+            logger.log(Level.SEVERE, e.getMessage());
             throw new RuntimeException("Error fatal al inicializar DatabaseConnectionManager", e);
         }
     }
@@ -52,7 +52,7 @@ public class DatabaseConnectionManager {
     private Connection connect() throws SQLException {
         if (connection == null || connection.isClosed()) {
             connection = DriverManager.getConnection(url, username, password);
-            logger.info("Conexion establecida");
+            logger.log(Level.INFO, "Conexion establecida");
         }
         return connection;
     }

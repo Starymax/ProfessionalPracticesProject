@@ -22,7 +22,7 @@ public class ExpedientDAO implements IDAOExpedient {
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, e.getMessage(), e.getStackTrace());
         }
         return loaded;
     }
