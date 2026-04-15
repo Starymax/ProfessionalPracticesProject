@@ -3,6 +3,12 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.idao.IDAOExpedient;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,5 +48,22 @@ public class ExpedientDAO implements IDAOExpedient {
             logger.log(Level.SEVERE, e.getMessage());
         }
         return isLoaded;
+    }
+
+    @Override
+    public boolean uploadDocument(String enrollment, String documentType, File sourceFile) throws IOException{
+    boolean uploaded = false;
+    if (sourceFile != null && sourceFile.exists()) {
+        try {
+            Path userDir = Paths.get("src", "resources", "expedientes", enrollment);
+            Files.createDirectories(userDir);
+            Path destination = userDir.resolve(documentType + ".pdf");
+            Files.copy(sourceFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
+            uploaded = true;
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error al subir el documento", e);
+        }
+    }
+    return uploaded;
     }
 }

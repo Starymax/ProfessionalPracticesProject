@@ -3,6 +3,7 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
+import mx.fei.logic.exceptions.DataBaseConnectionException;
 import mx.fei.logic.idao.IDAOProjectManager;
 
 import java.sql.Connection;
@@ -17,34 +18,35 @@ import java.util.logging.Logger;
 public class ProjectManagerDAO implements IDAOProjectManager {
     private Logger logger = Logger.getLogger(ProjectManagerDAO.class.getName());
     @Override
-    public boolean registerProjectManager(ProjectManager projectManager) {
-        if (projectManager == null) {
-            return false;
-        }
-        if (this.getProjectManagerById(projectManager.getProjectManagerId()) != null) {
-            logger.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
-            return false;
-        }
-        try {
-            String queryRegisterProfessor = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_proyecto) VALUES (?, ?, ?, ?, ?);";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
-                preparedStatement.setString(1, projectManager.getName());
-                preparedStatement.setString(2, projectManager.getEmailProjectManager());
-                preparedStatement.setString(3, projectManager.getPhoneNumberProjectManager());
-                preparedStatement.setString(4, projectManager.getRol());
-                preparedStatement.setInt(5, projectManager.getProject().getProjectId());
-                preparedStatement.executeUpdate();
-                return true;
+    public boolean registerProjectManager(ProjectManager projectManager) throws DataBaseConnectionException {
+        boolean sucess = false;
+        if (projectManager != null) {
+            if (this.getProjectManagerById(projectManager.getProjectManagerId()) != null) {
+                logger.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
+            } else {
+                try {
+                    String queryRegisterProfessor = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_proyecto) VALUES (?, ?, ?, ?, ?);";
+                    try (Connection connection = DatabaseConnectionManager.getConnection();
+                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+                        preparedStatement.setString(1, projectManager.getName());
+                        preparedStatement.setString(2, projectManager.getEmailProjectManager());
+                        preparedStatement.setString(3, projectManager.getPhoneNumberProjectManager());
+                        preparedStatement.setString(4, projectManager.getRol());
+                        preparedStatement.setInt(5, projectManager.getProject().getProjectId());
+                        preparedStatement.executeUpdate();
+                        sucess = true;
+                    }
+                } catch (SQLException e) {
+                    logger.log(Level.SEVERE, "Error al registrar el proyecto en la base de datos");
+                    throw new DataBaseConnectionException("Error al registrar el proyecto en la base de datos");
+                }
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
         }
-        return false;
+        return sucess;
     }
 
     @Override
-    public ProjectManager getProjectManagerById(int idProjectManager) {
+    public ProjectManager getProjectManagerById(int idProjectManager) throws DataBaseConnectionException {
         ProjectManager projectManager =  null;
         String query = "SELECT * FROM responsable_proyecto WHERE id_responsable = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -61,13 +63,14 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol, project);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, "Error al obtener el Responsable de la base de datos");
+            throw new DataBaseConnectionException("Error al obtener el Responsable de la base de datos");
         }
         return projectManager;
     }
 
     @Override
-    public List<ProjectManager> getProjectManagers() {
+    public List<ProjectManager> getProjectManagers() throws DataBaseConnectionException {
         List<ProjectManager> projectManagers = new ArrayList<>();
         String queryProjectManagers = "SELECT id_responsable FROM responsable_proyecto;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -77,7 +80,8 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 projectManagers.add(getProjectManagerById(resultSet.getInt("id_responsable")));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, "Error en la conexión a la base de datos");
+            throw new DataBaseConnectionException("Error en la conexión a la base de datos");
         }
         return projectManagers;
     }

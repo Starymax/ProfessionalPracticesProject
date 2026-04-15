@@ -3,6 +3,7 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Report;
 import mx.fei.logic.dto.Student;
+import mx.fei.logic.exceptions.DataBaseConnectionException;
 import mx.fei.logic.idao.IDAOReport;
 
 import java.sql.Connection;
@@ -19,7 +20,7 @@ public class ReportDAO implements IDAOReport {
     private static final Logger logger = Logger.getLogger(ReportDAO.class.getName());
 
     @Override
-    public boolean createReport(mx.fei.logic.dto.Report report) {
+    public boolean createReport(mx.fei.logic.dto.Report report) throws DataBaseConnectionException {
         boolean sucess = false;
         if (report != null) {
             String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
@@ -34,14 +35,15 @@ public class ReportDAO implements IDAOReport {
                 connection.close();
                 sucess = true;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al crear reporte", e);
+                logger.log(Level.SEVERE, "Error al crear el reporte en la base de datos");
+                throw new DataBaseConnectionException("Error al crear el reporte en la base de datos");
             }
         }
         return sucess;
     }
 
     @Override
-    public List<Report> getReportsByStudentEnrollment(String enrollment) {
+    public List<Report> getReportsByStudentEnrollment(String enrollment) throws DataBaseConnectionException {
         String queryViewReport = "SELECT id_reporte FROM vw_reportes WHERE matricula = ?";
         List<Report> reports = new ArrayList<>();
         List<Integer> idReports = new ArrayList<>();
@@ -57,13 +59,14 @@ public class ReportDAO implements IDAOReport {
                 reports.add(getReportById(idReport));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar reportes", e);
+            logger.log(Level.SEVERE, "Error al obtener los reportes de la base de datos");
+            throw new DataBaseConnectionException("Error al obtener los reportes de la base de datos");
         }
         return reports;
     }
 
     @Override
-    public Report getReportById(int reportId) {
+    public Report getReportById(int reportId) throws DataBaseConnectionException {
         String queryViewReport = "SELECT * FROM vw_reportes where id_reporte = ?";
         Report report = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -82,13 +85,26 @@ public class ReportDAO implements IDAOReport {
                 report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al consultar reportes", e);
+            logger.log(Level.SEVERE, "Error al obtener el reporte de la base de datos");
+            throw new DataBaseConnectionException("Error al obtener el reporte de la base de datos");
         }
         return report;
     }
 
     @Override
-    public void setObservations(int reportId, String Observations) {
-
+    public boolean setObservations(int reportId, String observations) throws DataBaseConnectionException {
+        boolean updated = false;
+        String query = "UPDATE reporte SET observaciones_reporte = ? WHERE id_reporte = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, observations);
+            preparedStatement.setInt(2, reportId);
+            int rowsAffected = preparedStatement.executeUpdate();
+            updated = rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al agregar observaciones al reporte en la base de datos");
+            throw new DataBaseConnectionException("Error al agregar observaciones al reporte en la base de datos");
+        }
+        return updated;
     }
 }

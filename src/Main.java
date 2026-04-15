@@ -1,6 +1,10 @@
+import java.io.File;
+import java.io.IOException;
 import java.sql.Date;
 import mx.fei.logic.dao.*;
 import mx.fei.logic.dto.*;
+import mx.fei.logic.exceptions.DataBaseConnectionException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -8,7 +12,7 @@ import java.util.Scanner;
 public class Main {
     static Scanner scanner = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DataBaseConnectionException {
         int opcion = -1;
         while (opcion != 0) {
             System.out.println("\n========== MENÚ DE PRUEBA ==========");
@@ -37,6 +41,7 @@ public class Main {
             System.out.println("23. Buscar actividad por ID");
             System.out.println("24. Listar todos los estudiantes activos");
             System.out.println("25. Listar todos los estudiantes sin proyecto");
+            System.out.println("26. Subir documento de expediente");
             System.out.println("0.  Salir");
             System.out.print("Opción: ");
             opcion = Integer.parseInt(scanner.nextLine());
@@ -67,6 +72,7 @@ public class Main {
                 case 23 -> probarBuscarActividad();
                 case 24 -> probarListarEstudiantesActivos();
                 case 25 -> probarListarEstudiantesSinProyecto();
+                case 26 -> probarSubirDocumentoExpediente();
                 case 0  -> System.out.println("Saliendo...");
                 default -> System.out.println("Opción no válida.");
             }
@@ -270,7 +276,7 @@ public class Main {
         System.out.println("Asignar EE: " + result);
     }
 
-    static void probarRegistrarResponsable() {
+    static void probarRegistrarResponsable() throws DataBaseConnectionException {
         System.out.print("ID del proyecto: ");
         int idProyecto = Integer.parseInt(scanner.nextLine());
         ProjectDAO pDao = new ProjectDAO();
@@ -285,7 +291,7 @@ public class Main {
         System.out.println("Registrar responsable: " + result);
     }
 
-    static void probarBuscarResponsable() {
+    static void probarBuscarResponsable() throws DataBaseConnectionException {
         System.out.print("ID responsable: ");
         int id = Integer.parseInt(scanner.nextLine());
         ProjectManagerDAO dao = new ProjectManagerDAO();
@@ -293,7 +299,7 @@ public class Main {
         System.out.println("Responsable: " + pm.getName());
     }
 
-    static void probarCrearReporte() {
+    static void probarCrearReporte() throws DataBaseConnectionException {
         System.out.print("Matrícula del estudiante: ");
         String matricula = scanner.nextLine();
         StudentDAO sDao = new StudentDAO();
@@ -309,7 +315,7 @@ public class Main {
         System.out.println("Crear reporte: " + result);
     }
 
-    static void probarReportesPorEstudiante() {
+    static void probarReportesPorEstudiante() throws DataBaseConnectionException {
         System.out.print("Matrícula: ");
         String matricula = scanner.nextLine();
         ReportDAO dao = new ReportDAO();
@@ -320,7 +326,7 @@ public class Main {
         }
     }
 
-    static void probarInsertarActividad() {
+    static void probarInsertarActividad() throws DataBaseConnectionException {
         System.out.print("ID del proyecto: ");
         int idProyecto = Integer.parseInt(scanner.nextLine());
         ProjectDAO pDao = new ProjectDAO();
@@ -338,7 +344,7 @@ public class Main {
         System.out.println("Insertar actividad: " + result);
     }
 
-    static void probarBuscarActividad() {
+    static void probarBuscarActividad() throws DataBaseConnectionException {
         System.out.print("ID actividad: ");
         int id = Integer.parseInt(scanner.nextLine());
         ActivityDAO dao = new ActivityDAO();
@@ -351,8 +357,21 @@ public class Main {
         }
     }
 
-    /*
-    evitar varios return en un mismo método
-    validacion de registerUser en registerProfessor y Student creo non (cambiar lo del numero magico -1)
-     */
+    static void probarSubirDocumentoExpediente() throws DataBaseConnectionException {
+        System.out.print("Matrícula del estudiante: ");
+        String enrollment = scanner.nextLine();
+        System.out.print("Tipo de documento (ej. cartaLiberacion, cartaAceptacion): ");
+        String documentType = scanner.nextLine();
+        System.out.print("Ruta del archivo PDF: ");
+        String filePath = scanner.nextLine();
+
+        ExpedientDAO dao = new ExpedientDAO();
+        File sourceFile = new File(filePath);
+        try {
+            boolean result = dao.uploadDocument(enrollment, documentType, sourceFile);
+            System.out.println("Subir documento: " + result);
+        } catch (IOException e) {
+            System.out.println("Error al subir documento: " + e.getMessage());
+        }
+    }
 }
