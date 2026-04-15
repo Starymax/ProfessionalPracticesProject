@@ -1,6 +1,7 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
+import mx.fei.logic.exceptions.DataBaseConnectionException;
 import mx.fei.logic.idao.IDAOExpedient;
 
 import java.io.File;
@@ -19,7 +20,7 @@ import java.util.logging.Logger;
 public class ExpedientDAO implements IDAOExpedient {
     private Logger logger = Logger.getLogger(ExpedientDAO.class.getName());
     @Override
-    public boolean loadDocument(String enrollment, String documentType, boolean loadState) {
+    public boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataBaseConnectionException {
         boolean loaded = false;
         String queryLoad = "UPDATE expediente_practicas set" + documentType + "= ? where enrollment=?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -28,13 +29,14 @@ public class ExpedientDAO implements IDAOExpedient {
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e.getStackTrace());
+            logger.log(Level.SEVERE,"Error al cargar los documentos");
+            throw new DataBaseConnectionException("Error al cargar los documentos");
         }
         return loaded;
     }
 
     @Override
-    public boolean isLoaded(String enrollment, String documentType) {
+    public boolean isLoaded(String enrollment, String documentType) throws DataBaseConnectionException {
         boolean isLoaded = false;
         String queryIsLoaded = "SELECT " + documentType + " FROM expediente_practicas WHERE matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -45,7 +47,8 @@ public class ExpedientDAO implements IDAOExpedient {
                 isLoaded = resultSet.getBoolean(documentType);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, e.getMessage());
+            logger.log(Level.SEVERE, "Error al comprobar los documentos");
+            throw new DataBaseConnectionException("Error al corroborar si esta cargado el documento");
         }
         return isLoaded;
     }
@@ -62,6 +65,7 @@ public class ExpedientDAO implements IDAOExpedient {
             uploaded = true;
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error al subir el documento", e);
+            throw new IOException("Error al subir el documento");
         }
     }
     return uploaded;

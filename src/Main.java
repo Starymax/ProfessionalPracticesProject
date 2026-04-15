@@ -79,7 +79,7 @@ public class Main {
         }
     }
 
-    static void probarRegistrarEstudiante() {
+    static void probarRegistrarEstudiante() throws DataBaseConnectionException {
         StudentDAO dao = new StudentDAO();
         Student student = new Student(
                 0, "Ian", "Diaz", "psd@uv.mx", "punt325",
@@ -90,7 +90,7 @@ public class Main {
         System.out.println("Registrar estudiante: " + result);
     }
 
-    static void probarBuscarEstudiante() {
+    static void probarBuscarEstudiante() throws DataBaseConnectionException {
         System.out.print("Matrícula: ");
         String enrollment = scanner.nextLine();
         StudentDAO dao = new StudentDAO();
@@ -98,7 +98,7 @@ public class Main {
         System.out.println("Estudiante encontrado: " + student.getName());
     }
 
-    static void probarListarEstudiantes() {
+    static void probarListarEstudiantes() throws DataBaseConnectionException {
         StudentDAO dao = new StudentDAO();
         List<Student> students = dao.getStudents();
         System.out.println("Total estudiantes: " + students.size());
@@ -107,7 +107,7 @@ public class Main {
         }
     }
 
-    static void probarListarEstudiantesActivos() {
+    static void probarListarEstudiantesActivos() throws DataBaseConnectionException {
         StudentDAO dao = new StudentDAO();
         List<Student> students = dao.getActiveStudents();
         System.out.println("Total estudiantes: " + students.size());
@@ -116,7 +116,7 @@ public class Main {
         }
     }
 
-    static void probarListarEstudiantesSinProyecto() {
+    static void probarListarEstudiantesSinProyecto() throws DataBaseConnectionException {
         StudentDAO dao = new StudentDAO();
         List<Student> students = dao.getStudentsWithoutProject();
         System.out.println("Total estudiantes: " + students.size());
@@ -125,7 +125,7 @@ public class Main {
         }
     }
 
-    static void probarModificarEstudiante() {
+    static void probarModificarEstudiante() throws DataBaseConnectionException {
         System.out.print("Matrícula del estudiante a modificar: ");
         String enrollment = scanner.nextLine();
         StudentDAO dao = new StudentDAO();
@@ -137,7 +137,7 @@ public class Main {
         System.out.println("Modificar estudiante: " + result);
     }
 
-    static void probarRegistrarProfesor() {
+    static void probarRegistrarProfesor() throws DataBaseConnectionException {
         ProfessorDAO dao = new ProfessorDAO();
         Professor professor = new Professor(
                 0, "Angel Juan", "Perez", "juangel@uv.mx", "ang321",
@@ -147,7 +147,7 @@ public class Main {
         System.out.println("Registrar profesor: " + result);
     }
 
-    static void probarBuscarProfesor() {
+    static void probarBuscarProfesor() throws DataBaseConnectionException {
         System.out.print("Número de personal: ");
         int num = Integer.parseInt(scanner.nextLine());
         ProfessorDAO dao = new ProfessorDAO();
@@ -155,7 +155,7 @@ public class Main {
         System.out.println("Profesor: " + professor.getName());
     }
 
-    static void probarListarProfesores() {
+    static void probarListarProfesores() throws DataBaseConnectionException {
         ProfessorDAO dao = new ProfessorDAO();
         List<Professor> list = dao.getProfessors();
         System.out.println("Total profesores: " + list.size());
@@ -164,7 +164,7 @@ public class Main {
         }
     }
 
-    static void probarRegistrarEmpresa() {
+    static void probarRegistrarEmpresa() throws DataBaseConnectionException {
         EnterpriseDAO dao = new EnterpriseDAO();
         Enterprise enterprise = new Enterprise(
                 0, "Tech MX", "Tecnología", "2281234567",
@@ -174,7 +174,7 @@ public class Main {
         System.out.println("Empresa registrada con ID: " + id);
     }
 
-    static void probarBuscarEmpresa() {
+    static void probarBuscarEmpresa() throws DataBaseConnectionException {
         System.out.print("ID empresa: ");
         int id = Integer.parseInt(scanner.nextLine());
         EnterpriseDAO dao = new EnterpriseDAO();
@@ -182,7 +182,7 @@ public class Main {
         System.out.println("Empresa: " + enterprise.getName());
     }
 
-    static void probarRegistrarProyecto() {
+    static void probarRegistrarProyecto() throws DataBaseConnectionException {
         EnterpriseDAO eDao = new EnterpriseDAO();
         System.out.print("ID empresa para el proyecto: ");
         int idEmpresa = Integer.parseInt(scanner.nextLine());
@@ -201,7 +201,7 @@ public class Main {
         System.out.println("Proyecto registrado con ID: " + id);
     }
 
-    static void probarBuscarProyecto() {
+    static void probarBuscarProyecto() throws DataBaseConnectionException {
         System.out.print("ID proyecto: ");
         int id = Integer.parseInt(scanner.nextLine());
         ProjectDAO dao = new ProjectDAO();
@@ -209,7 +209,7 @@ public class Main {
         System.out.println("Proyecto: " + project.getNameProject());
     }
 
-    static void probarListarProyectosActivos() {
+    static void probarListarProyectosActivos() throws DataBaseConnectionException {
         ProjectDAO dao = new ProjectDAO();
         List<Project> list = dao.getActiveProjects();
         System.out.println("Proyectos activos: " + list.size());
@@ -218,7 +218,7 @@ public class Main {
         }
     }
 
-    static void probarListarProyectosDisponibles() {
+    static void probarListarProyectosDisponibles() throws DataBaseConnectionException {
         ProjectDAO dao = new ProjectDAO();
         List<Project> list = dao.getAvailableProjects();
         System.out.println("Proyectos disponibles: " + list.size());
@@ -227,7 +227,7 @@ public class Main {
         }
     }
 
-    static void probarAsignarProyecto() {
+    static void probarAsignarProyecto() throws DataBaseConnectionException {
         System.out.print("Matrícula del estudiante: ");
         String matricula = scanner.nextLine();
         System.out.print("ID del proyecto: ");
@@ -243,7 +243,7 @@ public class Main {
         System.out.println("Asignar proyecto: " + result);
     }
 
-    static void probarRegistrarEE() {
+    static void probarRegistrarEE() throws DataBaseConnectionException {
         EducationalExperienceDAO dao = new EducationalExperienceDAO();
         EducationalExperience ee = new EducationalExperience(
                 "NRC-001", "Prácticas Profesionales", "ISIC", "2025-02", null
@@ -252,7 +252,7 @@ public class Main {
         System.out.println("Registrar EE: " + result);
     }
 
-    static void probarBuscarEE() {
+    static void probarBuscarEE() throws DataBaseConnectionException {
         System.out.print("NRC: ");
         String nrc = scanner.nextLine();
         EducationalExperienceDAO dao = new EducationalExperienceDAO();
@@ -260,7 +260,7 @@ public class Main {
         System.out.println("EE: " + ee.getName());
     }
 
-    static void probarAsignarEE() {
+    static void probarAsignarEE() throws DataBaseConnectionException {
         System.out.print("Matrícula del estudiante: ");
         String matricula = scanner.nextLine();
         System.out.print("NRC de la EE: ");
