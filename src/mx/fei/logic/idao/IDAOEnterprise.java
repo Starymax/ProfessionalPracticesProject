@@ -1,14 +1,14 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Enterprise;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.List;
 
 public interface IDAOEnterprise {
-    Enterprise getEnterpriseById(int idEnterprise) throws DataBaseConnectionException;
+    Enterprise getEnterpriseById(int idEnterprise) throws DataOperationException;
 
-    int registerEnterprise(Enterprise enterprise) throws DataBaseConnectionException;
+    int registerEnterprise(Enterprise enterprise) throws DataOperationException;
 
-    List<Enterprise> getActiveEnterprises() throws DataBaseConnectionException;
+    List<Enterprise> getActiveEnterprises() throws DataOperationException;
 }

@@ -2,7 +2,7 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Enterprise;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOEnterprise;
 
 import java.sql.Connection;
@@ -12,13 +12,14 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EnterpriseDAO implements IDAOEnterprise {
     private Logger logger = Logger.getLogger(EnterpriseDAO.class.getName());
     @Override
-    public Enterprise getEnterpriseById(int idEnterprise) throws DataBaseConnectionException {
+    public Enterprise getEnterpriseById(int idEnterprise) throws DataOperationException {
         Enterprise enterprise = null;
         String query = "SELECT * FROM organizacion_vinculada WHERE id_empresa = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -34,18 +35,25 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 int directUsers = resultSet.getInt("usuarios_directos");
                 int indirectUsers = resultSet.getInt("usuarios_indirectos");
                 boolean activeStatus = resultSet.getBoolean("estado_activo");
-                enterprise = new Enterprise(idEnterprise, name, sector, phone, mail,
-                        address, directUsers, indirectUsers, activeStatus);
+                enterprise = new Enterprise(idEnterprise, name, sector, phone, mail, address, directUsers, indirectUsers, activeStatus);
             }
+            if (enterprise == null) {
+                logger.log(Level.WARNING, "No se encontro a la empresa con el id: " + idEnterprise);
+                throw new NoSuchElementException("No se encontro a la empresa");
+            }
+            return enterprise;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo la organizacion vinculada");
-            throw new DataBaseConnectionException("Error al obtener la organizacion vinculada");
+            logger.log(Level.SEVERE, "Error obteniendo la organizacion vinculada",e);
+            throw new DataOperationException("Error al obtener la organizacion vinculada");
         }
-        return enterprise;
     }
 
     @Override
-    public int registerEnterprise(Enterprise enterprise) throws DataBaseConnectionException {
+    public int registerEnterprise(Enterprise enterprise) throws DataOperationException {
+        if (enterprise == null) {
+            logger.log(Level.WARNING,"La empresa es nula");
+            throw new IllegalArgumentException("La empresa no puede ser nula");
+        }
         int generatedId = -1;
         String queryRegisterEnterprise = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, direccion, usuarios_directos, usuarios_indirectos, estado_activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -64,14 +72,14 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 generatedId = keys.getInt(1);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando la organizacion vinculada");
-            throw new DataBaseConnectionException("Error al registrar la organizacion vinculada");
+            logger.log(Level.SEVERE, "Error registrando la organizacion vinculada",e);
+            throw new DataOperationException("Error al registrar la organizacion vinculada");
         }
         return generatedId;
     }
 
     @Override
-    public List<Enterprise> getActiveEnterprises() throws DataBaseConnectionException {
+    public List<Enterprise> getActiveEnterprises() throws DataOperationException {
         List<Enterprise> enterprises = new ArrayList<>();
         String queryActiveEnterprises = "SELECT id_empresa from organizacion_vinculada WHERE estado_activo = true;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -86,8 +94,8 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 enterprises.add(getEnterpriseById(id));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas");
-            throw new DataBaseConnectionException("Error al obtener todas las organizaciones activas");
+            logger.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas",e);
+            throw new DataOperationException("Error al obtener todas las organizaciones activas");
         }
         return enterprises;
     }

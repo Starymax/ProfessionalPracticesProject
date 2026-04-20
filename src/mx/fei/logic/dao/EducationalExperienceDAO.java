@@ -3,7 +3,7 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOEducationalExperience;
 
 import java.sql.Connection;
@@ -19,7 +19,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     private Logger logger = Logger.getLogger(EducationalExperienceDAO.class.getName());
 
     @Override
-    public boolean registerEducationalExperience(EducationalExperience educationalExperience) throws DataBaseConnectionException {
+    public boolean registerEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
         boolean registered = false;
         String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, periodo_escolar) values (?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -30,14 +30,14 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             preparedStatement.setString(4,educationalExperience.getEscolarPeriod());
             registered = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al registrar una experiencia educativa");
-            throw new DataBaseConnectionException("Error al registrar la experiencia educativa");
+            logger.log(Level.SEVERE, "Error al registrar una experiencia educativa",e);
+            throw new DataOperationException("Error al registrar la experiencia educativa");
         }
         return registered;
     }
 
     @Override
-    public EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataBaseConnectionException {
+    public EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataOperationException {
         EducationalExperience experience = null;
         String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -55,14 +55,14 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 experience = new EducationalExperience(nrcEE,name,career,period,professor);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al obtener la experiencia educativa por NRC");
-            throw new DataBaseConnectionException("Error al obtener los datos de la experiencia");
+            logger.log(Level.SEVERE,"Error al obtener la experiencia educativa por NRC",e);
+            throw new DataOperationException("Error al obtener los datos de la experiencia");
         }
         return experience;
     }
 
     @Override
-    public List<EducationalExperience> getEducationalExperiences() throws DataBaseConnectionException {
+    public List<EducationalExperience> getEducationalExperiences() throws DataOperationException {
         ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
         String queryGetEducationalExperiences = "SELECT nrc FROM experiencia_educativa;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -76,8 +76,8 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 educationalExperiences.add(getEducationalExperienceByNrc(nrc));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los datos de las experiencias");
-            throw  new DataBaseConnectionException("Error al obtener las experiencias educativas");
+            logger.log(Level.SEVERE, "Error al obtener los datos de las experiencias",e);
+            throw  new DataOperationException("Error al obtener las experiencias educativas");
         }
         return educationalExperiences;
     }

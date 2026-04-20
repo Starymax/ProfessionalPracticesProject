@@ -3,7 +3,8 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.dto.RegistrationStatus;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOProject;
 
 import java.sql.Connection;
@@ -14,13 +15,14 @@ import java.sql.Statement;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ProjectDAO implements IDAOProject {
     private Logger logger = Logger.getLogger(ProjectDAO.class.getName());
     @Override
-    public Project getProjectById(int idProject) throws DataBaseConnectionException {
+    public Project getProjectById(Integer idProject) throws DataOperationException {
         Project project = null;
         String query = "SELECT * FROM proyecto WHERE id_proyecto = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -46,15 +48,19 @@ public class ProjectDAO implements IDAOProject {
                         immediateObjectives, mediateObjectives, methodology, resources,
                         startDate, endDate, activeStatus, available_places, enterprise);
             }
+            if (project == null) {
+                logger.log(Level.WARNING, "No se encontro el proyecto con el id: " + idProject);
+                throw new NoSuchElementException("No se encontro el proyecto");
+            }
+            return project;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo el proyecto");
-            throw  new DataBaseConnectionException("Error al obtener el proyecto");
+            logger.log(Level.SEVERE, "Error obteniendo el proyecto",e);
+            throw  new DataOperationException("Error al obtener el proyecto");
         }
-        return project;
     }
 
     @Override
-    public int registerProject(Project project) throws DataBaseConnectionException {
+    public int registerProject(Project project) throws DataOperationException {
         int generatedID = -1;
         String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -77,14 +83,14 @@ public class ProjectDAO implements IDAOProject {
                 generatedID = keys.getInt(1);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando el proyecto");
-            throw new DataBaseConnectionException("Error al registrar el proyecto");
+            logger.log(Level.SEVERE, "Error registrando el proyecto",e);
+            throw new DataOperationException("Error al registrar el proyecto");
         }
         return generatedID;
     }
 
     @Override
-    public List<Project> getActiveProjects() throws DataBaseConnectionException {
+    public List<Project> getActiveProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
         String queryActiveProjects = "SELECT id_proyecto FROM proyecto WHERE estado_activo = true";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -99,14 +105,14 @@ public class ProjectDAO implements IDAOProject {
                 projects.add(getProjectById(projectID));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obtneindo todos los proyectos activos");
-            throw new DataBaseConnectionException("Error al obtener los proyectos activos");
+            logger.log(Level.SEVERE, "Error obtneindo todos los proyectos activos",e);
+            throw new DataOperationException("Error al obtener los proyectos activos");
         }
         return projects;
     }
 
     @Override
-    public List<Project> getAvailableProjects() throws DataBaseConnectionException {
+    public List<Project> getAvailableProjects() throws DataOperationException {
         List<Project> availableProjects = new ArrayList<>();
         List<Project> activeProjects = getActiveProjects();
         for (Project project : activeProjects) {
@@ -119,7 +125,7 @@ public class ProjectDAO implements IDAOProject {
     }
 
     @Override
-    public boolean modifyProject(Project project) throws DataBaseConnectionException {
+    public boolean modifyProject(Project project) throws DataOperationException {
         boolean updated = false;
         String queryModifyProject = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ? WHERE id_proyecto = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -139,8 +145,8 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setInt(13, project.getProjectId());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error modificando el proyecto");
-            throw new DataBaseConnectionException("Error al modificar los datos del proyecto");
+            logger.log(Level.SEVERE, "Error modificando el proyecto",e);
+            throw new DataOperationException("Error al modificar los datos del proyecto");
         }
         return updated;
     }

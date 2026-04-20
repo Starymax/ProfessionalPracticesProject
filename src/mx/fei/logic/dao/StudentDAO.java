@@ -5,7 +5,7 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.dto.Student;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOStudent;
 
 import java.sql.Connection;
@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,77 +22,87 @@ public class StudentDAO implements IDAOStudent {
     private  Logger logger = Logger.getLogger(StudentDAO.class.getName());
 
     @Override
-    public Student getStudentByEnrollment(String enrollment) throws DataBaseConnectionException {
+    public Student getStudentByEnrollment(String enrollment) throws DataOperationException, NoSuchElementException {
         Student student = null;
         String querygetStudentByEnrollment = "SELECT * FROM vw_alumnos where matricula=?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentByEnrollment);) {
-            preparedStatement.setString(1,enrollment);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int idUser = resultSet.getInt("id_usuario");
-                String name = resultSet.getString("nombre");
-                String lastName = resultSet.getString("apellidos");
-                String period = resultSet.getString("periodo");
-                String mail = resultSet.getString("correo");
-                String password = resultSet.getString("contrasena");
-                boolean activeStatus = resultSet.getBoolean("activo");
-                String gender = resultSet.getString("genero");
-                Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
-                Float grade = resultSet.getFloat("calificacion");
-                int studentProjectId = resultSet.getInt("proyecto");
-                String nrc = resultSet.getString("nrc");
-                resultSet.close();
-                ProjectDAO projectDAO = new ProjectDAO();
-                Project project = projectDAO.getProjectById(studentProjectId);
-                EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                EducationalExperience educationalExperience=educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-                student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
+        if (enrollment == null || enrollment.isBlank()) {
+            logger.log(Level.WARNING, "La matricula esta vacia");
+            throw new IllegalArgumentException("La matricula no puede estar vacia");
+        } else {
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentByEnrollment);) {
+                preparedStatement.setString(1,enrollment);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    int idUser = resultSet.getInt("id_usuario");
+                    String name = resultSet.getString("nombre");
+                    String lastName = resultSet.getString("apellidos");
+                    String period = resultSet.getString("periodo");
+                    String mail = resultSet.getString("correo");
+                    String password = resultSet.getString("contrasena");
+                    boolean activeStatus = resultSet.getBoolean("activo");
+                    String gender = resultSet.getString("genero");
+                    Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
+                    Float grade = resultSet.getFloat("calificacion");
+                    int studentProjectId = resultSet.getInt("proyecto");
+                    String nrc = resultSet.getString("nrc");
+                    resultSet.close();
+                    ProjectDAO projectDAO = new ProjectDAO();
+                    Project project = projectDAO.getProjectById(studentProjectId);
+                    EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+                    EducationalExperience educationalExperience=educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+                    student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
+                }
+                if (student == null) {
+                    logger.log(Level.WARNING, "No se encontro el estudiante con la matricula: " + enrollment);
+                    throw new NoSuchElementException("No se encontro el estudiante");
+                }
+                return student;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE,"Error al buscar el estudiante por matricula",e);
+                throw new DataOperationException("Error al obtener los datos del estudiante");
+            }
+        }
+    }
+
+    @Override
+    public boolean registerStudent(Student student) throws DataOperationException {
+        if (student == null) {
+            logger.log(Level.WARNING, "El estudiante es nulo");
+            throw new IllegalArgumentException("El estudiante no puede ser nulo");
+        }
+        try {
+            getStudentByEnrollment(student.getEnrollment());
+            logger.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + student.getEnrollment());
+            throw new IllegalStateException("Ya existe un estudiante con esa matricula");
+        }
+        catch (NoSuchElementException e) {
+            logger.log(Level.INFO,"Matricula disponible para el registro");
+        }
+        try {
+            UserDAO userDAO = new UserDAO();
+            int idUser = userDAO.registerUser(student);
+            if (idUser == RegistrationStatus.FAILURE.getValue()) {
+                logger.log(Level.SEVERE, "No se logro registrar el usuario base");
+                throw new DataOperationException("No se logro registrar el usuario en la base");
+            }
+            String query = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, idUser);
+                preparedStatement.setString(2, student.getEnrollment());
+                preparedStatement.setString(3, student.getPeriod());
+                preparedStatement.setBoolean(4, student.isIndigenousLanguage());
+                return preparedStatement.executeUpdate() > 0;
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al buscar el estudiante por matricula");
-            throw new DataBaseConnectionException("Error al obtener los datos del estudiante");
+            logger.log(Level.SEVERE, "Error registrando al estudiante", e);
+            throw new DataOperationException("Error al registrar el alumno");
         }
-        return student;
     }
 
     @Override
-    public boolean registerStudent(Student student) throws DataBaseConnectionException {
-        boolean registered = false;
-        if (student != null && getStudentByEnrollment(student.getEnrollment()) == null) {
-            try {
-                UserDAO userDAO = new UserDAO();
-                int idUser = userDAO.registerUser(student);
-                if (idUser != RegistrationStatus.FAILURE.getValue()) {
-                    String queryRegisterStudent = "INSERT INTO alumno (id_usuario,matricula,periodo,lengua_indigena) VALUES (?,?,?,?);";
-                    try (Connection connection = DatabaseConnectionManager.getConnection();
-                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterStudent)) {
-                        preparedStatement.setInt(1, idUser);
-                        preparedStatement.setString(2, student.getEnrollment());
-                        preparedStatement.setString(3, student.getPeriod());
-                        preparedStatement.setBoolean(4, student.isIndigenousLanguage());
-                        registered = preparedStatement.executeUpdate() > 0;
-                    }
-                } else {
-                    logger.log(Level.SEVERE, "No se logro registrar el usuario en la base");
-                    throw  new DataBaseConnectionException("No se logro registrar el usuario en la base");
-                }
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, e.getMessage());
-                throw  new DataBaseConnectionException("Error al registrar el alumno");
-            }
-        } else if (student == null) {
-            logger.log(Level.WARNING, "El estudiante es nulo");
-            throw new IllegalArgumentException("El estudiante es nulo");
-        } else {
-            logger.log(Level.WARNING, "El estudiante con la matricula ingresada ya existe");
-            throw new IllegalStateException("Ya existe un estudiante con la matricula ingresada");
-        }
-        return registered;
-    }
-
-    @Override
-    public boolean modifyStudent(Student student) throws DataBaseConnectionException {
+    public boolean modifyStudent(Student student) throws DataOperationException {
         boolean updated = false;
         String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=? where id_usuario=?;";
         if (student != null) {
@@ -103,15 +114,18 @@ public class StudentDAO implements IDAOStudent {
                 preparedStatement.setInt(4, student.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al modificar el alumno");
-                throw new DataBaseConnectionException("Error al cambiar los datos en la base de datos");
+                logger.log(Level.SEVERE, "Error al modificar el alumno",e);
+                throw new DataOperationException("Error al cambiar los datos en la base de datos");
             }
+        } else {
+            logger.log(Level.WARNING, "El estudiante es nulo");
+            throw new IllegalArgumentException("El estudiante no puede ser nulo");
         }
         return updated;
     }
 
     @Override
-    public List<Student> getStudents() throws DataBaseConnectionException {
+    public List<Student> getStudents() throws DataOperationException {
         List<Student> students = new ArrayList<>();
         String queryConsultStudent = "SELECT matricula FROM alumno";
         try (Connection connection =DatabaseConnectionManager.getConnection();
@@ -126,14 +140,14 @@ public class StudentDAO implements IDAOStudent {
                 students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al obtener todos los estudiantes");
-            throw new DataBaseConnectionException("Error al obtener los estudiantes en la base de datos");
+            logger.log(Level.SEVERE,"Error al obtener todos los estudiantes",e);
+            throw new DataOperationException("Error al obtener los estudiantes en la base de datos");
         }
         return students;
     }
 
     @Override
-    public List<Student> getStudentsWithoutProject() throws DataBaseConnectionException {
+    public List<Student> getStudentsWithoutProject() throws DataOperationException {
         List<Student> students = new ArrayList<>();
         String queryConsultStudents = "SELECT matricula FROM alumno WHERE proyecto_asignado IS NULL";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -148,14 +162,14 @@ public class StudentDAO implements IDAOStudent {
                 students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al obtener todos los estudiantes sin proyecto asignado");
-            throw new DataBaseConnectionException("Error al obtener los estudiantes sin proyecto");
+            logger.log(Level.SEVERE,"Error al obtener todos los estudiantes sin proyecto asignado",e);
+            throw new DataOperationException("Error al obtener los estudiantes sin proyecto");
         }
         return students;
     }
 
     @Override
-    public List<Student> getActiveStudents() throws DataBaseConnectionException {
+    public List<Student> getActiveStudents() throws DataOperationException {
         List<Student> students = new ArrayList<>();
         String queryConsultActiveStudent = "SELECT matricula FROM alumno join usuario USING(id_usuario) WHERE estado_activo = true";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -170,14 +184,14 @@ public class StudentDAO implements IDAOStudent {
                 students.add(getStudentByEnrollment(enrollment));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al obtener todos los estudiantes activos");
-            throw new DataBaseConnectionException("Error al obtener los estudiantes activos");
+            logger.log(Level.SEVERE,"Error al obtener todos los estudiantes activos",e);
+            throw new DataOperationException("Error al obtener los estudiantes activos");
         }
         return students;
     }
 
     @Override
-    public void saveSelectedProjects(List<Project> selectedProjects, Student student) throws DataBaseConnectionException {
+    public void saveSelectedProjects(List<Project> selectedProjects, Student student) throws DataOperationException {
         String querySaveSelectedProjects = "INSERT INTO seleccion (matricula, proyecto_seleccionado) values (?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(querySaveSelectedProjects)) {
@@ -188,34 +202,36 @@ public class StudentDAO implements IDAOStudent {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al guardar los proyectos seleccionados");
-            throw new DataBaseConnectionException("Error al guardar los proyectos seleccionados");
+            logger.log(Level.SEVERE,"Error al guardar los proyectos seleccionados",e);
+            throw new DataOperationException("Error al guardar los proyectos seleccionados");
         }
     }
 
     @Override
-    public List<Project> getSelectedProjects(Student student) throws DataBaseConnectionException {
+    public List<Project> getSelectedProjects(Student student) throws DataOperationException {
         ArrayList<Project> selectedProjects = new ArrayList<>();
         String queryGetSelectedProjects = "SELECT proyecto_seleccionado FROM seleccion WHERE matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryGetSelectedProjects)){
             preparedStatement.setString(1,student.getEnrollment());
             ResultSet resultSet = preparedStatement.executeQuery();
-            ProjectDAO projectDAO = new ProjectDAO();
+            List<Integer> projectIds = new ArrayList<>();
             while (resultSet.next()) {
-                int idProject = resultSet.getInt("proyecto_seleccionado");
-                Project project = projectDAO.getProjectById(idProject);
-                selectedProjects.add(project);
+                projectIds.add(resultSet.getInt("proyecto_seleccionado"));
+            }
+            ProjectDAO projectDAO = new ProjectDAO();
+            for(Integer projectId : projectIds) {
+                selectedProjects.add(projectDAO.getProjectById(projectId));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al obtener los proyectos seleccionados");
-            throw new DataBaseConnectionException("Error al obtener los proyectos seleccionados");
+            logger.log(Level.SEVERE,"Error al obtener los proyectos seleccionados",e);
+            throw new DataOperationException("Error al obtener los proyectos seleccionados");
         }
         return selectedProjects;
     }
 
     @Override
-    public boolean assignProject(Student student, Project project) throws DataBaseConnectionException {
+    public boolean assignProject(Student student, Project project) throws DataOperationException {
         boolean assigned = false;
         String queryAssignProject = "UPDATE alumno set proyecto_asignado = ? where matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -229,14 +245,14 @@ public class StudentDAO implements IDAOStudent {
                 projectDAO.modifyProject(project);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al asignar un proyecto");
-            throw new DataBaseConnectionException("Error al asignar el proyecto");
+            logger.log(Level.SEVERE,"Error al asignar un proyecto",e);
+            throw new DataOperationException("Error al asignar el proyecto");
         }
         return assigned;
     }
 
     @Override
-    public boolean assignEducationalExperience(Student student, EducationalExperience experience) throws DataBaseConnectionException {
+    public boolean assignEducationalExperience(Student student, EducationalExperience experience) throws DataOperationException {
         boolean assigned = false;
         String queryAssignEE = "UPDATE alumno SET nrc = ? where matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -245,8 +261,8 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(2,student.getEnrollment());
             assigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al asignar una experiencia educativa");
-            throw new DataBaseConnectionException("Error al asignar la experiencia educativa");
+            logger.log(Level.SEVERE,"Error al asignar una experiencia educativa",e);
+            throw new DataOperationException("Error al asignar la experiencia educativa");
         }
         return assigned;
     }

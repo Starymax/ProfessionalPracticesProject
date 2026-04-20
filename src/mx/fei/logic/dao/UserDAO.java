@@ -2,7 +2,7 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.User;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOUser;
 
 import java.sql.Connection;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class UserDAO implements IDAOUser {
     private Logger logger = Logger.getLogger(UserDAO.class.getName());
     @Override
-    public boolean userExist(int idUser) throws DataBaseConnectionException {
+    public boolean userExist(int idUser) throws DataOperationException {
         String queryUserExist = "SELECT id_usuario FROM  usuario where id_usuario=?;";
         boolean exist;
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -25,14 +25,14 @@ public class UserDAO implements IDAOUser {
             ResultSet resultSet = preparedStatement.executeQuery();
             exist = resultSet.next();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al verificar si existe un usuario en la base de datos");
-            throw new DataBaseConnectionException("Error al verificar si existe un usuario en la base de datos");
+            logger.log(Level.SEVERE,"Error al verificar si existe un usuario en la base de datos",e);
+            throw new DataOperationException("Error al verificar si existe un usuario en la base de datos");
         }
         return exist;
     }
 
     @Override
-    public int registerUser(User user) throws DataBaseConnectionException {
+    public int registerUser(User user) throws DataOperationException {
         int generatedID = -1;
         String query = "INSERT INTO usuario (nombre,apellidos,correo,contrasena,estado_activo,genero) VALUES (?,?,?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -49,14 +49,14 @@ public class UserDAO implements IDAOUser {
                 generatedID = keys.getInt(1);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al registrar un usuario en la base de datos");
-            throw new DataBaseConnectionException("Error al registrar un usuario en la base de datos");
+            logger.log(Level.SEVERE,"Error al registrar un usuario en la base de datos",e);
+            throw new DataOperationException("Error al registrar un usuario en la base de datos");
         }
         return generatedID;
     }
 
     @Override
-    public boolean updateUser(User user) throws DataBaseConnectionException {
+    public boolean updateUser(User user) throws DataOperationException {
         boolean updated = false;
         if (user != null) {
             String queryModifyStudent = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
@@ -71,8 +71,8 @@ public class UserDAO implements IDAOUser {
                 preparedStatement.setInt(7, user.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE,"Error al actualizar un usuario de la base de datos");
-                throw new DataBaseConnectionException("Error al actualizar un usuario de la base de datos");
+                logger.log(Level.SEVERE,"Error al actualizar un usuario de la base de datos",e);
+                throw new DataOperationException("Error al actualizar un usuario de la base de datos");
             }
         }
         return updated;

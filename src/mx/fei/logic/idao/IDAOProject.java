@@ -1,18 +1,18 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Project;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.List;
 
 public interface IDAOProject {
-    Project getProjectById(int idProject) throws DataBaseConnectionException;
+    Project getProjectById(Integer idProject) throws DataOperationException;
 
-    int registerProject(Project project) throws DataBaseConnectionException;
+    int registerProject(Project project) throws DataOperationException;
 
-    List<Project> getActiveProjects() throws DataBaseConnectionException;
+    List<Project> getActiveProjects() throws DataOperationException;
 
-    List<Project> getAvailableProjects() throws DataBaseConnectionException;
+    List<Project> getAvailableProjects() throws DataOperationException;
 
-    boolean modifyProject(Project project) throws DataBaseConnectionException;
+    boolean modifyProject(Project project) throws DataOperationException;
 }
