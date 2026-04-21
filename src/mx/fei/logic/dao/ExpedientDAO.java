@@ -1,10 +1,10 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
+import mx.fei.logic.dto.Document;
 import mx.fei.logic.exceptions.DataBaseConnectionException;
 import mx.fei.logic.idao.IDAOExpedient;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -54,14 +54,15 @@ public class ExpedientDAO implements IDAOExpedient {
     }
 
     @Override
-    public boolean uploadDocument(String enrollment, String documentType, File sourceFile) throws IOException{
+    public boolean uploadDocument(String enrollment, Document document) throws IOException{
     boolean uploaded = false;
-    if (sourceFile != null && sourceFile.exists()) {
+    if (!document.getDirectory().isEmpty()) {
         try {
-            Path userDir = Paths.get("src", "resources", "expedientes", enrollment);
-            Files.createDirectories(userDir);
-            Path destination = userDir.resolve(documentType + ".pdf");
-            Files.copy(sourceFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
+            Path expedientDirectory = Paths.get(System.getProperty("user.home"), "practices/expedients", enrollment);
+            Files.createDirectories(expedientDirectory);
+            Path targetFilePath = expedientDirectory.resolve(document.getDocumentType().name() + ".pdf");
+            Path sourceFilePath = Paths.get(document.getDirectory());
+            Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
             uploaded = true;
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error al subir el documento", e);

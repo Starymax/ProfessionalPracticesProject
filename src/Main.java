@@ -360,15 +360,15 @@ public class Main {
     static void probarSubirDocumentoExpediente() throws DataBaseConnectionException {
         System.out.print("Matrícula del estudiante: ");
         String enrollment = scanner.nextLine();
-        System.out.print("Tipo de documento (ej. cartaLiberacion, cartaAceptacion): ");
+        System.out.print("Tipo de documento (SELF_EVALUATION, LETTER_OF_RELEASE, ACCEPTANCE_LETTER, WORK_PLAN, STUDENT_SCHEDULE, COMPETENCE_EVALUATION): ");
         String documentType = scanner.nextLine();
         System.out.print("Ruta del archivo PDF: ");
         String filePath = scanner.nextLine();
 
         ExpedientDAO dao = new ExpedientDAO();
-        File sourceFile = new File(filePath);
+        Document document = new Document("", filePath, DocumentType.valueOf(documentType));
         try {
-            boolean result = dao.uploadDocument(enrollment, documentType, sourceFile);
+            boolean result = dao.uploadDocument(enrollment, document);
             System.out.println("Subir documento: " + result);
         } catch (IOException e) {
             System.out.println("Error al subir documento: " + e.getMessage());

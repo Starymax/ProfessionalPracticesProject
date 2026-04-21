@@ -1,0 +1,3 @@
+grant codeBase "file:./src/" {
+    permission java.io.FilePermission "${user.home}/practices/expedients/-", "read,write";
+};
