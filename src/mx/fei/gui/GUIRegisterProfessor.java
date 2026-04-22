@@ -1,25 +1,25 @@
 package mx.fei.gui;
 
+import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-import mx.fei.logic.dao.ProfessorDAO;
-import mx.fei.logic.exceptions.DataOperationException;
-import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
-
 public class GUIRegisterProfessor extends JFrame {
 
-    private JTextField textFieldName;
     private JTextField textFieldPersonalNumber;
+    private JTextField textFieldName;
+    private JTextField textFieldLastName;
+    private JTextField textFieldGender;
+    private JComboBox<String> comboBoxShift;
     private JTextField textFieldEmail;
     private JPasswordField textFieldPassword;
-    private JTextField textFieldNRC;
-    private JCheckBox checkBoxCoordinator;
+    private JCheckBox checkBoxIsCoordinator;
     private JButton jButtonRegister;
     private JButton jButtonCancel;
 
-    public GUIRegisterProfessor() throws DataOperationException {
+    public GUIRegisterProfessor() {
         setTitle("GUIRegisterProfessor");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
@@ -30,58 +30,81 @@ public class GUIRegisterProfessor extends JFrame {
         JLabel title = new JLabel("Datos del Profesor:");
         title.setFont(new Font("SansSerif", Font.BOLD, 16));
         mainPanel.add(title, BorderLayout.NORTH);
-        JPanel formPanel = new JPanel(new GridLayout(5, 2, 10, 12));
 
-        textFieldName = new JTextField();
+        JPanel formPanel = new JPanel(new GridLayout(7, 2, 10, 12));
+
         textFieldPersonalNumber = new JTextField();
+        textFieldName = new JTextField();
+        textFieldLastName = new JTextField();
+        textFieldGender = new JTextField();
+        comboBoxShift = new JComboBox<>(new String[]{"Matutino", "Vespertino", "Nocturno"});
         textFieldEmail = new JTextField();
         textFieldPassword = new JPasswordField();
-        textFieldNRC = new JTextField();
 
-        String[] labels = {"Nombre:", "No. de personal:", "Correo:", "Contraseña:", "NRC de EE:"};
-        JComponent[] fields = {textFieldName, textFieldPersonalNumber, textFieldEmail, textFieldPassword, textFieldNRC};
+        String[] labels = {"No. de personal:", "Nombre:", "Apellidos:", "Género:", "Turno:", "Correo:", "Contraseña:"};
+        JComponent[] fields = {textFieldPersonalNumber, textFieldName, textFieldLastName, textFieldGender, comboBoxShift, textFieldEmail, textFieldPassword};
+
         for (int i = 0; i < labels.length; i++) {
-            JLabel label = new JLabel(labels[i]);
-            label.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            formPanel.add(label);
+            JLabel lbl = new JLabel(labels[i]);
+            lbl.setFont(new Font("SansSerif", Font.PLAIN, 14));
+            formPanel.add(lbl);
             formPanel.add(fields[i]);
         }
+
         mainPanel.add(formPanel, BorderLayout.CENTER);
-        checkBoxCoordinator = new JCheckBox("Coordinador");
-        checkBoxCoordinator.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        ProfessorDAO professorDAO = new ProfessorDAO();
-        if (professorDAO.existsCoordinator()) {
-            checkBoxCoordinator.setEnabled(false);
-        }
+
+        checkBoxIsCoordinator = new JCheckBox("Coordinador");
+        checkBoxIsCoordinator.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
         jButtonRegister = new JButton("Registrar");
         jButtonCancel = new JButton("Cancelar");
+
         jButtonRegister.setBackground(new Color(30, 30, 35));
         jButtonRegister.setForeground(Color.WHITE);
+        jButtonRegister.setFocusPainted(false);
+
         jButtonCancel.setBackground(new Color(30, 30, 35));
         jButtonCancel.setForeground(Color.WHITE);
-        ButtonsRegisterProfessor listener = new ButtonsRegisterProfessor(this);
-        jButtonRegister.addActionListener(listener);
-        jButtonCancel.addActionListener(listener);
+        jButtonCancel.setFocusPainted(false);
 
-        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        buttonsPanel.add(jButtonRegister);
-        buttonsPanel.add(jButtonCancel);
+        ButtonsRegisterProfessor buttonsRegisterProfessor = new ButtonsRegisterProfessor(this);
+        jButtonRegister.addActionListener(buttonsRegisterProfessor);
+        jButtonCancel.addActionListener(buttonsRegisterProfessor);
+
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        btnPanel.add(jButtonRegister);
+        btnPanel.add(jButtonCancel);
+
         JPanel bottomRow = new JPanel(new BorderLayout());
-        bottomRow.add(checkBoxCoordinator, BorderLayout.WEST);
-        bottomRow.add(buttonsPanel, BorderLayout.EAST);
+        bottomRow.add(checkBoxIsCoordinator, BorderLayout.WEST);
+        bottomRow.add(btnPanel, BorderLayout.EAST);
+
         mainPanel.add(bottomRow, BorderLayout.SOUTH);
+
         setContentPane(mainPanel);
-        setPreferredSize(new Dimension(520, 340));
+        setPreferredSize(new Dimension(520, 420));
         pack();
         setLocationRelativeTo(null);
+    }
+
+    public JTextField getTextFieldPersonalNumber() {
+        return textFieldPersonalNumber;
     }
 
     public JTextField getTextFieldName() {
         return textFieldName;
     }
 
-    public JTextField getTextFieldPersonalNumber() {
-        return textFieldPersonalNumber;
+    public JTextField getTextFieldLastName() {
+        return textFieldLastName;
+    }
+
+    public JTextField getTextFieldGender() {
+        return textFieldGender;
+    }
+
+    public JComboBox<String> getComboBoxShift() {
+        return comboBoxShift;
     }
 
     public JTextField getTextFieldEmail() {
@@ -92,12 +115,8 @@ public class GUIRegisterProfessor extends JFrame {
         return textFieldPassword;
     }
 
-    public JTextField getTextFieldNRC() {
-        return textFieldNRC;
-    }
-
-    public JCheckBox getCheckBoxCoordinator() {
-        return checkBoxCoordinator;
+    public JCheckBox getCheckBoxIsCoordinator() {
+        return checkBoxIsCoordinator;
     }
 
     public JButton getButtonRegister() {

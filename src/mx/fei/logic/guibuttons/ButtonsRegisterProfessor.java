@@ -1,6 +1,8 @@
 package mx.fei.logic.guibuttons;
 
 import mx.fei.gui.GUIRegisterProfessor;
+import mx.fei.logic.dao.ProfessorDAO;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,17 +28,18 @@ public class ButtonsRegisterProfessor implements ActionListener {
         if (guiRegisterProfessor.getTextFieldName().getText().trim().isEmpty() ||
                 guiRegisterProfessor.getTextFieldPersonalNumber().getText().trim().isEmpty() ||
                 guiRegisterProfessor.getTextFieldEmail().getText().trim().isEmpty() ||
-                new String(guiRegisterProfessor.getTextFieldPassword().getPassword()).trim().isEmpty() ||
-                guiRegisterProfessor.getTextFieldNRC().getText().trim().isEmpty()) {
+                new String(guiRegisterProfessor.getTextFieldPassword().getPassword()).trim().isEmpty()) {
             JOptionPane.showMessageDialog(guiRegisterProfessor,
                     "Complete todos los campos antes de registrar.",
                     "Campos incompletos", JOptionPane.WARNING_MESSAGE);
-            return;
+        } else {
+            ProfessorDAO professorDAO = new ProfessorDAO();
+
+            JOptionPane.showMessageDialog(guiRegisterProfessor,
+                    "Profesor registrado exitosamente." +
+                            (guiRegisterProfessor.getCheckBoxIsCoordinator().isSelected() ? "\nCoordinador registrado exitosamente." : ""),
+                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
         }
-        JOptionPane.showMessageDialog(guiRegisterProfessor,
-                "Profesor registrado exitosamente." +
-                        (guiRegisterProfessor.getCheckBoxCoordinator().isSelected() ? "\nCoordinador registrado exitosamente." : ""),
-                "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void cancel() {
