@@ -21,14 +21,18 @@ public class ActivityDAO implements IDAOActivity {
     private Logger logger = Logger.getLogger(ActivityDAO.class.getName());
 
     @Override
-    public boolean insertActivity(Activity activity, int projectId, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException {
+    public boolean insertActivity(Activity activity, Project project, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException {
+        if (activity == null) {
+            logger.log(Level.WARNING,"La actividad esta vacia");
+            throw  new IllegalArgumentException("La actividad no puede estar vacía");
+        }
         boolean success = false;
         String queryActivity = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryActivity, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, activity.getName());
             preparedStatement.setString(2, activity.getObservationsActivity());
-            preparedStatement.setInt(3, projectId);
+            preparedStatement.setInt(3, project.getProjectId());
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -93,8 +97,12 @@ public class ActivityDAO implements IDAOActivity {
              PreparedStatement preparedStatement = connection.prepareStatement(queryActivities)) {
             preparedStatement.setInt(1, projectId);
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> activitiesIds = new ArrayList<>();
             while (resultSet.next()) {
-                activities.add(getActivityById(resultSet.getInt("id_actividad")));
+                activitiesIds.add(resultSet.getInt("id_actividad"));
+            }
+            for (int idActivity : activitiesIds) {
+                activities.add(getActivityById(idActivity));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener las actividades de la base de datos",e);

@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,7 +21,17 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
 
     @Override
     public boolean registerEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
-        boolean registered = false;
+        if (educationalExperience == null) {
+            logger.log(Level.WARNING, "La experiencia es nula");
+            throw new IllegalArgumentException("La experiencia educativa no puede ser nula");
+        }
+        try {
+            getEducationalExperienceByNrc(educationalExperience.getNrc());
+            logger.log(Level.WARNING,"Ya existe una experiencia educativa con el nrc: "+educationalExperience.getNrc());
+            throw new IllegalStateException("Ya existe una experiencia educativa con ese nrc");
+        } catch (NoSuchElementException e) {
+            logger.log(Level.INFO,"Nrc disponible para el registro");
+        }
         String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, periodo_escolar) values (?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEE)) {
@@ -28,16 +39,19 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             preparedStatement.setString(2,educationalExperience.getName());
             preparedStatement.setString(3,educationalExperience.getEducationalProgram());
             preparedStatement.setString(4,educationalExperience.getEscolarPeriod());
-            registered = preparedStatement.executeUpdate() > 0;
+            return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al registrar una experiencia educativa",e);
             throw new DataOperationException("Error al registrar la experiencia educativa");
         }
-        return registered;
     }
 
     @Override
     public EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataOperationException {
+        if (nrc == null || nrc.isBlank()) {
+            logger.log(Level.WARNING, "El nrc es nulo");
+            throw new IllegalArgumentException("El nrc no puede ser nulo");
+        }
         EducationalExperience experience = null;
         String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -50,9 +64,17 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 String career = resultSet.getString("programa_educativo");
                 String period = resultSet.getString("periodo_escolar");
                 int idProfessor = resultSet.getInt("id_profesor");
-                ProfessorDAO professorDAO = new ProfessorDAO();
-                Professor professor = professorDAO.getProfessorByPersonalNumber(idProfessor);
+                resultSet.close();
+                Professor professor = null;
+                if (idProfessor > 0) {
+                    ProfessorDAO professorDAO = new ProfessorDAO();
+                    professor = professorDAO.getProfessorByPersonalNumber(idProfessor);
+                }
                 experience = new EducationalExperience(nrcEE,name,career,period,professor);
+            }
+            if (experience == null) {
+                logger.log(Level.WARNING, "No se encontro el experiencia con el nrc: "+ nrc);
+                throw  new NoSuchElementException("No se encontro la experiencia educativa");
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener la experiencia educativa por NRC",e);

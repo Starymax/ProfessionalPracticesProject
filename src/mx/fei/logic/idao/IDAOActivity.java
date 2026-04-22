@@ -1,6 +1,7 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Activity;
+import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 
@@ -13,7 +14,7 @@ public interface IDAOActivity {
 
     List<Activity> getActivitiesByProjectId(int idActivity) throws DataOperationException;
 
-    boolean insertActivity(Activity activity, int projectId, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException;
+    boolean insertActivity(Activity activity, Project project, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException;
 
     boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataOperationException;
 

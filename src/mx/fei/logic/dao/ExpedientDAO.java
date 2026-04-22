@@ -16,6 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,17 +40,22 @@ public class ExpedientDAO implements IDAOExpedient {
 
     @Override
     public boolean isLoaded(String enrollment, String documentType) throws DataOperationException {
+        List<String> validColumns = List.of("carta_liberacion", "oficio_aceptacion", "plan_trabajo", "horario", "evaluacion_competencias");
+        if (!validColumns.contains(documentType)) {
+            logger.log(Level.WARNING, "Tipo de documento no valido: " + documentType);
+            throw new IllegalArgumentException("Tipo de documento no valido: " + documentType);
+        }
         boolean isLoaded = false;
-        String queryIsLoaded = "SELECT " + documentType + " FROM expediente_practicas WHERE matricula = ?;";
+        String query = "SELECT ep." + documentType + " FROM expediente_practicas ep" + " INNER JOIN alumno a ON ep.id_alumno = a.id_usuario" + " WHERE a.matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryIsLoaded)) {
-            preparedStatement.setString(1,enrollment);
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 isLoaded = resultSet.getBoolean(documentType);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al comprobar los documentos",e);
+            logger.log(Level.SEVERE, "Error al comprobar los documentos", e);
             throw new DataOperationException("Error al corroborar si esta cargado el documento");
         }
         return isLoaded;

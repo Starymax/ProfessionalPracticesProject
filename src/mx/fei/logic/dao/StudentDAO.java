@@ -47,22 +47,28 @@ public class StudentDAO implements IDAOStudent {
                     int studentProjectId = resultSet.getInt("proyecto");
                     String nrc = resultSet.getString("nrc");
                     resultSet.close();
-                    ProjectDAO projectDAO = new ProjectDAO();
-                    Project project = projectDAO.getProjectById(studentProjectId);
-                    EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                    EducationalExperience educationalExperience=educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+                    Project project = null;
+                    if (studentProjectId > 0) {
+                        ProjectDAO projectDAO = new ProjectDAO();
+                        project = projectDAO.getProjectById(studentProjectId);
+                    }
+                    EducationalExperience educationalExperience = null;
+                    if (nrc != null && !nrc.isBlank()) {
+                        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+                        educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+                    }
                     student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con la matricula: " + enrollment);
                     throw new NoSuchElementException("No se encontro el estudiante");
                 }
-                return student;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE,"Error al buscar el estudiante por matricula",e);
                 throw new DataOperationException("Error al obtener los datos del estudiante");
             }
         }
+        return student;
     }
 
     @Override

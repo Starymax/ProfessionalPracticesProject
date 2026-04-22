@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,26 +21,24 @@ public class ReportDAO implements IDAOReport {
     private static final Logger logger = Logger.getLogger(ReportDAO.class.getName());
 
     @Override
-    public boolean createReport(mx.fei.logic.dto.Report report) throws DataOperationException {
-        boolean sucess = false;
-        if (report != null) {
-            String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryReport);) {
-                preparedStatement.setFloat(1, report.getWorkedHours());
-                preparedStatement.setString(2, report.getReportType());
-                preparedStatement.setDate(3, (Date) report.getDate());
-                preparedStatement.setString(4, report.getObservationsReport());
-                preparedStatement.setInt(5, report.getStudent().getUserId());
-                preparedStatement.executeUpdate();
-                connection.close();
-                sucess = true;
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al crear el reporte en la base de datos",e);
-                throw new DataOperationException("Error al crear el reporte en la base de datos");
-            }
+    public boolean createReport(Report report) throws DataOperationException {
+        if (report == null) {
+            logger.log(Level.WARNING,"El reporte es nulo");
+            throw new IllegalArgumentException("El reporte no puede ser nulo");
         }
-        return sucess;
+        String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryReport);) {
+            preparedStatement.setFloat(1, report.getWorkedHours());
+            preparedStatement.setString(2, report.getReportType());
+            preparedStatement.setDate(3, (Date) report.getDate());
+            preparedStatement.setString(4, report.getObservationsReport());
+            preparedStatement.setInt(5, report.getStudent().getUserId());
+            return  preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al crear el reporte en la base de datos",e);
+            throw new DataOperationException("Error al crear el reporte en la base de datos");
+        }
     }
 
     @Override

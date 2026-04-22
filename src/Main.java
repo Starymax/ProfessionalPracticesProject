@@ -340,7 +340,7 @@ public class Main {
         logs.add(new WeeklyLog(0,  2, 9.0f, 10.0f, activity));
 
         ActivityDAO dao = new ActivityDAO();
-        boolean result = dao.insertActivity(activity, idProyecto, logs);
+        boolean result = dao.insertActivity(activity, project, logs);
         System.out.println("Insertar actividad: " + result);
     }
 

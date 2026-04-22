@@ -33,6 +33,10 @@ public class UserDAO implements IDAOUser {
 
     @Override
     public int registerUser(User user) throws DataOperationException {
+        if (user == null) {
+            logger.log(Level.WARNING,"El usuario es nulo");
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
         int generatedID = -1;
         String query = "INSERT INTO usuario (nombre,apellidos,correo,contrasena,estado_activo,genero) VALUES (?,?,?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();

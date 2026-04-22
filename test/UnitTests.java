@@ -1,14 +1,21 @@
-
 import mx.fei.logic.dao.*;
 import mx.fei.logic.dto.*;
 import mx.fei.logic.exceptions.DataOperationException;
-import org.junit.jupiter.api.*;
-import java.io.File;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class StudentDAOTest {
 
@@ -21,10 +28,8 @@ class StudentDAOTest {
         studentDAO = new StudentDAO();
     }
 
-    // --- getStudentByEnrollment ---
-
     @Test
-    @DisplayName("Debe regresar un Student cuando la matrícula existe")
+    @DisplayName("Debe regresar un Student cuando la matricula existe")
     void getStudentByEnrollment_existingEnrollment_returnsStudent() throws DataOperationException {
         Student student = studentDAO.getStudentByEnrollment(EXISTING_ENROLLMENT);
         assertNotNull(student);
@@ -32,7 +37,7 @@ class StudentDAOTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar excepción cuando la matrícula no existe")
+    @DisplayName("Debe lanzar excepcion cuando la matricula no existe")
     void getStudentByEnrollment_nonExistingEnrollment_throwsException() {
         assertThrows(NoSuchElementException.class, () ->
                 studentDAO.getStudentByEnrollment(NON_EXISTING_ENROLLMENT)
@@ -40,7 +45,7 @@ class StudentDAOTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con matrícula nula")
+    @DisplayName("Debe lanzar IllegalArgumentException con matricula nula")
     void getStudentByEnrollment_nullEnrollment_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 studentDAO.getStudentByEnrollment(null)
@@ -48,7 +53,7 @@ class StudentDAOTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con matrícula vacía")
+    @DisplayName("Debe lanzar IllegalArgumentException con matricula vacia")
     void getStudentByEnrollment_emptyEnrollment_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 studentDAO.getStudentByEnrollment("")
@@ -61,17 +66,17 @@ class StudentDAOTest {
         Student newStudent = new Student(
                 0, "Prueba", "Unitaria", "prueba@uv.mx",
                 "pass123", "Masculino", true,
-                "zS20019984", "2026-1", false, 0.0f, null, null
+                "S24017414", "2026-1", false, 0.0f, null, null
         );
         boolean result = studentDAO.registerStudent(newStudent);
         assertTrue(result);
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalStateException si la matrícula ya existe")
+    @DisplayName("Debe lanzar IllegalStateException si la matricula ya existe")
     void registerStudent_duplicateEnrollment_throwsIllegalState() {
         Student duplicate = new Student(
-                0, "Duplicado", "Test", "dup@uv.mx",
+                1, "Duplicado", "Test", "dup@uv.mx",
                 "pass123", "Femenino", true,
                 EXISTING_ENROLLMENT, "2026-1", false, 0.0f, null, null
         );
@@ -81,7 +86,7 @@ class StudentDAOTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con Student nulo")
+    @DisplayName("Debe lanzar IllegalArgumentException con estudiante nulo")
     void registerStudent_nullStudent_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 studentDAO.registerStudent(null)
@@ -89,7 +94,7 @@ class StudentDAOTest {
     }
 
     @Test
-    @DisplayName("Debe modificar un Student existente y regresar true")
+    @DisplayName("Debe modificar un alumno existente y regresar true")
     void modifyStudent_existingStudent_returnsTrue() throws DataOperationException {
         Student student = studentDAO.getStudentByEnrollment(EXISTING_ENROLLMENT);
         student.setPeriod("2026-2");
@@ -98,33 +103,27 @@ class StudentDAOTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con Student nulo")
+    @DisplayName("Debe lanzar IllegalArgumentException con estudiante nulo")
     void modifyStudent_nullStudent_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 studentDAO.modifyStudent(null)
         );
     }
 
-    // --- getStudents ---
-
     @Test
-    @DisplayName("Debe regresar una lista no vacía de estudiantes")
+    @DisplayName("Debe regresar una lista no vacia de estudiantes")
     void getStudents_returnsNonEmptyList() throws DataOperationException {
         List<Student> students = studentDAO.getStudents();
         assertNotNull(students);
         assertFalse(students.isEmpty());
     }
 
-    // --- getStudentsWithoutProject ---
-
     @Test
-    @DisplayName("Debe regresar una lista (puede estar vacía) de estudiantes sin proyecto")
+    @DisplayName("Debe regresar una lista (puede estar vacia) de estudiantes sin proyecto")
     void getStudentsWithoutProject_returnsList() throws DataOperationException {
         List<Student> students = studentDAO.getStudentsWithoutProject();
         assertNotNull(students);
     }
-
-    // --- getActiveStudents ---
 
     @Test
     @DisplayName("Todos los estudiantes regresados deben tener estado_activo = true")
@@ -133,8 +132,6 @@ class StudentDAOTest {
         assertNotNull(students);
         students.forEach(s -> assertTrue(s.isActive()));
     }
-
-    // --- saveSelectedProjects y getSelectedProjects ---
 
     @Test
     @DisplayName("Los proyectos guardados deben poderse recuperar")
@@ -178,7 +175,7 @@ class ProjectDAOTest {
     }
 
     @Test
-    @DisplayName("Debe regresar lista no vacía de proyectos activos")
+    @DisplayName("Debe regresar lista no vacia de proyectos activos")
     void getActiveProjects_returnsNonEmptyList() throws DataOperationException {
         List<Project> projects = projectDAO.getActiveProjects();
         assertNotNull(projects);
@@ -226,7 +223,7 @@ class EnterpriseDAOTest {
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con Enterprise nula")
+    @DisplayName("Debe lanzar IllegalArgumentException con organizacion nula")
     void registerEnterprise_nullEnterprise_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 enterpriseDAO.registerEnterprise(null)
@@ -234,76 +231,67 @@ class EnterpriseDAOTest {
     }
 }
 
-
-// ============================================================
-//  EducationalExperienceDAO
-// ============================================================
 class EducationalExperienceDAOTest {
-
-    private EducationalExperienceDAO eeDAO;
-    private static final String EXISTING_NRC = "IS-001";
+    private EducationalExperienceDAO educationalExperienceDAO;
+    private static final String EXISTING_NRC = "NRC-001";
     private static final String NON_EXISTING_NRC = "XX-999";
 
     @BeforeEach
     void setUp() {
-        eeDAO = new EducationalExperienceDAO();
+        educationalExperienceDAO = new EducationalExperienceDAO();
     }
 
     @Test
-    @DisplayName("Debe regresar una EducationalExperience cuando el NRC existe")
+    @DisplayName("Debe regresar una experiencia cuando el NRC existe")
     void getEEByNrc_existingNrc_returnsExperience() throws DataOperationException {
-        EducationalExperience ee = eeDAO.getEducationalExperienceByNrc(EXISTING_NRC);
-        assertNotNull(ee);
-        assertEquals(EXISTING_NRC, ee.getNrc());
+        EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(EXISTING_NRC);
+        assertNotNull(educationalExperience);
+        assertEquals(EXISTING_NRC, educationalExperience.getNrc());
     }
 
     @Test
     @DisplayName("Debe lanzar NoSuchElementException cuando el NRC no existe")
     void getEEByNrc_nonExistingNrc_throwsException() {
         assertThrows(NoSuchElementException.class, () ->
-                eeDAO.getEducationalExperienceByNrc(NON_EXISTING_NRC)
+                educationalExperienceDAO.getEducationalExperienceByNrc(NON_EXISTING_NRC)
         );
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con NRC nulo")
+    @DisplayName("Debe lanzar IllegalArgumentException con nrc nulo")
     void getEEByNrc_nullNrc_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
-                eeDAO.getEducationalExperienceByNrc(null)
+                educationalExperienceDAO.getEducationalExperienceByNrc(null)
         );
     }
 
     @Test
-    @DisplayName("Debe regresar lista no vacía de experiencias educativas")
+    @DisplayName("Debe regresar lista no vacia de experiencias educativas")
     void getEducationalExperiences_returnsNonEmptyList() throws DataOperationException {
-        List<EducationalExperience> list = eeDAO.getEducationalExperiences();
-        assertNotNull(list);
-        assertFalse(list.isEmpty());
+        List<EducationalExperience> educationalExperiences = educationalExperienceDAO.getEducationalExperiences();
+        assertNotNull(educationalExperiences);
+        assertFalse(educationalExperiences.isEmpty());
     }
 
     @Test
-    @DisplayName("Debe registrar una EducationalExperience válida y regresar true")
+    @DisplayName("Debe registrar una EducationalExperience valida y regresar true")
     void registerEE_validExperience_returnsTrue() throws DataOperationException {
-        EducationalExperience ee = new EducationalExperience(
-                "IS-TEST", "Prácticas Test", "Ingeniería de Software", "2026-1", null
+        EducationalExperience educationalExperience = new EducationalExperience(
+                "IS-TEST6", "Practicas Test", "Ingenieria de Software", "2026-1", null
         );
-        boolean result = eeDAO.registerEducationalExperience(ee);
+        boolean result = educationalExperienceDAO.registerEducationalExperience(educationalExperience);
         assertTrue(result);
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con EducationalExperience nula")
+    @DisplayName("Debe lanzar IllegalArgumentException con experiencia educativa nula")
     void registerEE_nullExperience_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
-                eeDAO.registerEducationalExperience(null)
+                educationalExperienceDAO.registerEducationalExperience(null)
         );
     }
 }
 
-
-// ============================================================
-//  ExpedientDAO
-// ============================================================
 class ExpedientDAOTest {
 
     private ExpedientDAO expedientDAO;
@@ -313,13 +301,6 @@ class ExpedientDAOTest {
         expedientDAO = new ExpedientDAO();
     }
 
-   /* @Test
-    @DisplayName("Debe regresar el expediente de un alumno existente")
-    void getExpedientByEnrollment_existingStudent_returnsExpedient() {
-        Expedient expedient = expedientDAO.getExpedientByEnrollment("zS20013001");
-        assertNotNull(expedient);
-    }*/
-
     @Test
     @DisplayName("isLoaded debe regresar false para documento no cargado")
     void isLoaded_documentNotLoaded_returnsFalse() throws DataOperationException {
@@ -328,46 +309,22 @@ class ExpedientDAOTest {
     }
 
     @Test
-    @DisplayName("isLoaded debe lanzar IllegalArgumentException con tipo inválido")
+    @DisplayName("isLoaded debe lanzar IllegalArgumentException con tipo invalido")
     void isLoaded_invalidDocumentType_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 expedientDAO.isLoaded("zS20013001", "columna_inexistente")
         );
     }
-
-    /*@Test
-    @DisplayName("uploadDocument debe lanzar IllegalArgumentException con archivo nulo")
-    void uploadDocument_nullFile_throwsIllegalArgument() throws DataOperationException {
-        StudentDAO studentDAO = new StudentDAO();
-        Student student = studentDAO.getStudentByEnrollment("zS20013001");
-        Expedient expedient = expedientDAO.getExpedientByEnrollment("zS20013001");
-        assertThrows(IllegalArgumentException.class, () ->
-                expedientDAO.uploadDocument(expedient, "carta_liberacion", null)
-        );
-    }*/
-
-   /* @Test
-    @DisplayName("uploadDocument debe lanzar IllegalArgumentException con archivo inexistente")
-    void uploadDocument_nonExistentFile_throwsIllegalArgument() {
-        Expedient expedient = expedientDAO.getExpedientByEnrollment("zS20013001");
-        File fakeFile = new File("ruta/que/no/existe.pdf");
-        assertThrows(IllegalArgumentException.class, () ->
-                expedientDAO.uploadDocument(expedient, "carta_liberacion", fakeFile)
-        );
-    }*/
 }
 
-
-// ============================================================
-//  ActivityDAO
-// ============================================================
 class ActivityDAOTest {
-
+    private ProjectDAO projectDAO;
     private ActivityDAO activityDAO;
 
     @BeforeEach
     void setUp() {
         activityDAO = new ActivityDAO();
+        projectDAO = new ProjectDAO();
     }
 
     @Test
@@ -386,27 +343,30 @@ class ActivityDAOTest {
         assertTrue(activities.isEmpty());
     }
 
-   /* @Test
-    @DisplayName("Debe registrar una actividad válida y regresar true")
-    void registerActivity_validActivity_returnsTrue() {
-        Activity activity = new Activity(0, "Actividad de prueba", "Observación test", 1);
-        boolean result = activityDAO.insertActivity(activity);
+    @Test
+    @DisplayName("Debe registrar una actividad valida y regresar true")
+    void registerActivity_validActivity_returnsTrue() throws DataOperationException {
+        Project project = projectDAO.getProjectById(1);
+        ArrayList<WeeklyLog> weeklyLogs = new ArrayList<>();
+        weeklyLogs.add(activityDAO.getWeeklyLogById(1));
+        Activity activity = new Activity(0, "Actividad de prueba", "Observación test", project);
+        boolean result = activityDAO.insertActivity(activity,project,weeklyLogs);
         assertTrue(result);
-    }*/
+    }
 
-   /* @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con Activity nula")
-    void registerActivity_nullActivity_throwsIllegalArgument() {
+    @Test
+    @DisplayName("Debe lanzar IllegalArgumentException con actividad nula")
+    void registerActivity_nullActivity_throwsIllegalArgument() throws DataOperationException {
+        ProjectDAO projectDAO = new ProjectDAO();
+        ArrayList<WeeklyLog> weeklyLogs = new ArrayList<>();
+        weeklyLogs.add(activityDAO.getWeeklyLogById(1));
+        Project project = projectDAO.getProjectById(1);
         assertThrows(IllegalArgumentException.class, () ->
-                activityDAO.insertActivity(null)
+                activityDAO.insertActivity(null, project,weeklyLogs)
         );
-    }*/
+    }
 }
 
-
-// ============================================================
-//  ReportDAO
-// ============================================================
 class ReportDAOTest {
 
     private ReportDAO reportDAO;
@@ -424,20 +384,17 @@ class ReportDAOTest {
     }
 
     @Test
-    @DisplayName("Debe registrar un reporte válido y regresar true")
+    @DisplayName("Debe registrar un reporte valido y regresar verdadero")
     void registerReport_validReport_returnsTrue() throws DataOperationException {
-        Student student = new Student(
-                0, "Ian", "Diaz", "psd@uv.mx", "punt325",
-                "Hombre", false, "s24736217", "2024-01",
-                false, 0.0f, null, null
-        );
-        Report report = new Report(0, 40.0f, "Parcial", Date.valueOf("20/04/2026"), "Observación", student);
+        StudentDAO studentDAO = new StudentDAO();
+        Student student = studentDAO.getStudentByEnrollment("s24014150");
+        Report report = new Report(0, 40.0f, "Parcial", Date.valueOf(LocalDate.now()), "Observación", student);
         boolean result = reportDAO.createReport(report);
         assertTrue(result);
     }
 
     @Test
-    @DisplayName("Debe lanzar IllegalArgumentException con Report nulo")
+    @DisplayName("Debe lanzar IllegalArgumentException con reporte nulo")
     void registerReport_nullReport_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 reportDAO.createReport(null)
@@ -445,10 +402,6 @@ class ReportDAOTest {
     }
 }
 
-
-// ============================================================
-//  UserDAO
-// ============================================================
 class UserDAOTest {
 
     private UserDAO userDAO;
