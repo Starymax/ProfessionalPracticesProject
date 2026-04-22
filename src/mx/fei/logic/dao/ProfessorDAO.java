@@ -122,4 +122,20 @@ public class ProfessorDAO implements IDAOProfessor {
         return updated;
     }
 
+    @Override
+    public boolean existsCoordinator() throws DataOperationException {
+        boolean exists = false;
+        String queryExistsCoordinator = "SELECT 1 FROM profesor WHERE es_coordinador = true LIMIT 1;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryExistsCoordinator)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                exists = true;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al verificar si existe un coordinador");
+            throw new DataOperationException("Error al verificar si existe un coordinador");
+        }
+        return exists;
+    }
 }
