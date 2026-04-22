@@ -4,7 +4,7 @@ import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.WeeklyLog;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOActivity;
 
 import java.sql.Connection;
@@ -21,14 +21,18 @@ public class ActivityDAO implements IDAOActivity {
     private Logger logger = Logger.getLogger(ActivityDAO.class.getName());
 
     @Override
-    public boolean insertActivity(Activity activity, int projectId, ArrayList<WeeklyLog> weeklyLogs) throws DataBaseConnectionException {
+    public boolean insertActivity(Activity activity, Project project, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException {
+        if (activity == null) {
+            logger.log(Level.WARNING,"La actividad esta vacia");
+            throw  new IllegalArgumentException("La actividad no puede estar vacía");
+        }
         boolean success = false;
         String queryActivity = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryActivity, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, activity.getName());
             preparedStatement.setString(2, activity.getObservationsActivity());
-            preparedStatement.setInt(3, projectId);
+            preparedStatement.setInt(3, project.getProjectId());
             preparedStatement.executeUpdate();
             ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
@@ -36,14 +40,14 @@ public class ActivityDAO implements IDAOActivity {
                 success = insertWeeklyLogs(connection, weeklyLogs, activityId);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al insertar actividad en la base de datos");
-            throw new DataBaseConnectionException("Error al insertar actividad en la base de datos");
+            logger.log(Level.SEVERE, "Error al insertar actividad en la base de datos",e);
+            throw new DataOperationException("Error al insertar actividad en la base de datos");
         }
         return success;
     }
 
     @Override
-    public boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataBaseConnectionException {
+    public boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataOperationException {
         boolean success = false;
         String queryWeeklyLog = "INSERT INTO registro_semanal (semana, horas_realizadas, horas_planificadas, id_actividad) VALUES (?,?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLog);) {
@@ -56,14 +60,14 @@ public class ActivityDAO implements IDAOActivity {
             }
             success = true;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al insertar el horario a la actividad en la base de datos");
-            throw new DataBaseConnectionException("Error al insertar el horario a la actividad en la base de datos");
+            logger.log(Level.SEVERE, "Error al insertar el horario a la actividad en la base de datos",e);
+            throw new DataOperationException("Error al insertar el horario a la actividad en la base de datos");
         }
         return success;
     }
 
     @Override
-    public Activity getActivityById(int activityId) throws DataBaseConnectionException {
+    public Activity getActivityById(int activityId) throws DataOperationException {
         String query = "SELECT id_actividad, nombre_actividad, observaciones_actividad, id_proyecto FROM actividad WHERE id_actividad = ?";
         Activity activity = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -79,32 +83,36 @@ public class ActivityDAO implements IDAOActivity {
                 activity = new Activity(activityId, nameActivity, observationsActivity, project);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener la actividad de la base de datos");
-            throw new DataBaseConnectionException("Error al obtener la actividad de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener la actividad de la base de datos",e);
+            throw new DataOperationException("Error al obtener la actividad de la base de datos");
         }
         return activity;
     }
 
     @Override
-    public List<Activity> getActivitiesByProjectId(int projectId) throws DataBaseConnectionException {
+    public List<Activity> getActivitiesByProjectId(int projectId) throws DataOperationException {
         String queryActivities = "SELECT id_actividad FROM actividad WHERE id_proyecto = ?";
         List<Activity> activities = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryActivities)) {
             preparedStatement.setInt(1, projectId);
             ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> activitiesIds = new ArrayList<>();
             while (resultSet.next()) {
-                activities.add(getActivityById(resultSet.getInt("id_actividad")));
+                activitiesIds.add(resultSet.getInt("id_actividad"));
+            }
+            for (int idActivity : activitiesIds) {
+                activities.add(getActivityById(idActivity));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener las actividades de la base de datos");
-            throw new DataBaseConnectionException("Error al obtener las actividades de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener las actividades de la base de datos",e);
+            throw new DataOperationException("Error al obtener las actividades de la base de datos");
         }
         return activities;
     }
 
     @Override
-    public WeeklyLog getWeeklyLogById(int weeklyLogId) throws DataBaseConnectionException {
+    public WeeklyLog getWeeklyLogById(int weeklyLogId) throws DataOperationException {
         String queryWeeklyLog = "SELECT semana, horas_realizadas, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
         WeeklyLog weeklyLog = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -119,14 +127,14 @@ public class ActivityDAO implements IDAOActivity {
                 weeklyLog = new WeeklyLog(weeklyLogId, week, workedHours, plannedHours, activity);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el horario de la actividad de la base de datos");
-            throw new DataBaseConnectionException("Error al obtener el horario de la actividad de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener el horario de la actividad de la base de datos",e);
+            throw new DataOperationException("Error al obtener el horario de la actividad de la base de datos");
         }
         return weeklyLog;
     }
 
     @Override
-    public List<WeeklyLog> getWeeklyLogsByActivityId(int activityId) throws DataBaseConnectionException {
+    public List<WeeklyLog> getWeeklyLogsByActivityId(int activityId) throws DataOperationException {
         String queryWeeklyLogs = "SELECT id_registro FROM registro_semanal WHERE id_actividad = ?";
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -142,8 +150,8 @@ public class ActivityDAO implements IDAOActivity {
                 weeklyLogs.add(getWeeklyLogById(weeklyLogId));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad de la base de datos");
-            throw new DataBaseConnectionException("Error al obtener los horarios de la actividad de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad de la base de datos",e);
+            throw new DataOperationException("Error al obtener los horarios de la actividad de la base de datos");
         }
         return weeklyLogs;
     }

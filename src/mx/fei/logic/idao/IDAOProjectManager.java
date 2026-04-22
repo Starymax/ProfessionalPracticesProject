@@ -1,14 +1,14 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.ProjectManager;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.List;
 
 public interface IDAOProjectManager {
-    boolean registerProjectManager(ProjectManager projectManager) throws DataBaseConnectionException;
+    boolean registerProjectManager(ProjectManager projectManager) throws DataOperationException;
 
-    ProjectManager getProjectManagerById(int idProjectManager) throws DataBaseConnectionException;
+    ProjectManager getProjectManagerById(int idProjectManager) throws DataOperationException;
 
-    List<ProjectManager> getProjectManagers() throws DataBaseConnectionException;
+    List<ProjectManager> getProjectManagers() throws DataOperationException;
 }

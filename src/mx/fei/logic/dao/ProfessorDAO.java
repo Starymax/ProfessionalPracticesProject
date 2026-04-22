@@ -3,7 +3,7 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.RegistrationStatus;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOProfessor;
 
 import java.sql.Connection;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class ProfessorDAO implements IDAOProfessor {
     private final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
     @Override
-    public Professor getProfessorByPersonalNumber(int personalNumber) throws DataBaseConnectionException {
+    public Professor getProfessorByPersonalNumber(int personalNumber) throws DataOperationException {
         Professor professor = null;
         String queryProfessor = "SELECT * FROM vw_profesor WHERE numero_de_personal = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -39,14 +39,14 @@ public class ProfessorDAO implements IDAOProfessor {
                 professor = new Professor(idUser, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el profesor");
-            throw new DataBaseConnectionException("Error al obtener el profesor");
+            logger.log(Level.SEVERE, "Error al obtener el profesor",e);
+            throw new DataOperationException("Error al obtener el profesor");
         }
         return professor;
     }
 
     @Override
-    public boolean registerProfessor(Professor professor) throws DataBaseConnectionException {
+    public boolean registerProfessor(Professor professor) throws DataOperationException {
         boolean registered = false;
         if (professor != null && getProfessorByPersonalNumber(professor.getPersonalNumber()) == null) {
             try {
@@ -65,11 +65,11 @@ public class ProfessorDAO implements IDAOProfessor {
                     }
                 } else {
                     logger.log(Level.WARNING, "No se logro registrar el usuario en la base de datos");
-                    throw new DataBaseConnectionException("No se logro registrar el profesor");
+                    throw new DataOperationException("No se logro registrar el profesor");
                 }
             }catch (SQLException e) {
-                logger.log(Level.SEVERE,"Error registrando el profesor");
-                throw new DataBaseConnectionException("Error al registrar el profesor");
+                logger.log(Level.SEVERE,"Error registrando el profesor",e);
+                throw new DataOperationException("Error al registrar el profesor");
             }
         } else if (professor == null) {
             logger.log(Level.WARNING, "El profesor es nulo");
@@ -82,7 +82,7 @@ public class ProfessorDAO implements IDAOProfessor {
     }
 
     @Override
-    public List<Professor> getProfessors() throws DataBaseConnectionException {
+    public List<Professor> getProfessors() throws DataOperationException {
         List<Professor> professors = new ArrayList<>();
         String queryRegisterProfessor = "SELECT numero_de_personal FROM profesor;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
@@ -97,14 +97,14 @@ public class ProfessorDAO implements IDAOProfessor {
                 professors.add(getProfessorByPersonalNumber(personalNumer));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo todos los profesores");
-            throw new DataBaseConnectionException("Error al obtener a los profesores");
+            logger.log(Level.SEVERE, "Error obteniendo todos los profesores",e);
+            throw new DataOperationException("Error al obtener a los profesores");
         }
         return professors;
     }
 
     @Override
-    public boolean modifyProfessor(Professor professor) throws DataBaseConnectionException {
+    public boolean modifyProfessor(Professor professor) throws DataOperationException {
         boolean updated = false;
         String queryModifyProfessor = "UPDATE profesor set es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
         if (professor != null) {
@@ -115,8 +115,8 @@ public class ProfessorDAO implements IDAOProfessor {
                 preparedStatement.setString(3, professor.getShift());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error modificando los datos del profesor");
-                throw new DataBaseConnectionException("Error al modificar los datos del profesor");
+                logger.log(Level.SEVERE, "Error modificando los datos del profesor",e);
+                throw new DataOperationException("Error al modificar los datos del profesor");
             }
         }
         return updated;

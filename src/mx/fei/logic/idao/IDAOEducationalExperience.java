@@ -1,15 +1,14 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dto.Student;
-import mx.fei.logic.exceptions.DataBaseConnectionException;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.List;
 
 public interface IDAOEducationalExperience {
-    boolean registerEducationalExperience(EducationalExperience educationalExperience) throws DataBaseConnectionException;
+    boolean registerEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException;
 
-    EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataBaseConnectionException;
+    EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataOperationException;
 
-    List<EducationalExperience> getEducationalExperiences() throws DataBaseConnectionException;
+    List<EducationalExperience> getEducationalExperiences() throws DataOperationException;
 }
