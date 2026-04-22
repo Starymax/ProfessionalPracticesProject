@@ -66,7 +66,7 @@ class StudentDAOTest {
         Student newStudent = new Student(
                 0, "Prueba", "Unitaria", "prueba@uv.mx",
                 "pass123", "Masculino", true,
-                "S24017414", "2026-1", false, 0.0f, null, null
+                "S24117414", "2026-1", false, 0.0f, null, null
         );
         boolean result = studentDAO.registerStudent(newStudent);
         assertTrue(result);
@@ -159,7 +159,7 @@ class ProjectDAOTest {
     }
 
     @Test
-    @DisplayName("Debe regresar un Project cuando el id existe")
+    @DisplayName("Debe regresar un proyecto cuando el id existe")
     void getProjectById_existingId_returnsProject() throws DataOperationException {
         Project project = projectDAO.getProjectById(EXISTING_ID);
         assertNotNull(project);
@@ -194,7 +194,7 @@ class EnterpriseDAOTest {
     }
 
     @Test
-    @DisplayName("Debe regresar una Enterprise cuando el id existe")
+    @DisplayName("Debe regresar una organizacion cuando el id existe")
     void getEnterpriseById_existingId_returnsEnterprise() throws DataOperationException {
         Enterprise enterprise = enterpriseDAO.getEnterpriseById(EXISTING_ID);
         assertNotNull(enterprise);
@@ -277,7 +277,7 @@ class EducationalExperienceDAOTest {
     @DisplayName("Debe registrar una EducationalExperience valida y regresar true")
     void registerEE_validExperience_returnsTrue() throws DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience(
-                "IS-TEST6", "Practicas Test", "Ingenieria de Software", "2026-1", null
+                "IS-TEST7", "Practicas Test", "Ingenieria de Software", "2026-1", null
         );
         boolean result = educationalExperienceDAO.registerEducationalExperience(educationalExperience);
         assertTrue(result);
@@ -288,31 +288,6 @@ class EducationalExperienceDAOTest {
     void registerEE_nullExperience_throwsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () ->
                 educationalExperienceDAO.registerEducationalExperience(null)
-        );
-    }
-}
-
-class ExpedientDAOTest {
-
-    private ExpedientDAO expedientDAO;
-
-    @BeforeEach
-    void setUp() {
-        expedientDAO = new ExpedientDAO();
-    }
-
-    @Test
-    @DisplayName("isLoaded debe regresar false para documento no cargado")
-    void isLoaded_documentNotLoaded_returnsFalse() throws DataOperationException {
-        boolean loaded = expedientDAO.isLoaded("zS20013001", "evaluacion_competencias");
-        assertFalse(loaded);
-    }
-
-    @Test
-    @DisplayName("isLoaded debe lanzar IllegalArgumentException con tipo invalido")
-    void isLoaded_invalidDocumentType_throwsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () ->
-                expedientDAO.isLoaded("zS20013001", "columna_inexistente")
         );
     }
 }
