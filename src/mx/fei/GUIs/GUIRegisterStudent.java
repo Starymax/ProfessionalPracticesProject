@@ -192,6 +192,7 @@ public class GUIRegisterStudent extends JFrame {
     }
 
     public boolean validateFields() {
+        boolean fieldsValidated = true;
         List<Map.Entry<Boolean, String>> validations = List.of(
                 Map.entry(textFieldNames.getText().trim().isEmpty(),"El campo nombres es obligatorio."),
                 Map.entry(textFieldLastName.getText().trim().isEmpty(),"El campo apellidos es obligatorio."),
@@ -207,10 +208,22 @@ public class GUIRegisterStudent extends JFrame {
         for (Map.Entry<Boolean, String> validation : validations) {
             if (validation.getKey()) {
                 showError(validation.getValue());
-                return false;
+                fieldsValidated = false;
+                break;
             }
         }
-        return true;
+        return fieldsValidated;
+    }
+
+    public boolean validateFieldPassword() {
+        boolean passwordsValidated = true;
+        String password = textFieldPassword.getText().trim();
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$";
+        if (!password.matches(regex)) {
+            showError("Favor de que su contraseña tenga minimo un caracter especial, una mayuscula, una minuscula, un numero y que sea de 8 digitos");
+            passwordsValidated = false;
+        }
+        return passwordsValidated;
     }
 
     private void showError(String message) {
