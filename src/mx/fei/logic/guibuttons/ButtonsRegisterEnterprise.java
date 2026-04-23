@@ -5,8 +5,9 @@ import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javax.swing.*;
-import java.awt.event.*;
+import javax.swing.JOptionPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ButtonsRegisterEnterprise implements ActionListener {
 

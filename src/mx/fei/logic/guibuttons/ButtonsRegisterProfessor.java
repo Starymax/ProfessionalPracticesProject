@@ -22,7 +22,7 @@ public class ButtonsRegisterProfessor implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == guiRegisterProfessor.getButtonRegister()) {
-            if (guiRegisterProfessor.validateFields()) {
+            if (guiRegisterProfessor.validateFields() && guiRegisterProfessor.validateFieldPassword()) {
                 register();
             }
         } else if (actionEvent.getSource() == guiRegisterProfessor.getButtonCancel()) {
@@ -43,7 +43,7 @@ public class ButtonsRegisterProfessor implements ActionListener {
             String shift = Arrays.toString(guiRegisterProfessor.getComboBoxShift().getSelectedObjects());
             boolean isCoordinator = guiRegisterProfessor.getCheckBoxIsCoordinator().isSelected();
             boolean isAdministrator = guiRegisterProfessor.getCheckBoxIsAdministrator().isSelected();
-            Professor professor = new Professor(0, name, lastName, email, hashPassword, gender, true, personalNumber, isCoordinator, false, shift);
+            Professor professor = new Professor(0, name, lastName, email, hashPassword, gender, true, personalNumber, isCoordinator, isAdministrator, shift);
             if (professorDAO.registerProfessor(professor)) {
                 if (isCoordinator) {
                     JOptionPane.showMessageDialog(guiRegisterProfessor, "Coordinador registrado exitosamente", "Continuar", JOptionPane.INFORMATION_MESSAGE);

@@ -2,8 +2,15 @@ package mx.fei.gui;
 
 import mx.fei.logic.guibuttons.ButtonsRegisterEnterprise;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;

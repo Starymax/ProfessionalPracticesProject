@@ -2,8 +2,18 @@ package mx.fei.gui;
 
 import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JComboBox;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JButton;
 import javax.swing.border.EmptyBorder;
+import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -120,6 +130,17 @@ public class GUIRegisterProfessor extends JFrame {
             }
         }
         return validated;
+    }
+
+    public boolean validateFieldPassword() {
+        boolean passwordsValidated = true;
+        String password = textFieldPassword.getText().trim();
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$";
+        if (!password.matches(regex)) {
+            showError("Favor de que su contraseña tenga minimo un caracter especial, una mayuscula, una minuscula, un numero y que sea de 8 digitos");
+            passwordsValidated = false;
+        }
+        return passwordsValidated;
     }
 
     private void showError(String message) {
