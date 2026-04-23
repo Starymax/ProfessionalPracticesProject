@@ -1,6 +1,6 @@
 package mx.fei.logic.guibuttons;
 
-import mx.fei.guis.GUIRegisterEducationalExperience;
+import mx.fei.gui.GUIRegisterEducationalExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
