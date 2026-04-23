@@ -218,7 +218,7 @@ public class GUIRegisterStudent extends JFrame {
     public boolean validateFieldPassword() {
         boolean passwordsValidated = true;
         String password = textFieldPassword.getText().trim();
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$";
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.,]).{8,}$";
         if (!password.matches(regex)) {
             showError("Favor de que su contraseña tenga minimo un caracter especial, una mayuscula, una minuscula, un numero y que sea de 8 digitos");
             passwordsValidated = false;

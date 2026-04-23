@@ -50,48 +50,48 @@ public class GUIRegisterEducationalExperience extends JFrame {
                 BorderFactory.createLineBorder(Color.GRAY),
                 new EmptyBorder(20, 30, 20, 30)
         ));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.insets = new Insets(5, 5, 5, 5);
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
 
         JLabel labelTitle = new JLabel("Registrar experiencia educativa");
         labelTitle.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        gbc.gridx = 0; gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(5, 5, 20, 5);
-        formPanel.add(labelTitle, gbc);
-        gbc.gridwidth = 1;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.insets = new Insets(10, 5, 10, 5);
+        gridBagConstraints.gridx = 0; gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        gridBagConstraints.insets = new Insets(5, 5, 20, 5);
+        formPanel.add(labelTitle, gridBagConstraints);
+        gridBagConstraints.gridwidth = 1;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.insets = new Insets(10, 5, 10, 5);
 
-        gbc.gridx = 0; gbc.gridy = 1;
-        formPanel.add(new JLabel("NRC:"), gbc);
+        gridBagConstraints.gridx = 0; gridBagConstraints.gridy = 1;
+        formPanel.add(new JLabel("NRC:"), gridBagConstraints);
         textFieldNrc = new JTextField(20);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(textFieldNrc, gbc);
-        gbc.fill = GridBagConstraints.NONE;
+        gridBagConstraints.gridx = 1; gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(textFieldNrc, gridBagConstraints);
+        gridBagConstraints.fill = GridBagConstraints.NONE;
 
-        gbc.gridx = 0; gbc.gridy = 2;
-        formPanel.add(new JLabel("Nombre:"), gbc);
+        gridBagConstraints.gridx = 0; gridBagConstraints.gridy = 2;
+        formPanel.add(new JLabel("Nombre:"), gridBagConstraints);
         textFieldName = new JTextField(20);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(textFieldName, gbc);
-        gbc.fill = GridBagConstraints.NONE;
+        gridBagConstraints.gridx = 1; gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(textFieldName, gridBagConstraints);
+        gridBagConstraints.fill = GridBagConstraints.NONE;
 
-        gbc.gridx = 0; gbc.gridy = 3;
-        formPanel.add(new JLabel("Carrera:"), gbc);
+        gridBagConstraints.gridx = 0; gridBagConstraints.gridy = 3;
+        formPanel.add(new JLabel("Carrera:"), gridBagConstraints);
         textFieldCareer = new JTextField(20);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(textFieldCareer, gbc);
-        gbc.fill = GridBagConstraints.NONE;
+        gridBagConstraints.gridx = 1; gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(textFieldCareer, gridBagConstraints);
+        gridBagConstraints.fill = GridBagConstraints.NONE;
 
-        gbc.gridx = 0; gbc.gridy = 4;
-        formPanel.add(new JLabel("Periodo:"), gbc);
+        gridBagConstraints.gridx = 0; gridBagConstraints.gridy = 4;
+        formPanel.add(new JLabel("Periodo:"), gridBagConstraints);
         textFieldPeriod = new JTextField(20);
-        gbc.gridx = 1; gbc.fill = GridBagConstraints.HORIZONTAL;
-        formPanel.add(textFieldPeriod, gbc);
-        gbc.fill = GridBagConstraints.NONE;
+        gridBagConstraints.gridx = 1; gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        formPanel.add(textFieldPeriod, gridBagConstraints);
+        gridBagConstraints.fill = GridBagConstraints.NONE;
 
         ButtonsRegisterEducationalExperience buttonsHandler = new ButtonsRegisterEducationalExperience(this);
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
@@ -109,11 +109,11 @@ public class GUIRegisterEducationalExperience extends JFrame {
         buttonsPanel.add(buttonRegister);
         buttonsPanel.add(buttonCancel);
 
-        gbc.gridx = 0; gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(20, 5, 5, 5);
-        formPanel.add(buttonsPanel, gbc);
+        gridBagConstraints.gridx = 0; gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        gridBagConstraints.insets = new Insets(20, 5, 5, 5);
+        formPanel.add(buttonsPanel, gridBagConstraints);
 
         mainPanel.add(formPanel, BorderLayout.CENTER);
         add(mainPanel);
