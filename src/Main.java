@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+
+import mx.fei.gui.GUIRegisterProfessor;
 import mx.fei.logic.dao.*;
 import mx.fei.logic.dto.*;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -13,6 +15,9 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws DataOperationException {
+        GUIRegisterProfessor guiRegisterProfessor = new GUIRegisterProfessor();
+        guiRegisterProfessor.setVisible(true);
+        /*
         int opcion = -1;
         while (opcion != 0) {
             System.out.println("\n========== MENÚ DE PRUEBA ==========");
@@ -373,5 +378,7 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Error al subir documento: " + e.getMessage());
         }
+
+         */
     }
 }

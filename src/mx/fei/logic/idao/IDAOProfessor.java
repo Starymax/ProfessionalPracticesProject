@@ -13,4 +13,6 @@ public interface IDAOProfessor {
     List<Professor> getProfessors() throws DataOperationException;
 
     boolean modifyProfessor(Professor professor) throws DataOperationException;
+
+    boolean existsCoordinator() throws DataOperationException;
 }
