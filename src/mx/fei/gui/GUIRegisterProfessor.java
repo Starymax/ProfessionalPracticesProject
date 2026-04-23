@@ -5,17 +5,20 @@ import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 public class GUIRegisterProfessor extends JFrame {
 
     private JTextField textFieldPersonalNumber;
     private JTextField textFieldName;
     private JTextField textFieldLastName;
-    private JTextField textFieldGender;
+    private JComboBox<String> comboBoxGender;
     private JComboBox<String> comboBoxShift;
     private JTextField textFieldEmail;
     private JPasswordField textFieldPassword;
     private JCheckBox checkBoxIsCoordinator;
+    private JCheckBox checkBoxIsAdministrator;
     private JButton jButtonRegister;
     private JButton jButtonCancel;
 
@@ -36,13 +39,13 @@ public class GUIRegisterProfessor extends JFrame {
         textFieldPersonalNumber = new JTextField();
         textFieldName = new JTextField();
         textFieldLastName = new JTextField();
-        textFieldGender = new JTextField();
-        comboBoxShift = new JComboBox<>(new String[]{"Matutino", "Vespertino", "Nocturno"});
+        comboBoxGender = new JComboBox<>(new String[]{"Masculino", "Femenino"});
+        comboBoxShift = new JComboBox<>(new String[]{"Matutino", "Vespertino", "Mixto"});
         textFieldEmail = new JTextField();
         textFieldPassword = new JPasswordField();
 
         String[] labels = {"No. de personal:", "Nombre:", "Apellidos:", "Género:", "Turno:", "Correo:", "Contraseña:"};
-        JComponent[] fields = {textFieldPersonalNumber, textFieldName, textFieldLastName, textFieldGender, comboBoxShift, textFieldEmail, textFieldPassword};
+        JComponent[] fields = {textFieldPersonalNumber, textFieldName, textFieldLastName, comboBoxGender, comboBoxShift, textFieldEmail, textFieldPassword};
 
         for (int i = 0; i < labels.length; i++) {
             JLabel lbl = new JLabel(labels[i]);
@@ -55,6 +58,9 @@ public class GUIRegisterProfessor extends JFrame {
 
         checkBoxIsCoordinator = new JCheckBox("Coordinador");
         checkBoxIsCoordinator.setFont(new Font("SansSerif", Font.PLAIN, 14));
+
+        checkBoxIsAdministrator = new JCheckBox("Administrador");
+        checkBoxIsAdministrator.setFont(new Font("SansSerif", Font.PLAIN, 14));
 
         jButtonRegister = new JButton("Registrar");
         jButtonCancel = new JButton("Cancelar");
@@ -75,16 +81,44 @@ public class GUIRegisterProfessor extends JFrame {
         btnPanel.add(jButtonRegister);
         btnPanel.add(jButtonCancel);
 
+        JPanel checkBoxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 0));
+        checkBoxPanel.add(checkBoxIsCoordinator);
+        checkBoxPanel.add(checkBoxIsAdministrator);
+        
         JPanel bottomRow = new JPanel(new BorderLayout());
-        bottomRow.add(checkBoxIsCoordinator, BorderLayout.WEST);
+        bottomRow.add(checkBoxPanel, BorderLayout.WEST);
         bottomRow.add(btnPanel, BorderLayout.EAST);
 
         mainPanel.add(bottomRow, BorderLayout.SOUTH);
 
         setContentPane(mainPanel);
-        setPreferredSize(new Dimension(520, 420));
+        setPreferredSize(new Dimension(570, 420));
         pack();
         setLocationRelativeTo(null);
+    }
+
+    public boolean validateFields() {
+        boolean validated = true;
+        java.util.List<Map.Entry<Boolean, String>> validations = List.of(
+                Map.entry(textFieldPersonalNumber.getText().isEmpty(), "El campo No. de personal es obligatorio"),
+                Map.entry(textFieldName.getText().isEmpty(),"El campo nombre es obligatorio."),
+                Map.entry(textFieldLastName.getText().isEmpty(),"El campo apellidos es obligatorio."),
+                Map.entry(textFieldEmail.getText().isEmpty(),"El campo correo es obligatorio."),
+                Map.entry(textFieldPassword.getPassword().length == 0,"El campo contraseña es obligatorio."),
+                Map.entry(comboBoxGender.getSelectedItem() == null, "El campo genero es obligatorio.")
+        );
+        for (Map.Entry<Boolean, String> validation : validations) {
+            if (validation.getKey()) {
+                showError(validation.getValue());
+                validated = false;
+                break;
+            }
+        }
+        return validated;
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Campo requerido", JOptionPane.WARNING_MESSAGE);
     }
 
     public JTextField getTextFieldPersonalNumber() {
@@ -99,8 +133,8 @@ public class GUIRegisterProfessor extends JFrame {
         return textFieldLastName;
     }
 
-    public JTextField getTextFieldGender() {
-        return textFieldGender;
+    public JComboBox<String> getComboBoxGender() {
+        return comboBoxGender;
     }
 
     public JComboBox<String> getComboBoxShift() {
@@ -117,6 +151,10 @@ public class GUIRegisterProfessor extends JFrame {
 
     public JCheckBox getCheckBoxIsCoordinator() {
         return checkBoxIsCoordinator;
+    }
+
+    public JCheckBox getCheckBoxIsAdministrator() {
+        return checkBoxIsAdministrator;
     }
 
     public JButton getButtonRegister() {
