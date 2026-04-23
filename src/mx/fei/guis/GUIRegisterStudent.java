@@ -1,4 +1,4 @@
-package mx.fei.GUIs;
+package mx.fei.guis;
 
 import mx.fei.logic.guibuttons.ButtonsRegisterStudent;
 

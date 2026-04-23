@@ -1,9 +1,10 @@
 package mx.fei.logic.guibuttons;
 
-import mx.fei.GUIs.GUIRegisterStudent;
+import mx.fei.guis.GUIRegisterStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 import javax.swing.JOptionPane;
@@ -28,12 +29,13 @@ public class ButtonsRegisterStudent implements ActionListener {
             String lastNames = guiRegisterStudent.getTextFieldLastName().getText().trim();
             String mail = guiRegisterStudent.getTextFieldMail().getText().trim();
             String password = new String(guiRegisterStudent.getTextFieldPassword().getPassword());
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
             String period = guiRegisterStudent.getTextFieldPeriod().getText().trim();
             String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
             boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
             boolean active = guiRegisterStudent.getToggleState().isSelected();
-            Student student = new Student(0, names, lastNames, mail, password, gender, active, enrollment, period, indigenousLanguage, 0.0f, null, null);
+            Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, period, indigenousLanguage, 0.0f, null, null);
             try {
                 boolean registered = studentDAO.registerStudent(student);
                 if (registered) {
@@ -44,7 +46,7 @@ public class ButtonsRegisterStudent implements ActionListener {
             } catch (IllegalStateException e) {
                 JOptionPane.showMessageDialog(guiRegisterStudent, e.getMessage(), "Matricula duplicada", JOptionPane.WARNING_MESSAGE);
             } catch (DataOperationException e) {
-                JOptionPane.showMessageDialog(guiRegisterStudent, "Error interno al registrar el alumno. Intente mas tarde", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(guiRegisterStudent, "Error al registrar el alumno. Intente mas tarde", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } else if (event.getActionCommand().equals("Cancelar")) {
             guiRegisterStudent.dispose();
