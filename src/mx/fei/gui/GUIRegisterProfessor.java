@@ -4,7 +4,12 @@ import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.Map;
 
@@ -163,5 +168,9 @@ public class GUIRegisterProfessor extends JFrame {
 
     public JButton getButtonCancel() {
         return jButtonCancel;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new GUIRegisterProfessor().setVisible(true));
     }
 }
