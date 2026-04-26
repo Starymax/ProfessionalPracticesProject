@@ -1,6 +1,6 @@
-package mx.fei.gui;
+package mx.fei.gui.views;
 
-import mx.fei.logic.guibuttons.ButtonsRegisterEnterprise;
+import mx.fei.gui.controllers.ControllerRegisterEnterprise;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -77,7 +77,7 @@ public class GUIRegisterEnterprise extends JFrame {
         cancelButton.setForeground(Color.WHITE);
         cancelButton.setFocusPainted(false);
 
-        ButtonsRegisterEnterprise listener = new ButtonsRegisterEnterprise(this);
+        ControllerRegisterEnterprise listener = new ControllerRegisterEnterprise(this);
         registerButton.addActionListener(listener);
         cancelButton.addActionListener(listener);
 
@@ -116,6 +116,25 @@ public class GUIRegisterEnterprise extends JFrame {
 
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "Campo requerido", JOptionPane.WARNING_MESSAGE);
+    }
+
+    public boolean validateFieldsInt() {
+        boolean intValidated = true;
+        String phoneNumberField = phoneNumberTextField.getText().trim();
+        String directUsersField = directUsersTextField.getText().trim();
+        String indirectUsersField = indirectUsersTextField.getText().trim();
+        String regex = "^\\d+$";
+        if (!phoneNumberField.matches(regex)) {
+            showError("El campo de teléfono debe incluir solo números");
+            intValidated = false;
+        } else if (!directUsersField.matches(regex)) {
+            showError("El campo Usuarios Directos debe incluir solo números");
+            intValidated = false;
+        } else if (!indirectUsersField.matches(regex)) {
+            showError("El campo Usuarios Indirectos debe incluir solo números");
+            intValidated = false;
+        }
+        return intValidated;
     }
 
     public JTextField getAddressTextField() {

@@ -1,6 +1,6 @@
-package mx.fei.logic.guibuttons;
+package mx.fei.gui.controllers;
 
-import mx.fei.gui.GUIRegisterProfessor;
+import mx.fei.gui.views.GUIRegisterProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -11,18 +11,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
 
-public class ButtonsRegisterProfessor implements ActionListener {
+public class ControllerRegisterProfessor implements ActionListener {
 
     private final GUIRegisterProfessor guiRegisterProfessor;
 
-    public ButtonsRegisterProfessor(GUIRegisterProfessor guiRegisterProfessor) {
+    public ControllerRegisterProfessor(GUIRegisterProfessor guiRegisterProfessor) {
         this.guiRegisterProfessor = guiRegisterProfessor;
     }
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
         if (actionEvent.getSource() == guiRegisterProfessor.getButtonRegister()) {
-            if (guiRegisterProfessor.validateFields() && guiRegisterProfessor.validateFieldPassword()) {
+            if (guiRegisterProfessor.validateFields() && guiRegisterProfessor.validateFieldPassword() && guiRegisterProfessor.validateFieldInt()) {
                 register();
             }
         } else if (actionEvent.getSource() == guiRegisterProfessor.getButtonCancel()) {
@@ -53,8 +53,6 @@ public class ButtonsRegisterProfessor implements ActionListener {
                     JOptionPane.showMessageDialog(guiRegisterProfessor, "Profesor registrado exitosamente", "Continuar", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(guiRegisterProfessor, e.getMessage(), "El campo solo debe contener números", JOptionPane.WARNING_MESSAGE);
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(guiRegisterProfessor, e.getMessage(), "Datos inválidos", JOptionPane.WARNING_MESSAGE);
         } catch (IllegalStateException e) {

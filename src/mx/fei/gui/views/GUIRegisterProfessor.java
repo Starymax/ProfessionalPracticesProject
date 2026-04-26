@@ -1,6 +1,6 @@
-package mx.fei.gui;
+package mx.fei.gui.views;
 
-import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
+import mx.fei.gui.controllers.ControllerRegisterProfessor;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -88,9 +88,9 @@ public class GUIRegisterProfessor extends JFrame {
         jButtonCancel.setForeground(Color.WHITE);
         jButtonCancel.setFocusPainted(false);
 
-        ButtonsRegisterProfessor buttonsRegisterProfessor = new ButtonsRegisterProfessor(this);
-        jButtonRegister.addActionListener(buttonsRegisterProfessor);
-        jButtonCancel.addActionListener(buttonsRegisterProfessor);
+        ControllerRegisterProfessor controllerRegisterProfessor = new ControllerRegisterProfessor(this);
+        jButtonRegister.addActionListener(controllerRegisterProfessor);
+        jButtonCancel.addActionListener(controllerRegisterProfessor);
 
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         btnPanel.add(jButtonRegister);
@@ -135,12 +135,23 @@ public class GUIRegisterProfessor extends JFrame {
     public boolean validateFieldPassword() {
         boolean passwordsValidated = true;
         String password = textFieldPassword.getText().trim();
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&]).{8,}$";
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?,.&]).{8,}$";
         if (!password.matches(regex)) {
             showError("Favor de que su contraseña tenga minimo un caracter especial, una mayuscula, una minuscula, un numero y que sea de 8 digitos");
             passwordsValidated = false;
         }
         return passwordsValidated;
+    }
+
+    public boolean validateFieldInt() {
+        boolean intValidated = true;
+        String personalNumberField = textFieldPersonalNumber.getText().trim();
+        String regex = "^\\d+$";
+        if (!personalNumberField.matches(regex)) {
+            showError("El campo No. de personal debe incluir solo números");
+            intValidated = false;
+        }
+        return intValidated;
     }
 
     private void showError(String message) {
