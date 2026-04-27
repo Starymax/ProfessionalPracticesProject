@@ -1,35 +1,38 @@
-package mx.fei.logic.guibuttons;
+package mx.fei.gui.controllers;
 
-import mx.fei.gui.GUIRegisterStudent;
+import mx.fei.gui.views.GUIRegisterStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import org.mindrot.jbcrypt.BCrypt;
 
+public class ButtonsRegisterStudent implements EventHandler<ActionEvent> {
+    private GUIRegisterStudent guiRegisterStudent;
+    private StudentDAO studentDAO;
 
-import javax.swing.JOptionPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-public class ButtonsRegisterStudent implements ActionListener {
-    GUIRegisterStudent guiRegisterStudent;
-    StudentDAO studentDAO;
-    public ButtonsRegisterStudent (GUIRegisterStudent guiRegisterStudent) {
+    public ButtonsRegisterStudent(GUIRegisterStudent guiRegisterStudent) {
         this.guiRegisterStudent = guiRegisterStudent;
         studentDAO = new StudentDAO();
     }
 
     @Override
-    public void actionPerformed(ActionEvent event) {
-        if (event.getActionCommand().equals("Confirmar")) {
-            if (!guiRegisterStudent.validateFields() || !guiRegisterStudent.validateFieldPassword()) {
+    public void handle(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        if (source.getText().equals("Confirmar")) {
+            if (!guiRegisterStudent.validateFields()) {
+                return;
+            }
+            if (!guiRegisterStudent.validateFieldPassword()) {
                 return;
             }
             String names = guiRegisterStudent.getTextFieldNames().getText().trim();
             String lastNames = guiRegisterStudent.getTextFieldLastName().getText().trim();
             String mail = guiRegisterStudent.getTextFieldMail().getText().trim();
-            String password = new String(guiRegisterStudent.getTextFieldPassword().getPassword());
-            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            String rawPassword = guiRegisterStudent.getTextFieldPassword().getText();
+            String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
             String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
             String period = guiRegisterStudent.getTextFieldPeriod().getText().trim();
             String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
@@ -39,17 +42,18 @@ public class ButtonsRegisterStudent implements ActionListener {
             try {
                 boolean registered = studentDAO.registerStudent(student);
                 if (registered) {
-                    JOptionPane.showMessageDialog(guiRegisterStudent, "Alumno registrado exitosamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                    guiRegisterStudent.showSuccess("Alumno registrado exitosamente.");
+                    guiRegisterStudent.closeWindow();
                 }
             } catch (IllegalArgumentException e) {
-                JOptionPane.showMessageDialog(guiRegisterStudent, e.getMessage(), "Datos invalidos", JOptionPane.WARNING_MESSAGE);
+                guiRegisterStudent.showError(e.getMessage());
             } catch (IllegalStateException e) {
-                JOptionPane.showMessageDialog(guiRegisterStudent, e.getMessage(), "Matricula duplicada", JOptionPane.WARNING_MESSAGE);
+                guiRegisterStudent.showError(e.getMessage());
             } catch (DataOperationException e) {
-                JOptionPane.showMessageDialog(guiRegisterStudent, "Error al registrar el alumno. Intente mas tarde", "Error", JOptionPane.ERROR_MESSAGE);
+                guiRegisterStudent.showError("Error interno al registrar el alumno. Intente mas tarde.");
             }
-        } else if (event.getActionCommand().equals("Cancelar")) {
-            guiRegisterStudent.dispose();
+        } else if (source.getText().equals("Cancelar")) {
+            guiRegisterStudent.closeWindow();
         }
     }
 }

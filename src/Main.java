@@ -1,14 +1,6 @@
-import java.io.File;
-import java.io.IOException;
-import java.sql.Date;
-
-import mx.fei.gui.GUIRegisterProfessor;
-import mx.fei.logic.dao.*;
-import mx.fei.logic.dto.*;
+import mx.fei.gui.views.GUIRegisterProfessor;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class Main {

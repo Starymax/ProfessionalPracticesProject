@@ -72,6 +72,56 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
+    public Student getStudentById(Integer idStudent) throws DataOperationException, NoSuchElementException {
+        Student student = null;
+        String querygetStudentById = "SELECT * FROM vw_alumnos where id_usuario=?;";
+        if (idStudent == null || idStudent.intValue() == 0) {
+            logger.log(Level.WARNING, "El id esta vacio");
+            throw new IllegalArgumentException("El Id no puede estar vacio");
+        } else {
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentById);) {
+                preparedStatement.setInt(1,idStudent);
+                ResultSet resultSet = preparedStatement.executeQuery();
+                if (resultSet.next()) {
+                    String name = resultSet.getString("nombre");
+                    String lastName = resultSet.getString("apellidos");
+                    String period = resultSet.getString("periodo");
+                    String mail = resultSet.getString("correo");
+                    String enrollment = resultSet.getString("matricula");
+                    String password = resultSet.getString("contrasena");
+                    boolean activeStatus = resultSet.getBoolean("activo");
+                    String gender = resultSet.getString("genero");
+                    Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
+                    Float grade = resultSet.getFloat("calificacion");
+                    int studentProjectId = resultSet.getInt("proyecto");
+                    String nrc = resultSet.getString("nrc");
+                    resultSet.close();
+                    Project project = null;
+                    if (studentProjectId > 0) {
+                        ProjectDAO projectDAO = new ProjectDAO();
+                        project = projectDAO.getProjectById(studentProjectId);
+                    }
+                    EducationalExperience educationalExperience = null;
+                    if (nrc != null && !nrc.isBlank()) {
+                        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+                        educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+                    }
+                    student = new Student(idStudent,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
+                }
+                if (student == null) {
+                    logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
+                    throw new NoSuchElementException("No se encontro el estudiante");
+                }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE,"Error al buscar el estudiante por ID",e);
+                throw new DataOperationException("Error al obtener los datos del estudiante");
+            }
+        }
+        return student;
+    }
+
+    @Override
     public boolean registerStudent(Student student) throws DataOperationException {
         if (student == null) {
             logger.log(Level.WARNING, "El estudiante es nulo");

@@ -6,6 +6,8 @@ import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
 
 public interface IDAOProfessor {
+    Professor getProfessorById(int idProfessor) throws DataOperationException;
+
     Professor getProfessorByPersonalNumber(int personalNumber) throws DataOperationException;
 
     boolean registerProfessor(Professor professor) throws DataOperationException;

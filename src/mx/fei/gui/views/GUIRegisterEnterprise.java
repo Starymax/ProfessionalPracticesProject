@@ -1,6 +1,6 @@
-package mx.fei.gui;
+package mx.fei.gui.views;
 
-import mx.fei.logic.guibuttons.ButtonsRegisterEnterprise;
+import mx.fei.gui.controllers.ButtonsRegisterEnterprise;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;

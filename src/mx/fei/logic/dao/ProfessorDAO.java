@@ -46,6 +46,34 @@ public class ProfessorDAO implements IDAOProfessor {
     }
 
     @Override
+    public Professor getProfessorById(int idProfessor) throws DataOperationException {
+        Professor professor = null;
+        String queryProfessor = "SELECT * FROM vw_profesor WHERE id_usuario = ?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryProfessor)) {
+            preparedStatement.setInt(1, idProfessor);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int personalNumber = resultSet.getInt("numero_de_personal");
+                String name = resultSet.getString("nombre");
+                String lastName = resultSet.getString("apellidos");
+                String mail = resultSet.getString("correo");
+                String password = resultSet.getString("contrasena");
+                boolean activeStatus = resultSet.getBoolean("estado_activo");
+                String gender = resultSet.getString("genero");
+                boolean isCoordinator = resultSet.getBoolean("es_coordinador");
+                boolean isAdmin = resultSet.getBoolean("es_administrador");
+                String shift = resultSet.getString("turno");
+                professor = new Professor(idProfessor, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener el profesor",e);
+            throw new DataOperationException("Error al obtener el profesor");
+        }
+        return professor;
+    }
+
+    @Override
     public boolean registerProfessor(Professor professor) throws DataOperationException {
         boolean registered = false;
         if (professor != null && getProfessorByPersonalNumber(professor.getPersonalNumber()) == null) {

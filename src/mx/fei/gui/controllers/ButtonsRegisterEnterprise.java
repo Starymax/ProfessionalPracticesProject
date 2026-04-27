@@ -1,6 +1,6 @@
-package mx.fei.logic.guibuttons;
+package mx.fei.gui.controllers;
 
-import mx.fei.gui.GUIRegisterEnterprise;
+import mx.fei.gui.views.GUIRegisterEnterprise;
 import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -33,7 +33,7 @@ public class ButtonsRegisterEnterprise implements ActionListener {
         try {
             String name = guiRegisterEnterprise.getNameTextField().getText();
             String address = guiRegisterEnterprise.getAddressTextField().getText();
-            int phoneNumberInt = Integer.parseInt(guiRegisterEnterprise.getPhoneNumberTextField().getText());
+            long phoneNumberInt = Long.parseLong(guiRegisterEnterprise.getPhoneNumberTextField().getText());
             String phoneNumber = phoneNumberInt + "";
             String email = guiRegisterEnterprise.getEmailTextField().getText();
             String sector = guiRegisterEnterprise.getSectorTextField().getText();
@@ -44,7 +44,7 @@ public class ButtonsRegisterEnterprise implements ActionListener {
                 JOptionPane.showMessageDialog(guiRegisterEnterprise, "Empresa registrada correctamente", "Continuar", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(guiRegisterEnterprise, "Los campos de usuarios deben contener números", "Aceptar",  JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(guiRegisterEnterprise, "Los campos de usuarios y telefono deben contener números", "Aceptar",  JOptionPane.WARNING_MESSAGE);
         } catch (DataOperationException e) {
             JOptionPane.showMessageDialog(guiRegisterEnterprise, "Error al insertar la empresa", "Continuar",  JOptionPane.WARNING_MESSAGE);
         }

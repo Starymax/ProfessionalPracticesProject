@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ProfessionalPractices.iml" filepath="$PROJECT_DIR$/ProfessionalPractices.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/ProfessionalPracticesProject.iml" filepath="$PROJECT_DIR$/.idea/ProfessionalPracticesProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/practicas-profesionales.iml" filepath="$PROJECT_DIR$/practicas-profesionales.iml" />
     </modules>
   </component>
 </project>

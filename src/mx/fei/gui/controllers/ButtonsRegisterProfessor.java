@@ -1,6 +1,6 @@
-package mx.fei.logic.guibuttons;
+package mx.fei.gui.controllers;
 
-import mx.fei.gui.GUIRegisterProfessor;
+import mx.fei.gui.views.GUIRegisterProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;

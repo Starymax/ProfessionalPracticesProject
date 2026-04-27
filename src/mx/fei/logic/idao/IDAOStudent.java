@@ -8,6 +8,8 @@ import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
 
 public interface IDAOStudent {
+    Student getStudentById(Integer studentId) throws DataOperationException;
+
     Student getStudentByEnrollment(String enrollment) throws DataOperationException;
 
     boolean registerStudent(Student student) throws DataOperationException;

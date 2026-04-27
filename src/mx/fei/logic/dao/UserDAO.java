@@ -1,6 +1,8 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
+import mx.fei.logic.dto.Professor;
+import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOUser;
@@ -10,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,4 +84,45 @@ public class UserDAO implements IDAOUser {
         }
         return updated;
     }
+
+    public User getUserByEmail(String email) throws DataOperationException {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("El correo no puede estar vacio");
+        }
+        StudentDAO studentDAO = new StudentDAO();
+        ProfessorDAO professorDAO = new ProfessorDAO();
+        String query = "SELECT id_usuario FROM usuario WHERE correo = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int idUser = resultSet.getInt("id_usuario");
+                if (isStudent(idUser)) {
+                    return studentDAO.getStudentById(idUser);
+                } else {
+                    return professorDAO.getProfessorById(idUser);
+                }
+            }
+            logger.log(Level.WARNING, "No se encontro usuario con correo: " + email);
+            throw new NoSuchElementException("No se encontro usuario con correo: " + email);
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al buscar usuario por correo", e);
+            throw new DataOperationException("Error al buscar el usuario");
+        }
+    }
+
+    private boolean isStudent(int idUser) throws DataOperationException {
+        String queryIsStudent = "SELECT COUNT(*) FROM alumno WHERE id_usuario = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryIsStudent)) {
+            preparedStatement.setInt(1, idUser);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+            return resultSet.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new DataOperationException("Error al obtener los datos de la base de datos");
+        }
+    }
+
 }

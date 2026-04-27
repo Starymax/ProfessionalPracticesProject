@@ -1,6 +1,6 @@
-package mx.fei.gui;
+package mx.fei.gui.views;
 
-import mx.fei.logic.guibuttons.ButtonsRegisterProfessor;
+import mx.fei.gui.controllers.ButtonsRegisterProfessor;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
