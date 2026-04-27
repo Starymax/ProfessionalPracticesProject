@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUICoordinator;
 import mx.fei.gui.views.GUILogin;
+import mx.fei.gui.views.GUIProfessor;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.Student;
@@ -43,15 +44,12 @@ public class ButtonsLogin implements EventHandler<ActionEvent> {
         }
         String mail = guiLogin.getTextFieldMail().getText().trim();
         String rawPassword = guiLogin.getTextFieldPassword().getText();
-
         try {
             User user = userDAO.getUserByEmail(mail);
-
             if (!user.isActive()) {
                 guiLogin.showError("El usuario esta inactivo. Contacte al administrador.");
                 return;
             }
-
             if (!BCrypt.checkpw(rawPassword, user.getPassword())) {
                 guiLogin.showError("Correo o contraseña incorrectos.");
                 return;
@@ -61,7 +59,6 @@ public class ButtonsLogin implements EventHandler<ActionEvent> {
                 // TODO: abrir menu de estudiante
             } else if (user instanceof Professor professor) {
                 if (professor.isCoordinator()) {
-                    guiLogin.showSuccess("Bienvenido coordinador: " + user.getName());
                     GUICoordinator guiCoordinator = new GUICoordinator(professor);
                     Stage stage = new Stage();
                     guiCoordinator.start(stage);
@@ -70,8 +67,10 @@ public class ButtonsLogin implements EventHandler<ActionEvent> {
                     guiLogin.showSuccess("Bienvenido administrador: " + user.getName());
                     // TODO: abrir menu de administrador
                 } else {
-                    guiLogin.showSuccess("Bienvenido profesor: " + user.getName());
-                    // TODO: abrir menu de profesor
+                    GUIProfessor guiProfessor = new GUIProfessor(professor);
+                    Stage stage = new Stage();
+                    guiProfessor.start(stage);
+                    guiLogin.closeWindow();
                 }
             }
             guiLogin.closeWindow();
@@ -79,19 +78,19 @@ public class ButtonsLogin implements EventHandler<ActionEvent> {
             guiLogin.showError("Correo o contraseña incorrectos.");
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error en login", e);
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError("Error interno. Intente mas tarde.");
         }
     }
 
     private boolean validateFields() {
+        boolean validated = true;
         if (guiLogin.getTextFieldMail().getText().trim().isEmpty()) {
             guiLogin.showError("El campo correo es obligatorio.");
-            return false;
-        }
-        if (guiLogin.getTextFieldPassword().getText().isEmpty()) {
+            validated = false;
+        } else if (guiLogin.getTextFieldPassword().getText().isEmpty()) {
             guiLogin.showError("El campo contraseña es obligatorio.");
-            return false;
+            validated = false;
         }
-        return true;
+        return validated;
     }
 }

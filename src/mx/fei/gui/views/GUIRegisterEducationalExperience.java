@@ -88,10 +88,10 @@ public class GUIRegisterEducationalExperience extends Application {
     public boolean validateFields() {
         boolean fieldsValidated = true;
         List<Map.Entry<Boolean, String>> validations = List.of(
-                Map.entry(textFieldNrc.getText().trim().isEmpty(),    "El campo NRC es obligatorio."),
-                Map.entry(textFieldName.getText().trim().isEmpty(),   "El campo nombre es obligatorio."),
-                Map.entry(textFieldCareer.getText().trim().isEmpty(), "El campo carrera es obligatorio."),
-                Map.entry(textFieldPeriod.getText().trim().isEmpty(), "El campo periodo es obligatorio.")
+                Map.entry(textFieldNrc.getText().trim().isEmpty(),"El campo NRC es obligatorio."),
+                Map.entry(textFieldName.getText().trim().isEmpty(),"El campo nombre es obligatorio."),
+                Map.entry(textFieldCareer.getText().trim().isEmpty(),"El campo carrera es obligatorio."),
+                Map.entry(textFieldPeriod.getText().trim().isEmpty(),"El campo periodo es obligatorio.")
         );
         for (Map.Entry<Boolean, String> validation : validations) {
             if (validation.getKey()) {

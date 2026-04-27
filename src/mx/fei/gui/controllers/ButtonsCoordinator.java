@@ -6,7 +6,7 @@ import javafx.scene.control.Button;
 import mx.fei.gui.views.GUICoordinator;
 
 public class ButtonsCoordinator implements EventHandler<ActionEvent> {
-    private mx.fei.gui.views.GUICoordinator guiCoordinator;
+    private GUICoordinator guiCoordinator;
 
     public ButtonsCoordinator(GUICoordinator guiCoordinator) {
         this.guiCoordinator = guiCoordinator;

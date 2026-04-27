@@ -1,6 +1,6 @@
 package mx.fei.gui.views;
 
-import mx.fei.gui.controllers.ButtonsCoordinator;
+import mx.fei.gui.controllers.ButtonsProfessor;
 import mx.fei.logic.dto.Professor;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -22,64 +22,53 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class GUICoordinator extends Application {
+public class GUIProfessor extends Application {
 
-    private Professor coordinator;
-    private Button buttonManageStudents;
-    private Button buttonManageProjects;
-    private Button buttonManageOrganizations;
-    private Button buttonManageEducationalExperience;
-    private Button buttonConsultProfessor;
+    private Professor professor;
+    private Button buttonManageActivities;
+    private Button buttonManageReports;
     private Button buttonBack;
 
-    public GUICoordinator(Professor coordinator) {
-        this.coordinator = coordinator;
+    public GUIProfessor(Professor professor) {
+        this.professor = professor;
     }
-    public GUICoordinator() {}
+
+    public GUIProfessor() {}
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Coordinador");
+        stage.setTitle("Profesor");
         stage.setResizable(false);
-
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(30, 40, 30, 40));
         formPanel.setAlignment(Pos.TOP_LEFT);
         formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
         formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        String coordinatorName = coordinator != null ? coordinator.getName() : "nombre del coordinador";
-        String coordinatorShift = coordinator != null ? coordinator.getShift() : "turno del coordinador";
-        Label labelWelcome = new Label("Bienvenido coordinador: " + coordinatorName);
+        String professorName  = professor != null ? professor.getName()  : "Nombre del profesor";
+        String professorShift = professor != null ? professor.getShift() : "Turno del profesor";
+        Label labelWelcome = new Label("Bienvenido profesor: " + professorName);
         labelWelcome.setFont(new Font("SansSerif", 13));
-        Label labelShift = new Label("Turno: " + coordinatorShift);
+        Label labelShift = new Label("Turno: " + professorShift);
         labelShift.setFont(new Font("SansSerif", 13));
         Region spacer = new Region();
         spacer.setPrefHeight(10);
-
-        buttonManageStudents = createMenuButton("Gestionar alumnos");
-        buttonManageProjects = createMenuButton("Gestionar proyectos");
-        buttonManageOrganizations = createMenuButton("Gestionar organizaciones");
-        buttonManageEducationalExperience = createMenuButton("Gestionar experiencia educativa");
-        buttonConsultProfessor = createMenuButton("Consultar profesor");
+        buttonManageActivities = createMenuButton("Gestionar actividades");
+        buttonManageReports = createMenuButton("Gestionar reportes");
         buttonBack = createMenuButton("Regresar");
-        VBox buttonsBox = new VBox(12, buttonManageStudents, buttonManageProjects, buttonManageOrganizations, buttonManageEducationalExperience, buttonConsultProfessor, buttonBack);
+        VBox buttonsBox = new VBox(12, buttonManageActivities, buttonManageReports, buttonBack);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelWelcome, labelShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ButtonsCoordinator buttonsHandler = new ButtonsCoordinator(this);
-        buttonManageStudents.setOnAction(buttonsHandler);
-        buttonManageProjects.setOnAction(buttonsHandler);
-        buttonManageOrganizations.setOnAction(buttonsHandler);
-        buttonManageEducationalExperience.setOnAction(buttonsHandler);
-        buttonConsultProfessor.setOnAction(buttonsHandler);
+        ButtonsProfessor buttonsHandler = new ButtonsProfessor(this);
+        buttonManageActivities.setOnAction(buttonsHandler);
+        buttonManageReports.setOnAction(buttonsHandler);
         buttonBack.setOnAction(buttonsHandler);
-        Scene scene = new Scene(mainPanel, 500, 550);
+        Scene scene = new Scene(mainPanel, 500, 420);
         stage.setScene(scene);
         stage.show();
     }
-
     private Button createMenuButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(250);
@@ -95,11 +84,8 @@ public class GUICoordinator extends Application {
         launch(args);
     }
 
-    public Professor getCoordinator() { return coordinator; }
-    public Button getButtonManageStudents() { return buttonManageStudents; }
-    public Button getButtonManageProjects() { return buttonManageProjects; }
-    public Button getButtonManageOrganizations() { return buttonManageOrganizations; }
-    public Button getButtonManageEducationalExperience() { return buttonManageEducationalExperience; }
-    public Button getButtonConsultProfessor() { return buttonConsultProfessor; }
+    public Professor getProfessor() { return professor; }
+    public Button getButtonManageActivities() { return buttonManageActivities; }
+    public Button getButtonManageReports() { return buttonManageReports; }
     public Button getButtonBack() { return buttonBack; }
 }
