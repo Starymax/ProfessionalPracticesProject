@@ -3,6 +3,8 @@ package mx.fei.gui.controllers;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
+import mx.fei.gui.views.GUICoordinator;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
@@ -60,7 +62,10 @@ public class ButtonsLogin implements EventHandler<ActionEvent> {
             } else if (user instanceof Professor professor) {
                 if (professor.isCoordinator()) {
                     guiLogin.showSuccess("Bienvenido coordinador: " + user.getName());
-                    // TODO: abrir menu de coordinador
+                    GUICoordinator guiCoordinator = new GUICoordinator(professor);
+                    Stage stage = new Stage();
+                    guiCoordinator.start(stage);
+                    guiLogin.closeWindow();
                 } else if (professor.isAdmin()) {
                     guiLogin.showSuccess("Bienvenido administrador: " + user.getName());
                     // TODO: abrir menu de administrador
