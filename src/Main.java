@@ -1,4 +1,5 @@
-import mx.fei.gui.views.GUIRegisterProfessor;
+import javafx.application.Application;
+import mx.fei.gui.views.*;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.Scanner;
@@ -7,8 +8,7 @@ public class Main {
     static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws DataOperationException {
-        GUIRegisterProfessor guiRegisterProfessor = new GUIRegisterProfessor();
-        guiRegisterProfessor.setVisible(true);
+        Application.launch(GUILogin.class);
         /*
         int opcion = -1;
         while (opcion != 0) {
