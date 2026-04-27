@@ -26,7 +26,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ButtonsRegisterStudent;
+import mx.fei.gui.controllers.ControllerRegisterStudent;
 
 public class GUIRegisterStudent extends Application {
 
@@ -130,7 +130,7 @@ public class GUIRegisterStudent extends Application {
         GridPane.setHalignment(buttonsBox, HPos.CENTER);
         formGrid.add(buttonsBox, 0, 10);
 
-        ButtonsRegisterStudent buttonsHandler = new ButtonsRegisterStudent(this);
+        ControllerRegisterStudent buttonsHandler = new ControllerRegisterStudent(this);
         buttonConfirm.setOnAction(buttonsHandler);
         buttonCancel.setOnAction(buttonsHandler);
 

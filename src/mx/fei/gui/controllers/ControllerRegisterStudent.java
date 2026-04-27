@@ -9,11 +9,11 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import org.mindrot.jbcrypt.BCrypt;
 
-public class ButtonsRegisterStudent implements EventHandler<ActionEvent> {
+public class ControllerRegisterStudent implements EventHandler<ActionEvent> {
     private GUIRegisterStudent guiRegisterStudent;
     private StudentDAO studentDAO;
 
-    public ButtonsRegisterStudent(GUIRegisterStudent guiRegisterStudent) {
+    public ControllerRegisterStudent(GUIRegisterStudent guiRegisterStudent) {
         this.guiRegisterStudent = guiRegisterStudent;
         studentDAO = new StudentDAO();
     }

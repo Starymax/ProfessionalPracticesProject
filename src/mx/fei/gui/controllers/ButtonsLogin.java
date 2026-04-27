@@ -4,9 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import mx.fei.gui.views.GUIAdministratorMenu;
-import mx.fei.gui.views.GUILogin;
-import mx.fei.gui.views.GUIStudentMenu;
+import mx.fei.gui.views.*;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
@@ -49,18 +47,20 @@ public class ButtonsLogin implements EventHandler<ActionEvent> {
                     guiLogin.showError("El usuario esta inactivo. Contacte al administrador.");
                 } else if (BCrypt.checkpw(rawPassword, user.getPassword())) {
                     if (user instanceof Student) {
-                        guiLogin.showSuccess("Bienvenido estudiante: " + user.getName());
                         studentLogin(user);
                     } else if (user instanceof Professor professor) {
                         if (professor.isCoordinator()) {
-                            guiLogin.showSuccess("Bienvenido coordinador: " + user.getName());
-                            // TODO: abrir menu de coordinador
+                            GUICoordinator guiCoordinator = new GUICoordinator(professor);
+                            Stage stage = new Stage();
+                            guiCoordinator.start(stage);
+                            guiLogin.closeWindow();
                         } else if (professor.isAdmin()) {
-                            guiLogin.showSuccess("Bienvenido administrador: " + user.getName());
                             adminLogin(professor);
                         } else {
-                            guiLogin.showSuccess("Bienvenido profesor: " + user.getName());
-                            // TODO: abrir menu de profesor
+                            GUIProfessor guiProfessor = new GUIProfessor();
+                            Stage stage = new Stage();
+                            guiProfessor.start(stage);
+                            guiLogin.closeWindow();
                         }
                     }
                 } else {

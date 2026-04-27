@@ -1,6 +1,6 @@
 package mx.fei.gui.views;
 
-import mx.fei.gui.controllers.ButtonsRegisterEducationalExperience;
+import mx.fei.gui.controllers.ControllerRegisterEducationalExperience;
 import javafx.application.Application;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -62,7 +62,7 @@ public class GUIRegisterEducationalExperience extends Application {
         formGrid.add(new Label("Periodo:"), 0, 4);
         textFieldPeriod = new TextField();
         formGrid.add(textFieldPeriod, 1, 4);
-        ButtonsRegisterEducationalExperience buttonsHandler = new ButtonsRegisterEducationalExperience(this);
+        ControllerRegisterEducationalExperience buttonsHandler = new ControllerRegisterEducationalExperience(this);
         buttonRegister = new Button("Registrar");
         buttonCancel = new Button("Cancelar");
         buttonRegister.setPrefWidth(110);

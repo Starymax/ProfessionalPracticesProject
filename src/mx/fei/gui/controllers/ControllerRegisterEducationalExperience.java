@@ -11,13 +11,13 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.NoSuchElementException;
 
-public class ButtonsRegisterEducationalExperience implements EventHandler<ActionEvent> {
+public class ControllerRegisterEducationalExperience implements EventHandler<ActionEvent> {
     GUIRegisterEducationalExperience guiRegisterEducationalExperience;
     EducationalExperienceDAO educationalExperienceDAO;
     Alert alertInformation = new Alert(Alert.AlertType.INFORMATION);
     Alert alertWarning = new Alert(Alert.AlertType.WARNING);
     Alert alertError = new Alert(Alert.AlertType.ERROR);
-    public ButtonsRegisterEducationalExperience(GUIRegisterEducationalExperience guiRegisterEducationalExperience) {
+    public ControllerRegisterEducationalExperience(GUIRegisterEducationalExperience guiRegisterEducationalExperience) {
         this.guiRegisterEducationalExperience = guiRegisterEducationalExperience;
         educationalExperienceDAO = new EducationalExperienceDAO();
     }
