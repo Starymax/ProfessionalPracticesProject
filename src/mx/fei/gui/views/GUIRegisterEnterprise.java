@@ -1,110 +1,97 @@
 package mx.fei.gui.views;
 
-import mx.fei.gui.controllers.ButtonsRegisterEnterprise;
+import mx.fei.gui.controllers.ControllerRegisterEnterprise;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.border.EmptyBorder;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.Dimension;
-import java.util.List;
-import java.util.Map;
+public class GUIRegisterEnterprise extends Application {
 
-public class GUIRegisterEnterprise extends JFrame {
+    private TextField nameTextField;
+    private TextField addressTextField;
+    private TextField phoneNumberTextField;
+    private TextField emailTextField;
+    private TextField sectorTextField;
+    private TextField directUsersTextField;
+    private TextField indirectUsersTextField;
+    private Button registerButton;
+    private Button cancelButton;
+    private Stage stage;
 
-    private JTextField addressTextField;
-    private JTextField nameTextField;
-    private JTextField phoneNumberTextField;
-    private JTextField emailTextField;
-    private JTextField sectorTextField;
-    private JTextField directUsersTextField;
-    private JTextField indirectUsersTextField;
-    private JButton registerButton;
-    private JButton cancelButton;
-
-    public GUIRegisterEnterprise() {
-        setTitle("ButtonsRegisterEnterprise");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setResizable(false);
-
-        JPanel mainPanel = new JPanel(new BorderLayout(0, 20));
-        mainPanel.setBorder(new EmptyBorder(24, 32, 24, 32));
-
-        JLabel title = new JLabel("Datos de la Organización Vinculada:");
-        title.setFont(new Font("SansSerif", Font.BOLD, 16));
-        mainPanel.add(title, BorderLayout.NORTH);
-
-        JPanel panel = new JPanel(new GridLayout(7, 2, 10, 12));
-
-        nameTextField = new JTextField();
-        addressTextField = new JTextField();
-        phoneNumberTextField = new JTextField();
-        emailTextField = new JTextField();
-        sectorTextField = new JTextField();
-        directUsersTextField = new JTextField();
-        indirectUsersTextField = new JTextField();
+    @Override
+    public void start(Stage stage) {
+        this.stage = stage;
+        Label title = new Label("Datos de la Organización Vinculada:");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 16));
+        nameTextField = new TextField();
+        addressTextField = new TextField();
+        phoneNumberTextField = new TextField();
+        emailTextField = new TextField();
+        sectorTextField = new TextField();
+        directUsersTextField = new TextField();
+        indirectUsersTextField = new TextField();
 
         String[] labels = {"Nombre:", "Dirección:", "Telefono:", "Correo Electrónico:", "Sector:", "No. de Usuarios directos:", "No. de Usuarios indirectos:"};
-        JComponent[] fields = {nameTextField, addressTextField, phoneNumberTextField, emailTextField, sectorTextField, directUsersTextField, indirectUsersTextField};
+        TextField[] fields = {nameTextField, addressTextField, phoneNumberTextField, emailTextField, sectorTextField, directUsersTextField, indirectUsersTextField};
 
+        GridPane formGrid = new GridPane();
+        formGrid.setHgap(10);
+        formGrid.setVgap(12);
         for (int i = 0; i < labels.length; i++) {
-            JLabel label = new JLabel(labels[i]);
-            label.setFont(new Font("SansSerif", Font.PLAIN, 14));
-            panel.add(label);
-            panel.add(fields[i]);
+            Label label = new Label(labels[i]);
+            label.setFont(Font.font("SansSerif", 14));
+            fields[i].setPrefWidth(340);
+            formGrid.add(label, 0, i);
+            formGrid.add(fields[i], 1, i);
         }
 
-        mainPanel.add(panel, BorderLayout.CENTER);
+        registerButton = new Button("Registrar");
+        cancelButton = new Button("Cancelar");
 
-        registerButton = new JButton("Registrar");
-        cancelButton = new JButton("Cancelar");
+        String btnStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
+        registerButton.setStyle(btnStyle);
+        cancelButton.setStyle(btnStyle);
 
-        registerButton.setBackground(new Color(30, 30, 35));
-        registerButton.setForeground(Color.WHITE);
-        registerButton.setFocusPainted(false);
+        ControllerRegisterEnterprise controller = new ControllerRegisterEnterprise(this);
+        registerButton.setOnAction(controller);
+        cancelButton.setOnAction(controller);
 
-        cancelButton.setBackground(new Color(30, 30, 35));
-        cancelButton.setForeground(Color.WHITE);
-        cancelButton.setFocusPainted(false);
+        HBox buttonPanel = new HBox(10, registerButton, cancelButton);
+        buttonPanel.setAlignment(Pos.CENTER_RIGHT);
 
-        ButtonsRegisterEnterprise listener = new ButtonsRegisterEnterprise(this);
-        registerButton.addActionListener(listener);
-        cancelButton.addActionListener(listener);
+        VBox mainPanel = new VBox(20, title, formGrid, buttonPanel);
+        mainPanel.setPadding(new Insets(24, 32, 24, 32));
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        buttonPanel.add(registerButton);
-        buttonPanel.add(cancelButton);
-
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        setContentPane(mainPanel);
-        setPreferredSize(new Dimension(580, 440));
-        pack();
-        setLocationRelativeTo(null);
+        Scene scene = new Scene(mainPanel, 580, 440);
+        stage.setTitle("GUIRegisterEnterprise");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public boolean validateFields() {
         boolean validated = true;
-        java.util.List<Map.Entry<Boolean, String>> validations = List.of(
-                Map.entry(nameTextField.getText().isEmpty(), "El campo Nombre es obligatorio"),
-                Map.entry(addressTextField.getText().isEmpty(),"El campo Direccion es obligatorio."),
-                Map.entry(phoneNumberTextField.getText().isEmpty(),"El campo Telefono es obligatorio."),
-                Map.entry(emailTextField.getText().isEmpty(),"El campo correo es obligatorio."),
-                Map.entry(sectorTextField.getText().isEmpty(),"El campo Sector es obligatorio."),
-                Map.entry(directUsersTextField.getText().isEmpty(),"El campo Usuarios Directos es obligatorio."),
-                Map.entry(indirectUsersTextField.getText().isEmpty(),"El campo Usuarios Indirectos es obligatorio.")
+        java.util.List<java.util.Map.Entry<Boolean, String>> validations = java.util.List.of(
+                java.util.Map.entry(nameTextField.getText().isEmpty(), "El campo Nombre es obligatorio."),
+                java.util.Map.entry(addressTextField.getText().isEmpty(), "El campo Dirección es obligatorio."),
+                java.util.Map.entry(phoneNumberTextField.getText().isEmpty(), "El campo Teléfono es obligatorio."),
+                java.util.Map.entry(emailTextField.getText().isEmpty(), "El campo Correo es obligatorio."),
+                java.util.Map.entry(sectorTextField.getText().isEmpty(), "El campo Sector es obligatorio."),
+                java.util.Map.entry(directUsersTextField.getText().isEmpty(), "El campo Usuarios Directos es obligatorio."),
+                java.util.Map.entry(indirectUsersTextField.getText().isEmpty(), "El campo Usuarios Indirectos es obligatorio.")
         );
-        for (Map.Entry<Boolean, String> validation : validations) {
+        for (var validation : validations) {
             if (validation.getKey()) {
                 showError(validation.getValue());
                 validated = false;
@@ -114,47 +101,79 @@ public class GUIRegisterEnterprise extends JFrame {
         return validated;
     }
 
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Campo requerido", JOptionPane.WARNING_MESSAGE);
+    public boolean validateFieldsInt() {
+        boolean intValidated = true;
+        String regex = "^\\d+$";
+        if (!phoneNumberTextField.getText().trim().matches(regex)) {
+            showError("El campo Teléfono debe incluir solo números.");
+            intValidated = false;
+        } else if (!directUsersTextField.getText().trim().matches(regex)) {
+            showError("El campo Usuarios Directos debe incluir solo números.");
+            intValidated = false;
+        } else if (!indirectUsersTextField.getText().trim().matches(regex)) {
+            showError("El campo Usuarios Indirectos debe incluir solo números.");
+            intValidated = false;
+        }
+        return intValidated;
     }
 
-    public JTextField getAddressTextField() {
-        return addressTextField;
+    public void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Campo requerido");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
-    public JTextField getNameTextField() {
+    public void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Éxito");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public TextField getNameTextField() {
         return nameTextField;
     }
 
-    public JTextField getPhoneNumberTextField() {
+    public TextField getAddressTextField() {
+        return addressTextField;
+    }
+
+    public TextField getPhoneNumberTextField() {
         return phoneNumberTextField;
     }
 
-    public JTextField getEmailTextField() {
+    public TextField getEmailTextField() {
         return emailTextField;
     }
 
-    public JTextField getSectorTextField() {
+    public TextField getSectorTextField() {
         return sectorTextField;
     }
 
-    public JTextField getDirectUsersTextField() {
+    public TextField getDirectUsersTextField() {
         return directUsersTextField;
     }
 
-    public JTextField getIndirectUsersTextField() {
+    public TextField getIndirectUsersTextField() {
         return indirectUsersTextField;
     }
 
-    public JButton getRegisterButton() {
+    public Button getRegisterButton() {
         return registerButton;
     }
 
-    public JButton getCancelButton() {
+    public Button getCancelButton() {
         return cancelButton;
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GUIRegisterEnterprise().setVisible(true));
+        launch(args);
     }
 }

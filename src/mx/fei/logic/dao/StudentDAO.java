@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -284,6 +285,25 @@ public class StudentDAO implements IDAOStudent {
             throw new DataOperationException("Error al obtener los proyectos seleccionados");
         }
         return selectedProjects;
+    }
+
+    public Project getProjectAssignedToEnrollment(String enrollment) throws DataOperationException {
+        Project project = null;
+        String query = "SELECT id_proyecto FROM proyecto p JOIN alumno a ON a.proyecto_asignado = p.id_proyecto WHERE a.matricula = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, enrollment);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int idProject = resultSet.getInt("id_proyecto");
+                ProjectDAO projectDAO = new ProjectDAO();
+                project = projectDAO.getProjectById(idProject);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener el proyecto asignado", e);
+            throw new DataOperationException("No se pudo obtener el proyecto asignado.");
+        }
+        return project;
     }
 
     @Override

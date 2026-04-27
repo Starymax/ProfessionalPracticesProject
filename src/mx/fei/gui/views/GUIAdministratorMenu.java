@@ -1,0 +1,110 @@
+package mx.fei.gui.views;
+
+import mx.fei.gui.controllers.ControllerAdministratorMenu;
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+public class GUIAdministratorMenu extends Application {
+
+    private Label labelAdministratorName;
+    private Button buttonRegisterProfessor;
+    private Button buttonModifyProfessor;
+    private Button buttonProfessorView;
+    private Button buttonLogout;
+    private Stage stage;
+
+    @Override
+    public void start(Stage stage) {
+        this.stage = stage;
+
+        Label bold = new Label("Bienvenido Administrador:");
+        bold.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
+
+        labelAdministratorName = new Label("Nombre del Administrador");
+        labelAdministratorName.setFont(Font.font("SansSerif", 15));
+
+        HBox welcomeRow = new HBox(8, bold, labelAdministratorName);
+        welcomeRow.setAlignment(Pos.CENTER_LEFT);
+
+        buttonRegisterProfessor = buildMenuButton("Registrar Profesor");
+        buttonModifyProfessor = buildMenuButton("Modificar Profesor");
+
+        VBox centerButtons = new VBox(20, buttonRegisterProfessor, buttonModifyProfessor);
+        centerButtons.setAlignment(Pos.CENTER);
+
+        buttonProfessorView = buildMenuButton("Vista de Profesor");
+        buttonProfessorView.setPrefWidth(180);
+
+        buttonLogout = buildMenuButton("Cerrar Sesión");
+        buttonLogout.setPrefWidth(160);
+
+        VBox bottomRightButtons = new VBox(10, buttonProfessorView, buttonLogout);
+        bottomRightButtons.setAlignment(Pos.BOTTOM_RIGHT);
+
+        ControllerAdministratorMenu controller = new ControllerAdministratorMenu(this);
+        buttonRegisterProfessor.setOnAction(controller);
+        buttonModifyProfessor.setOnAction(controller);
+        buttonProfessorView.setOnAction(controller);
+        buttonLogout.setOnAction(controller);
+
+        BorderPane mainPanel = new BorderPane();
+        mainPanel.setPadding(new Insets(32, 40, 32, 40));
+        mainPanel.setTop(welcomeRow);
+        mainPanel.setCenter(centerButtons);
+        mainPanel.setBottom(bottomRightButtons);
+        BorderPane.setMargin(centerButtons, new Insets(20, 0, 20, 0));
+
+        Scene scene = new Scene(mainPanel, 680, 520);
+        stage.setTitle("GUIAdministratorMenu");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private Button buildMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(350);
+        button.setPrefHeight(52);
+        button.setFont(Font.font("SansSerif", 15));
+        button.setStyle("-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;");
+        return button;
+    }
+
+    public void setAdministratorName(String name) {
+        labelAdministratorName.setText(name);
+    }
+
+    public Button getButtonRegisterProfessor() {
+        return buttonRegisterProfessor;
+    }
+
+    public Button getButtonModifyProfessor() {
+        return buttonModifyProfessor;
+    }
+
+    public Button getButtonProfessorView() {
+        return buttonProfessorView;
+    }
+
+    public Button getButtonLogout() {
+        return buttonLogout;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}

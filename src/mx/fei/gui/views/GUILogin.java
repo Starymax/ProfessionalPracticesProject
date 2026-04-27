@@ -20,7 +20,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ButtonsLogin;
-import mx.fei.gui.controllers.ButtonsRegisterStudent;
 
 public class GUILogin extends Application {
 
