@@ -4,7 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import mx.fei.gui.views.*;
+import mx.fei.gui.views.GUIProfessor;
+import mx.fei.gui.views.GUILogin;
+import mx.fei.gui.views.GUICoordinator;
+import mx.fei.gui.views.GUIStudentMenu;
+import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
@@ -17,12 +21,12 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
-public class ButtonsLogin implements EventHandler<ActionEvent> {
+public class ControllerLogin implements EventHandler<ActionEvent> {
     private final GUILogin guiLogin;
     private final UserDAO userDAO;
-    private static final Logger logger = Logger.getLogger(ButtonsLogin.class.getName());
+    private static final Logger logger = Logger.getLogger(ControllerLogin.class.getName());
 
-    public ButtonsLogin(GUILogin guiLogin) {
+    public ControllerLogin(GUILogin guiLogin) {
         this.guiLogin = guiLogin;
         this.userDAO = new UserDAO();
     }

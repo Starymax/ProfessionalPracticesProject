@@ -47,6 +47,11 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     }
 
     @Override
+    public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
+        return false;
+    }
+
+    @Override
     public EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataOperationException {
         if (nrc == null || nrc.isBlank()) {
             logger.log(Level.WARNING, "El nrc es nulo");

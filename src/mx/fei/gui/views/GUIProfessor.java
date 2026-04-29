@@ -1,6 +1,6 @@
 package mx.fei.gui.views;
 
-import mx.fei.gui.controllers.ButtonsProfessor;
+import mx.fei.gui.controllers.ControllerProfessorMenu;
 import mx.fei.logic.dto.Professor;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -61,7 +61,7 @@ public class GUIProfessor extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ButtonsProfessor buttonsHandler = new ButtonsProfessor(this);
+        ControllerProfessorMenu buttonsHandler = new ControllerProfessorMenu(this);
         buttonManageActivities.setOnAction(buttonsHandler);
         buttonManageReports.setOnAction(buttonsHandler);
         buttonBack.setOnAction(buttonsHandler);

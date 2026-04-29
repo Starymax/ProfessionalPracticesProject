@@ -1,6 +1,6 @@
 package mx.fei.gui.views;
 
-import mx.fei.gui.controllers.ButtonsCoordinator;
+import mx.fei.gui.controllers.ControllerCoordinatorMenu;
 import mx.fei.logic.dto.Professor;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -68,7 +68,7 @@ public class GUICoordinator extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ButtonsCoordinator buttonsHandler = new ButtonsCoordinator(this);
+        ControllerCoordinatorMenu buttonsHandler = new ControllerCoordinatorMenu(this);
         buttonManageStudents.setOnAction(buttonsHandler);
         buttonManageProjects.setOnAction(buttonsHandler);
         buttonManageOrganizations.setOnAction(buttonsHandler);

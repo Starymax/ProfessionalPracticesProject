@@ -5,9 +5,9 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIProfessor;
 
-public class ButtonsProfessor implements EventHandler<ActionEvent> {
+public class ControllerProfessorMenu implements EventHandler<ActionEvent> {
     private GUIProfessor guiProfessor;
-    public ButtonsProfessor(GUIProfessor guiProfessor) {
+    public ControllerProfessorMenu(GUIProfessor guiProfessor) {
         this.guiProfessor = guiProfessor;
     }
 

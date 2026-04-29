@@ -4,7 +4,11 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.TextField;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderWidths;
@@ -19,7 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ButtonsLogin;
+import mx.fei.gui.controllers.ControllerLogin;
 
 public class GUILogin extends Application {
 
@@ -61,7 +65,7 @@ public class GUILogin extends Application {
         buttonCancel.setPrefWidth(110);
         buttonLogin.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
-        ButtonsLogin buttonHandler = new ButtonsLogin(this);
+        ControllerLogin buttonHandler = new ControllerLogin(this);
         buttonLogin.setOnAction(buttonHandler);
         buttonCancel.setOnAction(buttonHandler);
 

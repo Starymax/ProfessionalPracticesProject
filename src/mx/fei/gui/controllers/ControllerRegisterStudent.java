@@ -1,5 +1,7 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Stage;
+import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUIRegisterStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
@@ -53,6 +55,10 @@ public class ControllerRegisterStudent implements EventHandler<ActionEvent> {
                 guiRegisterStudent.showError("Error interno al registrar el alumno. Intente mas tarde.");
             }
         } else if (source.getText().equals("Cancelar")) {
+            guiRegisterStudent.closeWindow();
+            GUIManageStudent guiManageStudent = new GUIManageStudent();
+            Stage stage = new Stage();
+            guiManageStudent.start(stage);
             guiRegisterStudent.closeWindow();
         }
     }
