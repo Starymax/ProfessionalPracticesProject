@@ -1,12 +1,12 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.Professor;
-import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
+import mx.fei.logic.dto.UserRole;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOUser;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
@@ -125,4 +125,12 @@ public class UserDAO implements IDAOUser {
         }
     }
 
+    public void logIn(UserRole role) throws DataOperationException {
+        try {
+            DatabaseConnectionManager.loadProperties(role.getPropertiesKey());
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+            throw new DataOperationException("Error al iniciar sesión");
+        }
+    }
 }

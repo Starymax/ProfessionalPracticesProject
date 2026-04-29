@@ -83,15 +83,23 @@ public class GUIRegisterProfessor extends Application {
         checkBoxIsCoordinator = new CheckBox("Coordinador");
         checkBoxIsAdministrator = new CheckBox("Administrador");
 
+        checkBoxIsCoordinator.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) checkBoxIsAdministrator.setSelected(false);
+        });
+
+        checkBoxIsAdministrator.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) checkBoxIsCoordinator.setSelected(false);
+        });
+
         HBox checkBoxPanel = new HBox(20, checkBoxIsCoordinator, checkBoxIsAdministrator);
         checkBoxPanel.setAlignment(Pos.CENTER_LEFT);
 
         buttonRegister = new Button("Registrar");
         buttonCancel = new Button("Cancelar");
 
-        String btnStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
-        buttonRegister.setStyle(btnStyle);
-        buttonCancel.setStyle(btnStyle);
+        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
+        buttonRegister.setStyle(buttonStyle);
+        buttonCancel.setStyle(buttonStyle);
 
         ControllerRegisterProfessor controller = new ControllerRegisterProfessor(this);
         buttonRegister.setOnAction(controller);

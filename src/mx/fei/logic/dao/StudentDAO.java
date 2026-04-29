@@ -13,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.Level;
@@ -93,8 +92,8 @@ public class StudentDAO implements IDAOStudent {
                     String password = resultSet.getString("contrasena");
                     boolean activeStatus = resultSet.getBoolean("activo");
                     String gender = resultSet.getString("genero");
-                    Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
-                    Float grade = resultSet.getFloat("calificacion");
+                    boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
+                    float grade = resultSet.getFloat("calificacion");
                     int studentProjectId = resultSet.getInt("proyecto");
                     String nrc = resultSet.getString("nrc");
                     resultSet.close();
@@ -124,38 +123,40 @@ public class StudentDAO implements IDAOStudent {
 
     @Override
     public boolean registerStudent(Student student) throws DataOperationException {
+        boolean result = false;
         if (student == null) {
             logger.log(Level.WARNING, "El estudiante es nulo");
             throw new IllegalArgumentException("El estudiante no puede ser nulo");
-        }
-        try {
-            getStudentByEnrollment(student.getEnrollment());
-            logger.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + student.getEnrollment());
-            throw new IllegalStateException("Ya existe un estudiante con esa matricula");
-        }
-        catch (NoSuchElementException e) {
-            logger.log(Level.INFO,"Matricula disponible para el registro");
-        }
-        try {
-            UserDAO userDAO = new UserDAO();
-            int idUser = userDAO.registerUser(student);
-            if (idUser == RegistrationStatus.FAILURE.getValue()) {
-                logger.log(Level.SEVERE, "No se logro registrar el usuario base");
-                throw new DataOperationException("No se logro registrar el usuario en la base");
+        } else {
+            try {
+                getStudentByEnrollment(student.getEnrollment());
+                logger.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + student.getEnrollment());
+                throw new IllegalStateException("Ya existe un estudiante con esa matricula");
+            } catch (NoSuchElementException e) {
+                logger.log(Level.INFO, "Matricula disponible para el registro");
             }
-            String query = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, idUser);
-                preparedStatement.setString(2, student.getEnrollment());
-                preparedStatement.setString(3, student.getPeriod());
-                preparedStatement.setBoolean(4, student.isIndigenousLanguage());
-                return preparedStatement.executeUpdate() > 0;
+            try {
+                UserDAO userDAO = new UserDAO();
+                int idUser = userDAO.registerUser(student);
+                if (idUser == RegistrationStatus.FAILURE.getValue()) {
+                    logger.log(Level.SEVERE, "No se logro registrar el usuario base");
+                    throw new DataOperationException("No se logro registrar el usuario en la base");
+                }
+                String query = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
+                try (Connection connection = DatabaseConnectionManager.getConnection();
+                     PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setInt(1, idUser);
+                    preparedStatement.setString(2, student.getEnrollment());
+                    preparedStatement.setString(3, student.getPeriod());
+                    preparedStatement.setBoolean(4, student.isIndigenousLanguage());
+                    result = preparedStatement.executeUpdate() > 0;
+                }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Error registrando al estudiante", e);
+                throw new DataOperationException("Error al registrar el alumno");
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando al estudiante", e);
-            throw new DataOperationException("Error al registrar el alumno");
         }
+        return result;
     }
 
     @Override

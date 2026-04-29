@@ -6,54 +6,39 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DatabaseConnectionManager {
     private static final Logger logger = Logger.getLogger(DatabaseConnectionManager.class.getName());
     private static DatabaseConnectionManager dbManager;
-    private Connection connection;
-    private String url;
-    private String username;
-    private String password;
+    private static Connection connection;
+    private static String url;
+    private static String username;
+    private static String password;
 
-    private DatabaseConnectionManager() {
-        try {
-            loadProperties();
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, e.getMessage());
-            throw new RuntimeException("Error fatal al inicializar DatabaseConnectionManager", e);
-        }
-    }
+    private DatabaseConnectionManager() {}
 
-    private void loadProperties() throws IOException {
-        Properties properties = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
+    public static void loadProperties(String role) throws IOException {
+        String fileName = "db_" + role + ".properties";
+        try (InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName)) {
             if (input == null) {
-                throw new IOException("Archivo db.properties no encontrado");
+                throw new IOException("No se encontró el archivo: " + fileName);
             }
+            Properties properties = new Properties();
             properties.load(input);
             username = properties.getProperty("db.username");
             password = properties.getProperty("db.password");
             String host = properties.getProperty("db.host");
             String port = properties.getProperty("db.port");
-            String dataBase = properties.getProperty("db.name");
-            url = "jdbc:mysql://" + host + ":" + port + "/" + dataBase + "?useTimezone=true&serverTimezone=UTC";
+            String name = properties.getProperty("db.name");
+            url = "jdbc:mysql://" + host + ":" + port + "/" + name;
         }
     }
 
     public static Connection getConnection() throws SQLException {
-        if (dbManager == null) {
-            dbManager = new DatabaseConnectionManager();
+        if (url == null) {
+            throw new SQLException("Sistema no disponible, intentelo de nuevo");
         }
-        return dbManager.connect();
-    }
-
-    private Connection connect() throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            connection = DriverManager.getConnection(url, username, password);
-            logger.log(Level.INFO, "Conexion establecida");
-        }
-        return connection;
+        return DriverManager.getConnection(url, username, password);
     }
 }

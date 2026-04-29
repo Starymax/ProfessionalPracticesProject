@@ -12,9 +12,10 @@ import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
-import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
+import mx.fei.logic.dto.UserRole;
+import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -29,6 +30,7 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
     public ControllerLogin(GUILogin guiLogin) {
         this.guiLogin = guiLogin;
         this.userDAO = new UserDAO();
+        defaultSession();
     }
 
     @Override
@@ -51,16 +53,20 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
                     guiLogin.showError("El usuario esta inactivo. Contacte al administrador.");
                 } else if (BCrypt.checkpw(rawPassword, user.getPassword())) {
                     if (user instanceof Student) {
+                        userDAO.logIn(UserRole.STUDENT);
                         studentLogin(user);
                     } else if (user instanceof Professor professor) {
                         if (professor.isCoordinator()) {
+                            userDAO.logIn(UserRole.COORDINATOR);
                             GUICoordinator guiCoordinator = new GUICoordinator(professor);
                             Stage stage = new Stage();
                             guiCoordinator.start(stage);
                             guiLogin.closeWindow();
                         } else if (professor.isAdmin()) {
+                            userDAO.logIn(UserRole.ADMINISTRATOR);
                             adminLogin(professor);
                         } else {
+                            userDAO.logIn(UserRole.PROFESSOR);
                             GUIProfessor guiProfessor = new GUIProfessor();
                             Stage stage = new Stage();
                             guiProfessor.start(stage);
@@ -89,6 +95,14 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
             validated = false;
         }
         return validated;
+    }
+
+    private void defaultSession() {
+        try {
+            userDAO.logIn(UserRole.DEFAULT);
+        }  catch (DataOperationException e) {
+            guiLogin.showError("Error interno. Intente más tarde.");
+        }
     }
 
     private void studentLogin(User user) {
