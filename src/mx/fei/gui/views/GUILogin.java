@@ -79,7 +79,6 @@ public class GUILogin extends Application {
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-
         Scene scene = new Scene(mainPanel);
         stage.setScene(scene);
         stage.show();

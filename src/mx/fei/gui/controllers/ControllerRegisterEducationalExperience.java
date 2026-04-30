@@ -4,6 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.stage.Stage;
+import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
@@ -77,6 +79,10 @@ public class ControllerRegisterEducationalExperience implements EventHandler<Act
                 }
             }        } else if (source.getText().equals("Cancelar")) {
             guiRegisterEducationalExperience.closeWindow();
+            GUIManageExperience guiManageExperience = new GUIManageExperience();
+            Stage stage = new Stage();
+            stage.setTitle("Gestionar experiencia");
+            guiManageExperience.start(stage);
         }
     }
 }

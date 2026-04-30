@@ -80,7 +80,7 @@ public class StudentDAO implements IDAOStudent {
             throw new IllegalArgumentException("El Id no puede estar vacio");
         } else {
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentById);) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentById)) {
                 preparedStatement.setInt(1,idStudent);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {

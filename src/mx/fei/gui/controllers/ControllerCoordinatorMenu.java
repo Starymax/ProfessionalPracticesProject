@@ -8,6 +8,7 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUICoordinator;
 import mx.fei.gui.views.GUILogin;
+import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIManageStudent;
 
 import java.util.Optional;
@@ -26,11 +27,17 @@ public class ControllerCoordinatorMenu implements EventHandler<ActionEvent> {
             case "Gestionar alumnos" -> {
                 GUIManageStudent guiManageStudent = new GUIManageStudent();
                 Stage stage = new Stage();
+                stage.setTitle("Gestionar alumnos");
                 guiManageStudent.start(stage);
             }
             case "Gestionar proyectos" -> { /* TODO: abrir ventana */ }
             case "Gestionar organizaciones" -> { /* TODO: abrir ventana */ }
-            case "Gestionar experiencia educativa" -> { /* TODO: abrir ventana */ }
+            case "Gestionar experiencia educativa" -> {
+                GUIManageExperience guiManageExperience = new GUIManageExperience();
+                Stage stage = new Stage();
+                stage.setTitle("Gestionar experiencia");
+                guiManageExperience.start(stage);
+            }
             case "Consultar profesor" -> { /* TODO: abrir ventana */ }
             case "Regresar" -> {
                 logout();

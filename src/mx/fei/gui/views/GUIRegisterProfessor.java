@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.gui.controllers.ControllerRegisterProfessor;
 
 import javafx.application.Application;
@@ -42,7 +43,6 @@ public class GUIRegisterProfessor extends Application {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-
         Label title = new Label("Datos del Profesor:");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 16));
 

@@ -47,8 +47,27 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     }
 
     @Override
-    public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
-        return false;
+    public boolean modifyEducationalExperience(EducationalExperience educationalExperience,Professor professor) throws DataOperationException {
+        boolean updated = false;
+        String queryModifyExperience = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,periodo_escolar=?,id_profesor=? where nrc=?;";
+        if (educationalExperience != null) {
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
+                preparedStatement.setString(1,educationalExperience.getName());
+                preparedStatement.setString(2,educationalExperience.getEducationalProgram());
+                preparedStatement.setString(3,educationalExperience.getEscolarPeriod());
+                preparedStatement.setInt(4,professor.getUserId());
+                preparedStatement.setString(5, educationalExperience.getNrc());
+                updated = preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Error al modificar una experiencia",e);
+                throw new DataOperationException("Error modificando los datos de una experiencia");
+            }
+        } else {
+            logger.log(Level.WARNING,"La experiencia es nula");
+            throw new IllegalArgumentException("La experiencia educativa  no puede ser nula");
+        }
+        return updated;
     }
 
     @Override
@@ -60,7 +79,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         EducationalExperience experience = null;
         String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryEEByNrc);) {
+        PreparedStatement preparedStatement = connection.prepareStatement(queryEEByNrc)) {
             preparedStatement.setString(1,nrc);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

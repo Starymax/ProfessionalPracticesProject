@@ -53,30 +53,29 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
                     guiLogin.showError("El usuario esta inactivo. Contacte al administrador.");
                 } else if (BCrypt.checkpw(rawPassword, user.getPassword())) {
                     if (user instanceof Student) {
-                        userDAO.logIn(UserRole.STUDENT);
                         studentLogin(user);
+                        userDAO.logIn(UserRole.STUDENT);
                     } else if (user instanceof Professor professor) {
                         if (professor.isCoordinator()) {
-                            userDAO.logIn(UserRole.COORDINATOR);
                             GUICoordinator guiCoordinator = new GUICoordinator(professor);
                             Stage stage = new Stage();
                             guiCoordinator.start(stage);
                             guiLogin.closeWindow();
+                            userDAO.logIn(UserRole.COORDINATOR);
                         } else if (professor.isAdmin()) {
-                            userDAO.logIn(UserRole.ADMINISTRATOR);
                             adminLogin(professor);
+                            userDAO.logIn(UserRole.ADMINISTRATOR);
                         } else {
-                            userDAO.logIn(UserRole.PROFESSOR);
                             GUIProfessor guiProfessor = new GUIProfessor();
                             Stage stage = new Stage();
                             guiProfessor.start(stage);
                             guiLogin.closeWindow();
+                            userDAO.logIn(UserRole.PROFESSOR);
                         }
                     }
                 } else {
                     guiLogin.showError("Correo o contraseña incorrectos.");
                 }
-                guiLogin.closeWindow();
             } catch (NoSuchElementException e) {
                 guiLogin.showError("Correo o contraseña incorrectos.");
             } catch (DataOperationException e) {

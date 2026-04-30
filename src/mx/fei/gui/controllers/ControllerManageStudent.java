@@ -22,6 +22,7 @@ public class ControllerManageStudent implements EventHandler<ActionEvent> {
                 GUIRegisterStudent guiRegisterStudent = new GUIRegisterStudent();
                 Stage stage = new Stage();
                 guiRegisterStudent.start(stage);
+                stage.setTitle("Registrar estudiante");
                 guiManageStudent.closeWindow();
             }
             case "Modificar estudiante" -> { /* TODO: abrir ventana modificar */ }
