@@ -2,6 +2,7 @@ package mx.fei.gui.controllers;
 
 import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.gui.views.GUILogin;
+import mx.fei.gui.views.GUIProfessor;
 import mx.fei.gui.views.GUIRegisterProfessor;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -43,7 +44,10 @@ public class ControllerAdministratorMenu implements EventHandler<ActionEvent> {
     }
 
     private void openProfessorView() {
-        // TODO: abrir GUIProfessorView
+        GUIProfessor guiProfessor = new GUIProfessor();
+        Stage stage = new Stage();
+        guiProfessor.start(stage);
+        guiAdministratorMenu.getStage().close();
     }
 
     private void logout() {

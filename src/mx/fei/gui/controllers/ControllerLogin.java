@@ -1,7 +1,6 @@
 package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIProfessor;
@@ -22,7 +21,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
-public class ControllerLogin implements EventHandler<ActionEvent> {
+public class ControllerLogin {
     private final GUILogin guiLogin;
     private final UserDAO userDAO;
     private static final Logger logger = Logger.getLogger(ControllerLogin.class.getName());
@@ -33,8 +32,8 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
         defaultSession();
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+
+    public void handleButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Ingresar")) {
             handleLogin();
@@ -49,28 +48,16 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
             String rawPassword = guiLogin.getTextFieldPassword().getText();
             try {
                 User user = userDAO.getUserByEmail(mail);
-                if (!user.isActive()) {
-                    guiLogin.showError("El usuario esta inactivo. Contacte al administrador.");
-                } else if (BCrypt.checkpw(rawPassword, user.getPassword())) {
+                if (user.isActive() && BCrypt.checkpw(rawPassword, user.getPassword())) {
                     if (user instanceof Student) {
                         studentLogin(user);
-                        userDAO.logIn(UserRole.STUDENT);
                     } else if (user instanceof Professor professor) {
                         if (professor.isCoordinator()) {
-                            GUICoordinator guiCoordinator = new GUICoordinator(professor);
-                            Stage stage = new Stage();
-                            guiCoordinator.start(stage);
-                            guiLogin.closeWindow();
-                            userDAO.logIn(UserRole.COORDINATOR);
+                            coordinatorLogin(professor);
                         } else if (professor.isAdmin()) {
                             adminLogin(professor);
-                            userDAO.logIn(UserRole.ADMINISTRATOR);
                         } else {
-                            GUIProfessor guiProfessor = new GUIProfessor();
-                            Stage stage = new Stage();
-                            guiProfessor.start(stage);
-                            guiLogin.closeWindow();
-                            userDAO.logIn(UserRole.PROFESSOR);
+                            professorLogin(professor);
                         }
                     }
                 } else {
@@ -98,7 +85,7 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
 
     private void defaultSession() {
         try {
-            userDAO.logIn(UserRole.DEFAULT);
+            userDAO.logInByRole(UserRole.DEFAULT);
         }  catch (DataOperationException e) {
             guiLogin.showError("Error interno. Intente más tarde.");
         }
@@ -123,6 +110,7 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
             } catch (DataOperationException e) {
                 guiStudentMenu.setProjectName("Proyecto sin asignar");
             }
+            userDAO.logInByRole(UserRole.STUDENT);
             guiLogin.closeWindow();
         } catch (DataOperationException | NoSuchElementException e) {
             guiLogin.showError("Error interno. Intente más tarde.");
@@ -135,6 +123,35 @@ public class ControllerLogin implements EventHandler<ActionEvent> {
         Stage administratorMenuStage = new Stage();
         guiAdministratorMenu.start(administratorMenuStage);
         guiAdministratorMenu.setAdministratorName(professor.getName());
+        try {
+            userDAO.logInByRole(UserRole.ADMINISTRATOR);
+        } catch (DataOperationException e) {
+            guiLogin.showError("Error interno. Intente más tarde.");
+        }
         guiLogin.closeWindow();
+    }
+
+    private void coordinatorLogin(Professor Coordinator) {
+        GUICoordinator guiCoordinator = new GUICoordinator();
+        Stage stage = new Stage();
+        guiCoordinator.start(stage);
+        try {
+            userDAO.logInByRole(UserRole.COORDINATOR);
+        } catch (DataOperationException e) {
+            guiLogin.showError("Error interno. Intente más tarde.");
+        }
+        guiLogin.closeWindow();
+    }
+
+    private void professorLogin(Professor professor) {
+        GUIProfessor guiProfessor = new GUIProfessor();
+        Stage stage = new Stage();
+        guiProfessor.start(stage);
+        guiLogin.closeWindow();
+        try {
+            userDAO.logInByRole(UserRole.PROFESSOR);
+        } catch (DataOperationException e) {
+            guiLogin.showError("Error interno. Intente más tarde.");
+        }
     }
 }

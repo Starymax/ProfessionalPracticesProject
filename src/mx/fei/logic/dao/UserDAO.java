@@ -125,7 +125,7 @@ public class UserDAO implements IDAOUser {
         }
     }
 
-    public void logIn(UserRole role) throws DataOperationException {
+    public void logInByRole(UserRole role) throws DataOperationException {
         try {
             DatabaseConnectionManager.loadProperties(role.getPropertiesKey());
         } catch (IOException e) {

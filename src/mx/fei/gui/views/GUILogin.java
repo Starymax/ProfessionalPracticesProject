@@ -66,8 +66,8 @@ public class GUILogin extends Application {
         buttonLogin.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         ControllerLogin buttonHandler = new ControllerLogin(this);
-        buttonLogin.setOnAction(buttonHandler);
-        buttonCancel.setOnAction(buttonHandler);
+        buttonLogin.setOnAction(event -> buttonHandler.handleButtons(event));
+        buttonCancel.setOnAction(event -> buttonHandler.handleButtons(event));
 
         HBox buttonsBox = new HBox(30, buttonLogin, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
@@ -82,14 +82,6 @@ public class GUILogin extends Application {
         Scene scene = new Scene(mainPanel);
         stage.setScene(scene);
         stage.show();
-    }
-
-    public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Exito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     public void showError(String message) {
