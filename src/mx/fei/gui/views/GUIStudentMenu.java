@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import javafx.scene.control.Alert;
 import mx.fei.gui.controllers.ControllerStudentMenu;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -13,8 +14,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.Project;
 
-    public class GUIStudentMenu extends Application {
+public class GUIStudentMenu extends Application {
 
         private Label labelStudentName;
         private Label labelProjectName;
@@ -23,6 +26,7 @@ import javafx.stage.Stage;
         private Button buttonDocuments;
         private Button buttonLogout;
         private Stage stage;
+        private Student student;
 
         @Override
         public void start(Stage stage) {
@@ -87,12 +91,25 @@ import javafx.stage.Stage;
             return button;
         }
 
-        public void setStudentName(String name) {
-            labelStudentName.setText(name);
+        public void showError(String message) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
         }
 
-        public void setProjectName(String project) {
-            labelProjectName.setText(project);
+        public void setStudentInfo(Student student) {
+            this.student = student;
+            if (labelStudentName != null) {
+                labelStudentName.setText(student.getName());
+            }
+            Project project = student.getAssignedProject();
+            if (project != null) {
+                labelProjectName.setText(project.getNameProject());
+            } else {
+                labelProjectName.setText("Proyecto sin asignar");
+            }
         }
 
         public Button getButtonSelectProjects() {
@@ -109,6 +126,10 @@ import javafx.stage.Stage;
 
         public Button getButtonLogout() {
             return buttonLogout;
+        }
+
+        public Student getStudent() {
+            return student;
         }
 
         public Stage getStage() {

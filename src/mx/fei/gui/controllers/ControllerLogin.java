@@ -14,7 +14,6 @@ import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
 import mx.fei.logic.dto.UserRole;
-import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -31,7 +30,6 @@ public class ControllerLogin {
         this.userDAO = new UserDAO();
         defaultSession();
     }
-
 
     public void handleButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
@@ -98,18 +96,7 @@ public class ControllerLogin {
             GUIStudentMenu guiStudentMenu = new GUIStudentMenu();
             Stage studentMenuStage = new Stage();
             guiStudentMenu.start(studentMenuStage);
-            guiStudentMenu.setStudentName(student.getName());
-            String enrollment = student.getEnrollment();
-            try {
-                Project project = studentDAO.getProjectAssignedToEnrollment(enrollment);
-                if (project != null) {
-                    guiStudentMenu.setProjectName(project.getNameProject());
-                } else {
-                    guiStudentMenu.setProjectName("Proyecto sin asignar");
-                }
-            } catch (DataOperationException e) {
-                guiStudentMenu.setProjectName("Proyecto sin asignar");
-            }
+            guiStudentMenu.setStudentInfo(student);
             userDAO.logInByRole(UserRole.STUDENT);
             guiLogin.closeWindow();
         } catch (DataOperationException | NoSuchElementException e) {
