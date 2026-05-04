@@ -130,9 +130,9 @@ public class GUIRegisterStudent extends Application {
         GridPane.setHalignment(buttonsBox, HPos.CENTER);
         formGrid.add(buttonsBox, 0, 10);
 
-        ControllerRegisterStudent buttonsHandler = new ControllerRegisterStudent(this);
-        buttonConfirm.setOnAction(buttonsHandler);
-        buttonCancel.setOnAction(buttonsHandler);
+        ControllerRegisterStudent controllerRegisterStudent = new ControllerRegisterStudent(this);
+        buttonConfirm.setOnAction(event -> controllerRegisterStudent.handleButtonAction(event));
+        buttonCancel.setOnAction(event -> controllerRegisterStudent.handleButtonAction(event));
 
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
@@ -200,17 +200,55 @@ public class GUIRegisterStudent extends Application {
         launch(args);
     }
 
-    public TextField getTextFieldNames() { return textFieldNames; }
-    public TextField getTextFieldLastName() { return textFieldLastName; }
-    public TextField getTextFieldMail() { return textFieldMail; }
-    public PasswordField getTextFieldPassword() { return textFieldPassword; }
-    public TextField getTextFieldEnrollment() { return textFieldEnrollment; }
-    public TextField getTextFieldPeriod() { return textFieldPeriod; }
-    public RadioButton getRadioButtonMan() { return radioButtonMan; }
-    public RadioButton getRadioButtonWoman() { return radioButtonWoman; }
-    public RadioButton getRadioButtonSpeakIndigenousLanguage() { return radioButtonSpeakIndigenousLanguage; }
-    public RadioButton getRadioButtonDontSpeakIndigenousLanguage() { return radioButtonDontSpeakIndigenousLanguage; }
-    public ToggleButton getToggleState() { return toggleState; }
-    public Button getButtonConfirm() { return buttonConfirm; }
-    public Button getButtonCancel() { return buttonCancel; }
+    public TextField getTextFieldNames() {
+        return textFieldNames;
+    }
+
+    public TextField getTextFieldLastName() {
+        return textFieldLastName;
+    }
+
+    public TextField getTextFieldMail() {
+        return textFieldMail;
+    }
+
+    public PasswordField getTextFieldPassword() {
+        return textFieldPassword;
+    }
+
+    public TextField getTextFieldEnrollment() {
+        return textFieldEnrollment;
+    }
+
+    public TextField getTextFieldPeriod() {
+        return textFieldPeriod;
+    }
+
+    public RadioButton getRadioButtonMan() {
+        return radioButtonMan;
+    }
+
+    public RadioButton getRadioButtonWoman() {
+        return radioButtonWoman;
+    }
+
+    public RadioButton getRadioButtonSpeakIndigenousLanguage() {
+        return radioButtonSpeakIndigenousLanguage;
+    }
+
+    public RadioButton getRadioButtonDontSpeakIndigenousLanguage() {
+        return radioButtonDontSpeakIndigenousLanguage;
+    }
+
+    public ToggleButton getToggleState() {
+        return toggleState;
+    }
+
+    public Button getButtonConfirm() {
+        return buttonConfirm;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
+    }
 }

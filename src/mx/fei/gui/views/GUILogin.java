@@ -65,9 +65,9 @@ public class GUILogin extends Application {
         buttonCancel.setPrefWidth(110);
         buttonLogin.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
-        ControllerLogin buttonHandler = new ControllerLogin(this);
-        buttonLogin.setOnAction(event -> buttonHandler.handleButtons(event));
-        buttonCancel.setOnAction(event -> buttonHandler.handleButtons(event));
+        ControllerLogin controllerLogin = new ControllerLogin(this);
+        buttonLogin.setOnAction(event -> controllerLogin.handleButtonAction(event));
+        buttonCancel.setOnAction(event -> controllerLogin.handleButtonAction(event));
 
         HBox buttonsBox = new HBox(30, buttonLogin, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
@@ -100,8 +100,19 @@ public class GUILogin extends Application {
         launch(args);
     }
 
-    public TextField getTextFieldMail() { return textFieldMail; }
-    public PasswordField getTextFieldPassword() { return textFieldPassword; }
-    public Button getButtonLogin() { return buttonLogin; }
-    public Button getButtonCancel() { return buttonCancel; }
+    public TextField getTextFieldMail() {
+        return textFieldMail;
+    }
+
+    public PasswordField getTextFieldPassword() {
+        return textFieldPassword;
+    }
+
+    public Button getButtonLogin() {
+        return buttonLogin;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
+    }
 }

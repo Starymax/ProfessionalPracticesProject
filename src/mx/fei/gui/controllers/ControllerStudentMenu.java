@@ -1,11 +1,11 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUISelectProjects;
 import mx.fei.gui.views.GUIStudentMenu;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import mx.fei.logic.dao.ProjectDAO;
@@ -15,7 +15,7 @@ import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
 import java.util.Optional;
 
-public class ControllerStudentMenu implements EventHandler<ActionEvent> {
+public class ControllerStudentMenu {
 
     private final GUIStudentMenu guiStudentMenu;
     private final ProjectDAO projectDAO;
@@ -25,8 +25,7 @@ public class ControllerStudentMenu implements EventHandler<ActionEvent> {
         projectDAO = new ProjectDAO();
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiStudentMenu.getButtonSelectProjects()) {
             openSelectProjects();
         } else if (event.getSource() == guiStudentMenu.getButtonReports()) {
@@ -43,10 +42,10 @@ public class ControllerStudentMenu implements EventHandler<ActionEvent> {
             List<Project> projectList = projectDAO.getAvailableProjects();
             GUISelectProjects guiSelectProjects = new GUISelectProjects();
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             guiSelectProjects.start(stage);
             guiSelectProjects.setStudent(guiStudentMenu.getStudent());
             guiSelectProjects.loadProjects(projectList);
-            guiStudentMenu.getStage().close();
         } catch (DataOperationException e) {
             guiStudentMenu.showError(e.getMessage());
         }

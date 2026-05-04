@@ -1,21 +1,19 @@
 package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
 
-public class ControllerManageExperience implements EventHandler<ActionEvent> {
+public class ControllerManageExperience {
     private GUIManageExperience guiManageExperience;
 
     public ControllerManageExperience(GUIManageExperience guiManageExperience) {
         this.guiManageExperience = guiManageExperience;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar nueva experiencia" -> {

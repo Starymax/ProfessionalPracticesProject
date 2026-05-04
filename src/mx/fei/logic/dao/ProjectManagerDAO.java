@@ -1,7 +1,6 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOProjectManager;
@@ -25,20 +24,19 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 logger.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
             } else {
                 try {
-                    String queryRegisterProfessor = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_proyecto) VALUES (?, ?, ?, ?, ?);";
+                    String queryRegisterProfessor = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo) VALUES (?, ?, ?, ?);";
                     try (Connection connection = DatabaseConnectionManager.getConnection();
                          PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
                         preparedStatement.setString(1, projectManager.getName());
                         preparedStatement.setString(2, projectManager.getEmailProjectManager());
                         preparedStatement.setString(3, projectManager.getPhoneNumberProjectManager());
                         preparedStatement.setString(4, projectManager.getRol());
-                        preparedStatement.setInt(5, projectManager.getProject().getProjectId());
                         preparedStatement.executeUpdate();
                         sucess = true;
                     }
                 } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "Error al registrar el proyecto en la base de datos",e);
-                    throw new DataOperationException("Error al registrar el proyecto en la base de datos");
+                    logger.log(Level.SEVERE, "Error al registrar el responsable en la base de datos",e);
+                    throw new DataOperationException("Error al registrar el responsable en la base de datos");
                 }
             }
         }
@@ -58,9 +56,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 String email = resultSet.getString("correo_responsable");
                 String phoneNumber = resultSet.getString("telefono_responsable");
                 String rol = resultSet.getString("cargo");
-                ProjectDAO projectDao = new ProjectDAO();
-                Project project = projectDao.getProjectById(resultSet.getInt("id_proyecto"));
-                projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol, project);
+                projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el Responsable de la base de datos",e);

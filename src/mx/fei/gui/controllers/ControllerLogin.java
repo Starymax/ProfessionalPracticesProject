@@ -31,7 +31,7 @@ public class ControllerLogin {
         defaultSession();
     }
 
-    public void handleButtons(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Ingresar")) {
             handleLogin();
@@ -118,10 +118,11 @@ public class ControllerLogin {
         guiLogin.closeWindow();
     }
 
-    private void coordinatorLogin(Professor Coordinator) {
+    private void coordinatorLogin(Professor coordinator) {
         GUICoordinator guiCoordinator = new GUICoordinator();
         Stage stage = new Stage();
         guiCoordinator.start(stage);
+        guiCoordinator.setCoordinatorInfo(coordinator);
         try {
             userDAO.logInByRole(UserRole.COORDINATOR);
         } catch (DataOperationException e) {
@@ -134,6 +135,7 @@ public class ControllerLogin {
         GUIProfessor guiProfessor = new GUIProfessor();
         Stage stage = new Stage();
         guiProfessor.start(stage);
+        guiProfessor.setProfessorInfo(professor);
         guiLogin.closeWindow();
         try {
             userDAO.logInByRole(UserRole.PROFESSOR);

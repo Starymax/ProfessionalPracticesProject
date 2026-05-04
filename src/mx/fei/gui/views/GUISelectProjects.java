@@ -1,13 +1,19 @@
 package mx.fei.gui.views;
 
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Alert;
+import javafx.scene.layout.Priority;
 import mx.fei.gui.controllers.ControllerSelectProjects;
 import mx.fei.logic.dto.Project;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -54,9 +60,9 @@ public class GUISelectProjects extends Application {
         selectButton.setPrefWidth(140);
         cancelButton.setPrefWidth(140);
 
-        ControllerSelectProjects controller = new ControllerSelectProjects(this);
-        selectButton.setOnAction(controller);
-        cancelButton.setOnAction(controller);
+        ControllerSelectProjects controllerSelectProjects = new ControllerSelectProjects(this);
+        selectButton.setOnAction(event -> controllerSelectProjects.handleButtonAction(event));
+        cancelButton.setOnAction(event -> controllerSelectProjects.handleButtonAction(event));
 
         HBox buttonRow = new HBox(40, selectButton, cancelButton);
         buttonRow.setAlignment(Pos.CENTER);

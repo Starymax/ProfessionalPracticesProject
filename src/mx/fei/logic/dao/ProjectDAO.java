@@ -3,7 +3,7 @@ package mx.fei.logic.dao;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
-import mx.fei.logic.dto.RegistrationStatus;
+import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOProject;
 
@@ -42,11 +42,14 @@ public class ProjectDAO implements IDAOProject {
                 boolean activeStatus = resultSet.getBoolean("estado_activo");
                 int available_places = resultSet.getInt("lugares_disponibles");
                 int idCompany = resultSet.getInt("id_empresa");
+                int idResponsable = resultSet.getInt("id_responsable");
                 EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
                 Enterprise enterprise = enterpriseDAO.getEnterpriseById(idCompany);
+                ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
+                ProjectManager projectManager = projectManagerDAO.getProjectManagerById(idResponsable);
                 project = new Project(idProject, projectName, description, generalObjective,
                         immediateObjectives, mediateObjectives, methodology, resources,
-                        startDate, endDate, activeStatus, available_places, enterprise);
+                        startDate, endDate, activeStatus, available_places, enterprise, projectManager);
             }
             if (project == null) {
                 logger.log(Level.WARNING, "No se encontro el proyecto con el id: " + idProject);
@@ -62,7 +65,7 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public int registerProject(Project project) throws DataOperationException {
         int generatedID = -1;
-        String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa, id_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProject, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,project.getNameProject());
@@ -77,6 +80,7 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setBoolean(10,project.getActiveStatus());
             preparedStatement.setInt(11,project.getAvailablePlaces());
             preparedStatement.setInt(12,project.getEnterprise().getEnterpriseId());
+            preparedStatement.setInt(13,project.getProjectManager().getProjectManagerId());
             preparedStatement.executeUpdate();
             ResultSet keys = preparedStatement.getGeneratedKeys();
             if (keys.next()) {
@@ -105,7 +109,7 @@ public class ProjectDAO implements IDAOProject {
                 projects.add(getProjectById(projectID));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obtneindo todos los proyectos activos",e);
+            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos activos",e);
             throw new DataOperationException("Error al obtener los proyectos activos");
         }
         return projects;
@@ -116,8 +120,7 @@ public class ProjectDAO implements IDAOProject {
         List<Project> availableProjects = new ArrayList<>();
         List<Project> activeProjects = getActiveProjects();
         for (Project project : activeProjects) {
-            if (project.getAvailablePlaces() != 0) {
-                modifyProject(project);
+            if (project.getAvailablePlaces() > 0) {
                 availableProjects.add(project);
             }
         }
@@ -127,7 +130,7 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public boolean modifyProject(Project project) throws DataOperationException {
         boolean updated = false;
-        String queryModifyProject = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ? WHERE id_proyecto = ?";
+        String queryModifyProject = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ?, id_responsable = ? WHERE id_proyecto = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProject)) {
             preparedStatement.setString(1, project.getNameProject());
@@ -142,7 +145,8 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setBoolean(10, project.getActiveStatus());
             preparedStatement.setInt(11, project.getAvailablePlaces());
             preparedStatement.setInt(12, project.getEnterprise().getEnterpriseId());
-            preparedStatement.setInt(13, project.getProjectId());
+            preparedStatement.setInt(13, project.getProjectManager().getProjectManagerId());
+            preparedStatement.setInt(14, project.getProjectId());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error modificando el proyecto",e);

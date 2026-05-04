@@ -1,7 +1,6 @@
 package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -15,7 +14,7 @@ import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
 import java.util.Optional;
 
-public class ControllerSelectProjects implements EventHandler<ActionEvent> {
+public class ControllerSelectProjects {
 
     private final GUISelectProjects guiSelectProjects;
     private final StudentDAO studentDAO;
@@ -25,7 +24,7 @@ public class ControllerSelectProjects implements EventHandler<ActionEvent> {
         studentDAO = new StudentDAO();
     }
 
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiSelectProjects.getSelectButton()) {
             selectProjects();
         } else if (event.getSource() == guiSelectProjects.getCancelButton()) {

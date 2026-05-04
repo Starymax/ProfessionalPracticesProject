@@ -1,35 +1,61 @@
 package mx.fei.gui.controllers;
 
 import javafx.stage.Stage;
+import mx.fei.gui.views.GUICoordinator;
 import mx.fei.gui.views.GUIManageStudent;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIRegisterStudent;
+import mx.fei.gui.views.GUISelectStudentForAssignProject;
+import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.exceptions.DataOperationException;
 
-public class ControllerManageStudent implements EventHandler<ActionEvent> {
+import java.util.List;
+
+public class ControllerManageStudent {
     private GUIManageStudent guiManageStudent;
 
     public ControllerManageStudent(GUIManageStudent guiManageStudent) {
         this.guiManageStudent = guiManageStudent;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar estudiante" -> {
-                GUIRegisterStudent guiRegisterStudent = new GUIRegisterStudent();
-                Stage stage = new Stage();
-                guiRegisterStudent.start(stage);
-                stage.setTitle("Registrar estudiante");
-                guiManageStudent.closeWindow();
+                registerStudent();
             }
             case "Modificar estudiante" -> { /* TODO: abrir ventana modificar */ }
-            case "Asignar proyecto"     -> { /* TODO: abrir ventana asignar */ }
+            case "Asignar proyecto"     -> {
+                assignProject();
+            }
             case "Regresar" -> {
                 guiManageStudent.closeWindow();
             }
+        }
+    }
+
+    private void registerStudent() {
+        GUIRegisterStudent guiRegisterStudent = new GUIRegisterStudent();
+        Stage stage = new Stage();
+        guiRegisterStudent.start(stage);
+        stage.setTitle("Registrar estudiante");
+        guiManageStudent.closeWindow();
+    }
+
+    private void assignProject() {
+        try {
+            StudentDAO studentDAO = new StudentDAO();
+            List<Student> studentList = studentDAO.getStudentsWithoutProject();
+            GUISelectStudentForAssignProject guiSelectStudentForAssignProject = new GUISelectStudentForAssignProject();
+            Stage stage = new Stage();
+            guiSelectStudentForAssignProject.start(stage);
+            guiSelectStudentForAssignProject.loadStudents(studentList);
+            stage.setTitle("Seleccionar estudiante");
+            guiManageStudent.closeWindow();
+        } catch (DataOperationException e) {
+            guiManageStudent.showError(e.getMessage());
         }
     }
 }

@@ -1,18 +1,18 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Modality;
 import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessor;
 import mx.fei.gui.views.GUIRegisterProfessor;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
 import java.util.Optional;
 
-public class ControllerAdministratorMenu implements EventHandler<ActionEvent> {
+public class ControllerAdministratorMenu {
 
     private final GUIAdministratorMenu guiAdministratorMenu;
 
@@ -20,8 +20,7 @@ public class ControllerAdministratorMenu implements EventHandler<ActionEvent> {
         this.guiAdministratorMenu = guiAdministratorMenu;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiAdministratorMenu.getButtonRegisterProfessor()) {
             openRegisterProfessor();
         } else if (event.getSource() == guiAdministratorMenu.getButtonModifyProfessor()) {
@@ -36,6 +35,7 @@ public class ControllerAdministratorMenu implements EventHandler<ActionEvent> {
     private void openRegisterProfessor() {
         GUIRegisterProfessor guiRegisterProfessor = new GUIRegisterProfessor();
         Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
         guiRegisterProfessor.start(stage);
     }
 
@@ -46,8 +46,8 @@ public class ControllerAdministratorMenu implements EventHandler<ActionEvent> {
     private void openProfessorView() {
         GUIProfessor guiProfessor = new GUIProfessor();
         Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
         guiProfessor.start(stage);
-        guiAdministratorMenu.getStage().close();
     }
 
     private void logout() {

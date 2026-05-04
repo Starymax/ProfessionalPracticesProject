@@ -51,11 +51,11 @@ public class GUIAdministratorMenu extends Application {
         VBox bottomRightButtons = new VBox(10, buttonProfessorView, buttonLogout);
         bottomRightButtons.setAlignment(Pos.BOTTOM_RIGHT);
 
-        ControllerAdministratorMenu controller = new ControllerAdministratorMenu(this);
-        buttonRegisterProfessor.setOnAction(controller);
-        buttonModifyProfessor.setOnAction(controller);
-        buttonProfessorView.setOnAction(controller);
-        buttonLogout.setOnAction(controller);
+        ControllerAdministratorMenu controllerAdministratorMenu = new ControllerAdministratorMenu(this);
+        buttonRegisterProfessor.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
+        buttonModifyProfessor.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
+        buttonProfessorView.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
+        buttonLogout.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
 
         BorderPane mainPanel = new BorderPane();
         mainPanel.setPadding(new Insets(32, 40, 32, 40));

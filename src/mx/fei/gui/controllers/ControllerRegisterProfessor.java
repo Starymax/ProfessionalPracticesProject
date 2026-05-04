@@ -7,13 +7,12 @@ import mx.fei.logic.exceptions.DataOperationException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
 
-public class ControllerRegisterProfessor implements EventHandler<ActionEvent> {
+public class ControllerRegisterProfessor {
 
     private final GUIRegisterProfessor guiRegisterProfessor;
 
@@ -21,8 +20,7 @@ public class ControllerRegisterProfessor implements EventHandler<ActionEvent> {
         this.guiRegisterProfessor = guiRegisterProfessor;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiRegisterProfessor.getButtonRegister()) {
             if (guiRegisterProfessor.validateFields() && guiRegisterProfessor.validateFieldPassword() && guiRegisterProfessor.validateFieldInt()) {
                 register();

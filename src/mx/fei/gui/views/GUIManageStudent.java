@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -53,11 +54,11 @@ public class GUIManageStudent extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ControllerManageStudent buttonsHandler = new ControllerManageStudent(this);
-        buttonRegisterStudent.setOnAction(buttonsHandler);
-        buttonModifyStudent.setOnAction(buttonsHandler);
-        buttonAssignProject.setOnAction(buttonsHandler);
-        buttonBack.setOnAction(buttonsHandler);
+        ControllerManageStudent controllerManageStudent = new ControllerManageStudent(this);
+        buttonRegisterStudent.setOnAction(event -> controllerManageStudent.handleButtonAction(event));
+        buttonModifyStudent.setOnAction(event -> controllerManageStudent.handleButtonAction(event));
+        buttonAssignProject.setOnAction(event -> controllerManageStudent.handleButtonAction(event));
+        buttonBack.setOnAction(event -> controllerManageStudent.handleButtonAction(event));
         Scene scene = new Scene(mainPanel, 550, 500);
         stage.setScene(scene);
         stage.show();
@@ -71,6 +72,14 @@ public class GUIManageStudent extends Application {
         return button;
     }
 
+    public void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
     public void closeWindow() {
         ((Stage) buttonBack.getScene().getWindow()).close();
     }
@@ -79,8 +88,19 @@ public class GUIManageStudent extends Application {
         launch(args);
     }
 
-    public Button getButtonRegisterStudent() { return buttonRegisterStudent; }
-    public Button getButtonModifyStudent() { return buttonModifyStudent; }
-    public Button getButtonAssignProject() { return buttonAssignProject; }
-    public Button getButtonBack() { return buttonBack; }
+    public Button getButtonRegisterStudent() {
+        return buttonRegisterStudent;
+    }
+
+    public Button getButtonModifyStudent() {
+        return buttonModifyStudent;
+    }
+
+    public Button getButtonAssignProject() {
+        return buttonAssignProject;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
 }

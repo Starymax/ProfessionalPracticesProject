@@ -53,11 +53,11 @@ public class GUIManageExperience extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ControllerManageExperience buttonsHandler = new ControllerManageExperience(this);
-        buttonRegisterExperience.setOnAction(buttonsHandler);
-        buttonModifyExperience.setOnAction(buttonsHandler);
-        buttonActivateExperience.setOnAction(buttonsHandler);
-        buttonBack.setOnAction(buttonsHandler);
+        ControllerManageExperience controllerManageExperience = new ControllerManageExperience(this);
+        buttonRegisterExperience.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
+        buttonModifyExperience.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
+        buttonActivateExperience.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
+        buttonBack.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
         Scene scene = new Scene(mainPanel, 600, 500);
         stage.setScene(scene);
         stage.show();
@@ -79,8 +79,19 @@ public class GUIManageExperience extends Application {
         launch(args);
     }
 
-    public Button getButtonRegisterExperience() { return buttonRegisterExperience; }
-    public Button getButtonModifyExperience() { return buttonModifyExperience; }
-    public Button getButtonActivateExperience() { return buttonActivateExperience; }
-    public Button getButtonBack() { return buttonBack; }
+    public Button getButtonRegisterExperience() {
+        return buttonRegisterExperience;
+    }
+
+    public Button getButtonModifyExperience() {
+        return buttonModifyExperience;
+    }
+
+    public Button getButtonActivateExperience() {
+        return buttonActivateExperience;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
 }

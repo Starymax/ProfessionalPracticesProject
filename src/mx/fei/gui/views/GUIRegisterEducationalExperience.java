@@ -62,15 +62,15 @@ public class GUIRegisterEducationalExperience extends Application {
         formGrid.add(new Label("Periodo:"), 0, 4);
         textFieldPeriod = new TextField();
         formGrid.add(textFieldPeriod, 1, 4);
-        ControllerRegisterEducationalExperience buttonsHandler = new ControllerRegisterEducationalExperience(this);
+        ControllerRegisterEducationalExperience controllerRegisterEducationalExperience = new ControllerRegisterEducationalExperience(this);
         buttonRegister = new Button("Registrar");
         buttonCancel = new Button("Cancelar");
         buttonRegister.setPrefWidth(110);
         buttonCancel.setPrefWidth(110);
         buttonRegister.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
-        buttonRegister.setOnAction(buttonsHandler);
-        buttonCancel.setOnAction(buttonsHandler);
+        buttonRegister.setOnAction(event -> controllerRegisterEducationalExperience.handleButtonAction(event));
+        buttonCancel.setOnAction(event -> controllerRegisterEducationalExperience.handleButtonAction(event));
         HBox buttonsBox = new HBox(30, buttonRegister, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));
@@ -127,10 +127,27 @@ public class GUIRegisterEducationalExperience extends Application {
         launch(args);
     }
 
-    public TextField getTextFieldNrc() { return textFieldNrc; }
-    public TextField getTextFieldName() { return textFieldName; }
-    public TextField getTextFieldCareer() { return textFieldCareer; }
-    public TextField getTextFieldPeriod() { return textFieldPeriod; }
-    public Button getButtonRegister() { return buttonRegister; }
-    public Button getButtonCancel() { return buttonCancel; }
+    public TextField getTextFieldNrc() {
+        return textFieldNrc;
+    }
+
+    public TextField getTextFieldName() {
+        return textFieldName;
+    }
+
+    public TextField getTextFieldCareer() {
+        return textFieldCareer;
+    }
+
+    public TextField getTextFieldPeriod() {
+        return textFieldPeriod;
+    }
+
+    public Button getButtonRegister() {
+        return buttonRegister;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
+    }
 }

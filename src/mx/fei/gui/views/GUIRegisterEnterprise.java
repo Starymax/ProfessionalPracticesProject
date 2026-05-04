@@ -63,9 +63,9 @@ public class GUIRegisterEnterprise extends Application {
         registerButton.setStyle(btnStyle);
         cancelButton.setStyle(btnStyle);
 
-        ControllerRegisterEnterprise controller = new ControllerRegisterEnterprise(this);
-        registerButton.setOnAction(controller);
-        cancelButton.setOnAction(controller);
+        ControllerRegisterEnterprise controllerRegisterEnterprise = new ControllerRegisterEnterprise(this);
+        registerButton.setOnAction(event -> controllerRegisterEnterprise.handleButtonAction(event));
+        cancelButton.setOnAction(event -> controllerRegisterEnterprise.handleButtonAction(event));
 
         HBox buttonPanel = new HBox(10, registerButton, cancelButton);
         buttonPanel.setAlignment(Pos.CENTER_RIGHT);

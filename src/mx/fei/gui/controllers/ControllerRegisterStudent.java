@@ -7,11 +7,10 @@ import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import org.mindrot.jbcrypt.BCrypt;
 
-public class ControllerRegisterStudent implements EventHandler<ActionEvent> {
+public class ControllerRegisterStudent {
     private GUIRegisterStudent guiRegisterStudent;
     private StudentDAO studentDAO;
 
@@ -20,8 +19,7 @@ public class ControllerRegisterStudent implements EventHandler<ActionEvent> {
         studentDAO = new StudentDAO();
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Confirmar")) {
             if (!guiRegisterStudent.validateFields()) {

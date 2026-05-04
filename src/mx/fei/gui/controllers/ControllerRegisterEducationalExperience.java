@@ -1,7 +1,6 @@
 package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -13,7 +12,7 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.NoSuchElementException;
 
-public class ControllerRegisterEducationalExperience implements EventHandler<ActionEvent> {
+public class ControllerRegisterEducationalExperience {
     GUIRegisterEducationalExperience guiRegisterEducationalExperience;
     EducationalExperienceDAO educationalExperienceDAO;
     Alert alertInformation = new Alert(Alert.AlertType.INFORMATION);
@@ -24,26 +23,7 @@ public class ControllerRegisterEducationalExperience implements EventHandler<Act
         educationalExperienceDAO = new EducationalExperienceDAO();
     }
 
-    public boolean nrcExists() {
-        boolean nrcExists = false;
-        String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
-        try {
-            educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-            nrcExists = true;
-        } catch (NoSuchElementException e) {
-            return nrcExists;
-        } catch (DataOperationException e) {
-            alertError.setTitle("Error");
-            alertError.setHeaderText(null);
-            alertError.setContentText("Error al verificar el NRC. Intente mas tarde.");
-            alertError.showAndWait();
-            return nrcExists = true;
-        }
-        return nrcExists;
-    }
-
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Registrar")) {
             if (!guiRegisterEducationalExperience.validateFields()) {
@@ -77,12 +57,31 @@ public class ControllerRegisterEducationalExperience implements EventHandler<Act
                     alertError.setContentText("Error al registrar la experiencia. Intente mas tarde");
                     alertError.showAndWait();
                 }
-            }        } else if (source.getText().equals("Cancelar")) {
+            }
+        } else if (source.getText().equals("Cancelar")) {
             guiRegisterEducationalExperience.closeWindow();
             GUIManageExperience guiManageExperience = new GUIManageExperience();
             Stage stage = new Stage();
             stage.setTitle("Gestionar experiencia");
             guiManageExperience.start(stage);
         }
+    }
+
+    public boolean nrcExists() {
+        boolean nrcExists = false;
+        String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
+        try {
+            educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+            nrcExists = true;
+        } catch (NoSuchElementException e) {
+            return nrcExists;
+        } catch (DataOperationException e) {
+            alertError.setTitle("Error");
+            alertError.setHeaderText(null);
+            alertError.setContentText("Error al verificar el NRC. Intente mas tarde.");
+            alertError.showAndWait();
+            return nrcExists = true;
+        }
+        return nrcExists;
     }
 }

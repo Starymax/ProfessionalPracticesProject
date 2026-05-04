@@ -40,8 +40,8 @@ public class ActivityDAO implements IDAOActivity {
                 success = insertWeeklyLogs(connection, weeklyLogs, activityId);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al insertar actividad en la base de datos",e);
-            throw new DataOperationException("Error al insertar actividad en la base de datos");
+            logger.log(Level.SEVERE, "Error al insertar actividad",e);
+            throw new DataOperationException("Error al insertar actividad");
         }
         return success;
     }
@@ -60,8 +60,8 @@ public class ActivityDAO implements IDAOActivity {
             }
             success = true;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al insertar el horario a la actividad en la base de datos",e);
-            throw new DataOperationException("Error al insertar el horario a la actividad en la base de datos");
+            logger.log(Level.SEVERE, "Error al insertar el horario a la actividad",e);
+            throw new DataOperationException("Error al insertar el horario a la actividad");
         }
         return success;
     }
@@ -83,8 +83,8 @@ public class ActivityDAO implements IDAOActivity {
                 activity = new Activity(activityId, nameActivity, observationsActivity, project);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener la actividad de la base de datos",e);
-            throw new DataOperationException("Error al obtener la actividad de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener la actividad",e);
+            throw new DataOperationException("Error al obtener la actividad");
         }
         return activity;
     }
@@ -105,8 +105,8 @@ public class ActivityDAO implements IDAOActivity {
                 activities.add(getActivityById(idActivity));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener las actividades de la base de datos",e);
-            throw new DataOperationException("Error al obtener las actividades de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener las actividades",e);
+            throw new DataOperationException("Error al obtener las actividades");
         }
         return activities;
     }
@@ -127,8 +127,8 @@ public class ActivityDAO implements IDAOActivity {
                 weeklyLog = new WeeklyLog(weeklyLogId, week, workedHours, plannedHours, activity);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el horario de la actividad de la base de datos",e);
-            throw new DataOperationException("Error al obtener el horario de la actividad de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener el horario de la actividad",e);
+            throw new DataOperationException("Error al obtener el horario de la actividad");
         }
         return weeklyLog;
     }
@@ -150,8 +150,8 @@ public class ActivityDAO implements IDAOActivity {
                 weeklyLogs.add(getWeeklyLogById(weeklyLogId));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad de la base de datos",e);
-            throw new DataOperationException("Error al obtener los horarios de la actividad de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad",e);
+            throw new DataOperationException("Error al obtener los horarios de la actividad");
         }
         return weeklyLogs;
     }

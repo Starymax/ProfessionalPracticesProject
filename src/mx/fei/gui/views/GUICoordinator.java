@@ -25,12 +25,15 @@ import javafx.stage.Stage;
 public class GUICoordinator extends Application {
 
     private Professor coordinator;
+    private Label labelCoordinatorName;
+    private Label labelCoordinatorShift;
     private Button buttonManageStudents;
     private Button buttonManageProjects;
     private Button buttonManageOrganizations;
     private Button buttonManageEducationalExperience;
     private Button buttonConsultProfessor;
     private Button buttonBack;
+    private Stage stage;
 
     public GUICoordinator(Professor coordinator) {
         this.coordinator = coordinator;
@@ -39,20 +42,21 @@ public class GUICoordinator extends Application {
 
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         stage.setTitle("Coordinador");
         stage.setResizable(false);
+
+        labelCoordinatorName = new Label("Bienvenido coordinador: nombre del coordinador");
+        labelCoordinatorName.setFont(new Font("SansSerif", 13));
+        labelCoordinatorShift = new Label("Turno: turno del coordinador");
+        labelCoordinatorShift.setFont(new Font("SansSerif", 13));
 
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(30, 40, 30, 40));
         formPanel.setAlignment(Pos.TOP_LEFT);
         formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
         formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        String coordinatorName = coordinator != null ? coordinator.getName() : "nombre del coordinador";
-        String coordinatorShift = coordinator != null ? coordinator.getShift() : "turno del coordinador";
-        Label labelWelcome = new Label("Bienvenido coordinador: " + coordinatorName);
-        labelWelcome.setFont(new Font("SansSerif", 13));
-        Label labelShift = new Label("Turno: " + coordinatorShift);
-        labelShift.setFont(new Font("SansSerif", 13));
+
         Region spacer = new Region();
         spacer.setPrefHeight(10);
 
@@ -64,17 +68,17 @@ public class GUICoordinator extends Application {
         buttonBack = createMenuButton("Regresar");
         VBox buttonsBox = new VBox(12, buttonManageStudents, buttonManageProjects, buttonManageOrganizations, buttonManageEducationalExperience, buttonConsultProfessor, buttonBack);
         buttonsBox.setAlignment(Pos.CENTER);
-        formPanel.getChildren().addAll(labelWelcome, labelShift, spacer, buttonsBox);
+        formPanel.getChildren().addAll(labelCoordinatorName, labelCoordinatorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ControllerCoordinatorMenu buttonsHandler = new ControllerCoordinatorMenu(this);
-        buttonManageStudents.setOnAction(buttonsHandler);
-        buttonManageProjects.setOnAction(buttonsHandler);
-        buttonManageOrganizations.setOnAction(buttonsHandler);
-        buttonManageEducationalExperience.setOnAction(buttonsHandler);
-        buttonConsultProfessor.setOnAction(buttonsHandler);
-        buttonBack.setOnAction(buttonsHandler);
+        ControllerCoordinatorMenu controllerCoordinatorMenu = new ControllerCoordinatorMenu(this);
+        buttonManageStudents.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
+        buttonManageProjects.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
+        buttonManageOrganizations.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
+        buttonManageEducationalExperience.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
+        buttonConsultProfessor.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
+        buttonBack.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
         Scene scene = new Scene(mainPanel, 500, 550);
         stage.setScene(scene);
         stage.show();
@@ -87,19 +91,53 @@ public class GUICoordinator extends Application {
         return button;
     }
 
+    public void setCoordinatorInfo(Professor professor) {
+        this.coordinator = professor;
+        if (labelCoordinatorName != null) {
+            labelCoordinatorName.setText("Bienvenido coordinador: " + professor.getName());
+        }
+        if (labelCoordinatorShift != null) {
+            labelCoordinatorShift.setText("Turno: " + professor.getShift());
+        }
+    }
+
     public void closeWindow() {
-        ((Stage) buttonBack.getScene().getWindow()).close();
+        stage.close();
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public Professor getCoordinator() { return coordinator; }
-    public Button getButtonManageStudents() { return buttonManageStudents; }
-    public Button getButtonManageProjects() { return buttonManageProjects; }
-    public Button getButtonManageOrganizations() { return buttonManageOrganizations; }
-    public Button getButtonManageEducationalExperience() { return buttonManageEducationalExperience; }
-    public Button getButtonConsultProfessor() { return buttonConsultProfessor; }
-    public Button getButtonBack() { return buttonBack; }
+    public Professor getCoordinator() {
+        return coordinator;
+    }
+
+    public Button getButtonManageStudents() {
+        return buttonManageStudents;
+    }
+
+    public Button getButtonManageProjects() {
+        return buttonManageProjects;
+    }
+
+    public Button getButtonManageOrganizations() {
+        return buttonManageOrganizations;
+    }
+
+    public Button getButtonManageEducationalExperience() {
+        return buttonManageEducationalExperience;
+    }
+
+    public Button getButtonConsultProfessor() {
+        return buttonConsultProfessor;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
 }

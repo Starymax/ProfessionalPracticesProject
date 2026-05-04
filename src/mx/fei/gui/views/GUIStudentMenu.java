@@ -52,11 +52,11 @@ public class GUIStudentMenu extends Application {
             HBox logoutRow = new HBox(buttonLogout);
             logoutRow.setAlignment(Pos.BOTTOM_RIGHT);
 
-            ControllerStudentMenu controller = new ControllerStudentMenu(this);
-            buttonSelectProjects.setOnAction(controller);
-            buttonReports.setOnAction(controller);
-            buttonDocuments.setOnAction(controller);
-            buttonLogout.setOnAction(controller);
+            ControllerStudentMenu controllerStudentMenu = new ControllerStudentMenu(this);
+            buttonSelectProjects.setOnAction(event -> controllerStudentMenu.handleButtonAction(event));
+            buttonReports.setOnAction(event -> controllerStudentMenu.handleButtonAction(event));
+            buttonDocuments.setOnAction(event -> controllerStudentMenu.handleButtonAction(event));
+            buttonLogout.setOnAction(event -> controllerStudentMenu.handleButtonAction(event));
 
             BorderPane mainPanel = new BorderPane();
             mainPanel.setPadding(new Insets(32, 40, 32, 40));

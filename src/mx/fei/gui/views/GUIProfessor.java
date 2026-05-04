@@ -25,9 +25,12 @@ import javafx.stage.Stage;
 public class GUIProfessor extends Application {
 
     private Professor professor;
+    private Label labelProfessorName;
+    private Label labelProfessorShift;
     private Button buttonManageActivities;
     private Button buttonManageReports;
     private Button buttonBack;
+    private Stage stage;
 
     public GUIProfessor(Professor professor) {
         this.professor = professor;
@@ -37,19 +40,21 @@ public class GUIProfessor extends Application {
 
     @Override
     public void start(Stage stage) {
+        this.stage = stage;
         stage.setTitle("Profesor");
         stage.setResizable(false);
+
+        labelProfessorName = new Label("Bienvenido profesor: Nombre del profesor");
+        labelProfessorName.setFont(new Font("SansSerif", 13));
+        labelProfessorShift = new Label("Turno: Turno del profesor");
+        labelProfessorShift.setFont(new Font("SansSerif", 13));
+
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(30, 40, 30, 40));
         formPanel.setAlignment(Pos.TOP_LEFT);
         formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
         formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
-        String professorName  = professor != null ? professor.getName()  : "Nombre del profesor";
-        String professorShift = professor != null ? professor.getShift() : "Turno del profesor";
-        Label labelWelcome = new Label("Bienvenido profesor: " + professorName);
-        labelWelcome.setFont(new Font("SansSerif", 13));
-        Label labelShift = new Label("Turno: " + professorShift);
-        labelShift.setFont(new Font("SansSerif", 13));
+
         Region spacer = new Region();
         spacer.setPrefHeight(10);
         buttonManageActivities = createMenuButton("Gestionar actividades");
@@ -57,18 +62,19 @@ public class GUIProfessor extends Application {
         buttonBack = createMenuButton("Regresar");
         VBox buttonsBox = new VBox(12, buttonManageActivities, buttonManageReports, buttonBack);
         buttonsBox.setAlignment(Pos.CENTER);
-        formPanel.getChildren().addAll(labelWelcome, labelShift, spacer, buttonsBox);
+        formPanel.getChildren().addAll(labelProfessorName, labelProfessorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        ControllerProfessorMenu buttonsHandler = new ControllerProfessorMenu(this);
-        buttonManageActivities.setOnAction(buttonsHandler);
-        buttonManageReports.setOnAction(buttonsHandler);
-        buttonBack.setOnAction(buttonsHandler);
+        ControllerProfessorMenu controllerProfessorMenu = new ControllerProfessorMenu(this);
+        buttonManageActivities.setOnAction(event -> controllerProfessorMenu.handleButtonAction(event));
+        buttonManageReports.setOnAction(event -> controllerProfessorMenu.handleButtonAction(event));
+        buttonBack.setOnAction(event -> controllerProfessorMenu.handleButtonAction(event));
         Scene scene = new Scene(mainPanel, 500, 420);
         stage.setScene(scene);
         stage.show();
     }
+
     private Button createMenuButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(250);
@@ -76,16 +82,41 @@ public class GUIProfessor extends Application {
         return button;
     }
 
+    public void setProfessorInfo(Professor professor) {
+        this.professor = professor;
+        if (labelProfessorName != null) {
+            labelProfessorName.setText("Bienvenido profesor: " + professor.getName());
+        }
+        if (labelProfessorShift != null) {
+            labelProfessorShift.setText("Turno: " + professor.getShift());
+        }
+    }
+
     public void closeWindow() {
-        ((Stage) buttonBack.getScene().getWindow()).close();
+        stage.close();
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 
-    public Professor getProfessor() { return professor; }
-    public Button getButtonManageActivities() { return buttonManageActivities; }
-    public Button getButtonManageReports() { return buttonManageReports; }
-    public Button getButtonBack() { return buttonBack; }
+    public Professor getProfessor() {
+        return professor;
+    }
+
+    public Button getButtonManageActivities() {
+        return buttonManageActivities;
+    }
+
+    public Button getButtonManageReports() {
+        return buttonManageReports;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
 }

@@ -6,13 +6,12 @@ import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
 
-public class ControllerRegisterEnterprise implements EventHandler<ActionEvent> {
+public class ControllerRegisterEnterprise {
 
     private final GUIRegisterEnterprise guiRegisterEnterprise;
 
@@ -20,8 +19,7 @@ public class ControllerRegisterEnterprise implements EventHandler<ActionEvent> {
         this.guiRegisterEnterprise = guiRegisterEnterprise;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiRegisterEnterprise.getRegisterButton()) {
             if (guiRegisterEnterprise.validateFields() && guiRegisterEnterprise.validateFieldsInt()) {
                 register();
