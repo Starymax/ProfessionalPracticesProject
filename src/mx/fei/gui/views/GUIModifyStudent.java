@@ -1,0 +1,201 @@
+package mx.fei.gui.views;
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import mx.fei.gui.controllers.ControllerModifyStudent;
+import mx.fei.logic.dto.Student;
+
+public class GUIModifyStudent extends Application {
+    private Student student;
+    private TextField textFieldNames;
+    private TextField textFieldLastName;
+    private TextField textFieldMail;
+    private TextField textFieldPeriod;
+    private TextField textFieldGrade;
+    private RadioButton radioButtonMan;
+    private RadioButton radioButtonWoman;
+    private RadioButton radioButtonSpeakIndigenousLanguage;
+    private RadioButton radioButtonDontSpeakIndigenousLanguage;
+    private ToggleButton toggleState;
+    private Button buttonUpdate;
+    private Button buttonCancel;
+
+    public GUIModifyStudent(Student student) {
+        this.student = student;
+    }
+
+    public GUIModifyStudent() {}
+
+    @Override
+    public void start(Stage stage) {
+        stage.setTitle("Modificar alumno");
+        stage.setResizable(false);
+        GridPane formGrid = new GridPane();
+        formGrid.setHgap(10);
+        formGrid.setVgap(12);
+        formGrid.setPadding(new Insets(25, 30, 25, 30));
+        formGrid.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
+        formGrid.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formGrid.add(new Label("Nombres:"), 0, 0);
+        textFieldNames = new TextField();
+        textFieldNames.setPrefWidth(370);
+        GridPane.setColumnSpan(textFieldNames, 3);
+        formGrid.add(textFieldNames, 1, 0);
+        formGrid.add(new Label("Apellidos:"), 0, 1);
+        textFieldLastName = new TextField();
+        GridPane.setColumnSpan(textFieldLastName, 3);
+        formGrid.add(textFieldLastName, 1, 1);
+        formGrid.add(new Label("Correo:"), 0, 2);
+        textFieldMail = new TextField();
+        GridPane.setColumnSpan(textFieldMail, 3);
+        formGrid.add(textFieldMail, 1, 2);
+        formGrid.add(new Label("Periodo:"), 0, 3);
+        textFieldPeriod = new TextField();
+        textFieldPeriod.setPrefWidth(220);
+        formGrid.add(textFieldPeriod, 1, 3);
+        formGrid.add(new Label("Calificación:"), 0, 4);
+        textFieldGrade = new TextField();
+        textFieldGrade.setPrefWidth(120);
+        formGrid.add(textFieldGrade, 1, 4);
+        formGrid.add(new Label("Genero"), 0, 5);
+        radioButtonMan = new RadioButton("Hombre");
+        radioButtonWoman = new RadioButton("Mujer");
+        ToggleGroup toggleGroupGender = new ToggleGroup();
+        radioButtonMan.setToggleGroup(toggleGroupGender);
+        radioButtonWoman.setToggleGroup(toggleGroupGender);
+        HBox genderBox = new HBox(20, radioButtonMan, radioButtonWoman);
+        genderBox.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setColumnSpan(genderBox, 3);
+        formGrid.add(genderBox, 1, 5);
+        formGrid.add(new Label("Lengua indigena:"), 0, 6);
+        radioButtonSpeakIndigenousLanguage = new RadioButton("Habla");
+        radioButtonDontSpeakIndigenousLanguage = new RadioButton("No habla");
+        ToggleGroup toggleGroupLanguage = new ToggleGroup();
+        radioButtonSpeakIndigenousLanguage.setToggleGroup(toggleGroupLanguage);
+        radioButtonDontSpeakIndigenousLanguage.setToggleGroup(toggleGroupLanguage);
+        HBox languageBox = new HBox(20, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
+        languageBox.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setColumnSpan(languageBox, 3);
+        formGrid.add(languageBox, 1, 6);
+        formGrid.add(new Label("Estado:"), 0, 7);
+        toggleState = new ToggleButton("Inactivo");
+        toggleState.setPrefWidth(110);
+        toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
+        formGrid.add(toggleState, 1, 7);
+        if (student != null) {
+            textFieldNames.setText(student.getName());
+            textFieldLastName.setText(student.getLastName());
+            textFieldMail.setText(student.getEmail());
+            textFieldPeriod.setText(student.getPeriod());
+            textFieldGrade.setText(String.valueOf(student.getGrade()));
+            if (student.getGender() != null && student.getGender().equals("Hombre")) {
+                radioButtonMan.setSelected(true);
+            } else {
+                radioButtonWoman.setSelected(true);
+            }
+            if (student.isIndigenousLanguage()) {
+                radioButtonSpeakIndigenousLanguage.setSelected(true);
+            } else {
+                radioButtonDontSpeakIndigenousLanguage.setSelected(true);
+            }
+            toggleState.setSelected(student.isActive());
+            toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
+        }
+        buttonUpdate = new Button("Actualizar");
+        buttonCancel = new Button("Cancelar");
+        buttonUpdate.setPrefWidth(120);
+        buttonCancel.setPrefWidth(120);
+        buttonUpdate.setPrefHeight(35);
+        buttonCancel.setPrefHeight(35);
+        buttonUpdate.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
+        buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
+        HBox buttonsBox = new HBox(20, buttonUpdate, buttonCancel);
+        buttonsBox.setAlignment(Pos.CENTER_LEFT);
+        buttonsBox.setPadding(new Insets(10,0,0,0));
+        GridPane.setColumnSpan(buttonsBox, 4);
+        formGrid.add(buttonsBox,0,8);
+        ControllerModifyStudent controllerModifyStudent = new ControllerModifyStudent(this);
+        buttonUpdate.setOnAction(event -> controllerModifyStudent.handleButtons(event));
+        buttonCancel.setOnAction(event ->  controllerModifyStudent.handleButtons(event));
+        StackPane mainPanel = new StackPane(formGrid);
+        mainPanel.setPadding(new Insets(20));
+        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
+        Scene scene = new Scene(mainPanel, 620, 460);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public boolean validateFields() {
+        java.util.List<java.util.Map.Entry<Boolean, String>> validations = java.util.List.of(
+                java.util.Map.entry(textFieldNames.getText().trim().isEmpty(),"El campo nombres es obligatorio."),
+                java.util.Map.entry(textFieldLastName.getText().trim().isEmpty(),"El campo apellidos es obligatorio."),
+                java.util.Map.entry(textFieldMail.getText().trim().isEmpty(),"El campo correo es obligatorio."),
+                java.util.Map.entry(textFieldPeriod.getText().trim().isEmpty(),"El campo periodo es obligatorio."),
+                java.util.Map.entry(textFieldGrade.getText().trim().isEmpty(),"El campo calificacion es obligatorio."),
+                java.util.Map.entry(radioButtonMan.getToggleGroup().getSelectedToggle() == null,"Selecciona un genero."),
+                java.util.Map.entry(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() == null,"Selecciona si el alumno habla lengua indigena.")
+        );
+        boolean valid = true;
+        for (java.util.Map.Entry<Boolean, String> validation : validations) {
+            if (validation.getKey()) {
+                showError(validation.getValue());
+                valid = false;
+                break;
+            }
+        }
+        return valid;
+    }
+
+    public void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void showSuccess(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Exito");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void closeWindow() {
+        ((Stage) buttonCancel.getScene().getWindow()).close();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public Student getStudent() { return student; }
+    public TextField getTextFieldNames() { return textFieldNames; }
+    public TextField getTextFieldLastName() { return textFieldLastName; }
+    public TextField getTextFieldMail() { return textFieldMail; }
+    public TextField getTextFieldPeriod() { return textFieldPeriod; }
+    public TextField getTextFieldGrade() { return textFieldGrade; }
+    public RadioButton getRadioButtonMan() { return radioButtonMan; }
+    public RadioButton getRadioButtonWoman() { return radioButtonWoman; }
+    public RadioButton getRadioButtonSpeakIndigenousLanguage() { return radioButtonSpeakIndigenousLanguage; }
+    public RadioButton getRadioButtonDontSpeakIndigenousLanguage() { return radioButtonDontSpeakIndigenousLanguage; }
+    public ToggleButton getToggleState() { return toggleState; }
+    public Button getButtonUpdate() { return buttonUpdate; }
+    public Button getButtonCancel() { return buttonCancel; }
+}

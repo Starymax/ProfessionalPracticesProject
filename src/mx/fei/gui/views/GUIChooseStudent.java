@@ -1,0 +1,119 @@
+package mx.fei.gui.views;
+
+import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import mx.fei.gui.controllers.ControllerChooseStudent;
+import mx.fei.logic.dto.Student;
+import java.util.List;
+
+public class GUIChooseStudent extends Application {
+    private ListView<String> listViewStudents;
+    private Button buttonSelect;
+    private Button buttonBack;
+    private List<Student> students;
+
+    public GUIChooseStudent() {}
+
+    @Override
+    public void start(Stage stage) {
+        stage.setTitle("Seleccionar alumno");
+        stage.setResizable(false);
+        VBox formPanel = new VBox(15);
+        formPanel.setPadding(new Insets(25, 25, 25, 25));
+        formPanel.setAlignment(Pos.TOP_LEFT);
+        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
+        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        Label labelTitle = new Label("Seleccione un alumno:");
+        labelTitle.setFont(new Font("SansSerif", 14));
+        listViewStudents = new ListView<>();
+        listViewStudents.setPrefWidth(390);
+        listViewStudents.setPrefHeight(260);
+        listViewStudents.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+        listViewStudents.setItems(FXCollections.observableArrayList());
+        buttonSelect = new Button("Seleccionar");
+        buttonBack = new Button("Regresar");
+        buttonSelect.setPrefWidth(130);
+        buttonBack.setPrefWidth(130);
+        buttonSelect.setPrefHeight(35);
+        buttonBack.setPrefHeight(35);
+        buttonSelect.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
+        buttonBack.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
+        VBox buttonsBox = new VBox(20, buttonSelect, buttonBack);
+        buttonsBox.setAlignment(Pos.TOP_CENTER);
+        buttonsBox.setPadding(new Insets(10, 0, 0, 0));
+        HBox contentBox = new HBox(20, listViewStudents, buttonsBox);
+        contentBox.setAlignment(Pos.TOP_LEFT);
+        formPanel.getChildren().addAll(labelTitle, contentBox);
+        StackPane mainPanel = new StackPane(formPanel);
+        mainPanel.setPadding(new Insets(20));
+        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
+        ControllerChooseStudent controllerChooseStudent = new ControllerChooseStudent(this);
+        buttonSelect.setOnAction(event -> controllerChooseStudent.handleButtons(event));
+        buttonBack.setOnAction(event -> controllerChooseStudent.handleButtons(event));
+        Scene scene = new Scene(mainPanel, 620, 390);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+        ObservableList<String> items = FXCollections.observableArrayList();
+        for (Student student : students) {
+            items.add(student.getEnrollment() + " - " + student.getName() + " " + student.getLastName());
+        }
+        listViewStudents.setItems(items);
+    }
+
+    public Student getSelectedStudent() {
+        int selectedIndex = listViewStudents.getSelectionModel().getSelectedIndex();
+        if (students == null || students.isEmpty()) {
+            throw new IllegalStateException("No hay alumnos disponibles selected");
+        }
+        if (selectedIndex < 0 || selectedIndex >= students.size()) {
+            throw new IllegalStateException("No se ha seleccionado un alumno");
+        }
+        return students.get(selectedIndex);
+    }
+
+    public void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void closeWindow() {
+        ((Stage) buttonBack.getScene().getWindow()).close();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public ListView<String> getListViewStudents() { return listViewStudents; }
+    public Button getButtonSelect() { return buttonSelect; }
+    public Button getButtonBack() { return buttonBack; }
+    public List<Student> getStudents() { return students; }
+}

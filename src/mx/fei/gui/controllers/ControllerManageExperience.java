@@ -3,6 +3,7 @@ package mx.fei.gui.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
 
@@ -23,7 +24,13 @@ public class ControllerManageExperience {
                 guiRegisterEducationalExperience.start(stage);
                 guiManageExperience.closeWindow();
             }
-            case "Modificar experiencia" -> { /* TODO: abrir ventana modificar */ }
+            case "Modificar experiencia" -> {
+                GUIChooseExperience  guiChooseExperience = new GUIChooseExperience();
+                Stage stage = new Stage();
+                stage.setTitle("Modificar experiencia");
+                guiChooseExperience.start(stage);
+                guiManageExperience.closeWindow();
+            }
             case "Dar de alta experiencia" -> { /* TODO: abrir ventana dar de alta */ }
             case "Regresar" -> guiManageExperience.closeWindow();
         }

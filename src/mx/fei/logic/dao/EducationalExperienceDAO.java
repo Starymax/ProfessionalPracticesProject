@@ -1,5 +1,7 @@
 package mx.fei.logic.dao;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
@@ -92,7 +94,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 Professor professor = null;
                 if (idProfessor > 0) {
                     ProfessorDAO professorDAO = new ProfessorDAO();
-                    professor = professorDAO.getProfessorByPersonalNumber(idProfessor);
+                    professor = professorDAO.getProfessorById(idProfessor);
                 }
                 experience = new EducationalExperience(nrcEE,name,career,period,professor);
             }

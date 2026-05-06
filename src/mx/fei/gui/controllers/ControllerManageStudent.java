@@ -1,12 +1,9 @@
 package mx.fei.gui.controllers;
 
 import javafx.stage.Stage;
-import mx.fei.gui.views.GUICoordinator;
-import mx.fei.gui.views.GUIManageStudent;
+import mx.fei.gui.views.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
-import mx.fei.gui.views.GUIRegisterStudent;
-import mx.fei.gui.views.GUISelectStudentForAssignProject;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -26,7 +23,13 @@ public class ControllerManageStudent {
             case "Registrar estudiante" -> {
                 registerStudent();
             }
-            case "Modificar estudiante" -> { /* TODO: abrir ventana modificar */ }
+            case "Modificar estudiante" -> {
+                GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
+                Stage stage = new Stage();
+                stage.setTitle("Modificar estudiante");
+                guiChooseStudent.start(stage);
+                guiManageStudent.closeWindow();
+            }
             case "Asignar proyecto"     -> {
                 assignProject();
             }

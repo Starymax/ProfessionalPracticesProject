@@ -1,0 +1,84 @@
+package mx.fei.gui.controllers;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+import mx.fei.gui.views.GUIChooseStudent;
+import mx.fei.gui.views.GUIModifyStudent;
+import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dao.UserDAO;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.exceptions.DataOperationException;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class ControllerModifyStudent {
+    private GUIModifyStudent guiModifyStudent;
+    private StudentDAO studentDAO;
+    private UserDAO userDAO;
+    private GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
+    private static final Logger logger = Logger.getLogger(ControllerModifyStudent.class.getName());
+
+    public ControllerModifyStudent(GUIModifyStudent guiModifyStudent) {
+        this.guiModifyStudent = guiModifyStudent;
+        this.studentDAO = new StudentDAO();
+        this.userDAO = new UserDAO();
+    }
+
+    public void handleButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Actualizar" -> handleUpdate();
+            case "Cancelar" -> {
+                guiModifyStudent.closeWindow();
+                Stage stage = new Stage();
+                stage.setTitle("Seleccionar estudiante");
+                guiChooseStudent.start(stage);
+            }
+        }
+    }
+
+    private void handleUpdate() {
+        if (guiModifyStudent.validateFields()) {
+            try {
+                Student original = guiModifyStudent.getStudent();
+                String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
+                boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
+                boolean active = guiModifyStudent.getToggleState().isSelected();
+                float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
+                Student updated = new Student(
+                        original.getUserId(),
+                        guiModifyStudent.getTextFieldNames().getText().trim(),
+                        guiModifyStudent.getTextFieldLastName().getText().trim(),
+                        guiModifyStudent.getTextFieldMail().getText().trim(),
+                        original.getPassword(),
+                        gender,
+                        active,
+                        original.getEnrollment(),
+                        guiModifyStudent.getTextFieldPeriod().getText().trim(),
+                        indigenousLanguage,
+                        grade,
+                        original.getAssignedProject(),
+                        original.getEducationalExperience()
+                );
+                userDAO.updateUser(updated);
+                boolean result = studentDAO.modifyStudent(updated);
+                if (result) {
+                    guiModifyStudent.showSuccess("Alumno actualizado exitosamente.");
+                    guiModifyStudent.closeWindow();
+                    Stage stage = new Stage();
+                    stage.setTitle("Seleccionar estudiante");
+                    guiChooseStudent.start(stage);
+                }
+            } catch (NumberFormatException e) {
+                guiModifyStudent.showError("La calificacion debe ser un número válido.");
+            } catch (IllegalArgumentException e) {
+                guiModifyStudent.showError(e.getMessage());
+            } catch (DataOperationException e) {
+                logger.log(Level.SEVERE, "Error al modificar estudiante", e);
+                guiModifyStudent.showError("Error al actualizar. Intente más tarde.");
+            }
+        }
+    }
+}
