@@ -16,7 +16,6 @@ public class ControllerModifyExperience {
     private GUIModifyExperience guiModifyExperience;
     private EducationalExperienceDAO educationalExperienceDAO;
     private ProfessorDAO professorDAO;
-    private GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
 
     public ControllerModifyExperience(GUIModifyExperience guiModifyExperience) {
         this.guiModifyExperience = guiModifyExperience;
@@ -40,9 +39,7 @@ public class ControllerModifyExperience {
             case "Actualizar" -> handleUpdate();
             case "Regresar" -> {
                 guiModifyExperience.closeWindow();
-                Stage stage = new Stage();
-                stage.setTitle("Seleccionar experiencia");
-                guiChooseExperience.start(stage);
+                openChooseExperience();
             }
         }
     }
@@ -50,34 +47,36 @@ public class ControllerModifyExperience {
     private void handleUpdate() {
         if (guiModifyExperience.validateFields()) {
             Professor selectedProfessor = guiModifyExperience.getSelectedProfessor();
-            if (selectedProfessor == null) {
-                selectedProfessor = guiModifyExperience.getExperience().getProfessor();
-            }
-            if (selectedProfessor != null) {
+            Professor professorToAssign = selectedProfessor != null ? selectedProfessor : guiModifyExperience.getExperience().getProfessor();
+            if (professorToAssign == null) {
+                guiModifyExperience.showError("Debe seleccionar un profesor, la experiencia no tiene ninguno asignado.");
+            } else  {
                 EducationalExperience updated = new EducationalExperience(
                         guiModifyExperience.getExperience().getNrc(),
                         guiModifyExperience.getTextFieldName().getText().trim(),
                         guiModifyExperience.getTextFieldCareer().getText().trim(),
                         guiModifyExperience.getTextFieldPeriod().getText().trim(),
-                        selectedProfessor
+                        professorToAssign
                 );
                 try {
-                    boolean result = educationalExperienceDAO.modifyEducationalExperience(updated, selectedProfessor);
+                    boolean result = educationalExperienceDAO.modifyEducationalExperience(updated, professorToAssign);
                     if (result) {
                         guiModifyExperience.showSuccess("Experiencia actualizada exitosamente.");
                         guiModifyExperience.closeWindow();
-                        Stage stage = new Stage();
-                        stage.setTitle("Seleccionar experiencia");
-                        guiChooseExperience.start(stage);
+                        openChooseExperience();
                     }
                 } catch (IllegalArgumentException e) {
                     guiModifyExperience.showError(e.getMessage());
                 } catch (DataOperationException e) {
                     guiModifyExperience.showError("Error al actualizar. Intente más tarde.");
                 }
-            } else {
-                guiModifyExperience.closeWindow();
             }
         }
+    }
+
+    private void openChooseExperience() {
+        GUIChooseExperience gui = new GUIChooseExperience();
+        Stage stage = new Stage();
+        gui.start(stage);
     }
 }

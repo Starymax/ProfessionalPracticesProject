@@ -8,6 +8,7 @@ import mx.fei.gui.views.GUIStudentMenu;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import mx.fei.gui.views.GUIUploadDocuments;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -31,7 +32,7 @@ public class ControllerStudentMenu {
         } else if (event.getSource() == guiStudentMenu.getButtonReports()) {
             openReports();
         } else if (event.getSource() == guiStudentMenu.getButtonDocuments()) {
-            openDocuments();
+            openDocuments(guiStudentMenu.getStudent().getEnrollment());
         } else if (event.getSource() == guiStudentMenu.getButtonLogout()) {
             logout();
         }
@@ -55,8 +56,11 @@ public class ControllerStudentMenu {
         // TODO: abrir GUIReports
     }
 
-    private void openDocuments() {
-        // TODO: abrir GUIDocuments
+    private void openDocuments(String enrollment) {
+        GUIUploadDocuments  guiUploadDocuments = new GUIUploadDocuments(enrollment);
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        guiUploadDocuments.start(stage);
     }
 
     private void logout() {

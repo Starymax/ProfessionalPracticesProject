@@ -46,7 +46,7 @@ public class ControllerSelectProjects {
                     studentDAO.saveSelectedProjects(selectedProjects, student);
                     guiSelectProjects.showSuccess("Proyectos seleccionados correctamente.");
                     guiSelectProjects.getStage().close();
-                    openGUIStudentMenu();
+
                 } catch (DataOperationException e) {
                     guiSelectProjects.showError(e.getMessage());
                 }
@@ -62,17 +62,6 @@ public class ControllerSelectProjects {
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             guiSelectProjects.getStage().close();
-            openGUIStudentMenu();
-        }
-    }
-
-    private void openGUIStudentMenu() {
-        Student student = guiSelectProjects.getStudent();
-        if (student != null) {
-            GUIStudentMenu guiStudentMenu = new GUIStudentMenu();
-            Stage stage = new Stage();
-            guiStudentMenu.start(stage);
-            guiStudentMenu.setStudentInfo(student);
         }
     }
 }

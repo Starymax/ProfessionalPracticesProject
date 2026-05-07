@@ -20,6 +20,10 @@ import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerModifyStudent;
 import mx.fei.logic.dto.Student;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 public class GUIModifyStudent extends Application {
     private Student student;
     private TextField textFieldNames;
@@ -34,6 +38,10 @@ public class GUIModifyStudent extends Application {
     private ToggleButton toggleState;
     private Button buttonUpdate;
     private Button buttonCancel;
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}\\s]{3,50}$");
+    private static final Pattern REPETITION_PATTERN = Pattern.compile("(\\p{L})\\1{3,}",Pattern.CASE_INSENSITIVE);
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    private static final Pattern PERIOD_PATTERN = Pattern.compile("^(19|20)\\d{2}-(0[1-9]|1[0-2])$");
 
     public GUIModifyStudent(Student student) {
         this.student = student;
@@ -141,24 +149,80 @@ public class GUIModifyStudent extends Application {
     }
 
     public boolean validateFields() {
-        java.util.List<java.util.Map.Entry<Boolean, String>> validations = java.util.List.of(
-                java.util.Map.entry(textFieldNames.getText().trim().isEmpty(),"El campo nombres es obligatorio."),
-                java.util.Map.entry(textFieldLastName.getText().trim().isEmpty(),"El campo apellidos es obligatorio."),
-                java.util.Map.entry(textFieldMail.getText().trim().isEmpty(),"El campo correo es obligatorio."),
-                java.util.Map.entry(textFieldPeriod.getText().trim().isEmpty(),"El campo periodo es obligatorio."),
-                java.util.Map.entry(textFieldGrade.getText().trim().isEmpty(),"El campo calificacion es obligatorio."),
-                java.util.Map.entry(radioButtonMan.getToggleGroup().getSelectedToggle() == null,"Selecciona un genero."),
-                java.util.Map.entry(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() == null,"Selecciona si el alumno habla lengua indigena.")
-        );
-        boolean valid = true;
-        for (java.util.Map.Entry<Boolean, String> validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                valid = false;
-                break;
-            }
+        boolean valid = false;
+        List<String> errors = new ArrayList<String>();
+        validateNames(textFieldNames.getText().trim(), "Nombres", errors);
+        validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
+        validateEmail(textFieldMail.getText().trim(), errors);
+        validatePeriod(textFieldPeriod.getText().trim(), errors);
+        validateGrade(textFieldGrade.getText().trim(), errors);
+        validateGenderSelection(errors);
+        validateIndigenousLanguageSelection(errors);
+        if (errors.isEmpty()) {
+            valid = true;
+        } else {
+            showErrors(errors);
         }
         return valid;
+    }
+
+    private void validateNames(String name, String fieldName, List<String> errors) {
+        if (name.isEmpty()) {
+            errors.add("El campo de " + fieldName + " es obligatorio.");
+        } else if (!NAME_PATTERN.matcher(name).matches()) {
+            errors.add(fieldName + " solo debe contener letras, espacios y un mínimo de 3 caracteres y máximo de 50.");
+        } else if (REPETITION_PATTERN.matcher(name).find()) {
+            errors.add(fieldName + " no puede tener 3 veces consecutivas la misma letra.");
+        }
+    }
+
+    private void validateEmail(String email, List<String> errors) {
+        if (email.isEmpty()) {
+            errors.add("El campo de correo es obligatorio.");
+        } else if (!EMAIL_PATTERN.matcher(email).matches()) {
+            errors.add("El correo electrónico no tiene un formato válido (ejemplo: usuario@dominio.com).");
+        }
+    }
+
+    private void validatePeriod(String period, List<String> errors) {
+        if (period.isEmpty()) {
+            errors.add("El campo de periodo es obligatorio.");
+        } else if (!PERIOD_PATTERN.matcher(period).matches()) {
+            errors.add("El periodo debe tener formato YYYY-MM (ejemplo: 2026-01).");
+        }
+    }
+
+    private void validateGrade(String gradeText, List<String> errors) {
+        if (gradeText.isEmpty()) {
+            errors.add("El campo de califición es obligatorio.");
+        }
+        try {
+            double grade = Double.parseDouble(gradeText);
+            if (grade < 0 || grade > 10) {
+                errors.add("La calificación no puede ser mayor a 10 o menor a 0.");
+            } else if (gradeText.matches(".*\\.[0-9]{3,}")) {
+                errors.add("La calificación no puede tener más de dos decimales.");
+            }
+        } catch (NumberFormatException e) {
+            errors.add("La calificación debe de ser un número válido.");
+        }
+    }
+
+    private void validateGenderSelection(List<String> errors) {
+        if (radioButtonMan.getToggleGroup().getSelectedToggle() == null) {
+            errors.add("Selecciona un género.");
+        }
+    }
+
+    private void validateIndigenousLanguageSelection(List<String> errors) {
+        if (radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() == null) {
+            errors.add("Selecciona si el alumno habla lengua indígena.");
+        }
+    }
+
+    private void showErrors(List<String> errors) {
+        String combinedMessage = String.join("\n- ", errors);
+        showError("- " + combinedMessage);
     }
 
     public void showError(String message) {

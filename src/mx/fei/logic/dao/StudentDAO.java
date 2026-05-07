@@ -7,7 +7,6 @@ import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOStudent;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -142,14 +141,20 @@ public class StudentDAO implements IDAOStudent {
                     logger.log(Level.SEVERE, "No se logro registrar el usuario base");
                     throw new DataOperationException("No se logro registrar el usuario en la base");
                 }
-                String query = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
+                String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
+                String queryExpedient = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, " + "plan_trabajo, horario, evaluacion_competencias, id_alumno) " + "VALUES (false, false, false, false, false, ?)";
                 try (Connection connection = DatabaseConnectionManager.getConnection();
-                     PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, idUser);
-                    preparedStatement.setString(2, student.getEnrollment());
-                    preparedStatement.setString(3, student.getPeriod());
-                    preparedStatement.setBoolean(4, student.isIndigenousLanguage());
-                    result = preparedStatement.executeUpdate() > 0;
+                     PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent);
+                     PreparedStatement preparedStatementExpedient = connection.prepareStatement(queryExpedient)) {
+                    preparedStatementStudent.setInt(1, idUser);
+                    preparedStatementStudent.setString(2, student.getEnrollment());
+                    preparedStatementStudent.setString(3, student.getPeriod());
+                    preparedStatementStudent.setBoolean(4, student.isIndigenousLanguage());
+                    result = preparedStatementStudent.executeUpdate() > 0;
+                    if (result) {
+                        preparedStatementExpedient.setInt(1, idUser);
+                        preparedStatementExpedient.executeUpdate();
+                    }
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error registrando al estudiante", e);

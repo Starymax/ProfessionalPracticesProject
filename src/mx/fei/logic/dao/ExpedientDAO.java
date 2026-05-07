@@ -4,7 +4,6 @@ import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOExpedient;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,14 +21,14 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataOperationException {
         boolean loaded = false;
-        String queryLoad = "UPDATE expediente_practicas set" + documentType + "= ? where enrollment=?;";
+        String queryLoad = "UPDATE expediente_practicas ep " + "INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente " + "SET ep." + documentType + " = ? " + "WHERE v.matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryLoad)) {
             preparedStatement.setBoolean(1,loadState);
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al cargar los documentos");
+            logger.log(Level.SEVERE,"Error al cargar los documentos", e);
             throw new DataOperationException("Error al cargar los documentos");
         }
         return loaded;
@@ -38,7 +37,7 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean isLoaded(String enrollment, String documentType) throws DataOperationException {
         boolean isLoaded = false;
-        String queryIsLoaded = "SELECT " + documentType + " FROM expediente_practicas WHERE matricula = ?;";
+        String queryIsLoaded = "SELECT " + documentType + " FROM vw_expediente_por_matricula WHERE matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryIsLoaded)) {
             preparedStatement.setString(1,enrollment);

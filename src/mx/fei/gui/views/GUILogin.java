@@ -26,7 +26,7 @@ import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerLogin;
 
 public class GUILogin extends Application {
-    private TextField textFieldMail;
+    private     TextField textFieldMail;
     private PasswordField textFieldPassword;
     private Button buttonLogin;
     private Button buttonCancel;
