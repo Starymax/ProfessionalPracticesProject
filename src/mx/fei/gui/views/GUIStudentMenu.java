@@ -41,7 +41,7 @@ public class GUIStudentMenu extends Application {
 
             buttonSelectProjects = buildMenuButton("Seleccionar Proyectos");
             buttonReports = buildMenuButton("Gestión de Reportes");
-            buttonDocuments = buildMenuButton("Gestión de Documentos");
+            buttonDocuments = buildMenuButton("Subir Documentos");
 
             VBox centerButtons = new VBox(20, buttonSelectProjects, buttonReports, buttonDocuments);
             centerButtons.setAlignment(Pos.CENTER);

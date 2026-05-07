@@ -45,7 +45,7 @@ public class GUIModifyExperience extends Application {
     private Button buttonBack;
     private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}\\s]{3,50}$");
     private static final Pattern REPETITION_PATTERN = Pattern.compile("(\\p{L})\\1{3,}", Pattern.CASE_INSENSITIVE);
-    private static final Pattern PERIOD_PATTERN = Pattern.compile("^(19|20)\\d{2}-(0[1-9]|1[0-2])$");
+    private static final Pattern PERIOD_PATTERN = Pattern.compile("^(20)\\d{2}-(0[1-9]|1[0-2])$");
 
     public GUIModifyExperience(EducationalExperience experience) {
         this.experience = experience;

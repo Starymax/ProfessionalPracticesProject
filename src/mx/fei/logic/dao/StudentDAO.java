@@ -142,7 +142,7 @@ public class StudentDAO implements IDAOStudent {
                     throw new DataOperationException("No se logro registrar el usuario en la base");
                 }
                 String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
-                String queryExpedient = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, " + "plan_trabajo, horario, evaluacion_competencias, id_alumno) " + "VALUES (false, false, false, false, false, ?)";
+                String queryExpedient = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno) VALUES (false, false, false, false, false, ?)";
                 try (Connection connection = DatabaseConnectionManager.getConnection();
                      PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent);
                      PreparedStatement preparedStatementExpedient = connection.prepareStatement(queryExpedient)) {
