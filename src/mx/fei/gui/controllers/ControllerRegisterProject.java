@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import mx.fei.gui.views.GUIActivityPlan;
 import mx.fei.gui.views.GUIRegisterProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
 import mx.fei.logic.dao.ProjectManagerDAO;
@@ -51,7 +52,11 @@ public class ControllerRegisterProject {
     private void continueButton() {
         if (guiRegisterProject.validateFields()) {
             Project project = buildProject();
-           // TODO: armar objeto Project y pasar a siguiente GUI (horario/calendarización)
+            GUIActivityPlan guiActivityPlan = new GUIActivityPlan();
+            guiActivityPlan.setProject(project);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            guiActivityPlan.start(stage);
         }
     }
 

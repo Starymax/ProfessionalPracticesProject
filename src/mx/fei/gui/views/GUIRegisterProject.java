@@ -175,9 +175,7 @@ public class GUIRegisterProject extends Application {
     public boolean validateFields() {
         boolean validated = true;
         java.util.List<String> errors = new java.util.ArrayList<>();
-
-        // Validar campos obligatorios
-        GUIUtils.validateNames(nameTextField.getText().trim(), "Nombre", errors);
+        GUIUtils.validateShortText(nameTextField.getText().trim(), "Nombre", errors);
         GUIUtils.validateLongText(descriptionTextArea.getText().trim(), "Descripción", errors);
         GUIUtils.validateLongText(generalObjectiveTextField.getText().trim(), "Objetivo General", errors);
         GUIUtils.validateLongText(mediateObjectivesTextField.getText().trim(), "Objetivos Mediatos", errors);

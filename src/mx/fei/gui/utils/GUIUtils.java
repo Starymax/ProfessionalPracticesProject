@@ -42,8 +42,6 @@ public class GUIUtils {
             errors.add(fieldName + " no puede contener solo espacios.");
         } else if (!value.equals(value.trim())) {
             errors.add(fieldName + " no puede empezar ni terminar con espacios.");
-        } else if (CONTAINS_NUMBERS_PATTERN.matcher(value).find()) {
-            errors.add(fieldName + " no puede contener números.");
         } else if (!LONG_TEXT_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 500 letras");
         } else if (REPETITION_PATTERN.matcher(value).find()) {
@@ -58,8 +56,6 @@ public class GUIUtils {
             errors.add(fieldName + " no puede contener solo espacios.");
         } else if (!value.equals(value.trim())) {
             errors.add(fieldName + " no puede empezar ni terminar con espacios.");
-        } else if (CONTAINS_NUMBERS_PATTERN.matcher(value).find()) {
-            errors.add(fieldName + " no puede contener números.");
         } else if (!SHORT_TEXT_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 50 letras");
         } else if (REPETITION_PATTERN.matcher(value).find()) {

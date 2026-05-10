@@ -3,11 +3,11 @@ package mx.fei.logic.dto;
 public class WeeklyLog {
     private int id;
     private int week;
-    private float workedHours;
-    private float plannedHours;
+    private int workedHours;
+    private int plannedHours;
     private Activity activity;
 
-    public WeeklyLog(int weeklyLogId, int week, float workedHours, float plannedHours, Activity activity) {
+    public WeeklyLog(int weeklyLogId, int week, int workedHours, int plannedHours, Activity activity) {
         this.id = weeklyLogId;
         this.week = week;
         this.workedHours = workedHours;
@@ -31,19 +31,19 @@ public class WeeklyLog {
         this.week = week;
     }
 
-    public float getWorkedHours() {
+    public int getWorkedHours() {
         return workedHours;
     }
 
-    public void setWorkedHours(float workedHours) {
+    public void setWorkedHours(int workedHours) {
         this.workedHours = workedHours;
     }
 
-    public float getPlannedHours() {
+    public int getPlannedHours() {
         return plannedHours;
     }
 
-    public void setPlannedHours(float plannedHours) {
+    public void setPlannedHours(int plannedHours) {
         this.plannedHours = plannedHours;
     }
 

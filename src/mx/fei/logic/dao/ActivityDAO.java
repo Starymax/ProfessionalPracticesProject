@@ -24,26 +24,30 @@ public class ActivityDAO implements IDAOActivity {
     public boolean insertActivity(Activity activity, Project project, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException {
         if (activity == null) {
             logger.log(Level.WARNING,"La actividad esta vacia");
-            throw  new IllegalArgumentException("La actividad no puede estar vacía");
-        }
-        boolean success = false;
-        String queryActivity = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryActivity, Statement.RETURN_GENERATED_KEYS);) {
-            preparedStatement.setString(1, activity.getName());
-            preparedStatement.setString(2, activity.getObservationsActivity());
-            preparedStatement.setInt(3, project.getProjectId());
-            preparedStatement.executeUpdate();
-            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                int activityId = generatedKeys.getInt(1);
-                success = insertWeeklyLogs(connection, weeklyLogs, activityId);
+            throw new DataOperationException("La actividad no puede estar vacía");
+        } else if (project == null) {
+            logger.log(Level.WARNING,"Error al guardar el proyecto");
+            throw new DataOperationException("Error al guardar el proyecto");
+        } else {
+            boolean success = false;
+            String queryActivity = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
+            try (Connection connection = DatabaseConnectionManager.getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryActivity, Statement.RETURN_GENERATED_KEYS);) {
+                preparedStatement.setString(1, activity.getName());
+                preparedStatement.setString(2, activity.getObservationsActivity());
+                preparedStatement.setInt(3, project.getProjectId());
+                preparedStatement.executeUpdate();
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int activityId = generatedKeys.getInt(1);
+                    success = insertWeeklyLogs(connection, weeklyLogs, activityId);
+                }
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "Error al insertar actividad", e);
+                throw new DataOperationException("Error al insertar actividad");
             }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al insertar actividad",e);
-            throw new DataOperationException("Error al insertar actividad");
+            return success;
         }
-        return success;
     }
 
     @Override
@@ -53,8 +57,8 @@ public class ActivityDAO implements IDAOActivity {
         try (PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLog);) {
             for (WeeklyLog log : logs) {
                 preparedStatement.setInt(1, log.getWeek());
-                preparedStatement.setFloat(2, log.getWorkedHours());
-                preparedStatement.setFloat(3, log.getPlannedHours());
+                preparedStatement.setInt(2, log.getWorkedHours());
+                preparedStatement.setInt(3, log.getPlannedHours());
                 preparedStatement.setInt(4, activityId);
                 preparedStatement.executeUpdate();
             }
@@ -121,8 +125,8 @@ public class ActivityDAO implements IDAOActivity {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 int week = resultSet.getInt("semana");
-                float workedHours = resultSet.getFloat("horas_realizadas");
-                float plannedHours = resultSet.getFloat("horas_planificadas");
+                int workedHours = resultSet.getInt("horas_realizadas");
+                int plannedHours = resultSet.getInt("horas_planificadas");
                 Activity activity = getActivityById(resultSet.getInt("id_actividad"));
                 weeklyLog = new WeeklyLog(weeklyLogId, week, workedHours, plannedHours, activity);
             }
