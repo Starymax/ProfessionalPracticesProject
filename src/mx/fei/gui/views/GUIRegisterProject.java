@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerRegisterProject;
 import mx.fei.logic.dto.Enterprise;
 import javafx.application.Application;
@@ -109,6 +110,8 @@ public class GUIRegisterProject extends Application {
         HBox dateRow = new HBox(16);
         dateRow.setAlignment(Pos.CENTER_LEFT);
         dateRow.getChildren().addAll(new Label("Fecha Inicio:"), initialDatePicker, new Label("Fecha Fin:"), finalDatePicker);
+        initialDatePicker.getEditor().setDisable(true);
+        finalDatePicker.getEditor().setDisable(true);
         form.add(dateRow, 0, row++, 2, 1);
 
         addRow(form, row++, "Responsabilidades:", responsabilitiesTextField);
@@ -171,38 +174,31 @@ public class GUIRegisterProject extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        List<Map.Entry<Boolean, String>> validations = List.of(
-                Map.entry(nameTextField.getText().isEmpty(), "El campo nombre es obligatorio."),
-                Map.entry(descriptionTextArea.getText().isEmpty(), "El campo descripcion es obligatorio."),
-                Map.entry(generalObjectiveTextField.getText().isEmpty(), "El campo Objetivo General es obligatorio."),
-                Map.entry(mediateObjectivesTextField.getText().isEmpty(), "El campo Objetivos Mediatos es obligatorio."),
-                Map.entry(immediateObjectivesTextField.getText().isEmpty(), "El campo Objetivos Inmediatos es obligatorio."),
-                Map.entry(methodologyTextField.getText().isEmpty(), "El campo Metodología es obligatorio."),
-                Map.entry(resourcesTextField.getText().isEmpty(), "El campo Recursos es obligatorio."),
-                Map.entry(initialDatePicker.getValue() == null, "El campo Fecha Inicial es obligatorio."),
-                Map.entry(finalDatePicker.getValue() == null, "El campo Fecha Final es obligatorio."),
-                Map.entry(responsabilitiesTextField.getText().isEmpty(), "El campo Responsabilidades es obligatorio."),
-                Map.entry(availablePlacesTextField.getText().isEmpty(), "El campo Lugares Disponibles es obligatorio."),
-                Map.entry(enterpriseComboBox.getSelectionModel().isEmpty(), "El campo Organización es obligatorio."),
-                Map.entry(projectManagerComboBox.getSelectionModel().isEmpty(), "El campo Responsable es obligatorio.")
-        );
-        for (var validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                validated = false;
-                break;
-            }
+        java.util.List<String> errors = new java.util.ArrayList<>();
+
+        // Validar campos obligatorios
+        GUIUtils.validateNames(nameTextField.getText().trim(), "Nombre", errors);
+        GUIUtils.validateLongText(descriptionTextArea.getText().trim(), "Descripción", errors);
+        GUIUtils.validateLongText(generalObjectiveTextField.getText().trim(), "Objetivo General", errors);
+        GUIUtils.validateLongText(mediateObjectivesTextField.getText().trim(), "Objetivos Mediatos", errors);
+        GUIUtils.validateLongText(immediateObjectivesTextField.getText().trim(), "Objetivos Inmediatos", errors);
+        GUIUtils.validateShortText(methodologyTextField.getText().trim(), "Metodología", errors);
+        GUIUtils.validateLongText(resourcesTextField.getText().trim(), "Recursos", errors);
+        GUIUtils.validateLongText(responsabilitiesTextField.getText().trim(), "Responsabilidades", errors);
+        GUIUtils.validateInt(availablePlacesTextField.getText().trim(), "Lugares Disponibles", errors);
+        GUIUtils.validateComboBoxSelection(enterpriseComboBox.getValue().getName(), "Organización", errors);
+        GUIUtils.validateComboBoxSelection(projectManagerComboBox.getValue().getName(), "Responsable", errors);
+        if (initialDatePicker.getValue() == null) {
+            errors.add("El campo Fecha Inicial es obligatorio.");
+        }
+        if (finalDatePicker.getValue() == null) {
+            errors.add("El campo Fecha Final es obligatorio.");
+        }
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
         }
         return validated;
-    }
-
-    public boolean validateFieldInt() {
-        boolean intValidated = true;
-        if (!availablePlacesTextField.getText().trim().matches("^\\d+$")) {
-            showError("El campo Lugares Disponibles debe incluir solo números.");
-            intValidated = false;
-        }
-        return intValidated;
     }
 
     public void loadEnterprises(List<Enterprise> enterprises) {
@@ -216,19 +212,11 @@ public class GUIRegisterProject extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Éxito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public TextField getNameTextField() {

@@ -22,7 +22,7 @@ public class ControllerRegisterProfessor {
 
     public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiRegisterProfessor.getButtonRegister()) {
-            if (guiRegisterProfessor.validateFields() && guiRegisterProfessor.validateFieldPassword() && guiRegisterProfessor.validateFieldInt()) {
+            if (guiRegisterProfessor.validateFields()) {
                 register();
             }
         } else if (event.getSource() == guiRegisterProfessor.getButtonCancel()) {

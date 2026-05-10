@@ -27,11 +27,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerModifyExperience;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class GUIModifyExperience extends Application {
     private EducationalExperience experience;
@@ -43,9 +43,6 @@ public class GUIModifyExperience extends Application {
     private ComboBox<String> comboBoxProfessors;
     private Button buttonUpdate;
     private Button buttonBack;
-    private static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}\\s]{3,50}$");
-    private static final Pattern REPETITION_PATTERN = Pattern.compile("(\\p{L})\\1{3,}", Pattern.CASE_INSENSITIVE);
-    private static final Pattern PERIOD_PATTERN = Pattern.compile("^(20)\\d{2}-(0[1-9]|1[0-2])$");
 
     public GUIModifyExperience(EducationalExperience experience) {
         this.experience = experience;
@@ -141,57 +138,28 @@ public class GUIModifyExperience extends Application {
     public boolean validateFields() {
         boolean valid = false;
         List<String> errors = new ArrayList<String>();
-        validateName(textFieldName.getText().trim(),"Nombre", errors);
-        validateName(textFieldCareer.getText().trim(),"Carrera", errors);
-        validatePeriod(textFieldPeriod.getText().trim(), errors);
+        GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
+        GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);
+        GUIUtils.validatePeriod(textFieldPeriod.getText().trim(), errors);
         if (errors.isEmpty()) {
             valid = true;
-        } else  {
-            showErrors(errors);
+        } else {
+            GUIUtils.showErrors(errors);
         }
         return valid;
     }
 
-    private void validateName(String value, String fieldName, List<String> errors) {
-        if (value.isEmpty()) {
-            errors.add("El campo de " + fieldName + " es obligatorio.");
-        } else if (!NAME_PATTERN.matcher(value).matches()) {
-            errors.add(fieldName + " debe contener solo letras y espacios, mínimo 3 caracteres y máximo 50.");
-        } else if (REPETITION_PATTERN.matcher(value).find()) {
-            errors.add(fieldName + " no puede tener más de 3 repeticiones consecutivas de la misma letra.");
-        }
-    }
-
-    private void validatePeriod(String period, List<String> errors) {
-        if (period.isEmpty()) {
-            errors.add("El campo de periodo es obligatorio.");
-        } else if (!PERIOD_PATTERN.matcher(period).matches()) {
-            errors.add("El periodo debe tener formato YYYY-MM (ejemplo: 2026-01).");
-        }
-    }
-
-    private void showErrors(List<String> errors) {
-        String combinedMessage = String.join("\n- ", errors);
-        showError("- " + combinedMessage);
-    }
-
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Exito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
-    public void closeWindow() {((Stage) buttonBack.getScene().getWindow()).close();}
+    public void closeWindow() {
+        ((Stage) buttonBack.getScene().getWindow()).close();
+    }
 
     public static void main(String[] args) {
         launch(args);

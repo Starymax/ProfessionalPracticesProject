@@ -13,9 +13,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import mx.fei.logic.dto.Professor;
 
 public class GUIAdministratorMenu extends Application {
 
+    private Professor professor;
     private Label labelAdministratorName;
     private Button buttonRegisterProfessor;
     private Button buttonModifyProfessor;
@@ -80,8 +82,9 @@ public class GUIAdministratorMenu extends Application {
         return button;
     }
 
-    public void setAdministratorName(String name) {
-        labelAdministratorName.setText(name);
+    public void setAdministratorInfo(Professor administrator) {
+        this.professor = administrator;
+        labelAdministratorName.setText(administrator.getName());
     }
 
     public Button getButtonRegisterProfessor() {
@@ -102,6 +105,10 @@ public class GUIAdministratorMenu extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public Professor getProfessor() {
+        return professor;
     }
 
     public static void main(String[] args) {

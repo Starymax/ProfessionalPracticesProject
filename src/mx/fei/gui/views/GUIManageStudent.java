@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerManageStudent;
+import mx.fei.gui.utils.GUIUtils;
 
 public class GUIManageStudent extends Application {
     private Button buttonRegisterStudent;
@@ -73,11 +74,7 @@ public class GUIManageStudent extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Error");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void closeWindow() {

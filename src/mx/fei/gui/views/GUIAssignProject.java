@@ -1,6 +1,7 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.controllers.ControllerAssignProject;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import javafx.application.Application;
@@ -112,19 +113,11 @@ public class GUIAssignProject extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Éxito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public Project getSelectedProject() {

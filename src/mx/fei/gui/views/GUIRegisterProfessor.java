@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.gui.controllers.ControllerRegisterProfessor;
 
@@ -124,57 +125,28 @@ public class GUIRegisterProfessor extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        List<Map.Entry<Boolean, String>> validations = List.of(
-                Map.entry(textFieldPersonalNumber.getText().isEmpty(), "El campo No. de personal es obligatorio."),
-                Map.entry(textFieldName.getText().isEmpty(), "El campo nombre es obligatorio."),
-                Map.entry(textFieldLastName.getText().isEmpty(), "El campo apellidos es obligatorio."),
-                Map.entry(textFieldEmail.getText().isEmpty(), "El campo correo es obligatorio."),
-                Map.entry(textFieldPassword.getText().isEmpty(), "El campo contraseña es obligatorio."),
-                Map.entry(comboBoxGender.getSelectionModel().isEmpty(), "El campo género es obligatorio.")
-        );
-        for (var validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                validated = false;
-                break;
-            }
+        java.util.List<String> errors = new java.util.ArrayList<>();
+        GUIUtils.validatePersonalNumber(textFieldPersonalNumber.getText().trim(), "No. de personal", errors);
+        GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
+        GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
+        GUIUtils.validateEmail(textFieldEmail.getText().trim(), errors);
+        GUIUtils.validateStrongPassword(textFieldPassword.getText().trim(), errors);
+        GUIUtils.validateNotEmpty(textFieldPassword.getText().trim(), "Contraseña", errors);
+        GUIUtils.validateComboBoxSelection(comboBoxGender.getValue(), "género", errors);
+        GUIUtils.validateComboBoxSelection(comboBoxShift.getValue(), "Turno", errors);
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
         }
         return validated;
     }
 
-    public boolean validateFieldPassword() {
-        boolean passwordValidated = true;
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?,.&]).{8,}$";
-        if (!textFieldPassword.getText().trim().matches(regex)) {
-            showError("Favor de que su contraseña tenga mínimo un carácter especial, una mayúscula, una minúscula, un número y que sea de 8 dígitos.");
-            passwordValidated = false;
-        }
-        return passwordValidated;
-    }
-
-    public boolean validateFieldInt() {
-        boolean intValidated = true;
-        if (!textFieldPersonalNumber.getText().trim().matches("^\\d+$")) {
-            showError("El campo No. de personal debe incluir solo números.");
-            intValidated = false;
-        }
-        return intValidated;
-    }
-
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Éxito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public TextField getTextFieldPersonalNumber() {

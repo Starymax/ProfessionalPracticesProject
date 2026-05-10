@@ -24,9 +24,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerLogin;
+import mx.fei.gui.utils.GUIUtils;
 
 public class GUILogin extends Application {
-    private     TextField textFieldMail;
+    private TextField textFieldMail;
     private PasswordField textFieldPassword;
     private Button buttonLogin;
     private Button buttonCancel;
@@ -84,11 +85,7 @@ public class GUILogin extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void closeWindow() {

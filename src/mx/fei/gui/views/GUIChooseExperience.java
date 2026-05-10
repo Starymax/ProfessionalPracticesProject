@@ -24,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerChooseExperience;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.EducationalExperience;
 import java.util.List;
 
@@ -97,11 +98,7 @@ public class GUIChooseExperience extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void closeWindow() {

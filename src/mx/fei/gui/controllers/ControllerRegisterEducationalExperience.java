@@ -27,35 +27,36 @@ public class ControllerRegisterEducationalExperience {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Registrar")) {
             if (!guiRegisterEducationalExperience.validateFields()) {
-            } else if (nrcExists()) {
-                alertWarning.setTitle("NRC no disponible");
-                alertWarning.setHeaderText(null);
-                alertWarning.setContentText("El NRC ingresado ya fue registrado previamente.");
-                alertWarning.showAndWait();
-            } else {
-                String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
-                String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
-                String carrer = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
-                String period = guiRegisterEducationalExperience.getTextFieldPeriod().getText().trim();
-                EducationalExperience educationalExperience = new EducationalExperience(nrc, name, carrer, period, null);
-                try {
-                    boolean registered = educationalExperienceDAO.registerEducationalExperience(educationalExperience);
-                    if (registered) {
-                        alertInformation.setTitle("Experiencia educativa registrada");
-                        alertInformation.setHeaderText(null);
-                        alertInformation.setContentText("Experiencia educativa registrada exitosamente.");
-                        alertInformation.showAndWait();
-                    }
-                } catch (IllegalArgumentException e) {
-                    alertWarning.setTitle("Error");
+                if (nrcExists()) {
+                    alertWarning.setTitle("NRC no disponible");
                     alertWarning.setHeaderText(null);
-                    alertWarning.setContentText("Datos invalidos, intente nuevamente.");
+                    alertWarning.setContentText("El NRC ingresado ya fue registrado previamente.");
                     alertWarning.showAndWait();
-                } catch (DataOperationException e) {
-                    alertError.setTitle("Error");
-                    alertError.setHeaderText(null);
-                    alertError.setContentText("Error al registrar la experiencia. Intente mas tarde");
-                    alertError.showAndWait();
+                } else {
+                    String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
+                    String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
+                    String carrer = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
+                    String period = guiRegisterEducationalExperience.getTextFieldPeriod().getText().trim();
+                    EducationalExperience educationalExperience = new EducationalExperience(nrc, name, carrer, period, null);
+                    try {
+                        boolean registered = educationalExperienceDAO.registerEducationalExperience(educationalExperience);
+                        if (registered) {
+                            alertInformation.setTitle("Experiencia educativa registrada");
+                            alertInformation.setHeaderText(null);
+                            alertInformation.setContentText("Experiencia educativa registrada exitosamente.");
+                            alertInformation.showAndWait();
+                        }
+                    } catch (IllegalArgumentException e) {
+                        alertWarning.setTitle("Error");
+                        alertWarning.setHeaderText(null);
+                        alertWarning.setContentText("Datos invalidos, intente nuevamente.");
+                        alertWarning.showAndWait();
+                    } catch (DataOperationException e) {
+                        alertError.setTitle("Error");
+                        alertError.setHeaderText(null);
+                        alertError.setContentText("Error al registrar la experiencia. Intente mas tarde");
+                        alertError.showAndWait();
+                    }
                 }
             }
         } else if (source.getText().equals("Cancelar")) {

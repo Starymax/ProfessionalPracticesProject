@@ -4,12 +4,12 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUILogin;
-import mx.fei.gui.views.GUIProfessor;
+import mx.fei.gui.views.GUIProfessorMenu;
 
 public class ControllerProfessorMenu {
-    private GUIProfessor guiProfessor;
-    public ControllerProfessorMenu(GUIProfessor guiProfessor) {
-        this.guiProfessor = guiProfessor;
+    private GUIProfessorMenu guiProfessorMenu;
+    public ControllerProfessorMenu(GUIProfessorMenu guiProfessorMenu) {
+        this.guiProfessorMenu = guiProfessorMenu;
     }
 
     public void handleButtonAction(ActionEvent event) {
@@ -21,7 +21,7 @@ public class ControllerProfessorMenu {
                 GUILogin guiLogin = new GUILogin();
                 Stage stage = new Stage();
                 stage.setTitle("Iniciar Sesion");
-                guiProfessor.closeWindow();
+                guiProfessorMenu.closeWindow();
             }
         }
     }

@@ -24,6 +24,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerChooseStudent;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Student;
 import java.util.List;
 
@@ -97,11 +98,7 @@ public class GUIChooseStudent extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void closeWindow() {

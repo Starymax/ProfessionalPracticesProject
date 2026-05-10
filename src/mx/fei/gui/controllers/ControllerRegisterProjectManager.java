@@ -27,7 +27,7 @@ public class ControllerRegisterProjectManager{
     }
 
     private void register() {
-        if (guiRegisterProjectManager.validateFields() && guiRegisterProjectManager.validateFieldsInt()) {
+        if (guiRegisterProjectManager.validateFields()) {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Confirmar registro");
             confirmation.setHeaderText(null);

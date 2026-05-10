@@ -1,7 +1,9 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.controllers.ControllerRegisterProjectManager;
+import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -101,46 +104,24 @@ public class GUIRegisterProjectManager extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        List<Map.Entry<Boolean, String>> validations = List.of(
-                Map.entry(textFieldName.getText().isBlank(), "El campo Nombre es obligatorio."),
-                Map.entry(textFieldPosition.getText().isBlank(), "El campo Cargo es obligatorio."),
-                Map.entry(textFieldPhoneNumber.getText().isBlank(), "El campo Teléfono es obligatorio."),
-                Map.entry(textFieldEmail.getText().isBlank(), "El campo Correo es obligatorio.")
-        );
-        for (Map.Entry<Boolean, String> validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                validated = false;
-                break;
-            }
+        List<String> errors = new ArrayList<>();
+        GUIUtils.validateNames(textFieldName.getText(), "Nombre", errors);
+        GUIUtils.validateShortText(textFieldPosition.getText().trim(), "Cargo", errors);
+        GUIUtils.validatePhone(textFieldPhoneNumber.getText().trim(), "Teléfono", errors);
+        GUIUtils.validateEmail(textFieldEmail.getText().trim(), errors);
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
         }
         return validated;
     }
 
-    public boolean validateFieldsInt() {
-        boolean intValidated = true;
-        String regex = "^\\d+$";
-        if (!textFieldPhoneNumber.getText().trim().matches(regex)) {
-            showError("El campo Teléfono debe incluir solo números.");
-            intValidated = false;
-        }
-        return intValidated;
-    }
-
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Éxito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public TextField getTextFieldName() {

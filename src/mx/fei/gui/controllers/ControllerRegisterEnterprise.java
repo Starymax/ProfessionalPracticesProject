@@ -21,7 +21,7 @@ public class ControllerRegisterEnterprise {
 
     public void handleButtonAction(ActionEvent event) {
         if (event.getSource() == guiRegisterEnterprise.getRegisterButton()) {
-            if (guiRegisterEnterprise.validateFields() && guiRegisterEnterprise.validateFieldsInt()) {
+            if (guiRegisterEnterprise.validateFields()) {
                 register();
             }
         } else if (event.getSource() == guiRegisterEnterprise.getCancelButton()) {

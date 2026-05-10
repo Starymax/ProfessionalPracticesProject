@@ -49,7 +49,7 @@ public class ControllerRegisterProject {
     }
 
     private void continueButton() {
-        if (guiRegisterProject.validateFields() && guiRegisterProject.validateFieldInt()) {
+        if (guiRegisterProject.validateFields()) {
             Project project = buildProject();
            // TODO: armar objeto Project y pasar a siguiente GUI (horario/calendarización)
         }

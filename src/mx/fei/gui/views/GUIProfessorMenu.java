@@ -22,7 +22,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class GUIProfessor extends Application {
+public class GUIProfessorMenu extends Application {
 
     private Professor professor;
     private Label labelProfessorName;
@@ -32,11 +32,11 @@ public class GUIProfessor extends Application {
     private Button buttonBack;
     private Stage stage;
 
-    public GUIProfessor(Professor professor) {
+    public GUIProfessorMenu(Professor professor) {
         this.professor = professor;
     }
 
-    public GUIProfessor() {}
+    public GUIProfessorMenu() {}
 
     @Override
     public void start(Stage stage) {

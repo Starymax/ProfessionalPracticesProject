@@ -1,7 +1,5 @@
 package mx.fei.logic.dao;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;

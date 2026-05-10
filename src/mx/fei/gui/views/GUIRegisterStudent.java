@@ -5,7 +5,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -27,6 +26,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerRegisterStudent;
+import mx.fei.gui.utils.GUIUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GUIRegisterStudent extends Application {
 
@@ -145,51 +148,30 @@ public class GUIRegisterStudent extends Application {
 
     public boolean validateFields() {
         boolean fieldsValidated = true;
-        java.util.List<java.util.Map.Entry<Boolean, String>> validations = java.util.List.of(
-                java.util.Map.entry(textFieldNames.getText().trim().isEmpty(),"El campo nombres es obligatorio."),
-                java.util.Map.entry(textFieldLastName.getText().trim().isEmpty(),"El campo apellidos es obligatorio."),
-                java.util.Map.entry(textFieldMail.getText().trim().isEmpty(),"El campo correo es obligatorio."),
-                java.util.Map.entry(textFieldPassword.getText().isEmpty(),"El campo contraseña es obligatorio."),
-                java.util.Map.entry(textFieldEnrollment.getText().trim().isEmpty(),"El campo matricula es obligatorio."),
-                java.util.Map.entry(textFieldPeriod.getText().trim().isEmpty(),"El campo periodo es obligatorio."),
-                java.util.Map.entry(radioButtonMan.getToggleGroup().getSelectedToggle() == null,"Selecciona un genero."),
-                java.util.Map.entry(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() == null,"Selecciona si el alumno habla lengua indigena.")
-        );
-        for (java.util.Map.Entry<Boolean, String> validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                fieldsValidated = false;
-                break;
-            }
+        List<String> errors = new ArrayList<>();
+        GUIUtils.validateNames(textFieldNames.getText(), "Nombre", errors);
+        GUIUtils.validateNames(textFieldLastName.getText(), "Apellidos", errors);
+        GUIUtils.validateEmail(textFieldMail.getText().trim(), errors);
+        GUIUtils.validateEnrollment(textFieldEnrollment.getText().trim(), "Matrícula", errors);
+        GUIUtils.validatePeriod(textFieldPeriod.getText().trim(), errors);
+        GUIUtils.validateStrongPassword(textFieldPassword.getText().trim(), errors);
+        boolean genderSelected = radioButtonMan.isSelected() || radioButtonWoman.isSelected();
+        GUIUtils.validateRadioSelection(genderSelected, "un género", errors);
+        boolean languageSelected = radioButtonSpeakIndigenousLanguage.isSelected() || radioButtonDontSpeakIndigenousLanguage.isSelected();
+        GUIUtils.validateRadioSelection(languageSelected, "si habla lengua indígena", errors);
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            fieldsValidated = false;
         }
         return fieldsValidated;
     }
 
-    public boolean validateFieldPassword() {
-        boolean passwordsValidated = true;
-        String password = textFieldPassword.getText().trim();
-        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.,]).{8,}$";
-        if (!password.matches(regex)) {
-            showError("La contraseña debe tener minimo 8 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.");
-            passwordsValidated = false;
-        }
-        return passwordsValidated;
-    }
-
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Exito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public void closeWindow() {

@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerRegisterEnterprise;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -82,55 +83,27 @@ public class GUIRegisterEnterprise extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        java.util.List<java.util.Map.Entry<Boolean, String>> validations = java.util.List.of(
-                java.util.Map.entry(nameTextField.getText().isEmpty(), "El campo Nombre es obligatorio."),
-                java.util.Map.entry(addressTextField.getText().isEmpty(), "El campo Dirección es obligatorio."),
-                java.util.Map.entry(phoneNumberTextField.getText().isEmpty(), "El campo Teléfono es obligatorio."),
-                java.util.Map.entry(emailTextField.getText().isEmpty(), "El campo Correo es obligatorio."),
-                java.util.Map.entry(sectorTextField.getText().isEmpty(), "El campo Sector es obligatorio."),
-                java.util.Map.entry(directUsersTextField.getText().isEmpty(), "El campo Usuarios Directos es obligatorio."),
-                java.util.Map.entry(indirectUsersTextField.getText().isEmpty(), "El campo Usuarios Indirectos es obligatorio.")
-        );
-        for (var validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                validated = false;
-                break;
-            }
+        java.util.List<String> errors = new java.util.ArrayList<>();
+        GUIUtils.validateShortText(nameTextField.getText().trim(), "Nombre", errors);
+        GUIUtils.validateShortText(addressTextField.getText().trim(), "Dirección", errors);
+        GUIUtils.validatePhone(phoneNumberTextField.getText().trim(), "Teléfono", errors);
+        GUIUtils.validateEmail(emailTextField.getText().trim(), errors);
+        GUIUtils.validateShortText(sectorTextField.getText().trim(), "Sector", errors);
+        GUIUtils.validateInt(directUsersTextField.getText().trim(), "Usuarios Directos", errors);
+        GUIUtils.validateInt(indirectUsersTextField.getText().trim(), "Usuarios Indirectos", errors);
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
         }
         return validated;
     }
 
-    public boolean validateFieldsInt() {
-        boolean intValidated = true;
-        String regex = "^\\d+$";
-        if (!phoneNumberTextField.getText().trim().matches(regex)) {
-            showError("El campo Teléfono debe incluir solo números.");
-            intValidated = false;
-        } else if (!directUsersTextField.getText().trim().matches(regex)) {
-            showError("El campo Usuarios Directos debe incluir solo números.");
-            intValidated = false;
-        } else if (!indirectUsersTextField.getText().trim().matches(regex)) {
-            showError("El campo Usuarios Indirectos debe incluir solo números.");
-            intValidated = false;
-        }
-        return intValidated;
-    }
-
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Éxito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public TextField getNameTextField() {

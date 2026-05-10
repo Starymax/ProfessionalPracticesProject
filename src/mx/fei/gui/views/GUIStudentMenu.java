@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIUtils;
 import javafx.scene.control.Alert;
 import mx.fei.gui.controllers.ControllerStudentMenu;
 import javafx.application.Application;
@@ -92,11 +93,7 @@ public class GUIStudentMenu extends Application {
         }
 
         public void showError(String message) {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Error");
-            alert.setHeaderText(null);
-            alert.setContentText(message);
-            alert.showAndWait();
+            GUIUtils.showError(message);
         }
 
         public void setStudentInfo(Student student) {

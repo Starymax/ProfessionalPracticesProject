@@ -3,7 +3,7 @@ package mx.fei.gui.controllers;
 import javafx.stage.Modality;
 import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.gui.views.GUILogin;
-import mx.fei.gui.views.GUIProfessor;
+import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUIRegisterProfessor;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
@@ -44,10 +44,10 @@ public class ControllerAdministratorMenu {
     }
 
     private void openProfessorView() {
-        GUIProfessor guiProfessor = new GUIProfessor();
+        GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
-        guiProfessor.start(stage);
+        guiProfessorMenu.start(stage);
     }
 
     private void logout() {

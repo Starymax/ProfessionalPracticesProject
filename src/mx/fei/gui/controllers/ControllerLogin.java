@@ -3,9 +3,9 @@ package mx.fei.gui.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import mx.fei.gui.views.GUIProfessor;
+import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUILogin;
-import mx.fei.gui.views.GUICoordinator;
+import mx.fei.gui.views.GUICoordinatorMenu;
 import mx.fei.gui.views.GUIStudentMenu;
 import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.logic.dao.StudentDAO;
@@ -109,7 +109,7 @@ public class ControllerLogin {
         GUIAdministratorMenu guiAdministratorMenu = new GUIAdministratorMenu();
         Stage administratorMenuStage = new Stage();
         guiAdministratorMenu.start(administratorMenuStage);
-        guiAdministratorMenu.setAdministratorName(professor.getName());
+        guiAdministratorMenu.setAdministratorInfo(professor);
         try {
             userDAO.logInByRole(UserRole.ADMINISTRATOR);
         } catch (DataOperationException e) {
@@ -119,10 +119,10 @@ public class ControllerLogin {
     }
 
     private void coordinatorLogin(Professor coordinator) {
-        GUICoordinator guiCoordinator = new GUICoordinator();
+        GUICoordinatorMenu guiCoordinatorMenu = new GUICoordinatorMenu();
         Stage stage = new Stage();
-        guiCoordinator.start(stage);
-        guiCoordinator.setCoordinatorInfo(coordinator);
+        guiCoordinatorMenu.start(stage);
+        guiCoordinatorMenu.setCoordinatorInfo(coordinator);
         try {
             userDAO.logInByRole(UserRole.COORDINATOR);
         } catch (DataOperationException e) {
@@ -132,10 +132,10 @@ public class ControllerLogin {
     }
 
     private void professorLogin(Professor professor) {
-        GUIProfessor guiProfessor = new GUIProfessor();
+        GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
         Stage stage = new Stage();
-        guiProfessor.start(stage);
-        guiProfessor.setProfessorInfo(professor);
+        guiProfessorMenu.start(stage);
+        guiProfessorMenu.setProfessorInfo(professor);
         guiLogin.closeWindow();
         try {
             userDAO.logInByRole(UserRole.PROFESSOR);

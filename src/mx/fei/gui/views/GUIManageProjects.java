@@ -2,6 +2,7 @@ package mx.fei.gui.views;
 
 import javafx.scene.control.Alert;
 import mx.fei.gui.controllers.ControllerManageProjects;
+import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -57,11 +58,7 @@ public class GUIManageProjects extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public Button getButtonRegisterProject() {

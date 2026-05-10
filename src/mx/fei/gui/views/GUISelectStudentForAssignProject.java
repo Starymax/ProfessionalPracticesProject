@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIUtils;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
@@ -89,11 +90,7 @@ public class GUISelectStudentForAssignProject extends Application {
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public Button getButtonSelect() {

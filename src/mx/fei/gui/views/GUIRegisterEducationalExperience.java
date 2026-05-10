@@ -6,7 +6,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,6 +22,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import mx.fei.gui.utils.GUIUtils;
 import java.util.List;
 import java.util.Map;
 
@@ -86,37 +86,25 @@ public class GUIRegisterEducationalExperience extends Application {
     }
 
     public boolean validateFields() {
-        boolean fieldsValidated = true;
-        List<Map.Entry<Boolean, String>> validations = List.of(
-                Map.entry(textFieldNrc.getText().trim().isEmpty(),"El campo NRC es obligatorio."),
-                Map.entry(textFieldName.getText().trim().isEmpty(),"El campo nombre es obligatorio."),
-                Map.entry(textFieldCareer.getText().trim().isEmpty(),"El campo carrera es obligatorio."),
-                Map.entry(textFieldPeriod.getText().trim().isEmpty(),"El campo periodo es obligatorio.")
-        );
-        for (Map.Entry<Boolean, String> validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                fieldsValidated = false;
-                break;
-            }
+        boolean validated = true;
+        java.util.List<String> errors = new java.util.ArrayList<>();
+        GUIUtils.validateNRC(textFieldNrc.getText().trim(), "NRC:", errors);
+        GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
+        GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);
+        GUIUtils.validatePeriod(textFieldPeriod.getText().trim(), errors);
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
         }
-        return fieldsValidated;
+        return validated;
     }
 
     public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Campo requerido");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showError(message);
     }
 
     public void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Exito");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+        GUIUtils.showSuccess(message);
     }
 
     public void closeWindow() {

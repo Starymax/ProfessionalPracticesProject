@@ -11,10 +11,10 @@ import mx.fei.gui.views.*;
 import java.util.Optional;
 
 public class ControllerCoordinatorMenu {
-    private GUICoordinator guiCoordinator;
+    private GUICoordinatorMenu guiCoordinatorMenu;
 
-    public ControllerCoordinatorMenu(GUICoordinator guiCoordinator) {
-        this.guiCoordinator = guiCoordinator;
+    public ControllerCoordinatorMenu(GUICoordinatorMenu guiCoordinatorMenu) {
+        this.guiCoordinatorMenu = guiCoordinatorMenu;
     }
 
     public void handleButtonAction(ActionEvent event) {
@@ -43,10 +43,10 @@ public class ControllerCoordinatorMenu {
                 guiManageExperience.start(stage);
             }
             case "Consultar profesor" -> {
-                GUIProfessor guiProfessor = new GUIProfessor();
+                GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
                 Stage stage = new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
-                guiProfessor.start(stage);
+                guiProfessorMenu.start(stage);
             }
             case "Regresar" -> {
                 logout();
@@ -61,7 +61,7 @@ public class ControllerCoordinatorMenu {
         confirm.setContentText("¿Seguro que desea cerrar sesión?");
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            guiCoordinator.closeWindow();
+            guiCoordinatorMenu.closeWindow();
             GUILogin guiLogin = new GUILogin();
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);
