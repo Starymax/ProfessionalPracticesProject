@@ -40,12 +40,18 @@ public class ControllerActivityPlan {
 
     private void openAddActivity() {
         try {
+            int remainingHours = guiActivityPlan.getRemainingPlannedHours();
+            if (remainingHours == 0) {
+                guiActivityPlan.showError("El plan ya tiene 240 horas planeadas. No se pueden agregar más actividades.");
+                return;
+            }
             GUIRegisterActivity guiRegisterActivity = new GUIRegisterActivity();
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             guiRegisterActivity.start(stage);
             guiRegisterActivity.setProject(project);
             guiRegisterActivity.setGuiActivityPlan(guiActivityPlan);
+            guiRegisterActivity.setRemainingAllowedHours(remainingHours);
         } catch (Exception exception) {
             guiActivityPlan.showError(exception.getMessage());
         }
@@ -55,6 +61,8 @@ public class ControllerActivityPlan {
         List<Activity> activities = guiActivityPlan.getActivities();
         if (activities.isEmpty()) {
             guiActivityPlan.showError("Debe añadir al menos una actividad para guardar.");
+        } else if (guiActivityPlan.getTotalPlannedHours() != GUIActivityPlan.TOTAL_PLAN_HOURS) {
+            guiActivityPlan.showError("La suma total de horas planeadas debe ser exactamente " + GUIActivityPlan.TOTAL_PLAN_HOURS + " horas para guardar el plan.");
         } else {
             Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
             confirmation.setTitle("Confirmar");
@@ -64,6 +72,7 @@ public class ControllerActivityPlan {
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 saveProject(project);
                 saveActivities(activities);
+                guiActivityPlan.showSuccess("Proyecto Registrado correctamente");
             }
         }
     }

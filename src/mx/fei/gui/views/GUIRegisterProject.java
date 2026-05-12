@@ -52,7 +52,9 @@ public class GUIRegisterProject extends Application {
         methodologyTextField = new TextField();
         resourcesTextField = new TextField();
         initialDatePicker = new DatePicker();
+        initialDatePicker.getEditor().setDisable(true);
         finalDatePicker = new DatePicker();
+        finalDatePicker.setDisable(true);
         responsabilitiesTextField = new TextField();
         availablePlacesTextField = new TextField();
         enterpriseComboBox = new ComboBox<>();

@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import mx.fei.gui.views.GUIUploadDocuments;
 import mx.fei.logic.dao.ProjectDAO;
+import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
 
@@ -39,14 +40,19 @@ public class ControllerStudentMenu {
     }
 
     private void openSelectProjects() {
+        StudentDAO studentDAO = new StudentDAO();
         try {
-            List<Project> projectList = projectDAO.getAvailableProjects();
-            GUISelectProjects guiSelectProjects = new GUISelectProjects();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiSelectProjects.start(stage);
-            guiSelectProjects.setStudent(guiStudentMenu.getStudent());
-            guiSelectProjects.loadProjects(projectList);
+            if (studentDAO.getSelectedProjects(guiStudentMenu.getStudent()).isEmpty()) {
+                List<Project> projectList = projectDAO.getAvailableProjects();
+                GUISelectProjects guiSelectProjects = new GUISelectProjects();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiSelectProjects.start(stage);
+                guiSelectProjects.setStudent(guiStudentMenu.getStudent());
+                guiSelectProjects.loadProjects(projectList);
+            } else {
+                guiStudentMenu.showError("Proyectos ya seleccionados.");
+            }
         } catch (DataOperationException e) {
             guiStudentMenu.showError(e.getMessage());
         }

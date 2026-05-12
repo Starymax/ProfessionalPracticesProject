@@ -1,6 +1,7 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.controllers.ControllerActivityPlan;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.WeeklyLog;
@@ -27,8 +28,11 @@ import java.util.Map;
 
 public class GUIActivityPlan extends Application {
 
+    public static final int TOTAL_PLAN_HOURS = 240;
+
     private ListView<Activity> listViewActivities;
     private Label labelActivityName;
+    private Label labelHoursSummary;
     private VBox weeklyLogsPanel;
     private Button buttonAddActivity;
     private Button buttonSave;
@@ -43,6 +47,10 @@ public class GUIActivityPlan extends Application {
 
         Label labelTitle = new Label("Plan de Actividades");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 18));
+
+        labelHoursSummary = new Label();
+        labelHoursSummary.setFont(Font.font("SansSerif", FontWeight.NORMAL, 14));
+        updateHoursSummary();
 
         listViewActivities = new ListView<>();
         listViewActivities.setPrefWidth(360);
@@ -101,7 +109,7 @@ public class GUIActivityPlan extends Application {
         buttonPanel.setLeft(buttonAddActivity);
         buttonPanel.setRight(buttonRightPanel);
 
-        VBox mainPanel = new VBox(24, labelTitle, contentPanel, buttonPanel);
+        VBox mainPanel = new VBox(16, labelTitle, labelHoursSummary, contentPanel, buttonPanel);
         mainPanel.setPadding(new Insets(32, 40, 32, 40));
 
         Scene scene = new Scene(mainPanel, 780, 460);
@@ -125,6 +133,7 @@ public class GUIActivityPlan extends Application {
     public void addActivity(Activity activity, ArrayList<WeeklyLog> weeklyLogs) {
         listViewActivities.getItems().add(activity);
         weeklyLogsMap.put(activity, weeklyLogs);
+        updateHoursSummary();
     }
 
     public List<Activity> getActivities() {
@@ -135,12 +144,30 @@ public class GUIActivityPlan extends Application {
         return weeklyLogsMap;
     }
 
+    public int getTotalPlannedHours() {
+        return weeklyLogsMap.values().stream().flatMap(List::stream).mapToInt(WeeklyLog::getPlannedHours).sum();
+    }
+
+    public int getRemainingPlannedHours() {
+        return Math.max(TOTAL_PLAN_HOURS - getTotalPlannedHours(), 0);
+    }
+
+    public void updateHoursSummary() {
+        int total = getTotalPlannedHours();
+        int remaining = getRemainingPlannedHours();
+        labelHoursSummary.setText("Horas planeadas: " + total + " / " + TOTAL_PLAN_HOURS + "    Restantes: " + remaining);
+    }
+
     public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Aviso");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
     }
 
     public void setProject(Project project) {

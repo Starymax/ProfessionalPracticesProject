@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import javafx.scene.control.*;
+import javafx.util.converter.IntegerStringConverter;
 import mx.fei.gui.controllers.ControllerRegisterActivity;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Activity;
@@ -9,14 +11,6 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -44,6 +38,7 @@ public class GUIRegisterActivity extends Application {
     private Button buttonCancel;
     private Stage stage;
     private final Map<Integer, Integer> plannedHoursPerWeek = new HashMap<>();
+    private int remainingAllowedHours = GUIActivityPlan.TOTAL_PLAN_HOURS;
     private Project project;
     private GUIActivityPlan guiActivityPlan;
 
@@ -100,10 +95,19 @@ public class GUIRegisterActivity extends Application {
         spinnerPlannedHours.setValueFactory(valueFactory);
         spinnerPlannedHours.setPrefWidth(100);
         spinnerPlannedHours.setEditable(true);
+        TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*")) {
+                return change;
+            }
+            return null;
+        });
+        spinnerPlannedHours.getEditor().setTextFormatter(formatter);
         spinnerPlannedHours.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null && newValue >= 0) {
                 int currentWeek = comboBoxWeek.getValue();
                 plannedHoursPerWeek.put(currentWeek, newValue);
+                updateSpinnerMax();
             }
         });
         comboBoxWeek.valueProperty().addListener((observable, oldWeek, newWeek) -> {
@@ -113,6 +117,7 @@ public class GUIRegisterActivity extends Application {
             if (newWeek != null) {
                 spinnerPlannedHours.getValueFactory().setValue(
                         plannedHoursPerWeek.getOrDefault(newWeek, 0));
+                updateSpinnerMax();
             }
         });
         HBox weekRow = new HBox(24, new HBox(10, labelWeek, comboBoxWeek), new HBox(10, labelPlannedHours, spinnerPlannedHours));
@@ -142,10 +147,15 @@ public class GUIRegisterActivity extends Application {
         boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateShortText(textFieldActivityName.getText(), "Nombre", errors);
-        GUIUtils.validateLongText(textAreaDescription.getText(), "Apellidos", errors);
+        GUIUtils.validateLongText(textAreaDescription.getText(), "Descripcion", errors);
+        plannedHoursPerWeek.put(comboBoxWeek.getValue(), spinnerPlannedHours.getValue());
         long weeksWithHours = plannedHoursPerWeek.values().stream().filter(hours -> hours > 0).count();
         if (weeksWithHours == 0) {
             errors.add("Debe asignar horas planeadas en al menos una semana.");
+        }
+        int totalActivityHours = getTotalPlannedHours();
+        if (totalActivityHours > remainingAllowedHours) {
+            errors.add("Las horas planeadas exceden las " + remainingAllowedHours + " horas disponibles.");
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
@@ -163,6 +173,29 @@ public class GUIRegisterActivity extends Application {
             }
         }
         return weeklyLogs;
+    }
+
+    private int getTotalPlannedHours() {
+        return plannedHoursPerWeek.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    public void setRemainingAllowedHours(int remainingAllowedHours) {
+        this.remainingAllowedHours = Math.max(0, remainingAllowedHours);
+        if (spinnerPlannedHours != null) {
+            updateSpinnerMax();
+        }
+    }
+
+    private void updateSpinnerMax() {
+        int currentWeek = comboBoxWeek.getValue();
+        int currentWeekHours = plannedHoursPerWeek.getOrDefault(currentWeek, 0);
+        int totalWithoutCurrentWeek = getTotalPlannedHours() - currentWeekHours;
+        int maxHours = Math.max(currentWeekHours, remainingAllowedHours - totalWithoutCurrentWeek);
+        if (maxHours < 0) {
+            maxHours = currentWeekHours;
+        }
+        SpinnerValueFactory<Integer> newValueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxHours, currentWeekHours);
+        spinnerPlannedHours.setValueFactory(newValueFactory);
     }
 
     public void showError(String message) {
