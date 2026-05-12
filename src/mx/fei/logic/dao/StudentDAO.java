@@ -293,25 +293,6 @@ public class StudentDAO implements IDAOStudent {
         return selectedProjects;
     }
 
-    public Project getProjectAssignedToEnrollment(String enrollment) throws DataOperationException {
-        Project project = null;
-        String query = "SELECT id_proyecto FROM proyecto p JOIN alumno a ON a.proyecto_asignado = p.id_proyecto WHERE a.matricula = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, enrollment);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int idProject = resultSet.getInt("id_proyecto");
-                ProjectDAO projectDAO = new ProjectDAO();
-                project = projectDAO.getProjectById(idProject);
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el proyecto asignado", e);
-            throw new DataOperationException("No se pudo obtener el proyecto asignado.");
-        }
-        return project;
-    }
-
     @Override
     public boolean assignProject(Student student, Project project) throws DataOperationException {
         boolean assigned = false;

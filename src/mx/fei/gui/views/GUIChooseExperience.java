@@ -6,7 +6,6 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -33,6 +32,7 @@ public class GUIChooseExperience extends Application {
     private Button buttonSelect;
     private Button buttonBack;
     private List<EducationalExperience> experiences;
+    private boolean toModify = false;
 
     public GUIChooseExperience() {}
 
@@ -70,8 +70,8 @@ public class GUIChooseExperience extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerChooseExperience controllerChooseExperience = new ControllerChooseExperience(this);
-        buttonSelect.setOnAction(event -> controllerChooseExperience.handleButtons(event));
-        buttonBack.setOnAction(event -> controllerChooseExperience.handleButtons(event));
+        buttonSelect.setOnAction(event -> controllerChooseExperience.handleButtonsSelectReturn(event));
+        buttonBack.setOnAction(event -> controllerChooseExperience.handleButtonsSelectReturn(event));
         Scene scene = new Scene(mainPanel, 680, 420);
         stage.setScene(scene);
         stage.show();
@@ -96,6 +96,7 @@ public class GUIChooseExperience extends Application {
         }
         listViewExperiences.setItems(items);
     }
+    //TODO: Validar que no se de clic en seleccionar sin seleccionar una experiencia primero
 
     public void showError(String message) {
         GUIUtils.showError(message);
@@ -112,5 +113,7 @@ public class GUIChooseExperience extends Application {
     public ListView<String> getListViewExperiences() { return listViewExperiences; }
     public Button getButtonSelect() { return buttonSelect; }
     public Button getButtonBack() { return buttonBack; }
+    public boolean isToModify() {return toModify; }
+    public void setToModify(boolean toModify) {this.toModify = toModify; }
     public List<EducationalExperience> getExperiences() { return experiences; }
 }

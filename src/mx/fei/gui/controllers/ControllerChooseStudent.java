@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseStudent;
+import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
@@ -33,11 +34,17 @@ public class ControllerChooseStudent {
         }
     }
 
-    public void handleButtons(ActionEvent event) {
+    public void handleButtonsSelectAndReturn(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Seleccionar" -> handleSelect();
-            case "Regresar" -> guiChooseStudent.closeWindow();
+            case "Regresar" -> {
+                guiChooseStudent.closeWindow();
+                GUIManageStudent guiManageStudent = new GUIManageStudent();
+                Stage stage = new Stage();
+                stage.setTitle("Gestionar estudiantes");
+                guiManageStudent.start(stage);
+            }
         }
     }
 
