@@ -33,7 +33,7 @@ public class ControllerModifyExperience {
         }
     }
 
-    public void handleButtons(ActionEvent event) {
+    public void handleButtonsUpdateReturn(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Actualizar" -> handleUpdate();

@@ -3,7 +3,9 @@ package mx.fei.gui.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
+import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIModifyExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
@@ -29,11 +31,17 @@ public class ControllerChooseExperience {
         }
     }
 
-    public void handleButtons(ActionEvent event) {
+    public void handleButtonsSelectReturn(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Seleccionar" -> handleSelect();
-            case "Regresar" -> guiChooseExperience.closeWindow();
+            case "Regresar" -> {
+                GUIManageExperience guiManageExperience = new GUIManageExperience();
+                Stage stage = new Stage();
+                stage.setTitle("Seleccionar experiencia");
+                guiManageExperience.start(stage);
+                guiChooseExperience.closeWindow();
+            }
         }
     }
 
@@ -42,9 +50,17 @@ public class ControllerChooseExperience {
         if (selected == null) {
             guiChooseExperience.showError("Selecciona una experiencia de la lista.");
         }
-        GUIModifyExperience guiModifyExperience = new GUIModifyExperience(selected);
-        Stage stage = new Stage();
-        guiModifyExperience.start(stage);
-        guiChooseExperience.closeWindow();
+        if (guiChooseExperience.isToModify()) {
+            GUIModifyExperience guiModifyExperience = new GUIModifyExperience(selected);
+            Stage stage = new Stage();
+            guiModifyExperience.start(stage);
+            guiChooseExperience.closeWindow();
+        } else {
+            GUIAddStudents  guiAddStudents = new GUIAddStudents(selected);
+            Stage stage = new Stage();
+            guiAddStudents.start(stage);
+            guiChooseExperience.closeWindow();
+        }
+
     }
 }
