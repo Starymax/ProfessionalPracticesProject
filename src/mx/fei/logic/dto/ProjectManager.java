@@ -6,13 +6,15 @@ public class ProjectManager {
     private String emailProjectManager;
     private String phoneNumberProjectManager;
     private String rol;
+    private int enterpriseId;
 
-    public ProjectManager(int projectManagerId, String name, String emailProjectManager, String phoneNumberProjectManager, String rol) {
+    public ProjectManager(int projectManagerId, String name, String emailProjectManager, String phoneNumberProjectManager, String rol, int enterpriseId) {
         this.id = projectManagerId;
         this.name = name;
         this.emailProjectManager = emailProjectManager;
         this.phoneNumberProjectManager = phoneNumberProjectManager;
         this.rol = rol;
+        this.enterpriseId = enterpriseId;
     }
 
     public int getProjectManagerId() {
@@ -53,5 +55,9 @@ public class ProjectManager {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public int getEnterpriseId() {
+        return enterpriseId;
     }
 }

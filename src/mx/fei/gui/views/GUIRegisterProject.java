@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 import mx.fei.logic.dto.ProjectManager;
 
 import java.util.List;
-import java.util.Map;
 
 public class GUIRegisterProject extends Application {
 
@@ -54,7 +53,7 @@ public class GUIRegisterProject extends Application {
         initialDatePicker = new DatePicker();
         initialDatePicker.getEditor().setDisable(true);
         finalDatePicker = new DatePicker();
-        finalDatePicker.setDisable(true);
+        finalDatePicker.getEditor().setDisable(true);
         responsabilitiesTextField = new TextField();
         availablePlacesTextField = new TextField();
         enterpriseComboBox = new ComboBox<>();
@@ -112,8 +111,6 @@ public class GUIRegisterProject extends Application {
         HBox dateRow = new HBox(16);
         dateRow.setAlignment(Pos.CENTER_LEFT);
         dateRow.getChildren().addAll(new Label("Fecha Inicio:"), initialDatePicker, new Label("Fecha Fin:"), finalDatePicker);
-        initialDatePicker.getEditor().setDisable(true);
-        finalDatePicker.getEditor().setDisable(true);
         form.add(dateRow, 0, row++, 2, 1);
 
         addRow(form, row++, "Responsabilidades:", responsabilitiesTextField);
@@ -131,9 +128,10 @@ public class GUIRegisterProject extends Application {
         cancelButton.setStyle(buttonStyle);
 
         ControllerRegisterProject controllerRegisterProject = new ControllerRegisterProject(this);
-        addProjectManagerButton.setOnAction(event ->  controllerRegisterProject.handleButtonAction(event));
-        continueButton.setOnAction(event ->  controllerRegisterProject.handleButtonAction(event));
-        cancelButton.setOnAction(event ->  controllerRegisterProject.handleButtonAction(event));
+        addProjectManagerButton.setOnAction(event ->  controllerRegisterProject.handleButtonsAndComboBoxes(event));
+        continueButton.setOnAction(event ->  controllerRegisterProject.handleButtonsAndComboBoxes(event));
+        cancelButton.setOnAction(event ->  controllerRegisterProject.handleButtonsAndComboBoxes(event));
+        enterpriseComboBox.setOnAction(event -> controllerRegisterProject.handleButtonsAndComboBoxes(event));
 
         HBox buttonRow = new HBox(12, addProjectManagerButton, continueButton, cancelButton);
         buttonRow.setAlignment(Pos.CENTER_LEFT);
@@ -186,8 +184,12 @@ public class GUIRegisterProject extends Application {
         GUIUtils.validateLongText(resourcesTextField.getText().trim(), "Recursos", errors);
         GUIUtils.validateLongText(responsabilitiesTextField.getText().trim(), "Responsabilidades", errors);
         GUIUtils.validateInt(availablePlacesTextField.getText().trim(), "Lugares Disponibles", errors);
-        GUIUtils.validateComboBoxSelection(enterpriseComboBox.getValue().getName(), "Organización", errors);
-        GUIUtils.validateComboBoxSelection(projectManagerComboBox.getValue().getName(), "Responsable", errors);
+        if (enterpriseComboBox.getValue() == null) {
+            errors.add("El campo Organizacion es obligatorio");
+        }
+        if (enterpriseComboBox.getValue() == null) {
+            errors.add("El campo Responsable es obligatorio");
+        }
         if (initialDatePicker.getValue() == null) {
             errors.add("El campo Fecha Inicial es obligatorio.");
         }

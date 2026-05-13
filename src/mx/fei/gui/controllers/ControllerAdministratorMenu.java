@@ -48,6 +48,7 @@ public class ControllerAdministratorMenu {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiProfessorMenu.start(stage);
+        guiProfessorMenu.setProfessorInfo(guiAdministratorMenu.getProfessor());
     }
 
     private void logout() {

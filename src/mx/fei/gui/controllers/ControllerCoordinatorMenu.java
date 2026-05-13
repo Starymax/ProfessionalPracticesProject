@@ -47,6 +47,7 @@ public class ControllerCoordinatorMenu {
                 Stage stage = new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
                 guiProfessorMenu.start(stage);
+                guiProfessorMenu.setProfessorInfo(guiCoordinatorMenu.getCoordinator());
             }
             case "Regresar" -> {
                 logout();

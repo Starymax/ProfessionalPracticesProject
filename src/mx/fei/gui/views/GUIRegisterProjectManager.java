@@ -20,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import mx.fei.logic.dto.Enterprise;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class GUIRegisterProjectManager extends Application {
     private Button buttonRegister;
     private Button buttonCancel;
     private Stage stage;
+    private Enterprise enterprise;
 
     @Override
     public void start(Stage stage) {
@@ -116,6 +118,10 @@ public class GUIRegisterProjectManager extends Application {
         return validated;
     }
 
+    public void loadEnterprise(Enterprise enterprise) {
+        this.enterprise = enterprise;
+    }
+
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -150,6 +156,10 @@ public class GUIRegisterProjectManager extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public Enterprise getEnterprise() {
+        return enterprise;
     }
 
     public static void main(String[] args) {

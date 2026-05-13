@@ -34,9 +34,7 @@ public class ControllerManageProjects implements EventHandler<ActionEvent> {
             Stage newStage = new Stage();
             guiRegisterProject.start(newStage);
             EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
-            ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
             guiRegisterProject.loadEnterprises(enterpriseDAO.getActiveEnterprises());
-            guiRegisterProject.loadProjectManagers(projectManagerDAO.getProjectManagers());
             guiManageProjects.getStage().close();
         } catch (DataOperationException e) {
             guiManageProjects.showError(e.getMessage());

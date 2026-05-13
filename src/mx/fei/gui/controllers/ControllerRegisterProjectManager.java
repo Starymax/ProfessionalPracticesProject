@@ -39,7 +39,8 @@ public class ControllerRegisterProjectManager{
                     String position = guiRegisterProjectManager.getTextFieldPosition().getText();
                     String phoneNumber = guiRegisterProjectManager.getTextFieldPhoneNumber().getText();
                     String email = guiRegisterProjectManager.getTextFieldEmail().getText();
-                    ProjectManager projectManager = new ProjectManager(0, name, email, phoneNumber, position);
+                    int enterpriseId = guiRegisterProjectManager.getEnterprise().getEnterpriseId();
+                    ProjectManager projectManager = new ProjectManager(0, name, email, phoneNumber, position, enterpriseId);
                     ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
                     if (projectManagerDAO.registerProjectManager(projectManager)) {
                         guiRegisterProjectManager.showSuccess("Responsable registrado exitosamente.");

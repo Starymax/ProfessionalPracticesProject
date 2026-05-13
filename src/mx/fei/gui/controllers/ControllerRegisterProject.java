@@ -1,5 +1,6 @@
 package mx.fei.gui.controllers;
 
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -8,6 +9,7 @@ import javafx.stage.Stage;
 import mx.fei.gui.views.GUIActivityPlan;
 import mx.fei.gui.views.GUIRegisterProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
+import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
@@ -15,6 +17,8 @@ import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class ControllerRegisterProject {
@@ -25,8 +29,10 @@ public class ControllerRegisterProject {
         this.guiRegisterProject = guiRegisterProject;
     }
 
-    public void handleButtonAction(ActionEvent event) {
-        if (event.getSource() == guiRegisterProject.getAddProjectManagerButton()) {
+    public void handleButtonsAndComboBoxes(ActionEvent event) {
+        if (event.getSource() == guiRegisterProject.getEnterpriseComboBox()) {
+            updateProjectManagers();
+        } else if (event.getSource() == guiRegisterProject.getAddProjectManagerButton()) {
             addProjectManager();
         } else if (event.getSource() == guiRegisterProject.getContinueButton()) {
             continueButton();
@@ -35,17 +41,32 @@ public class ControllerRegisterProject {
         }
     }
 
+    private void updateProjectManagers() {
+        Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
+        ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
+        List<ProjectManager> projectManagers = new ArrayList<>();
+        try {
+            projectManagers = projectManagerDAO.getProjectManagersByEnterprise(enterprise);
+        } catch (DataOperationException e) {
+            guiRegisterProject.showError(e.getMessage());
+        }
+        guiRegisterProject.getProjectManagerComboBox().setItems(FXCollections.observableArrayList(projectManagers));
+    }
+
     private void addProjectManager() {
         GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
         ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
         Stage stage = new Stage();
-        stage.setTitle("Add Project Manager");
+        stage.setTitle("Añadir Responsable");
         stage.initModality(Modality.APPLICATION_MODAL);
         guiRegisterProjectManager.start(stage);
         try {
-            guiRegisterProject.loadProjectManagers(projectManagerDAO.getProjectManagers());
+            Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
+            guiRegisterProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(enterprise));
+            guiRegisterProjectManager.loadEnterprise(enterprise);
         } catch (DataOperationException e) {
-            guiRegisterProjectManager.showError(e.getMessage());
+            guiRegisterProject.showError(e.getMessage());
+            guiRegisterProjectManager.getStage().close();
         }
     }
 
