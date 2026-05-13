@@ -6,7 +6,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import mx.fei.gui.views.*;
+import mx.fei.gui.views.GUICoordinatorMenu;
+import mx.fei.gui.views.GUIManageExperience;
+import mx.fei.gui.views.GUIManageProjects;
+import mx.fei.gui.views.GUIManageStudent;
+import mx.fei.gui.views.GUIProfessorMenu;
+import mx.fei.gui.views.GUILogin;
 
 import java.util.Optional;
 

@@ -3,11 +3,9 @@ package mx.fei.gui.views;
 import mx.fei.gui.controllers.ControllerRegisterProjectManager;
 import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -24,7 +22,6 @@ import mx.fei.logic.dto.Enterprise;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class GUIRegisterProjectManager extends Application {
 

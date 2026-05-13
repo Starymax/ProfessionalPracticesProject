@@ -10,6 +10,7 @@ public class Project {
     private String mediatesObjectives;
     private String immediateObjectives;
     private String methodology;
+    private String responsabilities;
     private String resources;
     private Date startDate;
     private Date finalDate;
@@ -18,7 +19,7 @@ public class Project {
     private Enterprise enterprise;
     private ProjectManager projectManager;
 
-    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String resources, Date startDate, Date finalDate, boolean activeStatus, int available_places, Enterprise enterprise, ProjectManager projectManager) {
+    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String responsabilities, String resources, Date startDate, Date finalDate, boolean activeStatus, int available_places, Enterprise enterprise, ProjectManager projectManager) {
         this.id = projectId;
         this.nameProject = nameProject;
         this.descriptionProject = descriptionProject;
@@ -26,6 +27,7 @@ public class Project {
         this.mediatesObjectives = mediatesObjectives;
         this.immediateObjectives = immediateObjectives;
         this.methodology = methodology;
+        this.responsabilities = responsabilities;
         this.resources = resources;
         this.startDate = startDate;
         this.finalDate = finalDate;
@@ -89,6 +91,14 @@ public class Project {
 
     public void setMethodology(String methodology) {
         this.methodology = methodology;
+    }
+
+    public String getResponsabilities() {
+        return responsabilities;
+    }
+
+    public void setResponsabilities(String responsabilities) {
+        this.responsabilities = responsabilities;
     }
 
     public String getResources() {

@@ -23,8 +23,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import mx.fei.gui.utils.GUIUtils;
-import java.util.List;
-import java.util.Map;
 
 public class GUIRegisterEducationalExperience extends Application {
 

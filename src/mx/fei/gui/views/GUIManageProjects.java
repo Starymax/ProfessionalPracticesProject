@@ -1,6 +1,5 @@
 package mx.fei.gui.views;
 
-import javafx.scene.control.Alert;
 import mx.fei.gui.controllers.ControllerManageProjects;
 import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;

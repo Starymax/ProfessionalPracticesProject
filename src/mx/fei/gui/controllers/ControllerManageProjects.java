@@ -6,7 +6,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import mx.fei.logic.dao.EnterpriseDAO;
-import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
 public class ControllerManageProjects implements EventHandler<ActionEvent> {

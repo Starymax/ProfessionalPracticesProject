@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import mx.fei.gui.views.GUIActivityPlan;
 import mx.fei.gui.views.GUIRegisterProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
-import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
@@ -88,13 +87,14 @@ public class ControllerRegisterProject {
         String mediatesObjectives = guiRegisterProject.getMediateObjectivesTextField().getText();
         String immediateObjectives = guiRegisterProject.getImmediateObjectivesTextField().getText();
         String methodology = guiRegisterProject.getMethodologyTextField().getText();
+        String responsabilities = guiRegisterProject.getResponsabilitiesTextField().getText();
         String resources = guiRegisterProject.getResourcesTextField().getText();
         Date initialDate = Date.valueOf(guiRegisterProject.getInitialDatePicker().getValue());
         Date finalDate = Date.valueOf(guiRegisterProject.getFinalDatePicker().getValue());
         int availablePlaces = Integer.parseInt(guiRegisterProject.getAvailablePlacesTextField().getText());
         Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
         ProjectManager projectManager = guiRegisterProject.getProjectManagerComboBox().getValue();
-        return new Project(0, name, description, generalObjective, mediatesObjectives, immediateObjectives, methodology, resources, initialDate, finalDate, true, availablePlaces, enterprise, projectManager);
+        return new Project(0, name, description, generalObjective, mediatesObjectives, immediateObjectives, methodology, responsabilities, resources, initialDate, finalDate, true, availablePlaces, enterprise, projectManager);
     }
 
     private void cancel() {

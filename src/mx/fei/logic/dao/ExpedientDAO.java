@@ -24,7 +24,7 @@ public class ExpedientDAO implements IDAOExpedient {
         String queryLoad = "UPDATE expediente_practicas ep " + "INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente " + "SET ep." + documentType + " = ? " + "WHERE v.matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryLoad)) {
-            preparedStatement.setBoolean(1,loadState);
+            preparedStatement.setBoolean(1,true);
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {

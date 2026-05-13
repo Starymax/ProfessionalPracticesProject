@@ -1,6 +1,14 @@
 package mx.fei.gui.views;
 
-import javafx.scene.control.*;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.Alert;
 import javafx.util.converter.IntegerStringConverter;
 import mx.fei.gui.controllers.ControllerRegisterActivity;
 import mx.fei.gui.utils.GUIUtils;

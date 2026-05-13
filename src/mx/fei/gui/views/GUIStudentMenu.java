@@ -1,7 +1,6 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIUtils;
-import javafx.scene.control.Alert;
 import mx.fei.gui.controllers.ControllerStudentMenu;
 import javafx.application.Application;
 import javafx.geometry.Insets;
