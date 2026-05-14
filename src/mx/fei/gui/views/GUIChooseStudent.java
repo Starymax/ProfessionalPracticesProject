@@ -88,7 +88,7 @@ public class GUIChooseStudent extends Application {
     public Student getSelectedStudent() {
         int selectedIndex = listViewStudents.getSelectionModel().getSelectedIndex();
         if (students == null || students.isEmpty()) {
-            throw new IllegalStateException("No hay alumnos disponibles selected");
+            throw new IllegalStateException("No hay alumnos disponibles");
         }
         if (selectedIndex < 0 || selectedIndex >= students.size()) {
             throw new IllegalStateException("No se ha seleccionado un alumno");

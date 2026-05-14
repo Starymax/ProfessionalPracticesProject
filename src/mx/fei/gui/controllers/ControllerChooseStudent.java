@@ -29,7 +29,7 @@ public class ControllerChooseStudent {
             List<Student> students = studentDAO.getStudents();
             guiChooseStudent.setStudents(students);
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE,"Error al cargar estudiantes", e);
+            logger.log(Level.SEVERE,"Error al cargar a los estudiantes", e);
             guiChooseStudent.showError("Error al cargar la lista de estudiantes.");
         }
     }
@@ -49,9 +49,9 @@ public class ControllerChooseStudent {
     }
 
     private void handleSelect() {
-        Student selected = guiChooseStudent.getSelectedStudent();
-        if (selected != null) {
-             GUIModifyStudent guiModifyStudent = new GUIModifyStudent(selected);
+        Student StudentSelected = guiChooseStudent.getSelectedStudent();
+        if (StudentSelected != null) {
+             GUIModifyStudent guiModifyStudent = new GUIModifyStudent(StudentSelected);
              Stage stage = new Stage();
              guiModifyStudent.start(stage);
              guiChooseStudent.closeWindow();
