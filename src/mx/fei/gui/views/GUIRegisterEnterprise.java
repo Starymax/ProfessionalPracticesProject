@@ -123,7 +123,7 @@ public class GUIRegisterEnterprise extends Application {
         ControllerRegisterEnterprise controllerRegisterEnterprise = new ControllerRegisterEnterprise(this);
         buttonRegister.setOnAction(event -> controllerRegisterEnterprise.handleButtonsRegisterCancel(event));
         buttonCancel.setOnAction(event -> controllerRegisterEnterprise.handleButtonsRegisterCancel(event));
-        Scene scene = new Scene(mainPanel, 560, 560);
+        Scene scene = new Scene(mainPanel, 560, 460);
         stage.setScene(scene);
         stage.show();
     }

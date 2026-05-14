@@ -1,7 +1,6 @@
 package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
-import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
@@ -94,7 +93,6 @@ public class ControllerSelectProjects {
                     studentDAO.saveSelectedProjects(selectedProjects, student);
                     guiSelectProjects.showSuccess("Proyectos seleccionados correctamente.");
                     guiSelectProjects.getStage().close();
-
                 } catch (DataOperationException e) {
                     guiSelectProjects.showError(e.getMessage());
                 }

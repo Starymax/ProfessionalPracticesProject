@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIModifyProfessor extends Application {
@@ -126,7 +127,7 @@ public class GUIModifyProfessor extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        List<String> errors = new java.util.ArrayList<>();
+        List<String> errors = new ArrayList<>();
         GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
         GUIUtils.validateEmail(textFieldEmail.getText().trim(), errors);

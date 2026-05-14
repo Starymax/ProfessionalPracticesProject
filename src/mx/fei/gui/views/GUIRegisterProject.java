@@ -25,6 +25,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.logic.dto.ProjectManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIRegisterProject extends Application {
@@ -185,7 +186,7 @@ public class GUIRegisterProject extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        java.util.List<String> errors = new java.util.ArrayList<>();
+        List<String> errors = new ArrayList<>();
         GUIUtils.validateShortText(nameTextField.getText().trim(), "Nombre", errors);
         GUIUtils.validateLongText(descriptionTextArea.getText().trim(), "Descripción", errors);
         GUIUtils.validateLongText(generalObjectiveTextField.getText().trim(), "Objetivo General", errors);

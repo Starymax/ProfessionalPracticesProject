@@ -24,6 +24,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import mx.fei.gui.utils.GUIUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GUIRegisterEducationalExperience extends Application {
 
     private TextField textFieldNrc;
@@ -85,7 +88,7 @@ public class GUIRegisterEducationalExperience extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        java.util.List<String> errors = new java.util.ArrayList<>();
+        List<String> errors = new ArrayList<>();
         GUIUtils.validateNRC(textFieldNrc.getText().trim(), "NRC:", errors);
         GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);

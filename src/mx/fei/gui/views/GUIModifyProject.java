@@ -30,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIModifyProject extends Application {
@@ -238,7 +239,7 @@ public class GUIModifyProject extends Application {
 
     public boolean validateFields() {
         boolean validated = true;
-        java.util.List<String> errors = new java.util.ArrayList<>();
+        List<String> errors = new ArrayList<>();
         GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateLongText(textAreaDescription.getText().trim(), "Descripción", errors);
         GUIUtils.validateLongText(textFieldGeneralObjective.getText().trim(), "Objetivo General", errors);
