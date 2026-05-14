@@ -29,6 +29,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.gui.utils.GUIUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIRegisterEnterprise extends Application {
@@ -132,29 +133,24 @@ public class GUIRegisterEnterprise extends Application {
         List<String> countries = CountryCityLoader.getCountries();
         comboBoxCountry.setItems(FXCollections.observableArrayList(countries));
     }
-    //TODO: Cambiar por las validaciones de GUIUtils
-    public boolean validateFields() {
-        List<java.util.Map.Entry<Boolean, String>> validations = java.util.List.of(
-                java.util.Map.entry(textFieldName.getText().trim().isEmpty(), "El campo nombre es obligatorio."),
-                java.util.Map.entry(textFieldPhone.getText().trim().isEmpty(), "El campo teléfono es obligatorio."),
-                java.util.Map.entry(textFieldMail.getText().trim().isEmpty(), "El campo correo es obligatorio."),
-                java.util.Map.entry(comboBoxSector.getValue() == null, "Selecciona un sector."),
-                java.util.Map.entry(textFieldDirectUsers.getText().trim().isEmpty(), "El campo usuarios directos es obligatorio."),
-                java.util.Map.entry(textFieldIndirectUsers.getText().trim().isEmpty(), "El campo usuarios indirectos es obligatorio."),
-                java.util.Map.entry(comboBoxCountry.getValue() == null, "Selecciona un país."),
-                java.util.Map.entry(comboBoxCity.getValue() == null, "Selecciona una ciudad.")
-        );
-        boolean valid = true;
-        for (java.util.Map.Entry<Boolean, String> validation : validations) {
-            if (validation.getKey()) {
-                showError(validation.getValue());
-                valid = false;
-                break;
-            }
-        }
-        return valid;
-    }
 
+    public  boolean validatedFields() {
+        boolean validated = true;
+        List<String> errors = new ArrayList<>();
+        GUIUtils.validateShortText(textFieldName.getText(),"Nombre",errors);
+        GUIUtils.validatePhone(textFieldPhone.getText(),"Telefono",errors);
+        GUIUtils.validateEmail(textFieldMail.getText(),errors);
+        GUIUtils.validateComboBoxSelection(comboBoxSector.getValue(),"Sector",errors);
+        GUIUtils.validateInt(textFieldDirectUsers.getText(),"Usuarios directos",errors);
+        GUIUtils.validateInt(textFieldIndirectUsers.getText(),"Usuarios indirectos",errors);
+        GUIUtils.validateComboBoxSelection(comboBoxCountry.getValue(),"Paises",errors);
+        GUIUtils.validateComboBoxSelection(comboBoxCity.getValue(),"Ciudades",errors);
+        if (!errors.isEmpty()){
+            validated = false;
+            GUIUtils.showErrors(errors);
+        }
+        return validated;
+    }
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -171,14 +167,43 @@ public class GUIRegisterEnterprise extends Application {
         launch(args);
     }
 
-    public TextField getTextFieldName() { return textFieldName; }
-    public TextField getTextFieldPhone() { return textFieldPhone; }
-    public TextField getTextFieldMail() { return textFieldMail; }
-    public ComboBox<String> getComboBoxSector() { return comboBoxSector; }
-    public TextField getTextFieldDirectUsers() { return textFieldDirectUsers; }
-    public TextField getTextFieldIndirectUsers() { return textFieldIndirectUsers; }
-    public ComboBox<String> getComboBoxCountry() { return comboBoxCountry; }
-    public ComboBox<String> getComboBoxCity() { return comboBoxCity; }
-    public Button getButtonRegister() { return buttonRegister; }
-    public Button getButtonCancel() { return buttonCancel; }
+    public TextField getTextFieldName() {
+        return textFieldName;
+    }
+
+    public TextField getTextFieldPhone() {
+        return textFieldPhone;
+    }
+
+    public TextField getTextFieldMail() {
+        return textFieldMail;
+    }
+
+    public ComboBox<String> getComboBoxSector() {
+        return comboBoxSector;
+    }
+
+    public TextField getTextFieldDirectUsers() {
+        return textFieldDirectUsers;
+    }
+
+    public TextField getTextFieldIndirectUsers() {
+        return textFieldIndirectUsers;
+    }
+
+    public ComboBox<String> getComboBoxCountry() {
+        return comboBoxCountry;
+    }
+
+    public ComboBox<String> getComboBoxCity() {
+        return comboBoxCity;
+    }
+
+    public Button getButtonRegister() {
+        return buttonRegister;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
+    }
 }

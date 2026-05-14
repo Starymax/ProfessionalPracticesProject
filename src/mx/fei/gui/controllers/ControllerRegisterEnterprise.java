@@ -33,7 +33,7 @@ public class ControllerRegisterEnterprise {
     }
 
     private void handleRegister() {
-        if (guiRegisterEnterprise.validateFields()) {
+        if (guiRegisterEnterprise.validatedFields()) {
             try {
                 int directUsers = Integer.parseInt(guiRegisterEnterprise.getTextFieldDirectUsers().getText().trim());
                 int indirectUsers = Integer.parseInt(guiRegisterEnterprise.getTextFieldIndirectUsers().getText().trim());

@@ -21,7 +21,7 @@ public class CountryCityLoader {
 
     public static Map<String, List<String>> getCountryCityMap() {
         if (countryCityMap == null) {
-            load();
+            loadCountriesCities();
         }
         return countryCityMap;
     }
@@ -35,7 +35,7 @@ public class CountryCityLoader {
         return cities != null ? cities : new ArrayList<>();
     }
 
-    private static void load() {
+    private static void loadCountriesCities() {
         countryCityMap = new LinkedHashMap<>();
         InputStream input = CountryCityLoader.class.getClassLoader().getResourceAsStream("countries_cities.json");
         if (input == null) {
@@ -55,7 +55,6 @@ public class CountryCityLoader {
                 while (blockMatcher.find()) {
                     String countryName = blockMatcher.group(1);
                     String citiesBlock = blockMatcher.group(2);
-
                     List<String> cities = new ArrayList<>();
                     Matcher cityMatcher = cityPattern.matcher(citiesBlock);
                     while (cityMatcher.find()) {
