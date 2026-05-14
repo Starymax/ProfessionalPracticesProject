@@ -191,14 +191,14 @@ public class GUIRegisterProject extends Application {
         GUIUtils.validateLongText(generalObjectiveTextField.getText().trim(), "Objetivo General", errors);
         GUIUtils.validateLongText(mediateObjectivesTextField.getText().trim(), "Objetivos Mediatos", errors);
         GUIUtils.validateLongText(immediateObjectivesTextField.getText().trim(), "Objetivos Inmediatos", errors);
-        GUIUtils.validateShortText(methodologyTextField.getText().trim(), "Metodología", errors);
+        GUIUtils.validateLongText(methodologyTextField.getText().trim(), "Metodología", errors);
         GUIUtils.validateLongText(resourcesTextField.getText().trim(), "Recursos", errors);
         GUIUtils.validateLongText(responsabilitiesTextField.getText().trim(), "Responsabilidades", errors);
         GUIUtils.validateInt(availablePlacesTextField.getText().trim(), "Lugares Disponibles", errors);
         if (enterpriseComboBox.getValue() == null) {
             errors.add("El campo Organizacion es obligatorio");
         }
-        if (enterpriseComboBox.getValue() == null) {
+        if (projectManagerComboBox.getValue() == null) {
             errors.add("El campo Responsable es obligatorio");
         }
         if (initialDatePicker.getValue() == null) {

@@ -36,7 +36,11 @@ public class ControllerRegisterProfessor {
             Professor professor = getProfessor();
             if (professorDAO.registerProfessor(professor)) {
                 if (professor.isCoordinator()) {
-                    guiRegisterProfessor.showSuccess("Coordinador registrado exitosamente.");
+                    if (professorDAO.existsCoordinator()) {
+                        guiRegisterProfessor.showError("Ya existe un Coordinador registrado");
+                    } else {
+                        guiRegisterProfessor.showSuccess("Coordinador registrado exitosamente.");
+                    }
                 } else if (professor.isAdmin()) {
                     guiRegisterProfessor.showSuccess("Administrador registrado exitosamente.");
                 } else {

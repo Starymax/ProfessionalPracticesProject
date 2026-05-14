@@ -1,0 +1,123 @@
+package mx.fei.gui.controllers;
+
+import javafx.collections.FXCollections;
+import javafx.stage.Modality;
+import mx.fei.gui.views.GUIModifyProject;
+import mx.fei.gui.views.GUIRegisterProjectManager;
+import mx.fei.logic.dao.ProjectDAO;
+import mx.fei.logic.dao.ProjectManagerDAO;
+import mx.fei.logic.dto.Enterprise;
+import mx.fei.logic.dto.Project;
+import mx.fei.logic.dto.ProjectManager;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+import mx.fei.logic.exceptions.DataOperationException;
+
+import java.util.ArrayList;
+import java.sql.Date;
+import java.util.List;
+import java.util.Optional;
+
+public class ControllerModifyProject {
+
+    private final GUIModifyProject guiModifyProject;
+
+    public ControllerModifyProject(GUIModifyProject guiModifyProject) {
+        this.guiModifyProject = guiModifyProject;
+    }
+
+    public void handleButtonsSaveAddProjectManagerCancel(ActionEvent event) {
+        if (event.getSource() == guiModifyProject.getComboBoxEnterprise()) {
+            updateProjectManagers();
+        } else if (event.getSource() == guiModifyProject.getButtonAddProjectManager()) {
+            addProjectManager();
+        } else if (event.getSource() == guiModifyProject.getButtonContinue()) {
+            saveChanges();
+        } else if (event.getSource() == guiModifyProject.getButtonCancel()) {
+            cancel();
+        }
+    }
+
+    private void updateProjectManagers() {
+        Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
+        ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
+        List<ProjectManager> projectManagers = new ArrayList<>();
+        try {
+            projectManagers = projectManagerDAO.getProjectManagersByEnterprise(enterprise);
+        } catch (DataOperationException e) {
+            guiModifyProject.showError(e.getMessage());
+        }
+        guiModifyProject.getComboBoxProjectManager().setItems(FXCollections.observableArrayList(projectManagers));
+    }
+
+    private void addProjectManager() {
+        if (guiModifyProject.getComboBoxEnterprise().getValue() != null) {
+            GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
+            ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
+            Stage stage = new Stage();
+            stage.setTitle("Añadir Responsable");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
+            guiRegisterProjectManager.start(stage);
+            guiRegisterProjectManager.loadEnterprise(enterprise);
+            stage.setOnHidden(event -> {
+                try {
+                    guiModifyProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(enterprise));
+                } catch (DataOperationException e) {
+                    guiModifyProject.showError(e.getMessage());
+                }
+            });
+        } else {
+            guiModifyProject.showError("Debe seleccionar una Organización para añadir un responsable");
+        }
+    }
+
+    private void saveChanges() {
+        if (guiModifyProject.validateFields()) {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Confirmar cambios");
+        confirmation.setHeaderText(null);
+        confirmation.setContentText("¿Seguro que desea guardar los cambios del proyecto?");
+        Optional<ButtonType> result = confirmation.showAndWait();
+        ProjectDAO projectDAO = new ProjectDAO();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                int projectId = guiModifyProject.getProject().getProjectId();
+                String name = guiModifyProject.getTextFieldName().getText();
+                String description = guiModifyProject.getTextAreaDescription().getText();
+                String generalObjective = guiModifyProject.getTextFieldGeneralObjective().getText();
+                String immediateObjectives = guiModifyProject.getTextFieldImmediateObjectives().getText();
+                String mediateObjectives = guiModifyProject.getTextFieldMediateObjectives().getText();
+                String methodology = guiModifyProject.getTextFieldMethodology().getText();
+                String resources = guiModifyProject.getTextFieldResources().getText();
+                Date startDate = Date.valueOf(guiModifyProject.getDatePickerStartDate().getValue());
+                Date finalDate = Date.valueOf(guiModifyProject.getDatePickerEndDate().getValue());
+                String responsibilities = guiModifyProject.getTextFieldResponsibilities().getText();
+                int availableSpots = Integer.parseInt(guiModifyProject.getTextFieldAvailableSpots().getText().trim());
+                boolean isActive = guiModifyProject.isActiveSelected();
+                Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
+                ProjectManager projectManager = guiModifyProject.getComboBoxProjectManager().getValue();
+                Project project = new Project(projectId, name, description, generalObjective, mediateObjectives, immediateObjectives, methodology, responsibilities, resources, startDate, finalDate, isActive, availableSpots, enterprise, projectManager);
+                projectDAO.modifyProject(project);
+                guiModifyProject.showSuccess("Proyecto actualizado exitosamente.");
+                guiModifyProject.getStage().close();
+            } catch (DataOperationException e) {
+                guiModifyProject.showError("Error al guardar los cambios: " + e.getMessage());
+            }
+        }
+        }
+    }
+
+    private void cancel() {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmation.setTitle("Cancelar");
+        confirmation.setHeaderText(null);
+        confirmation.setContentText("¿Seguro que desea cancelar? Se perderán los cambios realizados.");
+        Optional<ButtonType> result = confirmation.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            guiModifyProject.getStage().close();
+        }
+    }
+}

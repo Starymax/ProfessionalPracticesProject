@@ -1,11 +1,14 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Modality;
 import mx.fei.gui.views.GUIManageProjects;
 import mx.fei.gui.views.GUIRegisterProject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
+import mx.fei.gui.views.GUISelectProjects;
 import mx.fei.logic.dao.EnterpriseDAO;
+import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
 public class ControllerManageProjects implements EventHandler<ActionEvent> {
@@ -21,7 +24,7 @@ public class ControllerManageProjects implements EventHandler<ActionEvent> {
         if (event.getSource() == guiManageProjects.getButtonRegisterProject()) {
             openRegisterProject();
         } else if (event.getSource() == guiManageProjects.getButtonManageProject()) {
-            openManageProject();
+            openModifyProject();
         } else if (event.getSource() == guiManageProjects.getButtonGoBack()) {
             goBack();
         }
@@ -31,6 +34,7 @@ public class ControllerManageProjects implements EventHandler<ActionEvent> {
         try {
             GUIRegisterProject guiRegisterProject = new GUIRegisterProject();
             Stage newStage = new Stage();
+            newStage.initModality(Modality.APPLICATION_MODAL);
             guiRegisterProject.start(newStage);
             EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
             guiRegisterProject.loadEnterprises(enterpriseDAO.getActiveEnterprises());
@@ -40,12 +44,21 @@ public class ControllerManageProjects implements EventHandler<ActionEvent> {
         }
     }
 
-    private void openManageProject() {
-        // TODO: abrir GUIManageProject (CU-10)
+    private void openModifyProject() {
+        GUISelectProjects guiSelectProjects = new GUISelectProjects();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        guiSelectProjects.start(stage);
+        guiSelectProjects.setModify(true);
+        ProjectDAO projectDAO = new ProjectDAO();
+        try {
+            guiSelectProjects.loadProjects(projectDAO.getAllProjects());
+        } catch (DataOperationException e) {
+            guiManageProjects.showError(e.getMessage());
+        }
     }
 
     private void goBack() {
-        // TODO: abrir GUICoordinatorMenu
         guiManageProjects.getStage().close();
     }
 }

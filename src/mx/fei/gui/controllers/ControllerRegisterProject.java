@@ -53,19 +53,24 @@ public class ControllerRegisterProject {
     }
 
     private void addProjectManager() {
-        GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
-        ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
-        Stage stage = new Stage();
-        stage.setTitle("Añadir Responsable");
-        stage.initModality(Modality.APPLICATION_MODAL);
-        guiRegisterProjectManager.start(stage);
-        try {
+        if (guiRegisterProject.getEnterpriseComboBox().getValue() != null) {
+            GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
+            ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
+            Stage stage = new Stage();
+            stage.setTitle("Añadir Responsable");
+            stage.initModality(Modality.APPLICATION_MODAL);
             Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
-            guiRegisterProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(enterprise));
+            guiRegisterProjectManager.start(stage);
             guiRegisterProjectManager.loadEnterprise(enterprise);
-        } catch (DataOperationException e) {
-            guiRegisterProject.showError(e.getMessage());
-            guiRegisterProjectManager.getStage().close();
+            stage.setOnHidden(event -> {
+                try {
+                    guiRegisterProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(enterprise));
+                } catch (DataOperationException e) {
+                    guiRegisterProject.showError(e.getMessage());
+                }
+            });
+        } else {
+            guiRegisterProject.showError("Seleccione una Organización para agregar un practicante");
         }
     }
 

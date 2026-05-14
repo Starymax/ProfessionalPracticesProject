@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 public class GUIUtils {
     public static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}\\s]{3,50}$");
-    public static final Pattern LONG_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()\\-]{1,500}$");
-    public static final Pattern SHORT_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()\\-]{1,50}$");
+    public static final Pattern LONG_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,1000}$");
+    public static final Pattern SHORT_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,50}$");
     public static final Pattern REPETITION_PATTERN = Pattern.compile("(\\p{L})\\1{3,}", Pattern.CASE_INSENSITIVE);
     public static final Pattern CONTAINS_NUMBERS_PATTERN = Pattern.compile("\\d");
     public static final Pattern CONTAINS_VOWELS_PATTERN = Pattern.compile("[aeiouáéíóúüAEIOUÁÉÍÓÚÜ]", Pattern.CASE_INSENSITIVE);
@@ -43,7 +43,7 @@ public class GUIUtils {
         } else if (!value.equals(value.trim())) {
             errors.add(fieldName + " no puede empezar ni terminar con espacios.");
         } else if (!LONG_TEXT_PATTERN.matcher(value).matches()) {
-            errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 500 letras");
+            errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 1000 caracteres");
         } else if (REPETITION_PATTERN.matcher(value).find()) {
             errors.add(fieldName + " no puede tener 3 o más veces consecutivas la misma letra.");
         }
