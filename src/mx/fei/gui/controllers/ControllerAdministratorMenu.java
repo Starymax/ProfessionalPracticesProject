@@ -1,10 +1,7 @@
 package mx.fei.gui.controllers;
 
 import javafx.stage.Modality;
-import mx.fei.gui.views.GUIAdministratorMenu;
-import mx.fei.gui.views.GUILogin;
-import mx.fei.gui.views.GUIProfessorMenu;
-import mx.fei.gui.views.GUIRegisterProfessor;
+import mx.fei.gui.views.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -40,7 +37,10 @@ public class ControllerAdministratorMenu {
     }
 
     private void openModifyProfessor() {
-        // TODO: abrir GUIModifyProfessor
+        GUIChooseProfessor guiChooseProfessor = new GUIChooseProfessor();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        guiChooseProfessor.start(stage);
     }
 
     private void openProfessorView() {

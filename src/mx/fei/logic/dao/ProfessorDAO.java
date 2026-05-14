@@ -141,6 +141,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 preparedStatement.setBoolean(1, professor.isCoordinator());
                 preparedStatement.setBoolean(2, professor.isAdmin());
                 preparedStatement.setString(3, professor.getShift());
+                preparedStatement.setInt(4, professor.getPersonalNumber());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error modificando los datos del profesor",e);
