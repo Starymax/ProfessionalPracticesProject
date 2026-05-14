@@ -50,6 +50,7 @@
                 <directory>resources</directory>
                 <includes>
                     <include>**/*.properties</include>
+                    <include>countries_cities.json</include>
                 </includes>
             </resource>
         </resources>

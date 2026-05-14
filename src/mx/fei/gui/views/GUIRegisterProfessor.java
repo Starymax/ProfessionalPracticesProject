@@ -1,9 +1,7 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIUtils;
-import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.gui.controllers.ControllerRegisterProfessor;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -13,7 +11,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.BorderPane;
