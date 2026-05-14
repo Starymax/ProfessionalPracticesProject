@@ -75,7 +75,7 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setString(4,project.getImmediateObjectives());
             preparedStatement.setString(5,project.getMediatesObjectives());
             preparedStatement.setString(6,project.getMethodology());
-            preparedStatement.setString(7,project.getResponsabilities());
+            preparedStatement.setString(7,project.getResponsibilities());
             preparedStatement.setString(8,project.getResources());
             preparedStatement.setDate(9, project.getStartDate());
             preparedStatement.setDate(10,project.getFinalDate());
@@ -118,6 +118,28 @@ public class ProjectDAO implements IDAOProject {
     }
 
     @Override
+    public List<Project> getAllProjects() throws DataOperationException {
+        List<Project> projects = new ArrayList<>();
+        String queryActiveProjects = "SELECT id_proyecto FROM proyecto";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryActiveProjects)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> projectIDs = new ArrayList<>();
+            while (resultSet.next()) {
+                projectIDs.add((resultSet.getInt("id_proyecto")));
+            }
+            resultSet.close();
+            for (Integer projectID : projectIDs) {
+                projects.add(getProjectById(projectID));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos",e);
+            throw new DataOperationException("Error al obtener los proyectos");
+        }
+        return projects;
+    }
+
+    @Override
     public List<Project> getAvailableProjects() throws DataOperationException {
         List<Project> availableProjects = new ArrayList<>();
         List<Project> activeProjects = getActiveProjects();
@@ -148,8 +170,8 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setInt(11, project.getAvailablePlaces());
             preparedStatement.setInt(12, project.getEnterprise().getEnterpriseId());
             preparedStatement.setInt(13, project.getProjectManager().getProjectManagerId());
-            preparedStatement.setInt(14, project.getProjectId());
-            preparedStatement.setString(15, project.getResponsabilities());
+            preparedStatement.setInt(15, project.getProjectId());
+            preparedStatement.setString(14, project.getResponsibilities());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error modificando el proyecto",e);

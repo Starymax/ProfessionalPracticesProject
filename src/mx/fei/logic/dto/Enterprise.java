@@ -94,4 +94,9 @@ public class Enterprise {
     public void setActiveStatus(boolean activeStatus) {
         this.activeStatus = activeStatus;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

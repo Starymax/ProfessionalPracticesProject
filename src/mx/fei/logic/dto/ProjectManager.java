@@ -60,4 +60,9 @@ public class ProjectManager {
     public int getEnterpriseId() {
         return enterpriseId;
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

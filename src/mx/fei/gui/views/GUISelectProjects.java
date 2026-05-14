@@ -32,6 +32,7 @@ public class GUISelectProjects extends Application {
     private final List<CheckBox> checkBoxes = new ArrayList<>();
     private final List<Project> projects = new ArrayList<>();
     private Student student;
+    private boolean isModify;
 
     @Override
     public void start(Stage stage) {
@@ -42,6 +43,8 @@ public class GUISelectProjects extends Application {
         projectList = new VBox(6);
         projectList.setPadding(new Insets(10));
         projectList.setStyle("-fx-background-color: white;");
+
+        isModify = false;
 
         ScrollPane scrollPane = new ScrollPane(projectList);
         scrollPane.setFitToWidth(true);
@@ -161,5 +164,13 @@ public class GUISelectProjects extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public boolean isModify() {
+        return isModify;
+    }
+
+    public void setModify(boolean modify) {
+        isModify = modify;
     }
 }

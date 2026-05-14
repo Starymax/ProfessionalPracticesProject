@@ -12,6 +12,8 @@ public interface IDAOProject {
 
     List<Project> getActiveProjects() throws DataOperationException;
 
+    List<Project> getAllProjects() throws DataOperationException;
+
     List<Project> getAvailableProjects() throws DataOperationException;
 
     boolean modifyProject(Project project) throws DataOperationException;
