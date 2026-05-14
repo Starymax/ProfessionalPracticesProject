@@ -31,11 +31,12 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 String sector = resultSet.getString("sector");
                 String phone = resultSet.getString("telefono");
                 String mail = resultSet.getString("correo");
-                String address = resultSet.getString("direccion");
+                String city = resultSet.getString("ciudad");
                 int directUsers = resultSet.getInt("usuarios_directos");
                 int indirectUsers = resultSet.getInt("usuarios_indirectos");
                 boolean activeStatus = resultSet.getBoolean("estado_activo");
-                enterprise = new Enterprise(idEnterprise, name, sector, phone, mail, address, directUsers, indirectUsers, activeStatus);
+                String country = resultSet.getString("pais");
+                enterprise = new Enterprise(idEnterprise, name, sector, phone, mail, city, directUsers, indirectUsers, activeStatus, country);
             }
             if (enterprise == null) {
                 logger.log(Level.WARNING, "No se encontro a la empresa con el id: " + idEnterprise);
@@ -55,17 +56,18 @@ public class EnterpriseDAO implements IDAOEnterprise {
             throw new IllegalArgumentException("La empresa no puede ser nula");
         }
         int generatedId = -1;
-        String queryRegisterEnterprise = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, direccion, usuarios_directos, usuarios_indirectos, estado_activo) VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String queryRegisterEnterprise = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, ciudad, usuarios_directos, usuarios_indirectos, estado_activo, pais) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEnterprise, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,enterprise.getName());
             preparedStatement.setString(2,enterprise.getSector());
             preparedStatement.setString(3,enterprise.getPhoneNumber());
             preparedStatement.setString(4,enterprise.getContactEmail());
-            preparedStatement.setString(5,enterprise.getAddress());
+            preparedStatement.setString(5,enterprise.getCity());
             preparedStatement.setInt(6,enterprise.getDirectUsers());
             preparedStatement.setInt(7,enterprise.getIndirectUsers());
             preparedStatement.setBoolean(8,enterprise.isActiveStatus());
+            preparedStatement.setString(9,enterprise.getCountry());
             preparedStatement.executeUpdate();
             ResultSet keys = preparedStatement.getGeneratedKeys();
             if (keys.next()) {

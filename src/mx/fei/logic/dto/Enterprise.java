@@ -6,21 +6,23 @@ public class Enterprise {
     private String sector;
     private String phoneNumber;
     private String contactEmail;
-    private String address;
+    private String city;
     private int directUsers;
     private int indirectUsers;
     private boolean activeStatus;
+    private String country;
 
-    public Enterprise(int enterpriseId, String name, String sector, String phoneNumber, String contactEmail, String address, int directUsers, int indirectUsers, boolean activeStatus) {
+    public Enterprise(int enterpriseId, String name, String sector, String phoneNumber, String contactEmail, String city, int directUsers, int indirectUsers, boolean activeStatus, String country) {
         this.id = enterpriseId;
         this.name = name;
         this.sector = sector;
         this.phoneNumber = phoneNumber;
         this.contactEmail = contactEmail;
-        this.address = address;
+        this.city = city;
         this.directUsers = directUsers;
         this.indirectUsers = indirectUsers;
         this.activeStatus = activeStatus;
+        this.country = country;
     }
 
     public int getEnterpriseId() {
@@ -63,12 +65,12 @@ public class Enterprise {
         this.contactEmail = contactEmail;
     }
 
-    public String getAddress() {
-        return address;
+    public String getCity() {
+        return city;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCity(String city) {
+        this.city = city;
     }
 
     public int getDirectUsers() {
@@ -93,5 +95,13 @@ public class Enterprise {
 
     public void setActiveStatus(boolean activeStatus) {
         this.activeStatus = activeStatus;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 }

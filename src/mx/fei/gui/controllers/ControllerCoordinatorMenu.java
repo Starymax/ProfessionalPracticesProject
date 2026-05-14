@@ -39,7 +39,13 @@ public class ControllerCoordinatorMenu {
                 stage.setTitle("Gestionar proyectos");
                 guiManageProjects.start(stage);
             }
-            case "Gestionar organizaciones" -> { /* TODO: abrir ventana */ }
+            case "Gestionar organizaciones" -> {
+                GUIManageEnterprise guiManageEnterprise = new GUIManageEnterprise();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.setTitle("Gestionar organizaciones");
+                guiManageEnterprise.start(stage);
+            }
             case "Gestionar experiencia educativa" -> {
                 GUIManageExperience guiManageExperience = new GUIManageExperience();
                 Stage stage = new Stage();

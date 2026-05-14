@@ -45,7 +45,6 @@ public class GUICoordinatorMenu extends Application {
         this.stage = stage;
         stage.setTitle("Coordinador");
         stage.setResizable(false);
-
         labelCoordinatorName = new Label("Bienvenido coordinador: nombre del coordinador");
         labelCoordinatorName.setFont(new Font("SansSerif", 13));
         labelCoordinatorShift = new Label("Turno: turno del coordinador");
@@ -79,7 +78,7 @@ public class GUICoordinatorMenu extends Application {
         buttonManageEducationalExperience.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
         buttonConsultProfessor.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
         buttonBack.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
-        Scene scene = new Scene(mainPanel, 500, 550);
+        Scene scene = new Scene(mainPanel, 500, 470);
         stage.setScene(scene);
         stage.show();
     }
