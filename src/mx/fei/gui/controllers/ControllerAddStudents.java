@@ -5,6 +5,8 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAddStudents;
+import mx.fei.gui.views.GUIChooseExperience;
+import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUISelectStudents;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
@@ -80,6 +82,9 @@ public class ControllerAddStudents {
 
     private void handleBack() {
         if (guiAddStudents.showConfirmation("¿Seguro desea cancelar? Se perderán los cambios realizados.")) {
+            GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
+            Stage stage = new Stage();
+            guiChooseExperience.start(stage);
             guiAddStudents.closeWindow();
         }
     }

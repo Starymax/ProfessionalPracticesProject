@@ -34,7 +34,7 @@ public class ControllerChooseExperience {
     public void handleButtonsSelectReturn(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Seleccionar" -> handleSelect();
+            case "Seleccionar" -> handleSelectExperience();
             case "Regresar" -> {
                 GUIManageExperience guiManageExperience = new GUIManageExperience();
                 Stage stage = new Stage();
@@ -44,23 +44,23 @@ public class ControllerChooseExperience {
             }
         }
     }
-
-    private void handleSelect() {
-        EducationalExperience selected = guiChooseExperience.getSelectedExperience();
-        if (selected == null) {
-            guiChooseExperience.showError("Selecciona una experiencia de la lista.");
+    private void handleSelectExperience() {
+        EducationalExperience selectedExperience;
+        try {
+            selectedExperience = guiChooseExperience.getSelectedExperience();
+            if (guiChooseExperience.isToModify()) {
+                GUIModifyExperience guiModifyExperience = new GUIModifyExperience();
+                Stage stage = new Stage();
+                guiModifyExperience.start(stage);
+                guiChooseExperience.closeWindow();
+            } else {
+                GUIAddStudents guiAddStudents = new GUIAddStudents(selectedExperience);
+                Stage stage = new Stage();
+                guiAddStudents.start(stage);
+                guiChooseExperience.closeWindow();
+            }
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            guiChooseExperience.showError("Seleccione un experiencia.");
         }
-        if (guiChooseExperience.isToModify()) {
-            GUIModifyExperience guiModifyExperience = new GUIModifyExperience(selected);
-            Stage stage = new Stage();
-            guiModifyExperience.start(stage);
-            guiChooseExperience.closeWindow();
-        } else {
-            GUIAddStudents  guiAddStudents = new GUIAddStudents(selected);
-            Stage stage = new Stage();
-            guiAddStudents.start(stage);
-            guiChooseExperience.closeWindow();
-        }
-
     }
 }

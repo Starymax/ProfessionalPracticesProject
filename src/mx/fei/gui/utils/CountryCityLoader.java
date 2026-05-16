@@ -50,7 +50,6 @@ public class CountryCityLoader {
                 String json = stringBuilder.toString();
                 Pattern blockPattern = Pattern.compile("\\{\\s*\"name\"\\s*:\\s*\"([^\"]+)\"\\s*,\\s*\"cities\"\\s*:\\s*\\[([^\\]]*)\\]\\s*\\}");
                 Pattern cityPattern = Pattern.compile("\"([^\"]+)\"");
-
                 Matcher blockMatcher = blockPattern.matcher(json);
                 while (blockMatcher.find()) {
                     String countryName = blockMatcher.group(1);

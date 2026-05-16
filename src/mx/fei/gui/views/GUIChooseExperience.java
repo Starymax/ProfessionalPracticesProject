@@ -79,12 +79,6 @@ public class GUIChooseExperience extends Application {
 
     public EducationalExperience getSelectedExperience() {
         int selectedIndex = listViewExperiences.getSelectionModel().getSelectedIndex();
-        if (experiences == null || experiences.isEmpty()) {
-            throw new IllegalStateException("No hay experiencias disponibles");
-        }
-        if (selectedIndex < 0 || selectedIndex >= experiences.size()) {
-            throw new IllegalStateException("Ninguna experiencia seleccionada");
-        }
         return experiences.get(selectedIndex);
     }
 
@@ -96,7 +90,6 @@ public class GUIChooseExperience extends Application {
         }
         listViewExperiences.setItems(items);
     }
-    //TODO: Validar que no se de clic en seleccionar sin seleccionar una experiencia primero
 
     public void showError(String message) {
         GUIUtils.showError(message);

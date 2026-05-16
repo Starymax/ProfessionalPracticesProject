@@ -29,10 +29,8 @@ public class GUISelectStudentForAssignProject extends Application {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-
         Label title = new Label("Seleccione un alumno sin Proyecto asignado:");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
-
         studentListView = new ListView<>();
         studentListView.setCellFactory(listView -> new ListCell<>() {
             @Override
@@ -73,7 +71,7 @@ public class GUISelectStudentForAssignProject extends Application {
         BorderPane.setMargin(buttonPanel, new Insets(20, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 720, 560);
-        stage.setTitle("GUIAsignarProyecto");
+        stage.setTitle("Asignar proyecto");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

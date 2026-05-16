@@ -7,6 +7,8 @@ import mx.fei.gui.views.GUISelectStudents;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +29,8 @@ public class ControllerSelectStudents {
     private void loadStudents() {
         try {
             List<Student> students = studentDAO.getActiveStudents();
-            guiSelectStudents.setStudents(students);
+            List<Student> studentsAlreadySelected = guiSelectStudents.getGuiAddStudents().getStudentsToAdd();
+            guiSelectStudents.setStudents(students, studentsAlreadySelected);
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar estudiantes", e);
             guiSelectStudents.showError("Error al cargar la lista de estudiantes.");

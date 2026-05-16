@@ -37,7 +37,7 @@ public class ControllerChooseStudent {
     public void handleButtonsSelectAndReturn(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Seleccionar" -> handleSelect();
+            case "Seleccionar" -> handleSelectStudent();
             case "Regresar" -> {
                 guiChooseStudent.closeWindow();
                 GUIManageStudent guiManageStudent = new GUIManageStudent();
@@ -48,15 +48,16 @@ public class ControllerChooseStudent {
         }
     }
 
-    private void handleSelect() {
-        Student StudentSelected = guiChooseStudent.getSelectedStudent();
-        if (StudentSelected != null) {
-             GUIModifyStudent guiModifyStudent = new GUIModifyStudent(StudentSelected);
-             Stage stage = new Stage();
-             guiModifyStudent.start(stage);
-             guiChooseStudent.closeWindow();
-        } else {
-            guiChooseStudent.showError("Selecciona un alumno de la lista.");
+    private void handleSelectStudent() {
+        Student studentSelected;
+        try {
+            studentSelected = guiChooseStudent.getSelectedStudent();
+            GUIModifyStudent guiModifyStudent = new GUIModifyStudent();
+            Stage stage = new Stage();
+            guiModifyStudent.start(stage);
+            guiChooseStudent.closeWindow();
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            guiChooseStudent.showError("Seleccione un estudiante.");
         }
     }
 }

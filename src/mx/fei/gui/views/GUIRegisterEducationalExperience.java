@@ -70,8 +70,8 @@ public class GUIRegisterEducationalExperience extends Application {
         buttonCancel.setPrefWidth(110);
         buttonRegister.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
-        buttonRegister.setOnAction(event -> controllerRegisterEducationalExperience.handleButtonAction(event));
-        buttonCancel.setOnAction(event -> controllerRegisterEducationalExperience.handleButtonAction(event));
+        buttonRegister.setOnAction(controllerRegisterEducationalExperience::handleButtonAction);
+        buttonCancel.setOnAction(controllerRegisterEducationalExperience::handleButtonAction);
         HBox buttonsBox = new HBox(30, buttonRegister, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));

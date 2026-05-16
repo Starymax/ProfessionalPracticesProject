@@ -26,7 +26,7 @@ public class ControllerRegisterEducationalExperience {
     public void handleButtonAction(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Registrar")) {
-            if (!guiRegisterEducationalExperience.validateFields()) {
+            if (guiRegisterEducationalExperience.validateFields()) {
                 if (nrcExists()) {
                     alertWarning.setTitle("NRC no disponible");
                     alertWarning.setHeaderText(null);

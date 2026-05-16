@@ -59,4 +59,16 @@ public class Student extends User{
     }
 
     public EducationalExperience getEducationalExperience() {return educationalExperience;}
+
+    @Override
+    public boolean equals(Object object) {
+        boolean result = false;
+        if (this == object) {
+            result = true;
+        } else if (object instanceof Student) {
+            Student otherStudent = (Student) object;
+            result = this.enrollment.equals(otherStudent.enrollment);
+        }
+        return result;
+    }
 }

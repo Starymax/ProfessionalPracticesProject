@@ -75,8 +75,9 @@ public class ControllerModifyExperience {
     }
 
     private void openChooseExperience() {
-        GUIChooseExperience gui = new GUIChooseExperience();
+        GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
         Stage stage = new Stage();
-        gui.start(stage);
+        guiChooseExperience.setToModify(true);
+        guiChooseExperience.start(stage);
     }
 }

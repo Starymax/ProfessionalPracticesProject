@@ -78,12 +78,6 @@ public class GUIChooseProfessor extends Application {
 
     public Professor getSelectedProfessor() {
         int selectedIndex = listViewProfessors.getSelectionModel().getSelectedIndex();
-        if (professors == null || professors.isEmpty()) {
-            throw new IllegalArgumentException("No existen profesores disponibles");
-        }
-        if (selectedIndex < 0 || selectedIndex >= professors.size()) {
-            throw new IllegalArgumentException("No se ha seleccionado un professor");
-        }
         return professors.get(selectedIndex);
     }
 

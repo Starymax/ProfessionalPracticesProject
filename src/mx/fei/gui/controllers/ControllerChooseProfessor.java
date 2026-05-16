@@ -3,9 +3,7 @@ package mx.fei.gui.controllers;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.gui.views.GUIChooseProfessor;
-import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUIModifyProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
@@ -37,20 +35,21 @@ public class ControllerChooseProfessor {
     public void handleButtonsSelectReturn(ActionEvent actionEvent) {
         Button button = (Button) actionEvent.getSource();
         switch (button.getText()) {
-            case "Seleccionar" -> handleSelect();
+            case "Seleccionar" -> handleSelectProfessor();
             case "Regresar" -> guiChooseProfessor.closeWindow();
         }
     }
 
-    private void handleSelect() {
-        Professor professorSelected = guiChooseProfessor.getSelectedProfessor();
-        if (professorSelected != null) {
-            GUIModifyProfessor guiModifyProfessor = new GUIModifyProfessor(professorSelected);
+    private void handleSelectProfessor() {
+        Professor professorSelected;
+        try {
+            professorSelected = guiChooseProfessor.getSelectedProfessor();
+            GUIModifyProfessor guiModifyProfessor = new GUIModifyProfessor();
             Stage stage = new Stage();
             guiModifyProfessor.start(stage);
             guiChooseProfessor.closeWindow();
-        } else {
-            guiChooseProfessor.showError("Seleccione un profesor de la lista.");
+        } catch (NullPointerException | IndexOutOfBoundsException e) {
+            guiChooseProfessor.showError("Seleccione un profesor.");
         }
     }
 }

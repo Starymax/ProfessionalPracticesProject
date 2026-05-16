@@ -65,8 +65,8 @@ public class GUISelectProjects extends Application {
         cancelButton.setPrefWidth(140);
 
         ControllerSelectProjects controllerSelectProjects = new ControllerSelectProjects(this);
-        selectButton.setOnAction(event -> controllerSelectProjects.handleButtonAction(event));
-        cancelButton.setOnAction(event -> controllerSelectProjects.handleButtonAction(event));
+        selectButton.setOnAction(controllerSelectProjects::handleButtonAction);
+        cancelButton.setOnAction(controllerSelectProjects::handleButtonAction);
 
         HBox buttonRow = new HBox(40, selectButton, cancelButton);
         buttonRow.setAlignment(Pos.CENTER);
@@ -76,7 +76,7 @@ public class GUISelectProjects extends Application {
         mainPanel.setStyle("-fx-background-color: #d0d0d0;");
 
         Scene scene = new Scene(mainPanel, 680, 460);
-        stage.setTitle("GUISeleccionarProyectos");
+        stage.setTitle("SeleccionarProyectos");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

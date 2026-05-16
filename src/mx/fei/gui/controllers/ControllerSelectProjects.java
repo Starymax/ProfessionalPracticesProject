@@ -43,7 +43,10 @@ public class ControllerSelectProjects {
     }
 
     public void chooseProjectToModify() {
-        if (guiSelectProjects.getSelectedCount() > 1) {
+        int selectedCoutn = guiSelectProjects.getSelectedCount();
+        if (selectedCoutn == 0) {
+            guiSelectProjects.showError("Seleccione un proyecto de la lista.");
+        } else if (selectedCoutn > 1) {
             guiSelectProjects.showError("Solo puedes modificar un proyecto a la vez");
         } else {
             GUIModifyProject guiModifyProject = new GUIModifyProject();
