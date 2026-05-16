@@ -138,8 +138,8 @@ public class StudentDAO implements IDAOStudent {
                 UserDAO userDAO = new UserDAO();
                 int idUser = userDAO.registerUser(student);
                 if (idUser == RegistrationStatus.FAILURE.getValue()) {
-                    logger.log(Level.SEVERE, "No se logro registrar el usuario base");
-                    throw new DataOperationException("No se logro registrar el usuario en la base");
+                    logger.log(Level.SEVERE, "No se logro registrar el usuario");
+                    throw new DataOperationException("No se logro registrar el usuario");
                 }
                 String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
                 String queryExpedient = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno) VALUES (false, false, false, false, false, ?)";
@@ -178,7 +178,7 @@ public class StudentDAO implements IDAOStudent {
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al modificar el alumno",e);
-                throw new DataOperationException("Error al cambiar los datos en la base de datos");
+                throw new DataOperationException("Error al modificar el alumno");
             }
         } else {
             logger.log(Level.WARNING, "El estudiante es nulo");
@@ -204,7 +204,7 @@ public class StudentDAO implements IDAOStudent {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener todos los estudiantes",e);
-            throw new DataOperationException("Error al obtener los estudiantes en la base de datos");
+            throw new DataOperationException("Error al obtener los estudiantes");
         }
         return students;
     }

@@ -31,7 +31,7 @@ public class ControllerChooseExperience {
         }
     }
 
-    public void handleButtonsSelectReturn(ActionEvent event) {
+    public void handleSelectReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Seleccionar" -> handleSelectExperience();

@@ -69,8 +69,8 @@ public class GUIChooseStudent extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerChooseStudent controllerChooseStudent = new ControllerChooseStudent(this);
-        buttonSelect.setOnAction(event -> controllerChooseStudent.handleButtonsSelectAndReturn(event));
-        buttonBack.setOnAction(event -> controllerChooseStudent.handleButtonsSelectAndReturn(event));
+        buttonSelect.setOnAction(controllerChooseStudent::handleSelectAndReturnButtons);
+        buttonBack.setOnAction(controllerChooseStudent::handleSelectAndReturnButtons);
         Scene scene = new Scene(mainPanel, 620, 390);
         stage.setScene(scene);
         stage.show();

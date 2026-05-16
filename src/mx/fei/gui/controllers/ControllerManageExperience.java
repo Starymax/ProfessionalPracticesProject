@@ -14,7 +14,7 @@ public class ControllerManageExperience {
         this.guiManageExperience = guiManageExperience;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleRegisterModifyButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar nueva experiencia" -> {

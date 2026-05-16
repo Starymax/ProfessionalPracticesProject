@@ -56,8 +56,8 @@ public class GUISelectStudentForAssignProject extends Application {
         buttonCancel.setPrefWidth(160);
 
         ControllerSelectStudentForAssignProject controllerSelectStudentForAssignProject = new ControllerSelectStudentForAssignProject(this);
-        buttonSelect.setOnAction(event -> controllerSelectStudentForAssignProject.handleButtonAction(event));
-        buttonCancel.setOnAction(event -> controllerSelectStudentForAssignProject.handleButtonAction(event));
+        buttonSelect.setOnAction(controllerSelectStudentForAssignProject::handleSelectCancelButtons);
+        buttonCancel.setOnAction(controllerSelectStudentForAssignProject::handleSelectCancelButtons);
 
         VBox buttonPanel = new VBox(12, buttonSelect, buttonCancel);
         buttonPanel.setAlignment(Pos.BOTTOM_RIGHT);

@@ -6,7 +6,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
-import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUISelectStudents;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
@@ -27,7 +26,7 @@ public class ControllerAddStudents {
         this.stage = stage;
     }
 
-    public void handle(ActionEvent event) {
+    public void handleAddConfirmReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Agregar" -> handleAdd();

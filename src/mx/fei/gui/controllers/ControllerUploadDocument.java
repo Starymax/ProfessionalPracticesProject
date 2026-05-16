@@ -28,7 +28,7 @@ public class ControllerUploadDocument {
         this.stage = stage;
     }
 
-    public void handleSelectUploadCancel(ActionEvent event) {
+    public void handleSelectUploadCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Seleccionar" -> handleSelect();

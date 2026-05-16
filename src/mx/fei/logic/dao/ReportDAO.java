@@ -36,8 +36,8 @@ public class ReportDAO implements IDAOReport {
             preparedStatement.setInt(5, report.getStudent().getUserId());
             return  preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al crear el reporte en la base de datos",e);
-            throw new DataOperationException("Error al crear el reporte en la base de datos");
+            logger.log(Level.SEVERE, "Error al crear el reporte",e);
+            throw new DataOperationException("Error al crear el reporte");
         }
     }
 
@@ -58,8 +58,8 @@ public class ReportDAO implements IDAOReport {
                 reports.add(getReportById(idReport));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los reportes de la base de datos",e);
-            throw new DataOperationException("Error al obtener los reportes de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener los reportes",e);
+            throw new DataOperationException("Error al obtener los reportes");
         }
         return reports;
     }
@@ -84,8 +84,8 @@ public class ReportDAO implements IDAOReport {
                 report = new Report(reportId, workedHours, reportType, reportDate, observations, student);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el reporte de la base de datos",e);
-            throw new DataOperationException("Error al obtener el reporte de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener el reporte",e);
+            throw new DataOperationException("Error al obtener el reporte");
         }
         return report;
     }
@@ -101,8 +101,8 @@ public class ReportDAO implements IDAOReport {
             int rowsAffected = preparedStatement.executeUpdate();
             updated = rowsAffected > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al agregar observaciones al reporte en la base de datos",e);
-            throw new DataOperationException("Error al agregar observaciones al reporte en la base de datos");
+            logger.log(Level.SEVERE, "Error al agregar observaciones al reporte",e);
+            throw new DataOperationException("Error al agregar observaciones al reporte");
         }
         return updated;
     }

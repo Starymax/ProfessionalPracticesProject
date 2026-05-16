@@ -67,9 +67,9 @@ public class GUIProfessorMenu extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerProfessorMenu controllerProfessorMenu = new ControllerProfessorMenu(this);
-        buttonManageActivities.setOnAction(event -> controllerProfessorMenu.handleButtonAction(event));
-        buttonManageReports.setOnAction(event -> controllerProfessorMenu.handleButtonAction(event));
-        buttonBack.setOnAction(event -> controllerProfessorMenu.handleButtonAction(event));
+        buttonManageActivities.setOnAction(controllerProfessorMenu::handleButtonsMenu);
+        buttonManageReports.setOnAction(controllerProfessorMenu::handleButtonsMenu);
+        buttonBack.setOnAction(controllerProfessorMenu::handleButtonsMenu);
         Scene scene = new Scene(mainPanel, 500, 420);
         stage.setScene(scene);
         stage.show();

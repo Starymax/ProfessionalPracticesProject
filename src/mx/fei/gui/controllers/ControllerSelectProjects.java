@@ -30,7 +30,7 @@ public class ControllerSelectProjects {
         studentDAO = new StudentDAO();
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleSelectCancelButtons(ActionEvent event) {
         if (event.getSource() == guiSelectProjects.getSelectButton()) {
             if (guiSelectProjects.isModify()){
                 chooseProjectToModify();
@@ -43,10 +43,10 @@ public class ControllerSelectProjects {
     }
 
     public void chooseProjectToModify() {
-        int selectedCoutn = guiSelectProjects.getSelectedCount();
-        if (selectedCoutn == 0) {
+        int selectedCount = guiSelectProjects.getSelectedCount();
+        if (selectedCount == 0) {
             guiSelectProjects.showError("Seleccione un proyecto de la lista.");
-        } else if (selectedCoutn > 1) {
+        } else if (selectedCount > 1) {
             guiSelectProjects.showError("Solo puedes modificar un proyecto a la vez");
         } else {
             GUIModifyProject guiModifyProject = new GUIModifyProject();

@@ -17,7 +17,7 @@ public class ControllerAdministratorMenu {
         this.guiAdministratorMenu = guiAdministratorMenu;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleRegisterModifyProfessorViewCancelButtons(ActionEvent event) {
         if (event.getSource() == guiAdministratorMenu.getButtonRegisterProfessor()) {
             openRegisterProfessor();
         } else if (event.getSource() == guiAdministratorMenu.getButtonModifyProfessor()) {

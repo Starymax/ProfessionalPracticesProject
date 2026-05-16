@@ -109,8 +109,8 @@ public class GUIModifyExperience extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerModifyExperience controllerModifyExperience = new ControllerModifyExperience(this);
-        buttonUpdate.setOnAction(event -> controllerModifyExperience.handleButtonsUpdateReturn(event));
-        buttonBack.setOnAction(event -> controllerModifyExperience.handleButtonsUpdateReturn(event));
+        buttonUpdate.setOnAction(controllerModifyExperience::handleUpdateReturnButtons);
+        buttonBack.setOnAction(controllerModifyExperience::handleUpdateReturnButtons);
         Scene scene = new Scene(mainPanel, 580, 380);
         stage.setScene(scene);
         stage.show();

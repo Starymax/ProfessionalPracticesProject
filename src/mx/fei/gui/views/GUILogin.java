@@ -65,8 +65,8 @@ public class GUILogin extends Application {
         buttonLogin.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         ControllerLogin controllerLogin = new ControllerLogin(this);
-        buttonLogin.setOnAction(event -> controllerLogin.handleButtonAction(event));
-        buttonCancel.setOnAction(event -> controllerLogin.handleButtonAction(event));
+        buttonLogin.setOnAction(controllerLogin::handleLoginCancelButtons);
+        buttonCancel.setOnAction(controllerLogin::handleLoginCancelButtons);
 
         HBox buttonsBox = new HBox(30, buttonLogin, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);

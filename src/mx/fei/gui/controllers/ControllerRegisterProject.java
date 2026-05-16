@@ -28,20 +28,20 @@ public class ControllerRegisterProject {
         this.guiRegisterProject = guiRegisterProject;
     }
 
-    public void handleButtonsAndComboBoxes(ActionEvent event) {
-        if (event.getSource() == guiRegisterProject.getEnterpriseComboBox()) {
+    public void handleAddProjectManagerContinueButtonsAndEnterpriseComboBox(ActionEvent event) {
+        if (event.getSource() == guiRegisterProject.getComboBoxEnterprise()) {
             updateProjectManagers();
-        } else if (event.getSource() == guiRegisterProject.getAddProjectManagerButton()) {
+        } else if (event.getSource() == guiRegisterProject.getButtonAddProjectManager()) {
             addProjectManager();
-        } else if (event.getSource() == guiRegisterProject.getContinueButton()) {
+        } else if (event.getSource() == guiRegisterProject.getButtonContinue()) {
             continueButton();
-        } else if (event.getSource() == guiRegisterProject.getCancelButton()) {
+        } else if (event.getSource() == guiRegisterProject.getButtonCancel()) {
             cancel();
         }
     }
 
     private void updateProjectManagers() {
-        Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
+        Enterprise enterprise = guiRegisterProject.getComboBoxEnterprise().getValue();
         ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
         List<ProjectManager> projectManagers = new ArrayList<>();
         try {
@@ -49,17 +49,17 @@ public class ControllerRegisterProject {
         } catch (DataOperationException e) {
             guiRegisterProject.showError(e.getMessage());
         }
-        guiRegisterProject.getProjectManagerComboBox().setItems(FXCollections.observableArrayList(projectManagers));
+        guiRegisterProject.getComboBoxProjectManager().setItems(FXCollections.observableArrayList(projectManagers));
     }
 
     private void addProjectManager() {
-        if (guiRegisterProject.getEnterpriseComboBox().getValue() != null) {
+        if (guiRegisterProject.getComboBoxEnterprise().getValue() != null) {
             GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
             ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
             Stage stage = new Stage();
             stage.setTitle("Añadir Responsable");
             stage.initModality(Modality.APPLICATION_MODAL);
-            Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
+            Enterprise enterprise = guiRegisterProject.getComboBoxEnterprise().getValue();
             guiRegisterProjectManager.start(stage);
             guiRegisterProjectManager.loadEnterprise(enterprise);
             stage.setOnHidden(event -> {
@@ -86,19 +86,19 @@ public class ControllerRegisterProject {
     }
 
     private Project buildProject() {
-        String name = guiRegisterProject.getNameTextField().getText();
-        String description = guiRegisterProject.getDescriptionTextArea().getText();
-        String generalObjective = guiRegisterProject.getGeneralObjectiveTextField().getText();
-        String mediatesObjectives = guiRegisterProject.getMediateObjectivesTextField().getText();
-        String immediateObjectives = guiRegisterProject.getImmediateObjectivesTextField().getText();
-        String methodology = guiRegisterProject.getMethodologyTextField().getText();
-        String responsabilities = guiRegisterProject.getResponsabilitiesTextField().getText();
-        String resources = guiRegisterProject.getResourcesTextField().getText();
-        Date initialDate = Date.valueOf(guiRegisterProject.getInitialDatePicker().getValue());
-        Date finalDate = Date.valueOf(guiRegisterProject.getFinalDatePicker().getValue());
-        int availablePlaces = Integer.parseInt(guiRegisterProject.getAvailablePlacesTextField().getText());
-        Enterprise enterprise = guiRegisterProject.getEnterpriseComboBox().getValue();
-        ProjectManager projectManager = guiRegisterProject.getProjectManagerComboBox().getValue();
+        String name = guiRegisterProject.getTextFieldName().getText();
+        String description = guiRegisterProject.getTextAreaDescription().getText();
+        String generalObjective = guiRegisterProject.getTextFieldGeneralObjective().getText();
+        String mediatesObjectives = guiRegisterProject.getTextFieldMediateObjectives().getText();
+        String immediateObjectives = guiRegisterProject.getTextFieldImmediateObjective().getText();
+        String methodology = guiRegisterProject.getTextFieldMethodology().getText();
+        String responsabilities = guiRegisterProject.getTextFieldResponsibilities().getText();
+        String resources = guiRegisterProject.getTextFieldResources().getText();
+        Date initialDate = Date.valueOf(guiRegisterProject.getDatePickerStartDate().getValue());
+        Date finalDate = Date.valueOf(guiRegisterProject.getDatePickerFinalDate().getValue());
+        int availablePlaces = Integer.parseInt(guiRegisterProject.getTextFieldAvailablePlaces().getText());
+        Enterprise enterprise = guiRegisterProject.getComboBoxEnterprise().getValue();
+        ProjectManager projectManager = guiRegisterProject.getComboBoxProjectManager().getValue();
         return new Project(0, name, description, generalObjective, mediatesObjectives, immediateObjectives, methodology, responsabilities, resources, initialDate, finalDate, true, availablePlaces, enterprise, projectManager);
     }
 

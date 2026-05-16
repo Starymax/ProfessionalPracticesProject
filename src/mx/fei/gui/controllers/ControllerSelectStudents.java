@@ -8,7 +8,6 @@ import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +25,14 @@ public class ControllerSelectStudents {
         loadStudents();
     }
 
+    public void handleSelectGoBackButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Seleccionar" -> handleSelect();
+            case "Regresar" -> guiSelectStudents.closeWindow();
+        }
+    }
+
     private void loadStudents() {
         try {
             List<Student> students = studentDAO.getActiveStudents();
@@ -34,14 +41,6 @@ public class ControllerSelectStudents {
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar estudiantes", e);
             guiSelectStudents.showError("Error al cargar la lista de estudiantes.");
-        }
-    }
-
-    public void handle(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> handleSelect();
-            case "Regresar" -> guiSelectStudents.closeWindow();
         }
     }
 

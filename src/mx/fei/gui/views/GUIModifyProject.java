@@ -171,11 +171,11 @@ public class GUIModifyProject extends Application {
         buttonContinue.setStyle(buttonStyle);
         buttonCancel.setStyle(buttonStyle);
 
-        ControllerModifyProject controller = new ControllerModifyProject(this);
-        buttonAddProjectManager.setOnAction(controller::handleButtonsSaveAddProjectManagerCancel);
-        buttonContinue.setOnAction(controller::handleButtonsSaveAddProjectManagerCancel);
-        buttonCancel.setOnAction(controller::handleButtonsSaveAddProjectManagerCancel);
-        comboBoxEnterprise.setOnAction(controller::handleButtonsSaveAddProjectManagerCancel);
+        ControllerModifyProject controllerModifyProject = new ControllerModifyProject(this);
+        buttonAddProjectManager.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
+        buttonContinue.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
+        buttonCancel.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
+        comboBoxEnterprise.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
 
         HBox buttonRightPanel = new HBox(12, buttonContinue, buttonCancel);
         buttonRightPanel.setAlignment(Pos.CENTER_RIGHT);
@@ -240,15 +240,15 @@ public class GUIModifyProject extends Application {
     public boolean validateFields() {
         boolean validated = true;
         List<String> errors = new ArrayList<>();
-        GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
-        GUIUtils.validateLongText(textAreaDescription.getText().trim(), "Descripción", errors);
-        GUIUtils.validateLongText(textFieldGeneralObjective.getText().trim(), "Objetivo General", errors);
-        GUIUtils.validateLongText(textFieldMediateObjectives.getText().trim(), "Objetivos Mediatos", errors);
-        GUIUtils.validateLongText(textFieldImmediateObjectives.getText().trim(), "Objetivos Inmediatos", errors);
-        GUIUtils.validateLongText(textFieldMethodology.getText().trim(), "Metodología", errors);
-        GUIUtils.validateLongText(textFieldResources.getText().trim(), "Recursos", errors);
-        GUIUtils.validateLongText(textFieldResponsibilities.getText().trim(), "Responsabilidades", errors);
-        GUIUtils.validateInt(textFieldAvailableSpots.getText().trim(), "Lugares Disponibles", errors);
+        GUIUtils.validateShortText(textFieldName.getText(), "Nombre", errors);
+        GUIUtils.validateLongText(textAreaDescription.getText(), "Descripción", errors);
+        GUIUtils.validateLongText(textFieldGeneralObjective.getText(), "Objetivo General", errors);
+        GUIUtils.validateLongText(textFieldMediateObjectives.getText(), "Objetivos Mediatos", errors);
+        GUIUtils.validateLongText(textFieldImmediateObjectives.getText(), "Objetivos Inmediatos", errors);
+        GUIUtils.validateLongText(textFieldMethodology.getText(), "Metodología", errors);
+        GUIUtils.validateLongText(textFieldResources.getText(), "Recursos", errors);
+        GUIUtils.validateLongText(textFieldResponsibilities.getText(), "Responsabilidades", errors);
+        GUIUtils.validateShortInt(textFieldAvailableSpots.getText(), "Lugares Disponibles", errors);
         if (comboBoxEnterprise.getValue() == null) {
             errors.add("El campo Organizacion es obligatorio");
         }
@@ -260,6 +260,9 @@ public class GUIModifyProject extends Application {
         }
         if (datePickerEndDate.getValue() == null) {
             errors.add("El campo Fecha Final es obligatorio.");
+        }
+        if (datePickerStartDate.getValue().isAfter(datePickerEndDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerEndDate.getValue())) {
+            errors.add("La fecha final no puede ser anterior a la inicial");
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);

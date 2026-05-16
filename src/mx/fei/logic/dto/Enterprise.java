@@ -7,12 +7,12 @@ public class Enterprise {
     private String phoneNumber;
     private String contactEmail;
     private String city;
-    private int directUsers;
-    private int indirectUsers;
+    private long directUsers;
+    private long indirectUsers;
     private boolean activeStatus;
     private String country;
 
-    public Enterprise(int enterpriseId, String name, String sector, String phoneNumber, String contactEmail, String city, int directUsers, int indirectUsers, boolean activeStatus, String country) {
+    public Enterprise(int enterpriseId, String name, String sector, String phoneNumber, String contactEmail, String city, long directUsers, long indirectUsers, boolean activeStatus, String country) {
         this.id = enterpriseId;
         this.name = name;
         this.sector = sector;
@@ -73,19 +73,19 @@ public class Enterprise {
         this.city = city;
     }
 
-    public int getDirectUsers() {
+    public long getDirectUsers() {
         return directUsers;
     }
 
-    public void setDirectUsers(int directUsers) {
+    public void setDirectUsers(long directUsers) {
         this.directUsers = directUsers;
     }
 
-    public int getIndirectUsers() {
+    public long getIndirectUsers() {
         return indirectUsers;
     }
 
-    public void setIndirectUsers(int indirectUsers) {
+    public void setIndirectUsers(long indirectUsers) {
         this.indirectUsers = indirectUsers;
     }
 

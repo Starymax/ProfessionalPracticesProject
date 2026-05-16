@@ -60,8 +60,8 @@ public class GUIChooseProfessor extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerChooseProfessor controllerChooseProfessor = new ControllerChooseProfessor(this);
-        buttonSelect.setOnAction(controllerChooseProfessor::handleButtonsSelectReturn);
-        buttonBack.setOnAction(controllerChooseProfessor::handleButtonsSelectReturn);
+        buttonSelect.setOnAction(controllerChooseProfessor::handleSelectReturnButtons);
+        buttonBack.setOnAction(controllerChooseProfessor::handleSelectReturnButtons);
         Scene scene = new Scene(mainPanel, 660, 430);
         stage.setScene(scene);
         stage.show();

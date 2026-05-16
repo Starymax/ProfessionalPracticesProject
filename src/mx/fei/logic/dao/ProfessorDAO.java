@@ -92,7 +92,7 @@ public class ProfessorDAO implements IDAOProfessor {
                         registered = preparedStatement.executeUpdate() > 0;
                     }
                 } else {
-                    logger.log(Level.WARNING, "No se logro registrar el usuario en la base de datos");
+                    logger.log(Level.WARNING, "No se logro registrar el profesor");
                     throw new DataOperationException("No se logro registrar el profesor");
                 }
             }catch (SQLException e) {
@@ -154,7 +154,7 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public boolean existsCoordinator() throws DataOperationException {
         boolean exists = false;
-        String queryExistsCoordinator = "SELECT 1 FROM profesor WHERE es_coordinador = true LIMIT 1;";
+        String queryExistsCoordinator = "SELECT 1 FROM profesor p join usuario u WHERE p.es_coordinador = true and u.estado_activo = true LIMIT 1;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryExistsCoordinator)) {
             ResultSet resultSet = preparedStatement.executeQuery();

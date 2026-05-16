@@ -38,8 +38,8 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                         sucess = true;
                     }
                 } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "Error al registrar el responsable en la base de datos",e);
-                    throw new DataOperationException("Error al registrar el responsable en la base de datos");
+                    logger.log(Level.SEVERE, "Error al registrar el responsable",e);
+                    throw new DataOperationException("Error al registrar el responsable");
                 }
             }
         }
@@ -63,8 +63,8 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol, enterpriseId);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el Responsable de la base de datos",e);
-            throw new DataOperationException("Error al obtener el Responsable de la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener el Responsable",e);
+            throw new DataOperationException("Error al obtener el Responsable");
         }
         return projectManager;
     }
@@ -82,8 +82,8 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 projectManagers.add(getProjectManagerById(resultSet.getInt("id_responsable")));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error en la conexión a la base de datos",e);
-            throw new DataOperationException("Error en la conexión a la base de datos");
+            logger.log(Level.SEVERE, "Error al obtener los responsables",e);
+            throw new DataOperationException("Error al obtener los responsables");
         }
         return projectManagers;
     }

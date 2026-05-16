@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
@@ -30,22 +31,22 @@ import java.util.List;
 
 public class GUIRegisterProject extends Application {
 
-    private TextField nameTextField;
-    private TextArea descriptionTextArea;
-    private TextField generalObjectiveTextField;
-    private TextField immediateObjectivesTextField;
-    private TextField mediateObjectivesTextField;
-    private TextField methodologyTextField;
-    private TextField resourcesTextField;
-    private DatePicker initialDatePicker;
-    private DatePicker finalDatePicker;
-    private TextField responsabilitiesTextField;
-    private TextField availablePlacesTextField;
-    private ComboBox<Enterprise> enterpriseComboBox;
-    private ComboBox<ProjectManager> projectManagerComboBox;
-    private Button addProjectManagerButton;
-    private Button continueButton;
-    private Button cancelButton;
+    private TextField textFieldName;
+    private TextArea textAreaDescription;
+    private TextField textFieldGeneralObjective;
+    private TextField textFieldImmediateObjective;
+    private TextField textFieldMediateObjectives;
+    private TextField textFieldMethodology;
+    private TextField textFieldResources;
+    private DatePicker datePickerStartDate;
+    private DatePicker datePickerFinalDate;
+    private TextField textFieldResponsibilities;
+    private TextField textFieldAvailablePlaces;
+    private ComboBox<Enterprise> comboBoxEnterprise;
+    private ComboBox<ProjectManager> comboBoxProjectManager;
+    private Button buttonAddProjectManager;
+    private Button buttonContinue;
+    private Button buttonCancel;
     private Stage stage;
 
     @Override
@@ -55,51 +56,51 @@ public class GUIRegisterProject extends Application {
         Label title = new Label("Datos del proyecto:");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
 
-        nameTextField = new TextField();
-        descriptionTextArea = new TextArea();
-        generalObjectiveTextField = new TextField();
-        immediateObjectivesTextField = new TextField();
-        mediateObjectivesTextField = new TextField();
-        methodologyTextField = new TextField();
-        resourcesTextField = new TextField();
-        initialDatePicker = new DatePicker();
-        initialDatePicker.getEditor().setDisable(true);
-        finalDatePicker = new DatePicker();
-        finalDatePicker.getEditor().setDisable(true);
-        responsabilitiesTextField = new TextField();
-        availablePlacesTextField = new TextField();
-        enterpriseComboBox = new ComboBox<>();
-        projectManagerComboBox = new ComboBox<>();
+        textFieldName = new TextField();
+        textAreaDescription = new TextArea();
+        textFieldGeneralObjective = new TextField();
+        textFieldImmediateObjective = new TextField();
+        textFieldMediateObjectives = new TextField();
+        textFieldMethodology = new TextField();
+        textFieldResources = new TextField();
+        datePickerStartDate = new DatePicker();
+        datePickerStartDate.getEditor().setDisable(true);
+        datePickerFinalDate = new DatePicker();
+        datePickerFinalDate.getEditor().setDisable(true);
+        textFieldResponsibilities = new TextField();
+        textFieldAvailablePlaces = new TextField();
+        comboBoxEnterprise = new ComboBox<>();
+        comboBoxProjectManager = new ComboBox<>();
 
-        descriptionTextArea.setPrefRowCount(4);
-        descriptionTextArea.setWrapText(true);
+        textAreaDescription.setPrefRowCount(4);
+        textAreaDescription.setWrapText(true);
 
-        initialDatePicker.setPromptText("dd/mm/aaaa");
-        finalDatePicker.setPromptText("dd/mm/aaaa");
+        datePickerStartDate.setPromptText("dd/mm/aaaa");
+        datePickerFinalDate.setPromptText("dd/mm/aaaa");
 
-        enterpriseComboBox.setMaxWidth(Double.MAX_VALUE);
-        enterpriseComboBox.setCellFactory(listView -> new ListCell<>() {
+        comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
+        comboBoxEnterprise.setCellFactory(listView -> new ListCell<>() {
             @Override protected void updateItem(Enterprise enterprise, boolean empty) {
                 super.updateItem(enterprise, empty);
                 setText(empty || enterprise == null ? null : enterprise.getName());
             }
         });
 
-        enterpriseComboBox.setButtonCell(new ListCell<>() {
+        comboBoxEnterprise.setButtonCell(new ListCell<>() {
             @Override protected void updateItem(Enterprise enterprise, boolean empty) {
                 super.updateItem(enterprise, empty);
                 setText(empty || enterprise == null ? null : enterprise.getName());
             }
         });
 
-        projectManagerComboBox.setMaxWidth(Double.MAX_VALUE);
-        projectManagerComboBox.setCellFactory(lv -> new ListCell<>() {
+        comboBoxProjectManager.setMaxWidth(Double.MAX_VALUE);
+        comboBoxProjectManager.setCellFactory(lv -> new ListCell<>() {
             @Override protected void updateItem(ProjectManager projectManager, boolean empty) {
                 super.updateItem(projectManager, empty);
                 setText(empty || projectManager == null ? null : projectManager.getName());
             }
         });
-        projectManagerComboBox.setButtonCell(new ListCell<>() {
+        comboBoxProjectManager.setButtonCell(new ListCell<>() {
             @Override protected void updateItem(ProjectManager projectManager, boolean empty) {
                 super.updateItem(projectManager, empty);
                 setText(empty || projectManager == null ? null : projectManager.getName());
@@ -112,40 +113,40 @@ public class GUIRegisterProject extends Application {
         form.getColumnConstraints().addAll(columnConstraint(160), columnConstraint(Double.MAX_VALUE));
 
         int row = 0;
-        addRow(form, row++, "Nombre:", nameTextField);
-        addRow(form, row++, "Descripción:", descriptionTextArea);
-        addRow(form, row++, "Objetivo General:", generalObjectiveTextField);
-        addRow(form, row++, "Objetivos Inmediatos:", immediateObjectivesTextField);
-        addRow(form, row++, "Objetivos Mediatos:", mediateObjectivesTextField);
-        addRow(form, row++, "Metodología:", methodologyTextField);
-        addRow(form, row++, "Recursos humanos,\neconómicos y materiales:", resourcesTextField);
+        addRow(form, row++, "Nombre:", textFieldName);
+        addRow(form, row++, "Descripción:", textAreaDescription);
+        addRow(form, row++, "Objetivo General:", textFieldGeneralObjective);
+        addRow(form, row++, "Objetivos Inmediatos:", textFieldImmediateObjective);
+        addRow(form, row++, "Objetivos Mediatos:", textFieldMediateObjectives);
+        addRow(form, row++, "Metodología:", textFieldMethodology);
+        addRow(form, row++, "Recursos humanos,\neconómicos y materiales:", textFieldResources);
 
         HBox dateRow = new HBox(16);
         dateRow.setAlignment(Pos.CENTER_LEFT);
-        dateRow.getChildren().addAll(new Label("Fecha Inicio:"), initialDatePicker, new Label("Fecha Fin:"), finalDatePicker);
+        dateRow.getChildren().addAll(new Label("Fecha Inicio:"), datePickerStartDate, new Label("Fecha Fin:"), datePickerFinalDate);
         form.add(dateRow, 0, row++, 2, 1);
 
-        addRow(form, row++, "Responsabilidades:", responsabilitiesTextField);
-        addRow(form, row++, "Lugares disponibles:", availablePlacesTextField);
-        addRow(form, row++, "Organizacion:", enterpriseComboBox);
-        addRow(form, row, "Responsable:", projectManagerComboBox);
+        addRow(form, row++, "Responsabilidades:", textFieldResponsibilities);
+        addRow(form, row++, "Lugares disponibles:", textFieldAvailablePlaces);
+        addRow(form, row++, "Organizacion:", comboBoxEnterprise);
+        addRow(form, row, "Responsable:", comboBoxProjectManager);
 
-        addProjectManagerButton = new Button("Añadir Responsable");
-        continueButton = new Button("Continuar");
-        cancelButton = new Button("Cancelar");
+        buttonAddProjectManager = new Button("Añadir Responsable");
+        buttonContinue = new Button("Continuar");
+        buttonCancel = new Button("Cancelar");
 
         String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand;";
-        addProjectManagerButton.setStyle(buttonStyle);
-        continueButton.setStyle(buttonStyle);
-        cancelButton.setStyle(buttonStyle);
+        buttonAddProjectManager.setStyle(buttonStyle);
+        buttonContinue.setStyle(buttonStyle);
+        buttonCancel.setStyle(buttonStyle);
 
         ControllerRegisterProject controllerRegisterProject = new ControllerRegisterProject(this);
-        addProjectManagerButton.setOnAction(event ->  controllerRegisterProject.handleButtonsAndComboBoxes(event));
-        continueButton.setOnAction(event ->  controllerRegisterProject.handleButtonsAndComboBoxes(event));
-        cancelButton.setOnAction(event ->  controllerRegisterProject.handleButtonsAndComboBoxes(event));
-        enterpriseComboBox.setOnAction(event -> controllerRegisterProject.handleButtonsAndComboBoxes(event));
+        buttonAddProjectManager.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
+        buttonContinue.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
+        buttonCancel.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
+        comboBoxEnterprise.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
 
-        HBox buttonRow = new HBox(12, addProjectManagerButton, continueButton, cancelButton);
+        HBox buttonRow = new HBox(12, buttonAddProjectManager, buttonContinue, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_LEFT);
 
         VBox mainPanel = new VBox(16, title, form, buttonRow);
@@ -161,7 +162,7 @@ public class GUIRegisterProject extends Application {
         stage.show();
     }
 
-    private void addRow(GridPane grid, int row, String labelText, javafx.scene.Node field) {
+    private void addRow(GridPane grid, int row, String labelText, Node field) {
         Label label = new Label(labelText);
         label.setFont(Font.font("SansSerif", 13));
         label.setWrapText(true);
@@ -187,26 +188,29 @@ public class GUIRegisterProject extends Application {
     public boolean validateFields() {
         boolean validated = true;
         List<String> errors = new ArrayList<>();
-        GUIUtils.validateShortText(nameTextField.getText().trim(), "Nombre", errors);
-        GUIUtils.validateLongText(descriptionTextArea.getText().trim(), "Descripción", errors);
-        GUIUtils.validateLongText(generalObjectiveTextField.getText().trim(), "Objetivo General", errors);
-        GUIUtils.validateLongText(mediateObjectivesTextField.getText().trim(), "Objetivos Mediatos", errors);
-        GUIUtils.validateLongText(immediateObjectivesTextField.getText().trim(), "Objetivos Inmediatos", errors);
-        GUIUtils.validateLongText(methodologyTextField.getText().trim(), "Metodología", errors);
-        GUIUtils.validateLongText(resourcesTextField.getText().trim(), "Recursos", errors);
-        GUIUtils.validateLongText(responsabilitiesTextField.getText().trim(), "Responsabilidades", errors);
-        GUIUtils.validateInt(availablePlacesTextField.getText().trim(), "Lugares Disponibles", errors);
-        if (enterpriseComboBox.getValue() == null) {
+        GUIUtils.validateShortText(textFieldName.getText(), "Nombre", errors);
+        GUIUtils.validateLongText(textAreaDescription.getText(), "Descripción", errors);
+        GUIUtils.validateLongText(textFieldGeneralObjective.getText(), "Objetivo General", errors);
+        GUIUtils.validateLongText(textFieldMediateObjectives.getText(), "Objetivos Mediatos", errors);
+        GUIUtils.validateLongText(textFieldImmediateObjective.getText(), "Objetivos Inmediatos", errors);
+        GUIUtils.validateLongText(textFieldMethodology.getText(), "Metodología", errors);
+        GUIUtils.validateLongText(textFieldResources.getText(), "Recursos", errors);
+        GUIUtils.validateLongText(textFieldResponsibilities.getText(), "Responsabilidades", errors);
+        GUIUtils.validateShortInt(textFieldAvailablePlaces.getText(), "Lugares Disponibles", errors);
+        if (comboBoxEnterprise.getValue() == null) {
             errors.add("El campo Organizacion es obligatorio");
         }
-        if (projectManagerComboBox.getValue() == null) {
+        if (comboBoxProjectManager.getValue() == null) {
             errors.add("El campo Responsable es obligatorio");
         }
-        if (initialDatePicker.getValue() == null) {
+        if (datePickerStartDate.getValue() == null) {
             errors.add("El campo Fecha Inicial es obligatorio.");
         }
-        if (finalDatePicker.getValue() == null) {
+        if (datePickerFinalDate.getValue() == null) {
             errors.add("El campo Fecha Final es obligatorio.");
+        }
+        if (datePickerStartDate.getValue().isAfter(datePickerFinalDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerFinalDate.getValue())) {
+            errors.add("La fecha final no puede ser anterior a la inicial");
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
@@ -216,13 +220,13 @@ public class GUIRegisterProject extends Application {
     }
 
     public void loadEnterprises(List<Enterprise> enterprises) {
-        enterpriseComboBox.getItems().clear();
-        enterpriseComboBox.getItems().addAll(enterprises);
+        comboBoxEnterprise.getItems().clear();
+        comboBoxEnterprise.getItems().addAll(enterprises);
     }
 
     public void loadProjectManagers(List<ProjectManager> projectManagers) {
-        projectManagerComboBox.getItems().clear();
-        projectManagerComboBox.getItems().addAll(projectManagers);
+        comboBoxProjectManager.getItems().clear();
+        comboBoxProjectManager.getItems().addAll(projectManagers);
     }
 
     public void showError(String message) {
@@ -233,68 +237,68 @@ public class GUIRegisterProject extends Application {
         GUIUtils.showSuccess(message);
     }
 
-    public TextField getNameTextField() {
-        return nameTextField;
+    public TextField getTextFieldName() {
+        return textFieldName;
     }
 
-    public TextArea getDescriptionTextArea() {
-        return descriptionTextArea;
+    public TextArea getTextAreaDescription() {
+        return textAreaDescription;
     }
 
-    public TextField getGeneralObjectiveTextField() {
-        return generalObjectiveTextField;
+    public TextField getTextFieldGeneralObjective() {
+        return textFieldGeneralObjective;
     }
 
-    public TextField getImmediateObjectivesTextField() {
-        return immediateObjectivesTextField;
+    public TextField getTextFieldImmediateObjective() {
+        return textFieldImmediateObjective;
     }
 
-    public TextField getMediateObjectivesTextField() {
-        return mediateObjectivesTextField;
+    public TextField getTextFieldMediateObjectives() {
+        return textFieldMediateObjectives;
     }
 
-    public TextField getMethodologyTextField() {
-        return methodologyTextField;
+    public TextField getTextFieldMethodology() {
+        return textFieldMethodology;
     }
 
-    public TextField getResourcesTextField() {
-        return resourcesTextField;
+    public TextField getTextFieldResources() {
+        return textFieldResources;
     }
 
-    public DatePicker getInitialDatePicker() {
-        return initialDatePicker;
+    public DatePicker getDatePickerStartDate() {
+        return datePickerStartDate;
     }
 
-    public DatePicker getFinalDatePicker() {
-        return finalDatePicker;
+    public DatePicker getDatePickerFinalDate() {
+        return datePickerFinalDate;
     }
 
-    public TextField getResponsabilitiesTextField() {
-        return responsabilitiesTextField;
+    public TextField getTextFieldResponsibilities() {
+        return textFieldResponsibilities;
     }
 
-    public TextField getAvailablePlacesTextField() {
-        return availablePlacesTextField;
+    public TextField getTextFieldAvailablePlaces() {
+        return textFieldAvailablePlaces;
     }
 
-    public ComboBox<Enterprise> getEnterpriseComboBox() {
-        return enterpriseComboBox;
+    public ComboBox<Enterprise> getComboBoxEnterprise() {
+        return comboBoxEnterprise;
     }
 
-    public ComboBox<ProjectManager> getProjectManagerComboBox() {
-        return projectManagerComboBox;
+    public ComboBox<ProjectManager> getComboBoxProjectManager() {
+        return comboBoxProjectManager;
     }
 
-    public Button getAddProjectManagerButton() {
-        return addProjectManagerButton;
+    public Button getButtonAddProjectManager() {
+        return buttonAddProjectManager;
     }
 
-    public Button getContinueButton() {
-        return continueButton;
+    public Button getButtonContinue() {
+        return buttonContinue;
     }
 
-    public Button getCancelButton() {
-        return cancelButton;
+    public Button getButtonCancel() {
+        return buttonCancel;
     }
 
     public Stage getStage() {

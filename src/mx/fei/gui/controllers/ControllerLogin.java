@@ -31,7 +31,7 @@ public class ControllerLogin {
         defaultSession();
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleLoginCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Ingresar")) {
             handleLogin();

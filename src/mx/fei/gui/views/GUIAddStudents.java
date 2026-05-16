@@ -110,9 +110,9 @@ public class GUIAddStudents extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerAddStudents controllerAddStudents = new ControllerAddStudents(this, stage);
-        buttonAdd.setOnAction(event -> controllerAddStudents.handle(event));
-        buttonConfirm.setOnAction(event -> controllerAddStudents.handle(event));
-        buttonBack.setOnAction(event -> controllerAddStudents.handle(event));
+        buttonAdd.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
+        buttonConfirm.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
+        buttonBack.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
         Scene scene = new Scene(mainPanel, 560, 360);
         stage.setScene(scene);
         stage.show();

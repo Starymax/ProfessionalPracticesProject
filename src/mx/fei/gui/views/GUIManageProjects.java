@@ -30,10 +30,10 @@ public class GUIManageProjects extends Application {
         buttonManageProject = buildMenuButton("Gestionar proyecto");
         buttonGoBack = buildMenuButton("Regresar");
 
-        ControllerManageProjects controller = new ControllerManageProjects(this);
-        buttonRegisterProject.setOnAction(controller);
-        buttonManageProject.setOnAction(controller);
-        buttonGoBack.setOnAction(controller);
+        ControllerManageProjects controllerManageProjects = new ControllerManageProjects(this);
+        buttonRegisterProject.setOnAction(controllerManageProjects::handleRegisterModifyReturnButtons);
+        buttonManageProject.setOnAction(controllerManageProjects::handleRegisterModifyReturnButtons);
+        buttonGoBack.setOnAction(controllerManageProjects::handleRegisterModifyReturnButtons);
 
         VBox mainPanel = new VBox(20, labelTitle, buttonRegisterProject, buttonManageProject, buttonGoBack);
         mainPanel.setAlignment(Pos.CENTER);

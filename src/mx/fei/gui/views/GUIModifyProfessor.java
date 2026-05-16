@@ -106,9 +106,9 @@ public class GUIModifyProfessor extends Application {
         String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; " + "-fx-font-size: 14px; -fx-cursor: hand;";
         buttonUpdate.setStyle(buttonStyle);
         buttonCancel.setStyle(buttonStyle);
-        ControllerModifyProfessor controller = new ControllerModifyProfessor(this);
-        buttonUpdate.setOnAction(event -> controller.handleButtonAction(event));
-        buttonCancel.setOnAction(event -> controller.handleButtonAction(event));
+        ControllerModifyProfessor controllerModifyProfessor = new ControllerModifyProfessor(this);
+        buttonUpdate.setOnAction(controllerModifyProfessor::handleUpdateCancelButtons);
+        buttonCancel.setOnAction(controllerModifyProfessor::handleUpdateCancelButtons);
         HBox buttonPanel = new HBox(10, buttonUpdate, buttonCancel);
         buttonPanel.setAlignment(Pos.CENTER_RIGHT);
         HBox leftControls = new HBox(20, checkBoxPanel, toggleState);
@@ -140,8 +140,13 @@ public class GUIModifyProfessor extends Application {
         return validated;
     }
 
-    public void showError(String message) { GUIUtils.showError(message); }
-    public void showSuccess(String message) { GUIUtils.showSuccess(message); }
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
 
     public void closeWindow() {
         GUIUtils.closeWindow((Stage) buttonCancel.getScene().getWindow());
@@ -151,16 +156,51 @@ public class GUIModifyProfessor extends Application {
         launch(args);
     }
 
-    public Professor getProfessor() { return professor; }
-    public TextField getTextFieldName() { return textFieldName; }
-    public TextField getTextFieldLastName() { return textFieldLastName; }
-    public ComboBox<String> getComboBoxGender() { return comboBoxGender; }
-    public ComboBox<String> getComboBoxShift() { return comboBoxShift; }
-    public TextField getTextFieldEmail() { return textFieldEmail; }
-    public CheckBox getCheckBoxIsCoordinator() { return checkBoxIsCoordinator; }
-    public CheckBox getCheckBoxIsAdministrator() { return checkBoxIsAdministrator; }
-    public ToggleButton getToggleState() { return toggleState; }
-    public Button getButtonUpdate() { return buttonUpdate; }
-    public Button getButtonCancel() { return buttonCancel; }
-    public Stage getStage() { return stage; }
+    public Professor getProfessor() {
+        return professor;
+    }
+
+    public TextField getTextFieldName() {
+        return textFieldName;
+    }
+
+    public TextField getTextFieldLastName() {
+        return textFieldLastName;
+    }
+
+    public ComboBox<String> getComboBoxGender() {
+        return comboBoxGender;
+    }
+
+    public ComboBox<String> getComboBoxShift() {
+        return comboBoxShift;
+    }
+
+    public TextField getTextFieldEmail() {
+        return textFieldEmail;
+    }
+
+    public CheckBox getCheckBoxIsCoordinator() {
+        return checkBoxIsCoordinator;
+    }
+
+    public CheckBox getCheckBoxIsAdministrator() {
+        return checkBoxIsAdministrator;
+    }
+
+    public ToggleButton getToggleState() {
+        return toggleState;
+    }
+
+    public Button getButtonUpdate() {
+        return buttonUpdate;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
 }

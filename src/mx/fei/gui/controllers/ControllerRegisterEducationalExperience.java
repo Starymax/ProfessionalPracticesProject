@@ -23,7 +23,7 @@ public class ControllerRegisterEducationalExperience {
         educationalExperienceDAO = new EducationalExperienceDAO();
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleRegisterCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Registrar")) {
             if (guiRegisterEducationalExperience.validateFields()) {

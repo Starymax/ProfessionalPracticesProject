@@ -27,7 +27,7 @@ public class ControllerStudentMenu {
         projectDAO = new ProjectDAO();
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleButtonsMenu(ActionEvent event) {
         if (event.getSource() == guiStudentMenu.getButtonSelectProjects()) {
             openSelectProjects();
         } else if (event.getSource() == guiStudentMenu.getButtonReports()) {

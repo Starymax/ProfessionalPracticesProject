@@ -5,7 +5,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Alert;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import mx.fei.gui.utils.CountryCityLoader;
@@ -122,8 +121,8 @@ public class GUIRegisterEnterprise extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerRegisterEnterprise controllerRegisterEnterprise = new ControllerRegisterEnterprise(this);
-        buttonRegister.setOnAction(event -> controllerRegisterEnterprise.handleButtonsRegisterCancel(event));
-        buttonCancel.setOnAction(event -> controllerRegisterEnterprise.handleButtonsRegisterCancel(event));
+        buttonRegister.setOnAction(controllerRegisterEnterprise::handleRegisterCancelButtons);
+        buttonCancel.setOnAction(controllerRegisterEnterprise::handleRegisterCancelButtons);
         Scene scene = new Scene(mainPanel, 560, 460);
         stage.setScene(scene);
         stage.show();
@@ -141,8 +140,8 @@ public class GUIRegisterEnterprise extends Application {
         GUIUtils.validatePhone(textFieldPhone.getText(),"Telefono",errors);
         GUIUtils.validateEmail(textFieldMail.getText(),errors);
         GUIUtils.validateComboBoxSelection(comboBoxSector.getValue(),"Sector",errors);
-        GUIUtils.validateInt(textFieldDirectUsers.getText(),"Usuarios directos",errors);
-        GUIUtils.validateInt(textFieldIndirectUsers.getText(),"Usuarios indirectos",errors);
+        GUIUtils.validateLong(textFieldDirectUsers.getText(),"Usuarios directos",errors);
+        GUIUtils.validateLong(textFieldIndirectUsers.getText(),"Usuarios indirectos",errors);
         GUIUtils.validateComboBoxSelection(comboBoxCountry.getValue(),"Paises",errors);
         GUIUtils.validateComboBoxSelection(comboBoxCity.getValue(),"Ciudades",errors);
         if (!errors.isEmpty()){

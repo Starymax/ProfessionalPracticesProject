@@ -11,7 +11,7 @@ import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
-public class ControllerManageProjects implements EventHandler<ActionEvent> {
+public class ControllerManageProjects {
 
     private final GUIManageProjects guiManageProjects;
 
@@ -19,8 +19,7 @@ public class ControllerManageProjects implements EventHandler<ActionEvent> {
         this.guiManageProjects = guiManageProjects;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleRegisterModifyReturnButtons(ActionEvent event) {
         if (event.getSource() == guiManageProjects.getButtonRegisterProject()) {
             openRegisterProject();
         } else if (event.getSource() == guiManageProjects.getButtonManageProject()) {

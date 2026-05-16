@@ -28,7 +28,7 @@ public class ControllerModifyProject {
         this.guiModifyProject = guiModifyProject;
     }
 
-    public void handleButtonsSaveAddProjectManagerCancel(ActionEvent event) {
+    public void handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox(ActionEvent event) {
         if (event.getSource() == guiModifyProject.getComboBoxEnterprise()) {
             updateProjectManagers();
         } else if (event.getSource() == guiModifyProject.getButtonAddProjectManager()) {

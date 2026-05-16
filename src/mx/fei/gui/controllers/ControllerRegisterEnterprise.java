@@ -21,7 +21,7 @@ public class ControllerRegisterEnterprise {
         this.enterpriseDAO = new EnterpriseDAO();
     }
 
-    public void handleButtonsRegisterCancel(ActionEvent event) {
+    public void handleRegisterCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar" -> handleRegister();
@@ -35,22 +35,7 @@ public class ControllerRegisterEnterprise {
     private void handleRegister() {
         if (guiRegisterEnterprise.validatedFields()) {
             try {
-                int directUsers = Integer.parseInt(guiRegisterEnterprise.getTextFieldDirectUsers().getText().trim());
-                int indirectUsers = Integer.parseInt(guiRegisterEnterprise.getTextFieldIndirectUsers().getText().trim());
-                String city = guiRegisterEnterprise.getComboBoxCity().getValue();
-                String country = guiRegisterEnterprise.getComboBoxCountry().getValue();
-                Enterprise enterprise = new Enterprise(
-                        0,
-                        guiRegisterEnterprise.getTextFieldName().getText().trim(),
-                        guiRegisterEnterprise.getComboBoxSector().getValue(),
-                        guiRegisterEnterprise.getTextFieldPhone().getText().trim(),
-                        guiRegisterEnterprise.getTextFieldMail().getText().trim(),
-                        city,
-                        directUsers,
-                        indirectUsers,
-                        true,
-                        country
-                );
+                Enterprise enterprise = getEnterprise();
                 int idGenerated = enterpriseDAO.registerEnterprise(enterprise);
                 boolean registered = false;
                 if (idGenerated > 0) {
@@ -61,8 +46,6 @@ public class ControllerRegisterEnterprise {
                     openManageEnterprise();
                     guiRegisterEnterprise.closeWindow();
                 }
-            } catch (NumberFormatException e) {
-                guiRegisterEnterprise.showError("Los campos de usuarios directos e indirectos deben ser números enteros.");
             } catch (IllegalArgumentException e) {
                 guiRegisterEnterprise.showError(e.getMessage());
             } catch (DataOperationException e) {
@@ -71,6 +54,27 @@ public class ControllerRegisterEnterprise {
             }
         }
     }
+
+    private Enterprise getEnterprise() {
+        long directUsers = Long.getLong(guiRegisterEnterprise.getTextFieldDirectUsers().getText().trim());
+        long indirectUsers = Long.parseLong(guiRegisterEnterprise.getTextFieldIndirectUsers().getText().trim());
+        String city = guiRegisterEnterprise.getComboBoxCity().getValue();
+        String country = guiRegisterEnterprise.getComboBoxCountry().getValue();
+        Enterprise enterprise = new Enterprise(
+                0,
+                guiRegisterEnterprise.getTextFieldName().getText().trim(),
+                guiRegisterEnterprise.getComboBoxSector().getValue(),
+                guiRegisterEnterprise.getTextFieldPhone().getText().trim(),
+                guiRegisterEnterprise.getTextFieldMail().getText().trim(),
+                city,
+                directUsers,
+                indirectUsers,
+                true,
+                country
+        );
+        return enterprise;
+    }
+
     private void openManageEnterprise() {
         GUIManageEnterprise guiManageEnterprise = new GUIManageEnterprise();
         Stage stage = new Stage();

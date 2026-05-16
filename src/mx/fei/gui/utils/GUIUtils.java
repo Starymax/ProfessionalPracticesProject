@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 public class GUIUtils {
     public static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}\\s]{3,50}$");
-    public static final Pattern LONG_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,1000}$");
-    public static final Pattern SHORT_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,50}$");
+    public static final Pattern LONG_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,65535}$");
+    public static final Pattern SHORT_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,100}$");
     public static final Pattern REPETITION_PATTERN = Pattern.compile("(\\p{L})\\1{3,}", Pattern.CASE_INSENSITIVE);
     public static final Pattern CONTAINS_NUMBERS_PATTERN = Pattern.compile("\\d");
     public static final Pattern CONTAINS_VOWELS_PATTERN = Pattern.compile("[aeiouáéíóúüAEIOUÁÉÍÓÚÜ]", Pattern.CASE_INSENSITIVE);
@@ -36,7 +36,7 @@ public class GUIUtils {
     }
 
     public static void validateLongText(String value, String fieldName, List<String> errors) {
-        if (value.isEmpty()) {
+        if (value == null || value.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (value.trim().isEmpty()) {
             errors.add(fieldName + " no puede contener solo espacios.");
@@ -57,7 +57,7 @@ public class GUIUtils {
         } else if (!value.equals(value.trim())) {
             errors.add(fieldName + " no puede empezar ni terminar con espacios.");
         } else if (!SHORT_TEXT_PATTERN.matcher(value).matches()) {
-            errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 50 letras");
+            errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 100 letras");
         } else if (REPETITION_PATTERN.matcher(value).find()) {
             errors.add(fieldName + " no puede tener 3 o más veces consecutivas la misma letra.");
         }
@@ -132,11 +132,33 @@ public class GUIUtils {
         }
     }
 
+    public static void validateLong(String value, String fieldName, List<String> errors) {
+        if (value.isEmpty()) {
+            errors.add("El campo de " + fieldName + " es obligatorio.");
+        } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
+            errors.add(fieldName + " debe contener solo números.");
+        } else if (value.length() > 15) {
+            errors.add(fieldName + " no puede ser un valor tan grande.");
+        }
+    }
+
+    public static void validateShortInt(String value, String fieldName, List<String> errors) {
+        if (value.isEmpty()) {
+            errors.add("El campo de " + fieldName + " es obligatorio.");
+        } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
+            errors.add(fieldName + " debe contener solo números.");
+        } else if (value.length() > 2) {
+            errors.add(fieldName + " no puede ser un valor tan grande.");
+        }
+    }
+
     public static void validateInt(String value, String fieldName, List<String> errors) {
         if (value.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
+        } else if (value.length() > 9) {
+            errors.add(fieldName + " no puede ser un valor tan grande.");
         }
     }
 

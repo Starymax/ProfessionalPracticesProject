@@ -20,7 +20,7 @@ public class ControllerAssignProject {
         this.guiAssignProject = guiAssignProject;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleAssignCancelButtons(ActionEvent event) {
         if (event.getSource() == guiAssignProject.getButtonAssign()) {
             assignProject();
         } else if (event.getSource() == guiAssignProject.getButtonCancel()) {

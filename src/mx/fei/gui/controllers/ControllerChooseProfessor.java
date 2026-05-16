@@ -32,7 +32,7 @@ public class ControllerChooseProfessor {
         }
     }
 
-    public void handleButtonsSelectReturn(ActionEvent actionEvent) {
+    public void handleSelectReturnButtons(ActionEvent actionEvent) {
         Button button = (Button) actionEvent.getSource();
         switch (button.getText()) {
             case "Seleccionar" -> handleSelectProfessor();

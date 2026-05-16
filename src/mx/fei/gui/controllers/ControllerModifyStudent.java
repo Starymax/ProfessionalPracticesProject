@@ -26,15 +26,12 @@ public class ControllerModifyStudent {
         this.userDAO = new UserDAO();
     }
 
-    public void handleButtons(ActionEvent event) {
+    public void handleUpdateCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Actualizar" -> handleUpdate();
             case "Cancelar" -> {
                 guiModifyStudent.closeWindow();
-                Stage stage = new Stage();
-                stage.setTitle("Seleccionar estudiante");
-                guiChooseStudent.start(stage);
             }
         }
     }

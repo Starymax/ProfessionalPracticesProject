@@ -17,7 +17,7 @@ public class ControllerSelectStudentForAssignProject {
         this.guiSelectStudentForAssignProject = guiSelectStudentForAssignProject;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleSelectCancelButtons(ActionEvent event) {
         if (event.getSource() == guiSelectStudentForAssignProject.getButtonSelect()) {
             selectStudent();
         } else if (event.getSource() == guiSelectStudentForAssignProject.getButtonCancelar()) {

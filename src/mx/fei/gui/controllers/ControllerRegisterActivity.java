@@ -8,7 +8,7 @@ import javafx.event.EventHandler;
 
 import java.util.ArrayList;
 
-public class ControllerRegisterActivity implements EventHandler<ActionEvent> {
+public class ControllerRegisterActivity {
 
     private final GUIRegisterActivity guiRegisterActivity;
 
@@ -16,8 +16,7 @@ public class ControllerRegisterActivity implements EventHandler<ActionEvent> {
         this.guiRegisterActivity = guiRegisterActivity;
     }
 
-    @Override
-    public void handle(ActionEvent event) {
+    public void handleSaveCancelButtons(ActionEvent event) {
         if (event.getSource() == guiRegisterActivity.getButtonSave()) {
             save();
         } else if (event.getSource() == guiRegisterActivity.getButtonCancel()) {

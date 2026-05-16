@@ -101,9 +101,9 @@ public class GUIUploadDocuments extends Application {
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
 
         ControllerUploadDocument controllerUploadDocument = new ControllerUploadDocument(this, stage);
-        buttonSelect.setOnAction(event -> controllerUploadDocument.handleSelectUploadCancel(event));
-        buttonUpload.setOnAction(event -> controllerUploadDocument.handleSelectUploadCancel(event));
-        buttonCancel.setOnAction(event -> controllerUploadDocument.handleSelectUploadCancel(event));
+        buttonSelect.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
+        buttonUpload.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
+        buttonCancel.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
         Scene scene = new Scene(mainPanel, 560, 460);
         stage.setScene(scene);
         stage.show();

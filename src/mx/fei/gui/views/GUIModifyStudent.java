@@ -139,8 +139,8 @@ public class GUIModifyStudent extends Application {
         GridPane.setColumnSpan(buttonsBox, 4);
         formGrid.add(buttonsBox,0,8);
         ControllerModifyStudent controllerModifyStudent = new ControllerModifyStudent(this);
-        buttonUpdate.setOnAction(event -> controllerModifyStudent.handleButtons(event));
-        buttonCancel.setOnAction(event ->  controllerModifyStudent.handleButtons(event));
+        buttonUpdate.setOnAction(controllerModifyStudent::handleUpdateCancelButtons);
+        buttonCancel.setOnAction(controllerModifyStudent::handleUpdateCancelButtons);
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));

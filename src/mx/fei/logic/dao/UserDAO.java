@@ -28,8 +28,8 @@ public class UserDAO implements IDAOUser {
             ResultSet resultSet = preparedStatement.executeQuery();
             exist = resultSet.next();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al verificar si existe un usuario en la base de datos",e);
-            throw new DataOperationException("Error al verificar si existe un usuario en la base de datos");
+            logger.log(Level.SEVERE,"Error al verificar si existe un usuario",e);
+            throw new DataOperationException("Error al verificar si existe un usuario ");
         }
         return exist;
     }
@@ -56,8 +56,8 @@ public class UserDAO implements IDAOUser {
                 generatedID = keys.getInt(1);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al registrar un usuario en la base de datos",e);
-            throw new DataOperationException("Error al registrar un usuario en la base de datos");
+            logger.log(Level.SEVERE,"Error al registrar el usuario",e);
+            throw new DataOperationException("Error al registrar el usuario");
         }
         return generatedID;
     }
@@ -78,8 +78,8 @@ public class UserDAO implements IDAOUser {
                 preparedStatement.setInt(7, user.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE,"Error al actualizar un usuario de la base de datos",e);
-                throw new DataOperationException("Error al actualizar un usuario de la base de datos");
+                logger.log(Level.SEVERE,"Error al actualizar el usuario",e);
+                throw new DataOperationException("Error al actualizar el usuario");
             }
         }
         return updated;
@@ -104,10 +104,10 @@ public class UserDAO implements IDAOUser {
                     return professorDAO.getProfessorById(idUser);
                 }
             }
-            logger.log(Level.WARNING, "No se encontro usuario con correo: " + email);
-            throw new NoSuchElementException("No se encontro usuario con correo: " + email);
+            logger.log(Level.WARNING, "Error al obtener el usuario");
+            throw new NoSuchElementException("Error al obtener el usuario");
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al buscar usuario por correo", e);
+            logger.log(Level.SEVERE, "Error al obtener el usuario");
             throw new DataOperationException("Error al buscar el usuario");
         }
     }
@@ -121,7 +121,7 @@ public class UserDAO implements IDAOUser {
             resultSet.next();
             return resultSet.getInt(1) > 0;
         } catch (SQLException e) {
-            throw new DataOperationException("Error al obtener los datos de la base de datos");
+            throw new DataOperationException("Error al obtener los datos del usuario");
         }
     }
 

@@ -32,8 +32,8 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 String phone = resultSet.getString("telefono");
                 String mail = resultSet.getString("correo");
                 String city = resultSet.getString("ciudad");
-                int directUsers = resultSet.getInt("usuarios_directos");
-                int indirectUsers = resultSet.getInt("usuarios_indirectos");
+                long directUsers = resultSet.getLong("usuarios_directos");
+                long indirectUsers = resultSet.getLong("usuarios_indirectos");
                 boolean activeStatus = resultSet.getBoolean("estado_activo");
                 String country = resultSet.getString("pais");
                 enterprise = new Enterprise(idEnterprise, name, sector, phone, mail, city, directUsers, indirectUsers, activeStatus, country);
@@ -64,8 +64,8 @@ public class EnterpriseDAO implements IDAOEnterprise {
             preparedStatement.setString(3,enterprise.getPhoneNumber());
             preparedStatement.setString(4,enterprise.getContactEmail());
             preparedStatement.setString(5,enterprise.getCity());
-            preparedStatement.setInt(6,enterprise.getDirectUsers());
-            preparedStatement.setInt(7,enterprise.getIndirectUsers());
+            preparedStatement.setLong(6,enterprise.getDirectUsers());
+            preparedStatement.setLong(7,enterprise.getIndirectUsers());
             preparedStatement.setBoolean(8,enterprise.isActiveStatus());
             preparedStatement.setString(9,enterprise.getCountry());
             preparedStatement.executeUpdate();

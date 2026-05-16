@@ -12,7 +12,7 @@ public class ControllerProfessorMenu {
         this.guiProfessorMenu = guiProfessorMenu;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleButtonsMenu(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Gestionar actividades" -> { /* TODO: abrir ventana */ }

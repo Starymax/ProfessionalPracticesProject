@@ -54,10 +54,10 @@ public class GUIAdministratorMenu extends Application {
         bottomRightButtons.setAlignment(Pos.BOTTOM_RIGHT);
 
         ControllerAdministratorMenu controllerAdministratorMenu = new ControllerAdministratorMenu(this);
-        buttonRegisterProfessor.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
-        buttonModifyProfessor.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
-        buttonProfessorView.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
-        buttonLogout.setOnAction(event -> controllerAdministratorMenu.handleButtonAction(event));
+        buttonRegisterProfessor.setOnAction(controllerAdministratorMenu::handleRegisterModifyProfessorViewCancelButtons);
+        buttonModifyProfessor.setOnAction(controllerAdministratorMenu::handleRegisterModifyProfessorViewCancelButtons);
+        buttonProfessorView.setOnAction(controllerAdministratorMenu::handleRegisterModifyProfessorViewCancelButtons);
+        buttonLogout.setOnAction(controllerAdministratorMenu::handleRegisterModifyProfessorViewCancelButtons);
 
         BorderPane mainPanel = new BorderPane();
         mainPanel.setPadding(new Insets(32, 40, 32, 40));

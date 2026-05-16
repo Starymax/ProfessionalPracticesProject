@@ -13,7 +13,7 @@ public class ControllerManageEnterprise {
         this.guiManageEnterprise = guiManageEnterprise;
     }
 
-    public void handleButtonsRegisterModifyReturn(ActionEvent event) {
+    public void handleRegisterModifyReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar organización vinculada" -> {

@@ -23,7 +23,7 @@ public class ControllerCoordinatorMenu {
         this.guiCoordinatorMenu = guiCoordinatorMenu;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleButtonsMenu(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Gestionar alumnos" -> {

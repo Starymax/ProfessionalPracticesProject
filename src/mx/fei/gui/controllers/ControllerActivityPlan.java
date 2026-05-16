@@ -28,7 +28,7 @@ public class ControllerActivityPlan {
         this.guiActivityPlan = guiActivityPlan;
     }
 
-    public void handleButtons(ActionEvent event) {
+    public void handleAddActivitySavePlanCancelButtons(ActionEvent event) {
         if (event.getSource() == guiActivityPlan.getButtonAddActivity()) {
             openAddActivity();
         } else if (event.getSource() == guiActivityPlan.getButtonSave()) {

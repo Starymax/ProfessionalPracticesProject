@@ -101,8 +101,8 @@ public class GUIRegisterProfessor extends Application {
         buttonCancel.setStyle(buttonStyle);
 
         ControllerRegisterProfessor controllerRegisterProfessor = new ControllerRegisterProfessor(this);
-        buttonRegister.setOnAction(event -> controllerRegisterProfessor.handleButtonAction(event));
-        buttonCancel.setOnAction(event -> controllerRegisterProfessor.handleButtonAction(event));
+        buttonRegister.setOnAction(controllerRegisterProfessor::handleRegisterCancelButtons);
+        buttonCancel.setOnAction(controllerRegisterProfessor::handleRegisterCancelButtons);
 
         HBox buttonPanel = new HBox(10, buttonRegister, buttonCancel);
         buttonPanel.setAlignment(Pos.CENTER_RIGHT);

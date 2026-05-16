@@ -1,12 +1,10 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
-import mx.fei.gui.views.GUIChooseStudent;
-import mx.fei.gui.views.GUIManageStudent;
-import mx.fei.gui.views.GUIRegisterStudent;
-import mx.fei.gui.views.GUISelectStudentForAssignProject;
+import mx.fei.gui.views.*;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -20,18 +18,14 @@ public class ControllerManageStudent {
         this.guiManageStudent = guiManageStudent;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleRegisterModifyAssignButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar estudiante" -> {
                 registerStudent();
             }
             case "Modificar estudiante" -> {
-                GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
-                Stage stage = new Stage();
-                stage.setTitle("Modificar estudiante");
-                guiChooseStudent.start(stage);
-                guiManageStudent.closeWindow();
+                modifyStudent();
             }
             case "Asignar proyecto"     -> {
                 assignProject();
@@ -45,9 +39,17 @@ public class ControllerManageStudent {
     private void registerStudent() {
         GUIRegisterStudent guiRegisterStudent = new GUIRegisterStudent();
         Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
         guiRegisterStudent.start(stage);
         stage.setTitle("Registrar estudiante");
-        guiManageStudent.closeWindow();
+    }
+
+    private void modifyStudent() {
+        GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Modificar estudiante");
+        guiChooseStudent.start(stage);
     }
 
     private void assignProject() {
@@ -57,9 +59,9 @@ public class ControllerManageStudent {
             GUISelectStudentForAssignProject guiSelectStudentForAssignProject = new GUISelectStudentForAssignProject();
             Stage stage = new Stage();
             guiSelectStudentForAssignProject.start(stage);
+            stage.initModality(Modality.APPLICATION_MODAL);
             guiSelectStudentForAssignProject.loadStudents(studentList);
             stage.setTitle("Seleccionar estudiante");
-            guiManageStudent.closeWindow();
         } catch (DataOperationException e) {
             guiManageStudent.showError(e.getMessage());
         }

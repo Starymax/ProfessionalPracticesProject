@@ -1,7 +1,6 @@
 package mx.fei.gui.views;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -54,9 +53,9 @@ public class GUIManageEnterprise extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerManageEnterprise controllerManageEnterprise = new ControllerManageEnterprise(this);
-        buttonRegisterEnterprise.setOnAction(event -> controllerManageEnterprise.handleButtonsRegisterModifyReturn(event));
-        buttonModifyEnterprise.setOnAction(event -> controllerManageEnterprise.handleButtonsRegisterModifyReturn(event));
-        buttonBack.setOnAction(event -> controllerManageEnterprise.handleButtonsRegisterModifyReturn(event));
+        buttonRegisterEnterprise.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
+        buttonModifyEnterprise.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
+        buttonBack.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
         Scene scene = new Scene(mainPanel, 600, 480);
         stage.setScene(scene);
         stage.show();

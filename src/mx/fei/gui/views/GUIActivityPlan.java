@@ -96,11 +96,11 @@ public class GUIActivityPlan extends Application {
         buttonSave.setPrefWidth(140);
         buttonCancel.setPrefWidth(140);
 
-        ControllerActivityPlan controller = new ControllerActivityPlan(this);
-        buttonAddActivity.setOnAction( event -> controller.handleButtons(event));
-        buttonSave.setOnAction( event -> controller.handleButtons(event));
-        buttonCancel.setOnAction( event -> controller.handleButtons(event));
-        controller.setProject(project);
+        ControllerActivityPlan controllerActivityPlan = new ControllerActivityPlan(this);
+        buttonAddActivity.setOnAction(controllerActivityPlan::handleAddActivitySavePlanCancelButtons);
+        buttonSave.setOnAction(controllerActivityPlan::handleAddActivitySavePlanCancelButtons);
+        buttonCancel.setOnAction(controllerActivityPlan::handleAddActivitySavePlanCancelButtons);
+        controllerActivityPlan.setProject(project);
 
         HBox buttonRightPanel = new HBox(12, buttonSave, buttonCancel);
         buttonRightPanel.setAlignment(Pos.CENTER_RIGHT);

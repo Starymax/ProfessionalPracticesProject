@@ -18,7 +18,7 @@ public class ControllerRegisterProjectManager{
         this.guiRegisterProjectManager = guiRegisterProjectManager;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleRegisterCancelButtons(ActionEvent event) {
         if (event.getSource() == guiRegisterProjectManager.getButtonRegister()) {
             register();
         } else if (event.getSource() == guiRegisterProjectManager.getButtonCancel()) {

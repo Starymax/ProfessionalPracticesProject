@@ -70,8 +70,8 @@ public class GUIChooseExperience extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerChooseExperience controllerChooseExperience = new ControllerChooseExperience(this);
-        buttonSelect.setOnAction(event -> controllerChooseExperience.handleButtonsSelectReturn(event));
-        buttonBack.setOnAction(event -> controllerChooseExperience.handleButtonsSelectReturn(event));
+        buttonSelect.setOnAction(controllerChooseExperience::handleSelectReturnButtons);
+        buttonBack.setOnAction(controllerChooseExperience::handleSelectReturnButtons);
         Scene scene = new Scene(mainPanel, 680, 420);
         stage.setScene(scene);
         stage.show();

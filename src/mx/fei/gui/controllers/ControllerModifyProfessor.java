@@ -22,7 +22,7 @@ public class ControllerModifyProfessor {
         this.userDAO = new UserDAO();
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleUpdateCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Actualizar" -> handleUpdate();
@@ -33,27 +33,7 @@ public class ControllerModifyProfessor {
     private void handleUpdate() {
         if (guiModifyProfessor.validateFields()) {
             Professor original = guiModifyProfessor.getProfessor();
-            String name = guiModifyProfessor.getTextFieldName().getText().trim();
-            String lastName = guiModifyProfessor.getTextFieldLastName().getText().trim();
-            String email = guiModifyProfessor.getTextFieldEmail().getText().trim();
-            String gender = guiModifyProfessor.getComboBoxGender().getValue();
-            String shift = guiModifyProfessor.getComboBoxShift().getValue();
-            boolean isCoordinator = guiModifyProfessor.getCheckBoxIsCoordinator().isSelected();
-            boolean isAdministrator = guiModifyProfessor.getCheckBoxIsAdministrator().isSelected();
-            boolean active = guiModifyProfessor.getToggleState().isSelected();
-            Professor updated = new Professor(
-                    original.getUserId(),
-                    name,
-                    lastName,
-                    email,
-                    original.getPassword(),
-                    gender,
-                    active,
-                    original.getPersonalNumber(),
-                    isCoordinator,
-                    isAdministrator,
-                    shift
-            );
+            Professor updated = getProfessor(original);
             try {
                 userDAO.updateUser(updated);
                 boolean result = professorDAO.modifyProfessor(updated);
@@ -68,5 +48,30 @@ public class ControllerModifyProfessor {
                 guiModifyProfessor.showError("Error al actualizar. Intente más tarde.");
             }
         }
+    }
+
+    private Professor getProfessor(Professor original) {
+        String name = guiModifyProfessor.getTextFieldName().getText().trim();
+        String lastName = guiModifyProfessor.getTextFieldLastName().getText().trim();
+        String email = guiModifyProfessor.getTextFieldEmail().getText().trim();
+        String gender = guiModifyProfessor.getComboBoxGender().getValue();
+        String shift = guiModifyProfessor.getComboBoxShift().getValue();
+        boolean isCoordinator = guiModifyProfessor.getCheckBoxIsCoordinator().isSelected();
+        boolean isAdministrator = guiModifyProfessor.getCheckBoxIsAdministrator().isSelected();
+        boolean active = guiModifyProfessor.getToggleState().isSelected();
+        Professor updated = new Professor(
+                original.getUserId(),
+                name,
+                lastName,
+                email,
+                original.getPassword(),
+                gender,
+                active,
+                original.getPersonalNumber(),
+                isCoordinator,
+                isAdministrator,
+                shift
+        );
+        return updated;
     }
 }

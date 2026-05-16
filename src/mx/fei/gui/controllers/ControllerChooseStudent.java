@@ -2,9 +2,9 @@ package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseStudent;
-import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
@@ -34,16 +34,12 @@ public class ControllerChooseStudent {
         }
     }
 
-    public void handleButtonsSelectAndReturn(ActionEvent event) {
+    public void handleSelectAndReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Seleccionar" -> handleSelectStudent();
             case "Regresar" -> {
                 guiChooseStudent.closeWindow();
-                GUIManageStudent guiManageStudent = new GUIManageStudent();
-                Stage stage = new Stage();
-                stage.setTitle("Gestionar estudiantes");
-                guiManageStudent.start(stage);
             }
         }
     }
@@ -54,8 +50,8 @@ public class ControllerChooseStudent {
             studentSelected = guiChooseStudent.getSelectedStudent();
             GUIModifyStudent guiModifyStudent = new GUIModifyStudent();
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             guiModifyStudent.start(stage);
-            guiChooseStudent.closeWindow();
         } catch (NullPointerException | IndexOutOfBoundsException e) {
             guiChooseStudent.showError("Seleccione un estudiante.");
         }

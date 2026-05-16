@@ -20,7 +20,7 @@ public class ControllerRegisterProfessor {
         this.guiRegisterProfessor = guiRegisterProfessor;
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleRegisterCancelButtons(ActionEvent event) {
         if (event.getSource() == guiRegisterProfessor.getButtonRegister()) {
             if (guiRegisterProfessor.validateFields()) {
                 register();
@@ -34,21 +34,21 @@ public class ControllerRegisterProfessor {
         ProfessorDAO professorDAO = new ProfessorDAO();
         try {
             Professor professor = getProfessor();
-            if (professorDAO.registerProfessor(professor)) {
-                if (professor.isCoordinator()) {
-                    if (professorDAO.existsCoordinator()) {
-                        guiRegisterProfessor.showError("Ya existe un Coordinador registrado");
-                    } else {
-                        guiRegisterProfessor.showSuccess("Coordinador registrado exitosamente.");
-                    }
-                } else if (professor.isAdmin()) {
+            if (professor.isCoordinator()) {
+                if (professorDAO.existsCoordinator()) {
+                    guiRegisterProfessor.showError("Ya existe un Coordinador registrado");
+                } else if (professorDAO.registerProfessor(professor)) {
+                    guiRegisterProfessor.showSuccess("Coordinador registrado exitosamente.");
+                }
+            } else if (professorDAO.registerProfessor(professor)) {
+                if (professor.isAdmin()) {
                     guiRegisterProfessor.showSuccess("Administrador registrado exitosamente.");
                 } else {
                     guiRegisterProfessor.showSuccess("Profesor registrado exitosamente.");
                 }
             }
         } catch (IllegalArgumentException | IllegalStateException | DataOperationException e) {
-            guiRegisterProfessor.showError(e.getMessage());
+            guiRegisterProfessor.showError("Error al registrar el profesor");
         }
     }
 

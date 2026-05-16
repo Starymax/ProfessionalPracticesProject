@@ -54,10 +54,10 @@ public class GUIManageExperience extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerManageExperience controllerManageExperience = new ControllerManageExperience(this);
-        buttonRegisterExperience.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
-        buttonModifyExperience.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
-        buttonActivateExperience.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
-        buttonBack.setOnAction(event -> controllerManageExperience.handleButtonAction(event));
+        buttonRegisterExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
+        buttonModifyExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
+        buttonActivateExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
+        buttonBack.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
         Scene scene = new Scene(mainPanel, 600, 500);
         stage.setScene(scene);
         stage.show();

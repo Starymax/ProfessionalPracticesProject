@@ -1,7 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.stage.Stage;
-import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUIRegisterStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
@@ -19,41 +17,45 @@ public class ControllerRegisterStudent {
         studentDAO = new StudentDAO();
     }
 
-    public void handleButtonAction(ActionEvent event) {
+    public void handleConfirmCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         if (source.getText().equals("Confirmar")) {
             if (guiRegisterStudent.validateFields()) {
-                String names = guiRegisterStudent.getTextFieldNames().getText().trim();
-                String lastNames = guiRegisterStudent.getTextFieldLastName().getText().trim();
-                String mail = guiRegisterStudent.getTextFieldMail().getText().trim();
-                String rawPassword = guiRegisterStudent.getTextFieldPassword().getText();
-                String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
-                String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
-                String period = guiRegisterStudent.getTextFieldPeriod().getText().trim();
-                String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
-                boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
-                boolean active = guiRegisterStudent.getToggleState().isSelected();
-                Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, period, indigenousLanguage, 0.0f, null, null);
-                try {
-                    boolean registered = studentDAO.registerStudent(student);
-                    if (registered) {
-                        guiRegisterStudent.showSuccess("Alumno registrado exitosamente.");
-                        guiRegisterStudent.closeWindow();
-                    }
-                } catch (IllegalArgumentException e) {
-                    guiRegisterStudent.showError(e.getMessage());
-                } catch (IllegalStateException e) {
-                    guiRegisterStudent.showError(e.getMessage());
-                } catch (DataOperationException e) {
-                    guiRegisterStudent.showError("Error interno al registrar el alumno. Intente mas tarde.");
-                }
+                registerStudent();
+            } else if (source.getText().equals("Cancelar")) {
+                cancel();
             }
-        } else if (source.getText().equals("Cancelar")) {
-            guiRegisterStudent.closeWindow();
-            GUIManageStudent guiManageStudent = new GUIManageStudent();
-            Stage stage = new Stage();
-            guiManageStudent.start(stage);
-            guiRegisterStudent.closeWindow();
         }
+    }
+
+    private void registerStudent() {
+        String names = guiRegisterStudent.getTextFieldNames().getText().trim();
+        String lastNames = guiRegisterStudent.getTextFieldLastName().getText().trim();
+        String mail = guiRegisterStudent.getTextFieldMail().getText().trim();
+        String rawPassword = guiRegisterStudent.getTextFieldPassword().getText();
+        String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
+        String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
+        String period = guiRegisterStudent.getTextFieldPeriod().getText().trim();
+        String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
+        boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
+        boolean active = guiRegisterStudent.getToggleState().isSelected();
+        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, period, indigenousLanguage, 0.0f, null, null);
+        try {
+            boolean registered = studentDAO.registerStudent(student);
+            if (registered) {
+                guiRegisterStudent.showSuccess("Alumno registrado exitosamente.");
+                guiRegisterStudent.closeWindow();
+            }
+        } catch (IllegalArgumentException e) {
+            guiRegisterStudent.showError(e.getMessage());
+        } catch (IllegalStateException e) {
+            guiRegisterStudent.showError(e.getMessage());
+        } catch (DataOperationException e) {
+            guiRegisterStudent.showError("Error interno al registrar el alumno. Intente mas tarde.");
+        }
+    }
+
+    private void cancel() {
+        guiRegisterStudent.closeWindow();
     }
 }

@@ -72,12 +72,12 @@ public class GUICoordinatorMenu extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerCoordinatorMenu controllerCoordinatorMenu = new ControllerCoordinatorMenu(this);
-        buttonManageStudents.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
-        buttonManageProjects.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
-        buttonManageOrganizations.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
-        buttonManageEducationalExperience.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
-        buttonConsultProfessor.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
-        buttonBack.setOnAction(event -> controllerCoordinatorMenu.handleButtonAction(event));
+        buttonManageStudents.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonManageProjects.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonManageOrganizations.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonManageEducationalExperience.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonConsultProfessor.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonBack.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         Scene scene = new Scene(mainPanel, 500, 470);
         stage.setScene(scene);
         stage.show();

@@ -105,7 +105,7 @@ public class GUIRegisterActivity extends Application {
         spinnerPlannedHours.setEditable(true);
         TextFormatter<Integer> formatter = new TextFormatter<>(new IntegerStringConverter(), 0, change -> {
             String newText = change.getControlNewText();
-            if (newText.matches("\\d*")) {
+            if (newText.matches("\\d{0,9}")) {
                 return change;
             }
             return null;
@@ -137,15 +137,15 @@ public class GUIRegisterActivity extends Application {
         buttonCancel.setStyle(buttonStyle);
         buttonSave.setPrefWidth(130);
         buttonCancel.setPrefWidth(130);
-        ControllerRegisterActivity controller = new ControllerRegisterActivity(this);
-        buttonSave.setOnAction(controller);
-        buttonCancel.setOnAction(controller);
+        ControllerRegisterActivity controllerRegisterActivity = new ControllerRegisterActivity(this);
+        buttonSave.setOnAction(controllerRegisterActivity::handleSaveCancelButtons);
+        buttonCancel.setOnAction(controllerRegisterActivity::handleSaveCancelButtons);
         HBox buttonPanel = new HBox(12, buttonSave, buttonCancel);
         buttonPanel.setAlignment(Pos.CENTER_RIGHT);
         VBox mainPanel = new VBox(24, labelTitle, formGrid, weekRow, buttonPanel);
         mainPanel.setPadding(new Insets(32, 40, 32, 40));
         Scene scene = new Scene(mainPanel, 580, 320);
-        stage.setTitle("GUIRegistroActividad");
+        stage.setTitle("Registrar Actividad");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -156,6 +156,7 @@ public class GUIRegisterActivity extends Application {
         List<String> errors = new ArrayList<>();
         GUIUtils.validateShortText(textFieldActivityName.getText(), "Nombre", errors);
         GUIUtils.validateLongText(textAreaDescription.getText(), "Descripcion", errors);
+        GUIUtils.validateInt(spinnerPlannedHours.getEditor().getText(), "Horas Planeadas", errors);
         plannedHoursPerWeek.put(comboBoxWeek.getValue(), spinnerPlannedHours.getValue());
         long weeksWithHours = plannedHoursPerWeek.values().stream().filter(hours -> hours > 0).count();
         if (weeksWithHours == 0) {
