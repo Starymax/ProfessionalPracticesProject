@@ -5,4 +5,5 @@ module practicas.profesionales {
     requires jbcrypt;
     opens mx.fei.gui.views to javafx.fxml;
     exports mx.fei.gui.views;
+    exports mx.fei.logic.dto;
 }

@@ -38,7 +38,7 @@ public class GUIRegisterEducationalExperience extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("RegistrarExperienciaEducativa");
+        stage.setTitle("Registrar Experiencia Educativa");
         stage.setResizable(false);
         GridPane formGrid = new GridPane();
         formGrid.setHgap(10);

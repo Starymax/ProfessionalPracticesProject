@@ -67,7 +67,7 @@ public class GUIAdministratorMenu extends Application {
         BorderPane.setMargin(centerButtons, new Insets(20, 0, 20, 0));
 
         Scene scene = new Scene(mainPanel, 680, 520);
-        stage.setTitle("GUIAdministratorMenu");
+        stage.setTitle("Administrador");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

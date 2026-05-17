@@ -49,7 +49,7 @@ public class GUISelectStudents extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("GUISelectStudents");
+        stage.setTitle("Seleccione un estudiante:");
         stage.setResizable(false);
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(25, 25, 25, 25));

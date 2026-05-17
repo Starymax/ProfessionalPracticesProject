@@ -95,7 +95,7 @@ public class GUIRegisterProjectManager extends Application {
         BorderPane.setMargin(buttonPanel, new Insets(24, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 580, 380);
-        stage.setTitle("GUIRegistrarResponsable");
+        stage.setTitle("Registrar Responsable de Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

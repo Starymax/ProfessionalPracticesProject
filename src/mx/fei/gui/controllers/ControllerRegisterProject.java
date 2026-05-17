@@ -89,11 +89,11 @@ public class ControllerRegisterProject {
         String name = guiRegisterProject.getTextFieldName().getText();
         String description = guiRegisterProject.getTextAreaDescription().getText();
         String generalObjective = guiRegisterProject.getTextFieldGeneralObjective().getText();
-        String mediatesObjectives = guiRegisterProject.getTextFieldMediateObjectives().getText();
-        String immediateObjectives = guiRegisterProject.getTextFieldImmediateObjective().getText();
+        String mediatesObjectives = guiRegisterProject.getTextAreaMediateObjectives().getText();
+        String immediateObjectives = guiRegisterProject.getTextAreaImmediateObjective().getText();
         String methodology = guiRegisterProject.getTextFieldMethodology().getText();
-        String responsabilities = guiRegisterProject.getTextFieldResponsibilities().getText();
-        String resources = guiRegisterProject.getTextFieldResources().getText();
+        String responsabilities = guiRegisterProject.getTextAreaResponsibilities().getText();
+        String resources = guiRegisterProject.getTextAreaResources().getText();
         Date initialDate = Date.valueOf(guiRegisterProject.getDatePickerStartDate().getValue());
         Date finalDate = Date.valueOf(guiRegisterProject.getDatePickerFinalDate().getValue());
         int availablePlaces = Integer.parseInt(guiRegisterProject.getTextFieldAvailablePlaces().getText());

@@ -115,7 +115,7 @@ public class GUIRegisterProfessor extends Application {
         mainPanel.setPadding(new Insets(24, 32, 24, 32));
 
         Scene scene = new Scene(mainPanel, 570, 440);
-        stage.setTitle("GUIRegisterProfessor");
+        stage.setTitle("Registrar Profesor");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();

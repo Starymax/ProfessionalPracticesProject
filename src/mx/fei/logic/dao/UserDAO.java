@@ -85,6 +85,7 @@ public class UserDAO implements IDAOUser {
         return updated;
     }
 
+    @Override
     public User getUserByEmail(String email) throws DataOperationException {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("El correo no puede estar vacio");
@@ -112,7 +113,8 @@ public class UserDAO implements IDAOUser {
         }
     }
 
-    private boolean isStudent(int idUser) throws DataOperationException {
+    @Override
+    public boolean isStudent(int idUser) throws DataOperationException {
         String queryIsStudent = "SELECT COUNT(*) FROM alumno WHERE id_usuario = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryIsStudent)) {
@@ -125,6 +127,7 @@ public class UserDAO implements IDAOUser {
         }
     }
 
+    @Override
     public void logInByRole(UserRole role) throws DataOperationException {
         try {
             DatabaseConnectionManager.loadProperties(role.getPropertiesKey());

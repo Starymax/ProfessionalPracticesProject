@@ -64,7 +64,7 @@ public class GUIUploadDocuments extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("SubirDocumento");
+        stage.setTitle("Subir Documentos");
         stage.setResizable(false);
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(20, 30, 20, 30));

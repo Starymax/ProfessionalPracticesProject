@@ -18,12 +18,30 @@ import java.util.logging.Logger;
 
 public class ExpedientDAO implements IDAOExpedient {
     private Logger logger = Logger.getLogger(ExpedientDAO.class.getName());
+
+    @Override
+    public boolean createExpedient(int studentId, int periodId) throws DataOperationException {
+        boolean result = false;
+        String sql = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, id_periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, studentId);
+            preparedStatement.setInt(2, periodId);
+            preparedStatement.executeUpdate();
+            result = true;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al crear el expediente", e);
+            throw new DataOperationException("Error al crear el expediente");
+        }
+        return result;
+    }
+
     @Override
     public boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataOperationException {
         boolean loaded = false;
-        String queryLoad = "UPDATE expediente_practicas ep " + "INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente " + "SET ep." + documentType + " = ? " + "WHERE v.matricula = ?";
+        String queryLoad = "UPDATE expediente_practicas ep INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente SET ep." + documentType + " = ? WHERE v.matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryLoad)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryLoad)) {
             preparedStatement.setBoolean(1,true);
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;

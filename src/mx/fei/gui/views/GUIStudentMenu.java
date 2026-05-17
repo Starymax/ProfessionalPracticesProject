@@ -66,7 +66,7 @@ public class GUIStudentMenu extends Application {
             BorderPane.setMargin(centerButtons, new Insets(20, 0, 20, 0));
 
             Scene scene = new Scene(mainPanel, 680, 520);
-            stage.setTitle("GUIStudentMenu");
+            stage.setTitle("Estudiante");
             stage.setResizable(false);
             stage.setScene(scene);
             stage.show();

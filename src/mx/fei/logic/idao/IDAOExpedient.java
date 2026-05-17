@@ -7,6 +7,8 @@ import mx.fei.logic.exceptions.DataOperationException;
 import java.io.IOException;
 
 public interface IDAOExpedient {
+    boolean createExpedient(int studentId, int periodId) throws DataOperationException;
+
     boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataOperationException, DataOperationException;
 
     boolean isLoaded(String enrollment, String documentType) throws DataOperationException, DataOperationException;

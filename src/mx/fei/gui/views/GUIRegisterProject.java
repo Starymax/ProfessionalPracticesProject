@@ -34,13 +34,13 @@ public class GUIRegisterProject extends Application {
     private TextField textFieldName;
     private TextArea textAreaDescription;
     private TextField textFieldGeneralObjective;
-    private TextField textFieldImmediateObjective;
-    private TextField textFieldMediateObjectives;
+    private TextArea textAreaImmediateObjective;
+    private TextArea textAreaMediateObjectives;
     private TextField textFieldMethodology;
-    private TextField textFieldResources;
+    private TextArea textAreaResources;
     private DatePicker datePickerStartDate;
     private DatePicker datePickerFinalDate;
-    private TextField textFieldResponsibilities;
+    private TextArea textAreaResponsibilities;
     private TextField textFieldAvailablePlaces;
     private ComboBox<Enterprise> comboBoxEnterprise;
     private ComboBox<ProjectManager> comboBoxProjectManager;
@@ -59,21 +59,29 @@ public class GUIRegisterProject extends Application {
         textFieldName = new TextField();
         textAreaDescription = new TextArea();
         textFieldGeneralObjective = new TextField();
-        textFieldImmediateObjective = new TextField();
-        textFieldMediateObjectives = new TextField();
+        textAreaImmediateObjective = new TextArea();
+        textAreaMediateObjectives = new TextArea();
         textFieldMethodology = new TextField();
-        textFieldResources = new TextField();
+        textAreaResources = new TextArea();
         datePickerStartDate = new DatePicker();
         datePickerStartDate.getEditor().setDisable(true);
         datePickerFinalDate = new DatePicker();
         datePickerFinalDate.getEditor().setDisable(true);
-        textFieldResponsibilities = new TextField();
+        textAreaResponsibilities = new TextArea();
         textFieldAvailablePlaces = new TextField();
         comboBoxEnterprise = new ComboBox<>();
         comboBoxProjectManager = new ComboBox<>();
 
         textAreaDescription.setPrefRowCount(4);
         textAreaDescription.setWrapText(true);
+        textAreaImmediateObjective.setPrefRowCount(4);
+        textAreaImmediateObjective.setWrapText(true);
+        textAreaMediateObjectives.setPrefRowCount(4);
+        textAreaMediateObjectives.setWrapText(true);
+        textAreaResources.setPrefRowCount(4);
+        textAreaResources.setWrapText(true);
+        textAreaResponsibilities.setPrefRowCount(4);
+        textAreaResponsibilities.setWrapText(true);
 
         datePickerStartDate.setPromptText("dd/mm/aaaa");
         datePickerFinalDate.setPromptText("dd/mm/aaaa");
@@ -116,17 +124,17 @@ public class GUIRegisterProject extends Application {
         addRow(form, row++, "Nombre:", textFieldName);
         addRow(form, row++, "Descripción:", textAreaDescription);
         addRow(form, row++, "Objetivo General:", textFieldGeneralObjective);
-        addRow(form, row++, "Objetivos Inmediatos:", textFieldImmediateObjective);
-        addRow(form, row++, "Objetivos Mediatos:", textFieldMediateObjectives);
+        addRow(form, row++, "Objetivos Inmediatos:", textAreaImmediateObjective);
+        addRow(form, row++, "Objetivos Mediatos:", textAreaMediateObjectives);
         addRow(form, row++, "Metodología:", textFieldMethodology);
-        addRow(form, row++, "Recursos humanos,\neconómicos y materiales:", textFieldResources);
+        addRow(form, row++, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
 
         HBox dateRow = new HBox(16);
         dateRow.setAlignment(Pos.CENTER_LEFT);
         dateRow.getChildren().addAll(new Label("Fecha Inicio:"), datePickerStartDate, new Label("Fecha Fin:"), datePickerFinalDate);
         form.add(dateRow, 0, row++, 2, 1);
 
-        addRow(form, row++, "Responsabilidades:", textFieldResponsibilities);
+        addRow(form, row++, "Responsabilidades:", textAreaResponsibilities);
         addRow(form, row++, "Lugares disponibles:", textFieldAvailablePlaces);
         addRow(form, row++, "Organizacion:", comboBoxEnterprise);
         addRow(form, row, "Responsable:", comboBoxProjectManager);
@@ -155,8 +163,8 @@ public class GUIRegisterProject extends Application {
         ScrollPane scrollPane = new ScrollPane(mainPanel);
         scrollPane.setFitToWidth(true);
 
-        Scene scene = new Scene(scrollPane, 680, 620);
-        stage.setTitle("GUIRegistrarProyecto");
+        Scene scene = new Scene(scrollPane, 680, 850);
+        stage.setTitle("Registrar Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
@@ -191,11 +199,11 @@ public class GUIRegisterProject extends Application {
         GUIUtils.validateShortText(textFieldName.getText(), "Nombre", errors);
         GUIUtils.validateLongText(textAreaDescription.getText(), "Descripción", errors);
         GUIUtils.validateLongText(textFieldGeneralObjective.getText(), "Objetivo General", errors);
-        GUIUtils.validateLongText(textFieldMediateObjectives.getText(), "Objetivos Mediatos", errors);
-        GUIUtils.validateLongText(textFieldImmediateObjective.getText(), "Objetivos Inmediatos", errors);
+        GUIUtils.validateLongText(textAreaMediateObjectives.getText(), "Objetivos Mediatos", errors);
+        GUIUtils.validateLongText(textAreaImmediateObjective.getText(), "Objetivos Inmediatos", errors);
         GUIUtils.validateLongText(textFieldMethodology.getText(), "Metodología", errors);
-        GUIUtils.validateLongText(textFieldResources.getText(), "Recursos", errors);
-        GUIUtils.validateLongText(textFieldResponsibilities.getText(), "Responsabilidades", errors);
+        GUIUtils.validateLongText(textAreaResources.getText(), "Recursos", errors);
+        GUIUtils.validateLongText(textAreaResponsibilities.getText(), "Responsabilidades", errors);
         GUIUtils.validateShortInt(textFieldAvailablePlaces.getText(), "Lugares Disponibles", errors);
         if (comboBoxEnterprise.getValue() == null) {
             errors.add("El campo Organizacion es obligatorio");
@@ -204,12 +212,10 @@ public class GUIRegisterProject extends Application {
             errors.add("El campo Responsable es obligatorio");
         }
         if (datePickerStartDate.getValue() == null) {
-            errors.add("El campo Fecha Inicial es obligatorio.");
-        }
-        if (datePickerFinalDate.getValue() == null) {
+            errors.add("Los campos de Fecha son obligatorios.");
+        } else if (datePickerFinalDate.getValue() == null) {
             errors.add("El campo Fecha Final es obligatorio.");
-        }
-        if (datePickerStartDate.getValue().isAfter(datePickerFinalDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerFinalDate.getValue())) {
+        } else if (datePickerStartDate.getValue().isAfter(datePickerFinalDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerFinalDate.getValue())) {
             errors.add("La fecha final no puede ser anterior a la inicial");
         }
         if (!errors.isEmpty()) {
@@ -249,20 +255,20 @@ public class GUIRegisterProject extends Application {
         return textFieldGeneralObjective;
     }
 
-    public TextField getTextFieldImmediateObjective() {
-        return textFieldImmediateObjective;
+    public TextArea getTextAreaImmediateObjective() {
+        return textAreaImmediateObjective;
     }
 
-    public TextField getTextFieldMediateObjectives() {
-        return textFieldMediateObjectives;
+    public TextArea getTextAreaMediateObjectives() {
+        return textAreaMediateObjectives;
     }
 
     public TextField getTextFieldMethodology() {
         return textFieldMethodology;
     }
 
-    public TextField getTextFieldResources() {
-        return textFieldResources;
+    public TextArea getTextAreaResources() {
+        return textAreaResources;
     }
 
     public DatePicker getDatePickerStartDate() {
@@ -273,8 +279,8 @@ public class GUIRegisterProject extends Application {
         return datePickerFinalDate;
     }
 
-    public TextField getTextFieldResponsibilities() {
-        return textFieldResponsibilities;
+    public TextArea getTextAreaResponsibilities() {
+        return textAreaResponsibilities;
     }
 
     public TextField getTextFieldAvailablePlaces() {

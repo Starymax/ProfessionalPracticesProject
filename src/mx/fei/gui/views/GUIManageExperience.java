@@ -32,7 +32,7 @@ public class GUIManageExperience extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("GUIManageExperience");
+        stage.setTitle("Gestionar Experiencias Educativas");
         stage.setResizable(false);
         VBox formPanel = new VBox(20);
         formPanel.setPadding(new Insets(40, 40, 40, 40));

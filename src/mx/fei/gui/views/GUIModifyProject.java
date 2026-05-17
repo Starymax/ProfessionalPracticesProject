@@ -38,14 +38,14 @@ public class GUIModifyProject extends Application {
     private TextField textFieldName;
     private TextArea textAreaDescription;
     private TextField textFieldGeneralObjective;
-    private TextField textFieldImmediateObjectives;
-    private TextField textFieldMediateObjectives;
+    private TextArea textAreaImmediateObjectives;
+    private TextArea textAreaMediateObjectives;
     private TextField textFieldMethodology;
-    private TextField textFieldResources;
+    private TextArea textAreaResources;
     private DatePicker datePickerStartDate;
-    private DatePicker datePickerEndDate;
-    private TextField textFieldResponsibilities;
-    private TextField textFieldAvailableSpots;
+    private DatePicker datePickerFinalDate;
+    private TextArea textAreaResponsibilities;
+    private TextField textFieldAvailablePlaces;
     private ComboBox<Enterprise> comboBoxEnterprise;
     private ComboBox<ProjectManager> comboBoxProjectManager;
     private RadioButton radioButtonActive;
@@ -67,24 +67,34 @@ public class GUIModifyProject extends Application {
         textFieldName = new TextField();
         textAreaDescription = new TextArea();
         textFieldGeneralObjective = new TextField();
-        textFieldImmediateObjectives = new TextField();
-        textFieldMediateObjectives = new TextField();
+        textAreaImmediateObjectives = new TextArea();
+        textAreaMediateObjectives = new TextArea();
         textFieldMethodology = new TextField();
-        textFieldResources = new TextField();
+        textAreaResources = new TextArea();
         datePickerStartDate = new DatePicker();
-        datePickerEndDate = new DatePicker();
-        textFieldResponsibilities = new TextField();
-        textFieldAvailableSpots = new TextField();
+        datePickerStartDate.getEditor().setDisable(true);
+        datePickerFinalDate = new DatePicker();
+        datePickerFinalDate.getEditor().setDisable(true);
+        textAreaResponsibilities = new TextArea();
+        textFieldAvailablePlaces = new TextField();
         comboBoxEnterprise = new ComboBox<>();
         comboBoxProjectManager = new ComboBox<>();
 
         textAreaDescription.setPrefRowCount(4);
         textAreaDescription.setWrapText(true);
+        textAreaImmediateObjectives.setPrefRowCount(4);
+        textAreaImmediateObjectives.setWrapText(true);
+        textAreaMediateObjectives.setPrefRowCount(4);
+        textAreaMediateObjectives.setWrapText(true);
+        textAreaResources.setPrefRowCount(4);
+        textAreaResources.setWrapText(true);
+        textAreaResponsibilities.setPrefRowCount(4);
+        textAreaResponsibilities.setWrapText(true);
         textAreaDescription.setMaxWidth(Double.MAX_VALUE);
         datePickerStartDate.setPromptText("dd/mm/aaaa");
         datePickerStartDate.getEditor().setDisable(true);
-        datePickerEndDate.setPromptText("dd/mm/aaaa");
-        datePickerEndDate.getEditor().setDisable(true);
+        datePickerFinalDate.setPromptText("dd/mm/aaaa");
+        datePickerFinalDate.getEditor().setDisable(true);
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxProjectManager.setMaxWidth(Double.MAX_VALUE);
 
@@ -131,21 +141,21 @@ public class GUIModifyProject extends Application {
         addFormRow(formGrid, row++, "Nombre:", textFieldName);
         addFormRow(formGrid, row++, "Descripción:", textAreaDescription);
         addFormRow(formGrid, row++, "Objetivo General:", textFieldGeneralObjective);
-        addFormRow(formGrid, row++, "Objetivos Inmediatos:", textFieldImmediateObjectives);
-        addFormRow(formGrid, row++, "Objetivos Mediatos:", textFieldMediateObjectives);
+        addFormRow(formGrid, row++, "Objetivos Inmediatos:", textAreaImmediateObjectives);
+        addFormRow(formGrid, row++, "Objetivos Mediatos:", textAreaMediateObjectives);
         addFormRow(formGrid, row++, "Metodología:", textFieldMethodology);
-        addFormRow(formGrid, row++, "Recursos humanos,\neconómicos y materiales:", textFieldResources);
+        addFormRow(formGrid, row++, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
 
         Label labelStartDate = new Label("Fecha Inicio:");
         labelStartDate.setFont(Font.font("SansSerif", 13));
         Label labelEndDate = new Label("Fecha Fin:");
         labelEndDate.setFont(Font.font("SansSerif", 13));
-        HBox dateRow = new HBox(16, labelStartDate, datePickerStartDate, labelEndDate, datePickerEndDate);
+        HBox dateRow = new HBox(16, labelStartDate, datePickerStartDate, labelEndDate, datePickerFinalDate);
         dateRow.setAlignment(Pos.CENTER_LEFT);
         formGrid.add(dateRow, 0, row++, 2, 1);
 
-        addFormRow(formGrid, row++, "Responsabilidades:", textFieldResponsibilities);
-        addFormRow(formGrid, row++, "Lugares disponibles:", textFieldAvailableSpots);
+        addFormRow(formGrid, row++, "Responsabilidades:", textAreaResponsibilities);
+        addFormRow(formGrid, row++, "Lugares disponibles:", textFieldAvailablePlaces);
         addFormRow(formGrid, row++, "Organizacion:", comboBoxEnterprise);
         addFormRow(formGrid, row++, "Responsable:", comboBoxProjectManager);
 
@@ -190,7 +200,7 @@ public class GUIModifyProject extends Application {
         ScrollPane scrollPane = new ScrollPane(mainPanel);
         scrollPane.setFitToWidth(true);
 
-        Scene scene = new Scene(scrollPane, 620, 680);
+        Scene scene = new Scene(scrollPane, 620, 880);
         stage.setTitle("Modificar Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);
@@ -212,14 +222,14 @@ public class GUIModifyProject extends Application {
         textFieldName.setText(project.getNameProject());
         textAreaDescription.setText(project.getDescriptionProject());
         textFieldGeneralObjective.setText(project.getGeneralObjective());
-        textFieldImmediateObjectives.setText(project.getImmediateObjectives());
-        textFieldMediateObjectives.setText(project.getMediatesObjectives());
+        textAreaImmediateObjectives.setText(project.getImmediateObjectives());
+        textAreaMediateObjectives.setText(project.getMediatesObjectives());
         textFieldMethodology.setText(project.getMethodology());
         datePickerStartDate.setValue(project.getStartDate().toLocalDate());
-        datePickerEndDate.setValue(project.getFinalDate().toLocalDate());
-        textFieldResponsibilities.setText(project.getResponsibilities());
-        textFieldResources.setText(project.getResources());
-        textFieldAvailableSpots.setText(String.valueOf(project.getAvailablePlaces()));
+        datePickerFinalDate.setValue(project.getFinalDate().toLocalDate());
+        textAreaResponsibilities.setText(project.getResponsibilities());
+        textAreaResources.setText(project.getResources());
+        textFieldAvailablePlaces.setText(String.valueOf(project.getAvailablePlaces()));
         if (project.getActiveStatus()) {
             radioButtonActive.setSelected(true);
         } else {
@@ -243,12 +253,12 @@ public class GUIModifyProject extends Application {
         GUIUtils.validateShortText(textFieldName.getText(), "Nombre", errors);
         GUIUtils.validateLongText(textAreaDescription.getText(), "Descripción", errors);
         GUIUtils.validateLongText(textFieldGeneralObjective.getText(), "Objetivo General", errors);
-        GUIUtils.validateLongText(textFieldMediateObjectives.getText(), "Objetivos Mediatos", errors);
-        GUIUtils.validateLongText(textFieldImmediateObjectives.getText(), "Objetivos Inmediatos", errors);
+        GUIUtils.validateLongText(textAreaMediateObjectives.getText(), "Objetivos Mediatos", errors);
+        GUIUtils.validateLongText(textAreaImmediateObjectives.getText(), "Objetivos Inmediatos", errors);
         GUIUtils.validateLongText(textFieldMethodology.getText(), "Metodología", errors);
-        GUIUtils.validateLongText(textFieldResources.getText(), "Recursos", errors);
-        GUIUtils.validateLongText(textFieldResponsibilities.getText(), "Responsabilidades", errors);
-        GUIUtils.validateShortInt(textFieldAvailableSpots.getText(), "Lugares Disponibles", errors);
+        GUIUtils.validateLongText(textAreaResources.getText(), "Recursos", errors);
+        GUIUtils.validateLongText(textAreaResponsibilities.getText(), "Responsabilidades", errors);
+        GUIUtils.validateShortInt(textFieldAvailablePlaces.getText(), "Lugares Disponibles", errors);
         if (comboBoxEnterprise.getValue() == null) {
             errors.add("El campo Organizacion es obligatorio");
         }
@@ -258,10 +268,10 @@ public class GUIModifyProject extends Application {
         if (datePickerStartDate.getValue() == null) {
             errors.add("El campo Fecha Inicial es obligatorio.");
         }
-        if (datePickerEndDate.getValue() == null) {
+        if (datePickerFinalDate.getValue() == null) {
             errors.add("El campo Fecha Final es obligatorio.");
         }
-        if (datePickerStartDate.getValue().isAfter(datePickerEndDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerEndDate.getValue())) {
+        if (datePickerStartDate.getValue().isAfter(datePickerFinalDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerFinalDate.getValue())) {
             errors.add("La fecha final no puede ser anterior a la inicial");
         }
         if (!errors.isEmpty()) {
@@ -307,36 +317,36 @@ public class GUIModifyProject extends Application {
         return textFieldGeneralObjective;
     }
 
-    public TextField getTextFieldImmediateObjectives() {
-        return textFieldImmediateObjectives;
+    public TextArea getTextAreaImmediateObjectives() {
+        return textAreaImmediateObjectives;
     }
 
-    public TextField getTextFieldMediateObjectives() {
-        return textFieldMediateObjectives;
+    public TextArea getTextAreaMediateObjectives() {
+        return textAreaMediateObjectives;
     }
 
     public TextField getTextFieldMethodology() {
         return textFieldMethodology;
     }
 
-    public TextField getTextFieldResources() {
-        return textFieldResources;
+    public TextArea getTextAreaResources() {
+        return textAreaResources;
     }
 
     public DatePicker getDatePickerStartDate() {
         return datePickerStartDate;
     }
 
-    public DatePicker getDatePickerEndDate() {
-        return datePickerEndDate;
+    public DatePicker getDatePickerFinalDate() {
+        return datePickerFinalDate;
     }
 
-    public TextField getTextFieldResponsibilities() {
-        return textFieldResponsibilities;
+    public TextArea getTextAreaResponsibilities() {
+        return textAreaResponsibilities;
     }
 
-    public TextField getTextFieldAvailableSpots() {
-        return textFieldAvailableSpots;
+    public TextField getTextFieldAvailablePlaces() {
+        return textFieldAvailablePlaces;
     }
 
     public ComboBox<Enterprise> getComboBoxEnterprise() {
