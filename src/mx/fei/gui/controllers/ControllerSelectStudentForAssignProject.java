@@ -45,10 +45,6 @@ public class ControllerSelectStudentForAssignProject {
     }
 
     private void cancel() {
-        GUIManageStudent guiManageStudent = new GUIManageStudent();
-        Stage stage = new Stage();
-        guiManageStudent.start(stage);
-        stage.setTitle("Gestion estudiante");
         guiSelectStudentForAssignProject.getStage().close();
     }
 }

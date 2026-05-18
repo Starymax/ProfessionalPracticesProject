@@ -182,9 +182,23 @@ public class GUIUploadDocuments extends Application {
         launch(args);
     }
 
-    public String getStudentEnrollment() { return studentEnrollment; }
-    public Map<DocumentType, Document> getSelectedDocuments() { return selectedDocuments; }
-    public Button getButtonSelect() { return buttonSelect; }
-    public Button getButtonUpload() { return buttonUpload; }
-    public Button getButtonCancel() { return buttonCancel; }
+    public String getStudentEnrollment() {
+        return studentEnrollment;
+    }
+
+    public Map<DocumentType, Document> getSelectedDocuments() {
+        return selectedDocuments;
+    }
+
+    public Button getButtonSelect() {
+        return buttonSelect;
+    }
+
+    public Button getButtonUpload() {
+        return buttonUpload;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
+    }
 }

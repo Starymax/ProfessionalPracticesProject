@@ -2,6 +2,7 @@ package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -15,7 +16,6 @@ import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +31,13 @@ public class ControllerSelectProjects {
     }
 
     public void handleSelectCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiSelectProjects.getSelectButton()) {
+        if (event.getSource() == guiSelectProjects.getButtonSelect()) {
             if (guiSelectProjects.isModify()){
                 chooseProjectToModify();
             } else {
                 selectProjectsToAssign();
             }
-        } else if (event.getSource() == guiSelectProjects.getCancelButton()) {
+        } else if (event.getSource() == guiSelectProjects.getButtonCancel()) {
             cancel();
         }
     }
@@ -104,7 +104,7 @@ public class ControllerSelectProjects {
     }
 
     private void cancel() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cancelar?");

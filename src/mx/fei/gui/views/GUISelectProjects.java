@@ -4,6 +4,7 @@ import mx.fei.gui.utils.GUIUtils;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Priority;
 import mx.fei.gui.controllers.ControllerSelectProjects;
 import mx.fei.logic.dto.Project;
@@ -25,9 +26,9 @@ import java.util.List;
 
 public class GUISelectProjects extends Application {
 
-    private Button selectButton;
-    private Button cancelButton;
-    private VBox projectList;
+    private Button buttonSelect;
+    private Button buttonCancel;
+    private VBox vBoxProjectList;
     private Stage stage;
     private final List<CheckBox> checkBoxes = new ArrayList<>();
     private final List<Project> projects = new ArrayList<>();
@@ -40,13 +41,13 @@ public class GUISelectProjects extends Application {
         Label title = new Label("Proyectos disponibles");
         title.setFont(Font.font("SansSerif", FontWeight.NORMAL, 14));
 
-        projectList = new VBox(6);
-        projectList.setPadding(new Insets(10));
-        projectList.setStyle("-fx-background-color: white;");
+        vBoxProjectList = new VBox(6);
+        vBoxProjectList.setPadding(new Insets(10));
+        vBoxProjectList.setStyle("-fx-background-color: white;");
 
         isModify = false;
 
-        ScrollPane scrollPane = new ScrollPane(projectList);
+        ScrollPane scrollPane = new ScrollPane(vBoxProjectList);
         scrollPane.setFitToWidth(true);
         scrollPane.setStyle("-fx-background-color: white; -fx-border-color: #cccccc;");
         scrollPane.setPrefHeight(280);
@@ -55,20 +56,20 @@ public class GUISelectProjects extends Application {
         listPanel.setPadding(new Insets(16));
         listPanel.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #bbbbbb;");
 
-        selectButton = new Button("Seleccionar");
-        cancelButton = new Button("Cancelar");
+        buttonSelect = new Button("Seleccionar");
+        buttonCancel = new Button("Cancelar");
 
         String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
-        selectButton.setStyle(buttonStyle);
-        cancelButton.setStyle(buttonStyle);
-        selectButton.setPrefWidth(140);
-        cancelButton.setPrefWidth(140);
+        buttonSelect.setStyle(buttonStyle);
+        buttonCancel.setStyle(buttonStyle);
+        buttonSelect.setPrefWidth(140);
+        buttonCancel.setPrefWidth(140);
 
         ControllerSelectProjects controllerSelectProjects = new ControllerSelectProjects(this);
-        selectButton.setOnAction(controllerSelectProjects::handleSelectCancelButtons);
-        cancelButton.setOnAction(controllerSelectProjects::handleSelectCancelButtons);
+        buttonSelect.setOnAction(controllerSelectProjects::handleSelectCancelButtons);
+        buttonCancel.setOnAction(controllerSelectProjects::handleSelectCancelButtons);
 
-        HBox buttonRow = new HBox(40, selectButton, cancelButton);
+        HBox buttonRow = new HBox(40, buttonSelect, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER);
 
         VBox mainPanel = new VBox(20, listPanel, buttonRow);
@@ -96,7 +97,7 @@ public class GUISelectProjects extends Application {
             long selected = checkBoxes.stream().filter(CheckBox::isSelected).count();
             if (newValue && selected > 3) {
                 checkBox.setSelected(false);
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+                Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Límite alcanzado");
                 alert.setHeaderText(null);
                 alert.setContentText("Solo puedes seleccionar 3 proyectos.");
@@ -118,12 +119,12 @@ public class GUISelectProjects extends Application {
     }
 
     public void loadProjects(List<Project> projectsToLoad) {
-        projectList.getChildren().clear();
+        vBoxProjectList.getChildren().clear();
         checkBoxes.clear();
         projects.clear();
         projects.addAll(projectsToLoad);
         for (Project project : projectsToLoad) {
-            projectList.getChildren().add(buildProjectRow(project));
+            vBoxProjectList.getChildren().add(buildProjectRow(project));
         }
     }
 
@@ -142,12 +143,12 @@ public class GUISelectProjects extends Application {
         return count;
     }
 
-    public Button getSelectButton() {
-        return selectButton;
+    public Button getButtonSelect() {
+        return buttonSelect;
     }
 
-    public Button getCancelButton() {
-        return cancelButton;
+    public Button getButtonCancel() {
+        return buttonCancel;
     }
 
     public Stage getStage() {

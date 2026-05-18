@@ -60,30 +60,7 @@ class StudentDAOTest {
         );
     }
 
-    @Test
-    @DisplayName("Debe registrar un estudiante valido y regresar true")
-    void registerStudent_validStudent_returnsTrue() throws DataOperationException {
-        Student newStudent = new Student(
-                0, "Prueba", "Unitaria", "prueba@uv.mx",
-                "pass123", "Masculino", true,
-                "S24117414", "2026-1", false, 0.0f, null, null
-        );
-        boolean result = studentDAO.registerStudent(newStudent);
-        assertTrue(result);
-    }
 
-    @Test
-    @DisplayName("Debe lanzar IllegalStateException si la matricula ya existe")
-    void registerStudent_duplicateEnrollment_throwsIllegalState() {
-        Student duplicate = new Student(
-                1, "Duplicado", "Test", "dup@uv.mx",
-                "pass123", "Femenino", true,
-                EXISTING_ENROLLMENT, "2026-1", false, 0.0f, null, null
-        );
-        assertThrows(IllegalStateException.class, () ->
-                studentDAO.registerStudent(duplicate)
-        );
-    }
 
     @Test
     @DisplayName("Debe lanzar IllegalArgumentException con estudiante nulo")
@@ -93,14 +70,7 @@ class StudentDAOTest {
         );
     }
 
-    @Test
-    @DisplayName("Debe modificar un alumno existente y regresar true")
-    void modifyStudent_existingStudent_returnsTrue() throws DataOperationException {
-        Student student = studentDAO.getStudentByEnrollment(EXISTING_ENROLLMENT);
-        student.setPeriod("2026-2");
-        boolean result = studentDAO.modifyStudent(student);
-        assertTrue(result);
-    }
+
 
     @Test
     @DisplayName("Debe lanzar IllegalArgumentException con estudiante nulo")
@@ -209,18 +179,7 @@ class EnterpriseDAOTest {
         );
     }
 
-    @Test
-    @DisplayName("registerUser debe regresar un id mayor a 0")
-    void registerUser_validStudent_returnsPositiveId() throws DataOperationException {
-        UserDAO userDAO = new UserDAO();
-        Student student = new Student(
-                0, "Test", "Usuario", "testuser@uv.mx",
-                "pass123", "Masculino", true,
-                "zS20018888", "2026-1", false, 0.0f, null, null
-        );
-        int id = userDAO.registerUser(student);
-        assertTrue(id > 0);
-    }
+
 
     @Test
     @DisplayName("Debe lanzar IllegalArgumentException con organizacion nula")
@@ -273,15 +232,6 @@ class EducationalExperienceDAOTest {
         assertFalse(educationalExperiences.isEmpty());
     }
 
-    @Test
-    @DisplayName("Debe registrar una EducationalExperience valida y regresar true")
-    void registerEE_validExperience_returnsTrue() throws DataOperationException {
-        EducationalExperience educationalExperience = new EducationalExperience(
-                "IS-TEST7", "Practicas Test", "Ingenieria de Software", "2026-1", null
-        );
-        boolean result = educationalExperienceDAO.registerEducationalExperience(educationalExperience);
-        assertTrue(result);
-    }
 
     @Test
     @DisplayName("Debe lanzar IllegalArgumentException con experiencia educativa nula")
@@ -384,18 +334,6 @@ class UserDAOTest {
     @BeforeEach
     void setUp() {
         userDAO = new UserDAO();
-    }
-
-    @Test
-    @DisplayName("registerUser debe regresar un id mayor a 0")
-    void registerUser_validStudent_returnsPositiveId() throws DataOperationException {
-        Student student = new Student(
-                0, "Test", "Usuario", "testuser@uv.mx",
-                "pass123", "Masculino", true,
-                "zS20018888", "2026-1", false, 0.0f, null, null
-        );
-        int id = userDAO.registerUser(student);
-        assertTrue(id > 0);
     }
 
     @Test

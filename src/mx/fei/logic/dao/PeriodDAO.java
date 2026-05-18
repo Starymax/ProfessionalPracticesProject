@@ -4,13 +4,13 @@ import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Period;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOPeriod;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,19 +46,18 @@ public class PeriodDAO implements IDAOPeriod {
 
     @Override
     public Period getActivePeriod() throws DataOperationException {
-        String query = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo WHERE activo = TRUE";
+        String queryGetActivePeriod = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo WHERE activo = TRUE";
         Period period = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryGetActivePeriod)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                period = new Period(
-                        resultSet.getInt("id_periodo"),
-                        resultSet.getInt("anio"),
-                        resultSet.getInt("numero"),
-                        resultSet.getString("nombre"),
-                        resultSet.getBoolean("activo")
-                );
+                int idPeriod = resultSet.getInt("id_periodo");
+                int year = resultSet.getInt("anio");
+                int periodNumber = resultSet.getInt("numero");
+                String periodName = resultSet.getString("nombre");
+                boolean activeState = resultSet.getBoolean("activo");
+                period = new Period(idPeriod, year, periodNumber, periodName, activeState);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el periodo activo", e);
@@ -69,24 +68,77 @@ public class PeriodDAO implements IDAOPeriod {
 
     @Override
     public List<Period> getAllPeriods() throws DataOperationException {
-        String query = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo ORDER BY anio DESC, numero DESC";
+        String queryGetAllPeriods = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo ORDER BY anio DESC, numero DESC";
         List<Period> periods = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryGetAllPeriods)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                periods.add(new Period(
-                        resultSet.getInt("id_periodo"),
-                        resultSet.getInt("anio"),
-                        resultSet.getInt("numero"),
-                        resultSet.getString("nombre"),
-                        resultSet.getBoolean("activo")
-                ));
+                int idPeriod = resultSet.getInt("id_periodo");
+                int year = resultSet.getInt("anio");
+                int periodNumber = resultSet.getInt("numero");
+                String periodName = resultSet.getString("nombre");
+                boolean activeState = resultSet.getBoolean("activo");
+                periods.add(new Period(idPeriod, year, periodNumber, periodName, activeState));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener todos los periodos", e);
             throw new DataOperationException("Error al obtener los periodos.");
         }
         return periods;
+    }
+
+    public Period getPeriodById(int periodId) throws DataOperationException {
+        if (periodId <= 0) {
+            logger.log(Level.WARNING, "El id de periodo es invalido");
+            throw new IllegalArgumentException("El id de periodo no puede ser menor o igual a 0");
+        }
+        Period period = null;
+        String queryGetPeriodById = "SELECT * FROM periodo WHERE id_periodo = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryGetPeriodById)) {
+            preparedStatement.setInt(1, periodId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt("id_periodo");
+                int year = resultSet.getInt("anio");
+                int number = resultSet.getInt("numero");
+                String name = resultSet.getString("nombre");
+                boolean active = resultSet.getBoolean("activo");
+                period = new Period(id, year, number, name, active);
+            }
+            if (period == null) {
+                logger.log(Level.WARNING, "No se encontro el periodo con id: " + periodId);
+                throw new NoSuchElementException("No se encontro el periodo");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener el periodo por id", e);
+            throw new DataOperationException("Error al obtener el periodo");
+        }
+        return period;
+    }
+
+    public Period getPeriodByYearAndNumber(int year, int number) throws DataOperationException {
+        String queryGetPeriodByYearAndNumber = "SELECT * FROM periodo WHERE anio = ? AND numero = ?";
+        Period period = null;
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryGetPeriodByYearAndNumber)) {
+            preparedStatement.setInt(1, year);
+            preparedStatement.setInt(2, number);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                int idPeriod = resultSet.getInt("id_periodo");
+                String periodName = resultSet.getString("nombre");
+                boolean activeState = resultSet.getBoolean("activo");
+                period = new Period(idPeriod, year, number, periodName, activeState);
+            }
+            if (period == null) {
+                throw new NoSuchElementException("No se encontró el periodo");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al buscar periodo", e);
+            throw new DataOperationException("Error al obtener el periodo");
+        }
+        return period;
     }
 }

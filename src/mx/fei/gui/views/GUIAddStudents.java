@@ -154,9 +154,23 @@ public class GUIAddStudents extends Application {
         launch(args);
     }
 
-    public EducationalExperience getExperience() { return experience; }
-    public List<Student> getStudentsToAdd() { return studentsToAdd; }
-    public Button getButtonAdd() { return buttonAdd; }
-    public Button getButtonConfirm() { return buttonConfirm; }
-    public Button getButtonBack() { return buttonBack; }
+    public EducationalExperience getExperience() {
+        return experience;
+    }
+
+    public List<Student> getStudentsToAdd() {
+        return studentsToAdd;
+    }
+
+    public Button getButtonAdd() {
+        return buttonAdd;
+    }
+
+    public Button getButtonConfirm() {
+        return buttonConfirm;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
 }

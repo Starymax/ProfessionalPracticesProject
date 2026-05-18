@@ -36,7 +36,6 @@ public class StudentDAO implements IDAOStudent {
                     int idUser = resultSet.getInt("id_usuario");
                     String name = resultSet.getString("nombre");
                     String lastName = resultSet.getString("apellidos");
-                    String period = resultSet.getString("periodo");
                     String mail = resultSet.getString("correo");
                     String password = resultSet.getString("contrasena");
                     boolean activeStatus = resultSet.getBoolean("activo");
@@ -56,7 +55,7 @@ public class StudentDAO implements IDAOStudent {
                         EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
                         educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
                     }
-                    student = new Student(idUser,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
+                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, educationalExperience);
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con la matricula: " + enrollment);
@@ -85,7 +84,6 @@ public class StudentDAO implements IDAOStudent {
                 if (resultSet.next()) {
                     String name = resultSet.getString("nombre");
                     String lastName = resultSet.getString("apellidos");
-                    String period = resultSet.getString("periodo");
                     String mail = resultSet.getString("correo");
                     String enrollment = resultSet.getString("matricula");
                     String password = resultSet.getString("contrasena");
@@ -106,7 +104,7 @@ public class StudentDAO implements IDAOStudent {
                         EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
                         educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
                     }
-                    student = new Student(idStudent,name,lastName,mail,password,gender,activeStatus,enrollment,period,indigenousLanguage,grade,project,educationalExperience);
+                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, educationalExperience);
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
@@ -141,20 +139,13 @@ public class StudentDAO implements IDAOStudent {
                     logger.log(Level.SEVERE, "No se logro registrar el usuario");
                     throw new DataOperationException("No se logro registrar el usuario");
                 }
-                String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, periodo, lengua_indigena) VALUES (?,?,?,?)";
-                String queryExpedient = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno) VALUES (false, false, false, false, false, ?)";
+                String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, lengua_indigena) VALUES (?,?,?)";
                 try (Connection connection = DatabaseConnectionManager.getConnection();
-                     PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent);
-                     PreparedStatement preparedStatementExpedient = connection.prepareStatement(queryExpedient)) {
+                     PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent)) {
                     preparedStatementStudent.setInt(1, idUser);
                     preparedStatementStudent.setString(2, student.getEnrollment());
-                    preparedStatementStudent.setString(3, student.getPeriod());
-                    preparedStatementStudent.setBoolean(4, student.isIndigenousLanguage());
+                    preparedStatementStudent.setBoolean(3, student.isIndigenousLanguage());
                     result = preparedStatementStudent.executeUpdate() > 0;
-                    if (result) {
-                        preparedStatementExpedient.setInt(1, idUser);
-                        preparedStatementExpedient.executeUpdate();
-                    }
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error registrando al estudiante", e);
@@ -167,14 +158,13 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean modifyStudent(Student student) throws DataOperationException {
         boolean updated = false;
-        String queryModifyStudent = "UPDATE alumno SET periodo=?, lengua_indigena=?, calificacion=? where id_usuario=?;";
+        String queryModifyStudent = "UPDATE alumno SET lengua_indigena=?, calificacion=? where id_usuario=?;";
         if (student != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent)) {
-                preparedStatement.setString(1, student.getPeriod());
-                preparedStatement.setBoolean(2, student.isIndigenousLanguage());
-                preparedStatement.setFloat(3, student.getGrade());
-                preparedStatement.setInt(4, student.getUserId());
+                preparedStatement.setBoolean(1, student.isIndigenousLanguage());
+                preparedStatement.setFloat(2, student.getGrade());
+                preparedStatement.setInt(3, student.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al modificar el alumno",e);

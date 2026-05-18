@@ -44,12 +44,13 @@ public class ControllerChooseExperience {
             }
         }
     }
+
     private void handleSelectExperience() {
         EducationalExperience selectedExperience;
         try {
             selectedExperience = guiChooseExperience.getSelectedExperience();
             if (guiChooseExperience.isToModify()) {
-                GUIModifyExperience guiModifyExperience = new GUIModifyExperience();
+                GUIModifyExperience guiModifyExperience = new GUIModifyExperience(selectedExperience);
                 Stage stage = new Stage();
                 guiModifyExperience.start(stage);
                 guiChooseExperience.closeWindow();

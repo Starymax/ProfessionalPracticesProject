@@ -22,9 +22,9 @@ public class ControllerRegisterStudent {
         if (source.getText().equals("Confirmar")) {
             if (guiRegisterStudent.validateFields()) {
                 registerStudent();
-            } else if (source.getText().equals("Cancelar")) {
-                cancel();
             }
+        }  else if (source.getText().equals("Cancelar")) {
+            cancel();
         }
     }
 
@@ -35,11 +35,10 @@ public class ControllerRegisterStudent {
         String rawPassword = guiRegisterStudent.getTextFieldPassword().getText();
         String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
         String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
-        String period = guiRegisterStudent.getTextFieldPeriod().getText().trim();
         String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
-        boolean active = guiRegisterStudent.getToggleState().isSelected();
-        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, period, indigenousLanguage, 0.0f, null, null);
+        boolean active = guiRegisterStudent.getToggleButtonState().isSelected();
+        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, 0.0f, null, null);
         try {
             boolean registered = studentDAO.registerStudent(student);
             if (registered) {

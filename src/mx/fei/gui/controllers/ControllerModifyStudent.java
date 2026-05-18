@@ -53,7 +53,6 @@ public class ControllerModifyStudent {
                         gender,
                         active,
                         original.getEnrollment(),
-                        guiModifyStudent.getTextFieldPeriod().getText().trim(),
                         indigenousLanguage,
                         grade,
                         original.getAssignedProject(),

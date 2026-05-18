@@ -34,7 +34,6 @@ public class GUIModifyStudent extends Application {
     private TextField textFieldNames;
     private TextField textFieldLastName;
     private TextField textFieldMail;
-    private TextField textFieldPeriod;
     private TextField textFieldGrade;
     private RadioButton radioButtonMan;
     private RadioButton radioButtonWoman;
@@ -73,15 +72,11 @@ public class GUIModifyStudent extends Application {
         textFieldMail = new TextField();
         GridPane.setColumnSpan(textFieldMail, 3);
         formGrid.add(textFieldMail, 1, 2);
-        formGrid.add(new Label("Periodo:"), 0, 3);
-        textFieldPeriod = new TextField();
-        textFieldPeriod.setPrefWidth(220);
-        formGrid.add(textFieldPeriod, 1, 3);
-        formGrid.add(new Label("Calificación:"), 0, 4);
+        formGrid.add(new Label("Calificación:"), 0, 3);
         textFieldGrade = new TextField();
         textFieldGrade.setPrefWidth(120);
-        formGrid.add(textFieldGrade, 1, 4);
-        formGrid.add(new Label("Genero"), 0, 5);
+        formGrid.add(textFieldGrade, 1, 3);
+        formGrid.add(new Label("Genero"), 0, 4);
         radioButtonMan = new RadioButton("Hombre");
         radioButtonWoman = new RadioButton("Mujer");
         ToggleGroup toggleGroupGender = new ToggleGroup();
@@ -90,8 +85,8 @@ public class GUIModifyStudent extends Application {
         HBox genderBox = new HBox(20, radioButtonMan, radioButtonWoman);
         genderBox.setAlignment(Pos.CENTER_LEFT);
         GridPane.setColumnSpan(genderBox, 3);
-        formGrid.add(genderBox, 1, 5);
-        formGrid.add(new Label("Lengua indigena:"), 0, 6);
+        formGrid.add(genderBox, 1, 4);
+        formGrid.add(new Label("Lengua indigena:"), 0, 5);
         radioButtonSpeakIndigenousLanguage = new RadioButton("Habla");
         radioButtonDontSpeakIndigenousLanguage = new RadioButton("No habla");
         ToggleGroup toggleGroupLanguage = new ToggleGroup();
@@ -100,17 +95,16 @@ public class GUIModifyStudent extends Application {
         HBox languageBox = new HBox(20, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
         languageBox.setAlignment(Pos.CENTER_LEFT);
         GridPane.setColumnSpan(languageBox, 3);
-        formGrid.add(languageBox, 1, 6);
-        formGrid.add(new Label("Estado:"), 0, 7);
+        formGrid.add(languageBox, 1, 5);
+        formGrid.add(new Label("Estado:"), 0, 6);
         toggleState = new ToggleButton("Inactivo");
         toggleState.setPrefWidth(110);
         toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
-        formGrid.add(toggleState, 1, 7);
+        formGrid.add(toggleState, 1, 6);
         if (student != null) {
             textFieldNames.setText(student.getName());
             textFieldLastName.setText(student.getLastName());
             textFieldMail.setText(student.getEmail());
-            textFieldPeriod.setText(student.getPeriod());
             textFieldGrade.setText(String.valueOf(student.getGrade()));
             if (student.getGender() != null && student.getGender().equals("Hombre")) {
                 radioButtonMan.setSelected(true);
@@ -155,7 +149,6 @@ public class GUIModifyStudent extends Application {
         GUIUtils.validateNames(textFieldNames.getText().trim(), "Nombres", errors);
         GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
         GUIUtils.validateEmail(textFieldMail.getText().trim(), errors);
-        GUIUtils.validatePeriod(textFieldPeriod.getText().trim(), errors);
         GUIUtils.validateGrade(textFieldGrade.getText().trim(), errors);
         GUIUtils.validateRadioSelection(radioButtonMan.getToggleGroup().getSelectedToggle() != null, "un género", errors);
         GUIUtils.validateRadioSelection(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() != null, "si el alumno habla lengua indígena", errors);
@@ -196,10 +189,6 @@ public class GUIModifyStudent extends Application {
 
     public TextField getTextFieldMail() {
         return textFieldMail;
-    }
-
-    public TextField getTextFieldPeriod() {
-        return textFieldPeriod;
     }
 
     public TextField getTextFieldGrade() {

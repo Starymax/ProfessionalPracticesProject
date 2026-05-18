@@ -2,13 +2,14 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
+import mx.fei.logic.dto.Period;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOEducationalExperience;
-
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Connection;
+import java.sql.Types;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,13 +33,22 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         } catch (NoSuchElementException e) {
             logger.log(Level.INFO,"Nrc disponible para el registro");
         }
-        String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, periodo_escolar) values (?,?,?,?);";
+        String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, id_periodo) values (?,?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEE)) {
             preparedStatement.setString(1,educationalExperience.getNrc());
             preparedStatement.setString(2,educationalExperience.getName());
             preparedStatement.setString(3,educationalExperience.getEducationalProgram());
-            preparedStatement.setString(4,educationalExperience.getEscolarPeriod());
+            if (educationalExperience.getProfessor() != null) {
+                preparedStatement.setInt(4,educationalExperience.getProfessor().getUserId());
+            } else {
+                preparedStatement.setNull(4, Types.NULL);
+            }
+            if (educationalExperience.getPeriod() != null) {
+                preparedStatement.setInt(5, educationalExperience.getPeriod().getPeriodId());
+            } else {
+                preparedStatement.setNull(5, Types.NULL);
+            }
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al registrar una experiencia educativa",e);
@@ -47,16 +57,16 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     }
 
     @Override
-    public boolean modifyEducationalExperience(EducationalExperience educationalExperience,Professor professor) throws DataOperationException {
+    public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
         boolean updated = false;
-        String queryModifyExperience = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,periodo_escolar=?,id_profesor=? where nrc=?;";
+        String queryModifyExperience = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,id_profesor=?, id_periodo=? where nrc=?;";
         if (educationalExperience != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
                 preparedStatement.setString(1,educationalExperience.getName());
                 preparedStatement.setString(2,educationalExperience.getEducationalProgram());
-                preparedStatement.setString(3,educationalExperience.getEscolarPeriod());
-                preparedStatement.setInt(4,professor.getUserId());
+                preparedStatement.setInt(3,educationalExperience.getProfessor().getUserId());
+                preparedStatement.setInt(4,educationalExperience.getPeriod().getPeriodId());
                 preparedStatement.setString(5, educationalExperience.getNrc());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
@@ -86,15 +96,20 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 String nrcEE = resultSet.getString("NRC");
                 String name = resultSet.getString("nombre_experiencia");
                 String career = resultSet.getString("programa_educativo");
-                String period = resultSet.getString("periodo_escolar");
                 int idProfessor = resultSet.getInt("id_profesor");
+                int idPeriod = resultSet.getInt("id_periodo");
                 resultSet.close();
                 Professor professor = null;
+                Period period = null;
                 if (idProfessor > 0) {
                     ProfessorDAO professorDAO = new ProfessorDAO();
                     professor = professorDAO.getProfessorById(idProfessor);
                 }
-                experience = new EducationalExperience(nrcEE,name,career,period,professor);
+                if (idPeriod > 0) {
+                    PeriodDAO periodDAO = new PeriodDAO();
+                    period = periodDAO.getPeriodById(idPeriod);
+                }
+                experience = new EducationalExperience(nrcEE,name,career,professor,period);
             }
             if (experience == null) {
                 logger.log(Level.WARNING, "No se encontro el experiencia con el nrc: "+ nrc);

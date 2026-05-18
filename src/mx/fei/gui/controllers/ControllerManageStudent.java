@@ -58,8 +58,8 @@ public class ControllerManageStudent {
             List<Student> studentList = studentDAO.getStudentsWithoutProject();
             GUISelectStudentForAssignProject guiSelectStudentForAssignProject = new GUISelectStudentForAssignProject();
             Stage stage = new Stage();
-            guiSelectStudentForAssignProject.start(stage);
             stage.initModality(Modality.APPLICATION_MODAL);
+            guiSelectStudentForAssignProject.start(stage);
             guiSelectStudentForAssignProject.loadStudents(studentList);
             stage.setTitle("Seleccionar estudiante");
         } catch (DataOperationException e) {

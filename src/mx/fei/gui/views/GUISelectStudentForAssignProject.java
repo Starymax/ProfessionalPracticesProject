@@ -23,7 +23,7 @@ public class GUISelectStudentForAssignProject extends Application {
 
     private Button buttonSelect;
     private Button buttonCancel;
-    private ListView<Student> studentListView;
+    private ListView<Student> listViewStudent;
     private Stage stage;
 
     @Override
@@ -31,8 +31,8 @@ public class GUISelectStudentForAssignProject extends Application {
         this.stage = stage;
         Label title = new Label("Seleccione un alumno sin Proyecto asignado:");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
-        studentListView = new ListView<>();
-        studentListView.setCellFactory(listView -> new ListCell<>() {
+        listViewStudent = new ListView<>();
+        listViewStudent.setCellFactory(listView -> new ListCell<>() {
             @Override
             protected void updateItem(Student student, boolean empty) {
                 super.updateItem(student, empty);
@@ -43,8 +43,8 @@ public class GUISelectStudentForAssignProject extends Application {
                 }
             }
         });
-        studentListView.setPrefHeight(400);
-        studentListView.setStyle("-fx-font-size: 14px;");
+        listViewStudent.setPrefHeight(400);
+        listViewStudent.setStyle("-fx-font-size: 14px;");
 
         buttonSelect = new Button("Seleccionar");
         buttonCancel = new Button("Cancelar");
@@ -65,7 +65,7 @@ public class GUISelectStudentForAssignProject extends Application {
         BorderPane mainPanel = new BorderPane();
         mainPanel.setPadding(new Insets(32, 40, 32, 40));
         mainPanel.setTop(title);
-        mainPanel.setCenter(studentListView);
+        mainPanel.setCenter(listViewStudent);
         mainPanel.setBottom(buttonPanel);
         BorderPane.setMargin(title, new Insets(0, 0, 20, 0));
         BorderPane.setMargin(buttonPanel, new Insets(20, 0, 0, 0));
@@ -78,12 +78,12 @@ public class GUISelectStudentForAssignProject extends Application {
     }
 
     public void loadStudents(List<Student> students) {
-        studentListView.getItems().clear();
-        studentListView.getItems().addAll(students);
+        listViewStudent.getItems().clear();
+        listViewStudent.getItems().addAll(students);
     }
 
     public Student getSelectedStudent() {
-        return studentListView.getSelectionModel().getSelectedItem();
+        return listViewStudent.getSelectionModel().getSelectedItem();
     }
 
     public void showError(String message) {

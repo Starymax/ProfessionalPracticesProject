@@ -38,12 +38,11 @@ public class GUIRegisterStudent extends Application {
     private TextField textFieldMail;
     private PasswordField textFieldPassword;
     private TextField textFieldEnrollment;
-    private TextField textFieldPeriod;
     private RadioButton radioButtonMan;
     private RadioButton radioButtonWoman;
     private RadioButton radioButtonSpeakIndigenousLanguage;
     private RadioButton radioButtonDontSpeakIndigenousLanguage;
-    private ToggleButton toggleState;
+    private ToggleButton toggleButtonState;
     private Button buttonConfirm;
     private Button buttonCancel;
 
@@ -86,12 +85,7 @@ public class GUIRegisterStudent extends Application {
         textFieldEnrollment = new TextField();
         formGrid.add(textFieldEnrollment, 1, 5);
 
-        formGrid.add(new Label("Periodo:"), 0, 6);
-        textFieldPeriod = new TextField();
-        textFieldPeriod.setPrefWidth(100);
-        formGrid.add(textFieldPeriod, 1, 6);
-
-        formGrid.add(new Label("Genero:"), 0, 7);
+        formGrid.add(new Label("Genero:"), 0, 6);
         radioButtonMan = new RadioButton("Hombre");
         radioButtonWoman = new RadioButton("Mujer");
         ToggleGroup toggleGroupGender = new ToggleGroup();
@@ -99,9 +93,9 @@ public class GUIRegisterStudent extends Application {
         radioButtonWoman.setToggleGroup(toggleGroupGender);
         HBox genderBox = new HBox(15, radioButtonMan, radioButtonWoman);
         genderBox.setAlignment(Pos.CENTER_LEFT);
-        formGrid.add(genderBox, 1, 7);
+        formGrid.add(genderBox, 1, 6);
 
-        formGrid.add(new Label("Lengua indigena:"), 0, 8);
+        formGrid.add(new Label("Lengua indigena:"), 0, 7);
         radioButtonSpeakIndigenousLanguage = new RadioButton("Habla");
         radioButtonDontSpeakIndigenousLanguage = new RadioButton("No habla");
         ToggleGroup toggleGroupLanguage = new ToggleGroup();
@@ -109,15 +103,15 @@ public class GUIRegisterStudent extends Application {
         radioButtonDontSpeakIndigenousLanguage.setToggleGroup(toggleGroupLanguage);
         HBox languageBox = new HBox(15, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
         languageBox.setAlignment(Pos.CENTER_LEFT);
-        formGrid.add(languageBox, 1, 8);
+        formGrid.add(languageBox, 1, 7);
 
-        formGrid.add(new Label("Estado:"), 0, 9);
-        toggleState = new ToggleButton("Inactivo");
-        toggleState.setPrefWidth(100);
-        toggleState.setOnAction(e ->
-                toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo")
+        formGrid.add(new Label("Estado:"), 0, 8);
+        toggleButtonState = new ToggleButton("Inactivo");
+        toggleButtonState.setPrefWidth(100);
+        toggleButtonState.setOnAction(e ->
+                toggleButtonState.setText(toggleButtonState.isSelected() ? "Activo" : "Inactivo")
         );
-        formGrid.add(toggleState, 1, 9);
+        formGrid.add(toggleButtonState, 1, 8);
 
         buttonConfirm = new Button("Confirmar");
         buttonCancel = new Button("Cancelar");
@@ -153,7 +147,6 @@ public class GUIRegisterStudent extends Application {
         GUIUtils.validateNames(textFieldLastName.getText(), "Apellidos", errors);
         GUIUtils.validateEmail(textFieldMail.getText().trim(), errors);
         GUIUtils.validateEnrollment(textFieldEnrollment.getText().trim(), "Matrícula", errors);
-        GUIUtils.validatePeriod(textFieldPeriod.getText().trim(), errors);
         GUIUtils.validateStrongPassword(textFieldPassword.getText().trim(), errors);
         boolean genderSelected = radioButtonMan.isSelected() || radioButtonWoman.isSelected();
         GUIUtils.validateRadioSelection(genderSelected, "un género", errors);
@@ -202,10 +195,6 @@ public class GUIRegisterStudent extends Application {
         return textFieldEnrollment;
     }
 
-    public TextField getTextFieldPeriod() {
-        return textFieldPeriod;
-    }
-
     public RadioButton getRadioButtonMan() {
         return radioButtonMan;
     }
@@ -222,8 +211,8 @@ public class GUIRegisterStudent extends Application {
         return radioButtonDontSpeakIndigenousLanguage;
     }
 
-    public ToggleButton getToggleState() {
-        return toggleState;
+    public ToggleButton getToggleButtonState() {
+        return toggleButtonState;
     }
 
     public Button getButtonConfirm() {
