@@ -25,7 +25,7 @@ public class ControllerManageExperience {
                 guiManageExperience.closeWindow();
             }
             case "Modificar experiencia" -> {
-                GUIChooseExperience  guiChooseExperience = new GUIChooseExperience();
+                GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
                 Stage stage = new Stage();
                 stage.setTitle("Modificar experiencia");
                 guiChooseExperience.setToModify(true);
@@ -33,7 +33,7 @@ public class ControllerManageExperience {
                 guiManageExperience.closeWindow();
             }
             case "Dar de alta experiencia" -> {
-                GUIChooseExperience  guiChooseExperience = new GUIChooseExperience();
+                GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
                 Stage stage = new Stage();
                 stage.setTitle("Dar de alta experiencia");
                 guiChooseExperience.start(stage);

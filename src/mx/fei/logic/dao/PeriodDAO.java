@@ -4,6 +4,7 @@ import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Period;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOPeriod;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +18,24 @@ import java.util.logging.Logger;
 public class PeriodDAO implements IDAOPeriod {
 
     private static final Logger logger = Logger.getLogger(PeriodDAO.class.getName());
+
+    @Override
+    public boolean createPeriodIfNotExists(int year, int number) throws DataOperationException {
+        boolean inserted = false;
+        String name = year + "-" + number;
+        String sql = "INSERT INTO periodo (anio, numero, nombre, activo) VALUES (?, ?, ?, FALSE) ON DUPLICATE KEY UPDATE id_periodo = id_periodo";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setInt(1, year);
+            preparedStatement.setInt(2, number);
+            preparedStatement.setString(3, name);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al asignar el periodo", e);
+            throw new DataOperationException("Error al asignar el periodo");
+        }
+        return inserted;
+    }
 
     @Override
     public boolean activatePeriod(int year, int number) throws DataOperationException {

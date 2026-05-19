@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DatabaseConnectionManager {
@@ -20,10 +21,12 @@ public class DatabaseConnectionManager {
 
     public static void loadProperties(String role) throws IOException {
         String fileName = "db_" + role + ".properties";
-        try (InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName)) {
-            if (input == null) {
-                throw new IOException("No se encontró el archivo: " + fileName);
-            }
+        InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName);
+        if (input == null) {
+            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades");
+            throw new IOException("Error al iniciar sesión");
+        }
+        try (input) {
             Properties properties = new Properties();
             properties.load(input);
             username = properties.getProperty("db.username");

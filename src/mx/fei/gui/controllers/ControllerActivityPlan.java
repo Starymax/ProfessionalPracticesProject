@@ -43,15 +43,15 @@ public class ControllerActivityPlan {
             int remainingHours = guiActivityPlan.getRemainingPlannedHours();
             if (remainingHours == 0) {
                 guiActivityPlan.showError("El plan ya tiene 240 horas planeadas. No se pueden agregar más actividades.");
-                return;
+            } else {
+                GUIRegisterActivity guiRegisterActivity = new GUIRegisterActivity();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiRegisterActivity.start(stage);
+                guiRegisterActivity.setProject(project);
+                guiRegisterActivity.setGuiActivityPlan(guiActivityPlan);
+                guiRegisterActivity.setRemainingAllowedHours(remainingHours);
             }
-            GUIRegisterActivity guiRegisterActivity = new GUIRegisterActivity();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiRegisterActivity.start(stage);
-            guiRegisterActivity.setProject(project);
-            guiRegisterActivity.setGuiActivityPlan(guiActivityPlan);
-            guiRegisterActivity.setRemainingAllowedHours(remainingHours);
         } catch (Exception exception) {
             guiActivityPlan.showError(exception.getMessage());
         }

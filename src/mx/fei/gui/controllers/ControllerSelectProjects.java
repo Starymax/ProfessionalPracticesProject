@@ -24,6 +24,8 @@ public class ControllerSelectProjects {
 
     private final GUISelectProjects guiSelectProjects;
     private final StudentDAO studentDAO;
+    private final int MAX_PROJECTS_TO_SELECT = 3;
+    private final int MAX_PROJECTS_TO_MODIFY = 1;
 
     public ControllerSelectProjects(GUISelectProjects guiSelectProjects) {
         this.guiSelectProjects = guiSelectProjects;
@@ -46,7 +48,7 @@ public class ControllerSelectProjects {
         int selectedCount = guiSelectProjects.getSelectedCount();
         if (selectedCount == 0) {
             guiSelectProjects.showError("Seleccione un proyecto de la lista.");
-        } else if (selectedCount > 1) {
+        } else if (selectedCount > MAX_PROJECTS_TO_MODIFY) {
             guiSelectProjects.showError("Solo puedes modificar un proyecto a la vez");
         } else {
             GUIModifyProject guiModifyProject = new GUIModifyProject();
@@ -84,7 +86,7 @@ public class ControllerSelectProjects {
 
     private void selectProjectsToAssign() {
         Student student;
-        if (guiSelectProjects.getSelectedCount() < 3) {
+        if (guiSelectProjects.getSelectedCount() < MAX_PROJECTS_TO_SELECT) {
             guiSelectProjects.showError("Debes seleccionar exactamente 3 proyectos.");
         } else {
             student = guiSelectProjects.getStudent();

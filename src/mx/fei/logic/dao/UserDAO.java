@@ -132,7 +132,6 @@ public class UserDAO implements IDAOUser {
         try {
             DatabaseConnectionManager.loadProperties(role.getPropertiesKey());
         } catch (IOException e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
             throw new DataOperationException("Error al iniciar sesión");
         }
     }

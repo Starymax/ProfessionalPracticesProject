@@ -6,6 +6,8 @@ import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
 
 public interface IDAOPeriod {
+    boolean createPeriodIfNotExists(int year, int number) throws DataOperationException;
+
     public boolean activatePeriod(int year, int number) throws DataOperationException;
 
     public Period getActivePeriod() throws DataOperationException;
