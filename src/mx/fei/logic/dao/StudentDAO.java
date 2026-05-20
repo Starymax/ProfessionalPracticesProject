@@ -23,16 +23,16 @@ public class StudentDAO implements IDAOStudent {
 
     @Override
     public Student getStudentByEnrollment(String enrollment) throws DataOperationException, NoSuchElementException {
-        Student student = null;
-        String querygetStudentByEnrollment = "SELECT * FROM vw_alumnos where matricula=?;";
         if (enrollment == null || enrollment.isBlank()) {
-            logger.log(Level.WARNING, "La matricula esta vacia");
-            throw new IllegalArgumentException("La matricula no puede estar vacia");
-        } else {
-            try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentByEnrollment);) {
-                preparedStatement.setString(1,enrollment);
-                ResultSet resultSet = preparedStatement.executeQuery();
+            logger.log(Level.WARNING, "La matrícula está vacía");
+            throw new IllegalArgumentException("La matrícula no puede estar vacía");
+        }
+        Student student = null;
+        String query = "SELECT * FROM vw_alumnos WHERE matricula=?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, enrollment);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     int idUser = resultSet.getInt("id_usuario");
                     String name = resultSet.getString("nombre");
@@ -41,39 +41,30 @@ public class StudentDAO implements IDAOStudent {
                     String password = resultSet.getString("contrasena");
                     boolean activeStatus = resultSet.getBoolean("activo");
                     String gender = resultSet.getString("genero");
-                    Boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
-                    Float grade = resultSet.getFloat("calificacion");
+                    boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
+                    float grade = resultSet.getFloat("calificacion");
                     int studentProjectId = resultSet.getInt("proyecto");
-                    String nrc = resultSet.getString("nrc");
-                    resultSet.close();
+                    int practiceId = resultSet.getInt("id_practica");
                     Project project = null;
                     if (studentProjectId > 0) {
                         ProjectDAO projectDAO = new ProjectDAO();
                         project = projectDAO.getProjectById(studentProjectId);
                     }
-                    EducationalExperience educationalExperience = null;
-                    if (nrc != null && !nrc.isBlank()) {
-                        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                        educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-                    }
                     Practice practice = null;
-                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
-                    if (educationalExperience != null) {
+                    if (practiceId > 0) {
                         PracticeDAO practiceDAO = new PracticeDAO();
-                        practice = practiceDAO.getPracticeByEnrollment(enrollment, student);
-                        if (practice != null) {
-                            student.setPractice(practice);
-                        }
+                        practice = practiceDAO.getPracticeById(practiceId);
                     }
+                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
                 }
-                if (student == null) {
-                    logger.log(Level.WARNING, "No se encontro el estudiante con la matricula: " + enrollment);
-                    throw new NoSuchElementException("No se encontro el estudiante");
-                }
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE,"Error al buscar el estudiante por matricula",e);
-                throw new DataOperationException("Error al obtener los datos del estudiante");
             }
+            if (student == null) {
+                logger.log(Level.WARNING, "Error al buscar el estudiante por matrícula");
+                throw new NoSuchElementException("No se encontró el estudiante");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al buscar el estudiante por matrícula", e);
+            throw new DataOperationException("Error al obtener los datos del estudiante");
         }
         return student;
     }
@@ -81,13 +72,13 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public Student getStudentById(Integer idStudent) throws DataOperationException, NoSuchElementException {
         Student student = null;
-        String querygetStudentById = "SELECT * FROM vw_alumnos where id_usuario=?;";
+        String queryStudentById = "SELECT * FROM vw_alumnos where id_usuario=?;";
         if (idStudent == null || idStudent.intValue() == 0) {
             logger.log(Level.WARNING, "El id esta vacio");
             throw new IllegalArgumentException("El Id no puede estar vacio");
         } else {
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(querygetStudentById)) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryStudentById)) {
                 preparedStatement.setInt(1,idStudent);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 if (resultSet.next()) {
@@ -101,27 +92,19 @@ public class StudentDAO implements IDAOStudent {
                     boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
                     float grade = resultSet.getFloat("calificacion");
                     int studentProjectId = resultSet.getInt("proyecto");
-                    String nrc = resultSet.getString("nrc");
+                    int practiceId = resultSet.getInt("id_practica");
                     resultSet.close();
                     Project project = null;
                     if (studentProjectId > 0) {
                         ProjectDAO projectDAO = new ProjectDAO();
                         project = projectDAO.getProjectById(studentProjectId);
                     }
-                    EducationalExperience educationalExperience = null;
-                    if (nrc != null && !nrc.isBlank()) {
-                        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                        educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-                    }
                     Practice practice = null;
-                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
-                    if (educationalExperience != null) {
+                    if (practiceId > 0) {
                         PracticeDAO practiceDAO = new PracticeDAO();
-                        practice = practiceDAO.getPracticeByEnrollment(enrollment, student);
-                        if (practice != null) {
-                            student.setPractice(practice);
-                        }
+                        practice = practiceDAO.getPracticeById(practiceId);
                     }
+                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);

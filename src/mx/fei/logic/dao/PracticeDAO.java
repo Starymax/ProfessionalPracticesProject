@@ -13,11 +13,42 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PracticeDAO implements IDAOPractice {
     private static final Logger logger = Logger.getLogger(PracticeDAO.class.getName());
+
+    @Override
+    public Practice getPracticeById(int practiceId) throws DataOperationException {
+        Practice practice = null;
+        String query = "SELECT * FROM practicas WHERE id_practica=?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practiceId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int studentId = resultSet.getInt("id_alumno");
+                    String nrc = resultSet.getString("nrc");
+                    String period = resultSet.getString("periodo");
+                    StudentDAO studentDAO = new StudentDAO();
+                    Student student = studentDAO.getStudentById(studentId);
+                    EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+                    EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+                    practice = new Practice(student, educationalExperience, period);
+                }
+            }
+            if (practice == null) {
+                logger.log(Level.WARNING, "Error al buscar la práctica por id");
+                throw new NoSuchElementException("No se encontró la práctica");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al buscar la práctica por id", e);
+            throw new DataOperationException("Error al obtener los datos de la práctica");
+        }
+        return practice;
+    }
 
     @Override
     public boolean createPractice(Practice practice) throws DataOperationException {
