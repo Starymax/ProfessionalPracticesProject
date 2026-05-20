@@ -39,7 +39,9 @@ public class ControllerModifyExperience {
     public void handleUpdateReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Actualizar" -> handleUpdate();
+            case "Actualizar" -> {
+                handleUpdate();
+            }
             case "Regresar" -> {
                 guiModifyExperience.closeWindow();
                 openChooseExperience();

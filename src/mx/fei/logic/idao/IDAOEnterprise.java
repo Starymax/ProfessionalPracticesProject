@@ -11,4 +11,8 @@ public interface IDAOEnterprise {
     int registerEnterprise(Enterprise enterprise) throws DataOperationException;
 
     List<Enterprise> getActiveEnterprises() throws DataOperationException;
+
+    List<Enterprise> getEnterprises() throws DataOperationException;
+
+    boolean modifyEnterprise(Enterprise enterprise) throws DataOperationException;
 }

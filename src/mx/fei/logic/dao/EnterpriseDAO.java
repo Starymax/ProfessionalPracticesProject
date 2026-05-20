@@ -101,4 +101,53 @@ public class EnterpriseDAO implements IDAOEnterprise {
         }
         return enterprises;
     }
+
+    public List<Enterprise> getEnterprises() throws DataOperationException {
+        List<Enterprise> enterprises = new ArrayList<>();
+        String queryGetEnterprises = "SELECT id_empresa from organizacion_vinculada;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(queryGetEnterprises)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Integer> enterprisesIds = new ArrayList<>();
+            while (resultSet.next()) {
+                enterprisesIds.add(resultSet.getInt("id_empresa"));
+            }
+            resultSet.close();
+            for (Integer enterpriseId : enterprisesIds) {
+                enterprises.add(getEnterpriseById(enterpriseId));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error obteniendo las organizaciones activas",e);
+            throw new DataOperationException("Error obteniendo todas las organizaciones");
+        }
+        return enterprises;
+    }
+
+    @Override
+    public boolean modifyEnterprise(Enterprise enterprise) throws DataOperationException {
+        if (enterprise == null) {
+            logger.log(Level.WARNING, "La empresa es nula");
+            throw new IllegalArgumentException("La empresa no puede ser nula");
+        }
+        boolean updated = false;
+        String queryModifyEnterprise = "UPDATE organizacion_vinculada SET nombre_empresa=?, sector=?, telefono=?, correo=?, ciudad=?, usuarios_directos=?, usuarios_indirectos=?, estado_activo=?, pais=? WHERE id_empresa=?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyEnterprise)) {
+            preparedStatement.setString(1, enterprise.getName());
+            preparedStatement.setString(2, enterprise.getSector());
+            preparedStatement.setString(3, enterprise.getPhoneNumber());
+            preparedStatement.setString(4, enterprise.getContactEmail());
+            preparedStatement.setString(5, enterprise.getCity());
+            preparedStatement.setLong(6, enterprise.getDirectUsers());
+            preparedStatement.setLong(7, enterprise.getIndirectUsers());
+            preparedStatement.setBoolean(8, enterprise.isActiveStatus());
+            preparedStatement.setString(9, enterprise.getCountry());
+            preparedStatement.setInt(10, enterprise.getEnterpriseId());
+            updated = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al modificar la organizacion vinculada", e);
+            throw new DataOperationException("Error al modificar la organizacion vinculada");
+        }
+        return updated;
+    }
 }

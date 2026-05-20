@@ -184,6 +184,7 @@ public class GUIModifyExperience extends Application {
     }
 
     public void showError(String message) { GUIUtils.showError(message); }
+
     public void showSuccess(String message) { GUIUtils.showSuccess(message); }
 
     public void closeWindow() {

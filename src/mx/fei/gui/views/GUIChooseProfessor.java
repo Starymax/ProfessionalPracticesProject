@@ -18,7 +18,6 @@ import javafx.stage.Stage;
 import java.util.List;
 
 public class GUIChooseProfessor extends Application {
-
     private ListView<String> listViewProfessors;
     private Button buttonSelect;
     private Button buttonBack;
