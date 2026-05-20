@@ -103,7 +103,7 @@ public class GUIModifyProfessor extends Application {
 
         buttonUpdate = new Button("Actualizar");
         buttonCancel = new Button("Cancelar");
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; " + "-fx-font-size: 14px; -fx-cursor: hand;";
+        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
         buttonUpdate.setStyle(buttonStyle);
         buttonCancel.setStyle(buttonStyle);
         ControllerModifyProfessor controllerModifyProfessor = new ControllerModifyProfessor(this);
@@ -118,7 +118,7 @@ public class GUIModifyProfessor extends Application {
         bottomRow.setRight(buttonPanel);
         VBox mainPanel = new VBox(20, title, formGrid, bottomRow);
         mainPanel.setPadding(new Insets(24, 32, 24, 32));
-        Scene scene = new Scene(mainPanel, 570, 420);
+        Scene scene = new Scene(mainPanel, 570, 320);
         stage.setTitle("Modificar Profesor");
         stage.setResizable(false);
         stage.setScene(scene);

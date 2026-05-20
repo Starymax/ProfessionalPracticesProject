@@ -7,8 +7,6 @@ import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUISelectStudents;
-import mx.fei.logic.dao.ExpedientDAO;
-import mx.fei.logic.dao.PeriodDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -56,16 +54,13 @@ public class ControllerAddStudents {
 
     private void handleConfirm() {
         List<Student> studentsToAdd = guiAddStudents.getStudentsToAdd();
-        ExpedientDAO expedientDAO = new ExpedientDAO();
-        PeriodDAO periodDAO = new PeriodDAO();
         if (studentsToAdd.isEmpty()) {
             guiAddStudents.showError("Debe agregar al menos un estudiante antes de confirmar.");
         } else if (guiAddStudents.showConfirmation("¿Seguro que quiere dar de alta la experiencia educativa?")) {
             try {
                 boolean allAssigned = true;
                 for (Student student : studentsToAdd) {
-                    boolean assigned = studentDAO.assignEducationalExperience(student, guiAddStudents.getExperience()) &&
-                            expedientDAO.createExpedient(student.getUserId(), periodDAO.getActivePeriod().getPeriodId());
+                    boolean assigned = studentDAO.assignEducationalExperience(student, guiAddStudents.getExperience());
                     if (!assigned) {
                         allAssigned = false;
                         logger.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());

@@ -6,10 +6,8 @@ import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIModifyExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
-import mx.fei.logic.dao.PeriodDAO;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dto.Period;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
@@ -54,26 +52,11 @@ public class ControllerModifyExperience {
             if (professorToAssign == null) {
                 guiModifyExperience.showError("Debe seleccionar un profesor, la experiencia no tiene ninguno asignado.");
             } else  {
-                int year = guiModifyExperience.getComboBoxYear().getValue();
-                int semesterNumber = guiModifyExperience.getSelectedSemesterNumber();
-                Period period = null;
-                try {
-                    PeriodDAO periodDAO = new PeriodDAO();
-                    try {
-                        period = periodDAO.getPeriodByYearAndNumber(year, semesterNumber);
-                    } catch (NoSuchElementException e) {
-                        periodDAO.activatePeriod(year, semesterNumber);
-                        period = periodDAO.getPeriodByYearAndNumber(year, semesterNumber);
-                    }
-                } catch (DataOperationException e) {
-                    guiModifyExperience.showError("Error al obtener el periodo.");
-                }
                 EducationalExperience updated = new EducationalExperience(
                         guiModifyExperience.getExperience().getNrc(),
                         guiModifyExperience.getTextFieldName().getText().trim(),
                         guiModifyExperience.getTextFieldCareer().getText().trim(),
-                        professorToAssign,
-                        period
+                        professorToAssign
                 );
                 try {
                     boolean result = educationalExperienceDAO.modifyEducationalExperience(updated);

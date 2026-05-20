@@ -7,10 +7,10 @@ public class Expedient {
     private boolean workPlan;
     private boolean schelude;
     private boolean competenceEvaluation;
-    private Period period;
+    private String period;
     private Student student;
 
-    public Expedient(int expedientId, boolean liberationLetter, boolean acceptationOffice, boolean workPlan, boolean schelude, boolean competenceEvaluation, Period period, Student student) {
+    public Expedient(int expedientId, boolean liberationLetter, boolean acceptationOffice, boolean workPlan, boolean schelude, boolean competenceEvaluation, String period, Student student) {
         this.id = expedientId;
         this.liberationLetter = liberationLetter;
         this.acceptationOffice = acceptationOffice;
@@ -69,11 +69,11 @@ public class Expedient {
         this.competenceEvaluation = competenceEvaluation;
     }
 
-    public Period getPeriod() {
+    public String getPeriod() {
         return period;
     }
 
-    public void setPeriod(Period period) {
+    public void setPeriod(String period) {
         this.period = period;
     }
 

@@ -47,7 +47,7 @@
         <sourceDirectory>src</sourceDirectory>
         <resources>
             <resource>
-                <directory>resources</directory>
+                <directory>src/resources</directory>
                 <includes>
                     <include>**/*.properties</include>
                     <include>countries_cities.json</include>

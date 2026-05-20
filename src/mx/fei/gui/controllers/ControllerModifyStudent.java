@@ -56,7 +56,7 @@ public class ControllerModifyStudent {
                         indigenousLanguage,
                         grade,
                         original.getAssignedProject(),
-                        original.getEducationalExperience()
+                        original.getPractice()
                 );
                 userDAO.updateUser(updated);
                 boolean result = studentDAO.modifyStudent(updated);

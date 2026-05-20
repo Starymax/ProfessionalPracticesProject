@@ -80,15 +80,15 @@ public class GUIModifyProject extends Application {
         comboBoxEnterprise = new ComboBox<>();
         comboBoxProjectManager = new ComboBox<>();
 
-        textAreaDescription.setPrefRowCount(4);
+        textAreaDescription.setPrefRowCount(3);
         textAreaDescription.setWrapText(true);
-        textAreaImmediateObjectives.setPrefRowCount(4);
+        textAreaImmediateObjectives.setPrefRowCount(2);
         textAreaImmediateObjectives.setWrapText(true);
-        textAreaMediateObjectives.setPrefRowCount(4);
+        textAreaMediateObjectives.setPrefRowCount(2);
         textAreaMediateObjectives.setWrapText(true);
-        textAreaResources.setPrefRowCount(4);
+        textAreaResources.setPrefRowCount(2);
         textAreaResources.setWrapText(true);
-        textAreaResponsibilities.setPrefRowCount(4);
+        textAreaResponsibilities.setPrefRowCount(2);
         textAreaResponsibilities.setWrapText(true);
         textAreaDescription.setMaxWidth(Double.MAX_VALUE);
         datePickerStartDate.setPromptText("dd/mm/aaaa");
@@ -200,7 +200,7 @@ public class GUIModifyProject extends Application {
         ScrollPane scrollPane = new ScrollPane(mainPanel);
         scrollPane.setFitToWidth(true);
 
-        Scene scene = new Scene(scrollPane, 620, 880);
+        Scene scene = new Scene(scrollPane, 620, 740);
         stage.setTitle("Modificar Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);

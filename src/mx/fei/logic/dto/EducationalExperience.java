@@ -5,9 +5,13 @@ public class EducationalExperience {
     private String name;
     private String educationalProgram;
     private Professor professor;
-    private Period period;
+    private String period;
 
-    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor, Period period) {
+    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor) {
+        this(nrc, name, educationalProgram, professor, "");
+    }
+
+    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor, String period) {
         this.nrc = nrc;
         this.name = name;
         this.educationalProgram = educationalProgram;
@@ -47,11 +51,11 @@ public class EducationalExperience {
         this.professor = professor;
     }
 
-    public Period getPeriod() {
+    public String getPeriod() {
         return period;
     }
 
-    public void setPeriod(Period period) {
+    public void setPeriod(String period) {
         this.period = period;
     }
 }

@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +22,17 @@ public class ExpedientDAO implements IDAOExpedient {
     private Logger logger = Logger.getLogger(ExpedientDAO.class.getName());
 
     @Override
-    public boolean createExpedient(int studentId, int periodId) throws DataOperationException {
+    public boolean createExpedient(int studentId, String period) throws DataOperationException {
+        if (period == null || period.isBlank()) {
+            logger.log(Level.WARNING, "El periodo esta vacio");
+            throw new IllegalArgumentException("El periodo no puede estar vacio");
+        }
         boolean result = false;
-        String sql = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, id_periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
+        String sql = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, studentId);
-            preparedStatement.setInt(2, periodId);
+            preparedStatement.setString(2, period);
             preparedStatement.executeUpdate();
             result = true;
         } catch (SQLException e) {
@@ -34,6 +40,32 @@ public class ExpedientDAO implements IDAOExpedient {
             throw new DataOperationException("Error al crear el expediente");
         }
         return result;
+    }
+
+    public String getPeriodByStudentEnrollment(String enrollment) throws DataOperationException {
+        if (enrollment == null || enrollment.isBlank()) {
+            logger.log(Level.WARNING, "La matricula esta vacia");
+            throw new IllegalArgumentException("La matricula no puede estar vacia");
+        }
+        String period = null;
+        String query = "SELECT periodo FROM vw_expediente_por_matricula WHERE matricula = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, enrollment);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                period = resultSet.getString("periodo");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener el periodo del expediente", e);
+            throw new DataOperationException("Error al obtener el periodo del expediente");
+        }
+        return period;
+    }
+
+    public String getCurrentPeriod() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        return LocalDate.now().format(formatter);
     }
 
     @Override

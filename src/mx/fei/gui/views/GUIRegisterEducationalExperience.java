@@ -55,14 +55,14 @@ public class GUIRegisterEducationalExperience extends Application {
         formGrid.add(textFieldCareer, 1, 3);
         formGrid.add(new Label("Semestre:"), 0, 4);
         comboBoxSemester = new ComboBox<>(FXCollections.observableArrayList("Febrero - Julio", "Agosto - Enero"));
-        comboBoxSemester.setPromptText("Seleccionar semestre");
         comboBoxSemester.setPrefWidth(220);
+        comboBoxSemester.setPromptText("Seleccione semestre");
         formGrid.add(comboBoxSemester, 1, 4);
         formGrid.add(new Label("Año:"), 0, 5);
         int currentYear = LocalDate.now().getYear();
         comboBoxYear = new ComboBox<>(FXCollections.observableArrayList(currentYear, currentYear + 1));
-        comboBoxYear.setPromptText("Seleccionar año");
         comboBoxYear.setPrefWidth(220);
+        comboBoxYear.setPromptText("Seleccione año");
         formGrid.add(comboBoxYear, 1, 5);
         ControllerRegisterEducationalExperience controller = new ControllerRegisterEducationalExperience(this);
         buttonRegister = new Button("Registrar");
@@ -87,15 +87,24 @@ public class GUIRegisterEducationalExperience extends Application {
         stage.show();
     }
 
-    public int getSelectedSemesterNumber() {
-        int semesterNumber = -1;
-        String semester = comboBoxSemester.getValue();
-        if ("Febrero - Julio".equals(semester)) {
-            semesterNumber = 1;
-        } else if ("Agosto - Enero".equals(semester)) {
-            semesterNumber = 2;
+    public String getSelectedPeriod() {
+        if (comboBoxSemester == null || comboBoxYear == null) {
+            return "";
         }
-        return semesterNumber;
+        String semester = comboBoxSemester.getValue();
+        Integer year = comboBoxYear.getValue();
+        if (semester == null || year == null) {
+            return "";
+        }
+        String month;
+        if ("Febrero - Julio".equals(semester)) {
+            month = "02";
+        } else if ("Agosto - Enero".equals(semester)) {
+            month = "08";
+        } else {
+            return "";
+        }
+        return String.format("%d-%s", year, month);
     }
 
     public boolean validateFields() {
@@ -104,11 +113,17 @@ public class GUIRegisterEducationalExperience extends Application {
         GUIUtils.validateNRC(textFieldNrc.getText().trim(), "NRC:", errors);
         GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);
-        if (comboBoxSemester.getValue() == null) {
-            errors.add("Debe seleccionar un semestre.");
+        if (comboBoxSemester.getValue() == null || comboBoxSemester.getValue().isBlank()) {
+            errors.add("Seleccione el semestre.");
         }
         if (comboBoxYear.getValue() == null) {
-            errors.add("Debe seleccionar un año.");
+            errors.add("Seleccione el año.");
+        }
+        String selectedPeriod = getSelectedPeriod();
+        if (selectedPeriod.isBlank()) {
+            errors.add("El periodo seleccionado no es valido.");
+        } else {
+            GUIUtils.validatePeriod(selectedPeriod, errors);
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
@@ -143,14 +158,6 @@ public class GUIRegisterEducationalExperience extends Application {
 
     public TextField getTextFieldCareer() {
         return textFieldCareer;
-    }
-
-    public ComboBox<String> getComboBoxSemester() {
-        return comboBoxSemester;
-    }
-
-    public ComboBox<Integer> getComboBoxYear() {
-        return comboBoxYear;
     }
 
     public Button getButtonRegister() {

@@ -5,15 +5,15 @@ public class Student extends User{
     private boolean indigenousLanguage;
     private float grade;
     private Project assignedProject;
-    private EducationalExperience educationalExperience;
+    private Practice practice;
 
-    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status,  String enrollment, boolean indigenousLanguage, float grade, Project asignedProject, EducationalExperience educationalExperience) {
+    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status,  String enrollment, boolean indigenousLanguage, float grade, Project asignedProject, Practice practice) {
         super(userId, name, lastName, email, password, gender, active_status);
         this.enrollment = enrollment;
         this.indigenousLanguage = indigenousLanguage;
         this.grade = grade;
         this.assignedProject = asignedProject;
-        this.educationalExperience = educationalExperience;
+        this.practice = practice;
     }
 
     public String getEnrollment() {
@@ -48,7 +48,17 @@ public class Student extends User{
         this.assignedProject = assignedProject;
     }
 
-    public EducationalExperience getEducationalExperience() {return educationalExperience;}
+    public Practice getPractice() {
+        return practice;
+    }
+
+    public void setPractice(Practice practice) {
+        this.practice = practice;
+    }
+
+    public EducationalExperience getEducationalExperience() {
+        return practice != null ? practice.getEducationalExperience() : null;
+    }
 
     @Override
     public boolean equals(Object object) {

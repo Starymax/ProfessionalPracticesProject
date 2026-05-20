@@ -5,6 +5,7 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.Practice;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOStudent;
 import java.sql.Connection;
@@ -55,7 +56,15 @@ public class StudentDAO implements IDAOStudent {
                         EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
                         educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
                     }
-                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, educationalExperience);
+                    Practice practice = null;
+                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
+                    if (educationalExperience != null) {
+                        PracticeDAO practiceDAO = new PracticeDAO();
+                        practice = practiceDAO.getPracticeByEnrollment(enrollment, student);
+                        if (practice != null) {
+                            student.setPractice(practice);
+                        }
+                    }
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con la matricula: " + enrollment);
@@ -104,7 +113,15 @@ public class StudentDAO implements IDAOStudent {
                         EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
                         educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
                     }
-                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, educationalExperience);
+                    Practice practice = null;
+                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
+                    if (educationalExperience != null) {
+                        PracticeDAO practiceDAO = new PracticeDAO();
+                        practice = practiceDAO.getPracticeByEnrollment(enrollment, student);
+                        if (practice != null) {
+                            student.setPractice(practice);
+                        }
+                    }
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
@@ -309,10 +326,17 @@ public class StudentDAO implements IDAOStudent {
         boolean assigned = false;
         String queryAssignEE = "UPDATE alumno SET nrc = ? where matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryAssignEE)) {
-            preparedStatement.setString(1,experience.getNrc());
-            preparedStatement.setString(2,student.getEnrollment());
+             PreparedStatement preparedStatement = connection.prepareStatement(queryAssignEE)) {
+            preparedStatement.setString(1, experience.getNrc());
+            preparedStatement.setString(2, student.getEnrollment());
             assigned = preparedStatement.executeUpdate() > 0;
+            if (assigned) {
+                PracticeDAO practiceDAO = new PracticeDAO();
+                String period = practiceDAO.getCurrentPeriod();
+                Practice registration = new Practice(student, experience, period);
+                practiceDAO.createPractice(registration);
+                student.setPractice(registration);
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al asignar una experiencia educativa",e);
             throw new DataOperationException("Error al asignar la experiencia educativa");
