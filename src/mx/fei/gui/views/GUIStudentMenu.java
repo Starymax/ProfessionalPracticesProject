@@ -23,6 +23,7 @@ public class GUIStudentMenu extends Application {
         private Label labelProjectName;
         private Button buttonSelectProjects;
         private Button buttonReports;
+        private Button buttonRegisterAdvance;
         private Button buttonDocuments;
         private Button buttonLogout;
         private Stage stage;
@@ -41,9 +42,10 @@ public class GUIStudentMenu extends Application {
 
             buttonSelectProjects = buildMenuButton("Seleccionar Proyectos");
             buttonReports = buildMenuButton("Gestión de Reportes");
+            buttonRegisterAdvance = buildMenuButton("Registro de Avances");
             buttonDocuments = buildMenuButton("Subir Documentos");
 
-            VBox centerButtons = new VBox(20, buttonSelectProjects, buttonReports, buttonDocuments);
+            VBox centerButtons = new VBox(20, buttonSelectProjects, buttonReports, buttonRegisterAdvance, buttonDocuments);
             centerButtons.setAlignment(Pos.CENTER);
 
             buttonLogout = buildMenuButton("Cerrar Sesión");
@@ -55,6 +57,7 @@ public class GUIStudentMenu extends Application {
             ControllerStudentMenu controllerStudentMenu = new ControllerStudentMenu(this);
             buttonSelectProjects.setOnAction(controllerStudentMenu::handleButtonsMenu);
             buttonReports.setOnAction(controllerStudentMenu::handleButtonsMenu);
+            buttonRegisterAdvance.setOnAction(controllerStudentMenu::handleButtonsMenu);
             buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
             buttonLogout.setOnAction(controllerStudentMenu::handleButtonsMenu);
 
@@ -114,6 +117,10 @@ public class GUIStudentMenu extends Application {
 
         public Button getButtonReports() {
             return buttonReports;
+        }
+
+        public Button getButtonRegisterAdvance() {
+            return buttonRegisterAdvance;
         }
 
         public Button getButtonDocuments() {

@@ -1,7 +1,11 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.*;
+import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.Project;
+import mx.fei.logic.dto.RegistrationStatus;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOStudent;
 import java.sql.Connection;
