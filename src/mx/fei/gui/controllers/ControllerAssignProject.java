@@ -33,7 +33,7 @@ public class ControllerAssignProject {
         Student student = guiAssignProject.getStudent();
         if (selected == null) {
             guiAssignProject.showError("Seleccione un proyecto de la lista.");
-        } else {
+        } else if (selected.getAvailablePlaces() > 0) {
             Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
             confirm.setTitle("Confirmar asignación");
             confirm.setHeaderText(null);
@@ -50,6 +50,8 @@ public class ControllerAssignProject {
                     guiAssignProject.showError(e.getMessage());
                 }
             }
+        } else {
+            guiAssignProject.showError("Proyecto lleno, seleccione otro.");
         }
     }
 

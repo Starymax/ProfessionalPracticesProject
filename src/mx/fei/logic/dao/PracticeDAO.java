@@ -32,11 +32,12 @@ public class PracticeDAO implements IDAOPractice {
                     int studentId = resultSet.getInt("id_alumno");
                     String nrc = resultSet.getString("nrc");
                     String period = resultSet.getString("periodo");
+                    float grade = resultSet.getFloat("calificacion");
                     StudentDAO studentDAO = new StudentDAO();
                     Student student = studentDAO.getStudentById(studentId);
                     EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
                     EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-                    practice = new Practice(student, educationalExperience, period);
+                    practice = new Practice(student, educationalExperience, period, grade);
                 }
             }
             if (practice == null) {
@@ -66,12 +67,13 @@ public class PracticeDAO implements IDAOPractice {
             throw new IllegalArgumentException("El periodo de la practica no puede estar vacio");
         }
         boolean result = false;
-        String sql = "INSERT INTO practicas (id_alumno, nrc, periodo) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO practicas (id_alumno, nrc, periodo, calificacion) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, practice.getStudent().getUserId());
             preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
             preparedStatement.setString(3, period);
+            preparedStatement.setFloat(4, practice.getGrade());
             result = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al crear la practica", e);
@@ -90,7 +92,7 @@ public class PracticeDAO implements IDAOPractice {
             logger.log(Level.WARNING, "El estudiante es nulo");
             throw new IllegalArgumentException("El estudiante no puede ser nulo");
         }
-        String query = "SELECT p.periodo, p.nrc FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
+        String query = "SELECT p.periodo, p.nrc, p.calificacion FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
         Practice practice = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -99,10 +101,11 @@ public class PracticeDAO implements IDAOPractice {
             if (resultSet.next()) {
                 String period = resultSet.getString("periodo");
                 String nrc = resultSet.getString("nrc");
+                float grade = resultSet.getFloat("calificacion");
                 if (nrc != null && !nrc.isBlank()) {
                     EducationalExperienceDAO experienceDAO = new EducationalExperienceDAO();
                     EducationalExperience educationalExperience = experienceDAO.getEducationalExperienceByNrc(nrc);
-                    practice = new Practice(student, educationalExperience, period != null ? period : "");
+                    practice = new Practice(student, educationalExperience, period != null ? period : "", grade);
                 }
             }
         } catch (SQLException e) {

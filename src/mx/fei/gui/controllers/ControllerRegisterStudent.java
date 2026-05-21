@@ -38,7 +38,7 @@ public class ControllerRegisterStudent {
         String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
         boolean active = guiRegisterStudent.getToggleButtonState().isSelected();
-        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, 0.0f, null, null);
+        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, null);
         try {
             boolean registered = studentDAO.registerStudent(student);
             if (registered) {

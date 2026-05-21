@@ -1,11 +1,7 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dto.Project;
-import mx.fei.logic.dto.RegistrationStatus;
-import mx.fei.logic.dto.Student;
-import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.*;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOStudent;
 import java.sql.Connection;
@@ -42,20 +38,13 @@ public class StudentDAO implements IDAOStudent {
                     boolean activeStatus = resultSet.getBoolean("activo");
                     String gender = resultSet.getString("genero");
                     boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
-                    float grade = resultSet.getFloat("calificacion");
                     int studentProjectId = resultSet.getInt("proyecto");
-                    int practiceId = resultSet.getInt("id_practica");
                     Project project = null;
                     if (studentProjectId > 0) {
                         ProjectDAO projectDAO = new ProjectDAO();
                         project = projectDAO.getProjectById(studentProjectId);
                     }
-                    Practice practice = null;
-                    if (practiceId > 0) {
-                        PracticeDAO practiceDAO = new PracticeDAO();
-                        practice = practiceDAO.getPracticeById(practiceId);
-                    }
-                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
+                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project);
                 }
             }
             if (student == null) {
@@ -90,21 +79,14 @@ public class StudentDAO implements IDAOStudent {
                     boolean activeStatus = resultSet.getBoolean("activo");
                     String gender = resultSet.getString("genero");
                     boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
-                    float grade = resultSet.getFloat("calificacion");
                     int studentProjectId = resultSet.getInt("proyecto");
-                    int practiceId = resultSet.getInt("id_practica");
                     resultSet.close();
                     Project project = null;
                     if (studentProjectId > 0) {
                         ProjectDAO projectDAO = new ProjectDAO();
                         project = projectDAO.getProjectById(studentProjectId);
                     }
-                    Practice practice = null;
-                    if (practiceId > 0) {
-                        PracticeDAO practiceDAO = new PracticeDAO();
-                        practice = practiceDAO.getPracticeById(practiceId);
-                    }
-                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, grade, project, practice);
+                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project);
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
@@ -158,13 +140,12 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean modifyStudent(Student student) throws DataOperationException {
         boolean updated = false;
-        String queryModifyStudent = "UPDATE alumno SET lengua_indigena=?, calificacion=? where id_usuario=?;";
+        String queryModifyStudent = "UPDATE alumno SET lengua_indigena=? where id_usuario=?;";
         if (student != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent)) {
                 preparedStatement.setBoolean(1, student.isIndigenousLanguage());
-                preparedStatement.setFloat(2, student.getGrade());
-                preparedStatement.setInt(3, student.getUserId());
+                preparedStatement.setInt(2, student.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al modificar el alumno",e);
@@ -202,7 +183,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public List<Student> getStudentsWithoutProject() throws DataOperationException {
         List<Student> students = new ArrayList<>();
-        String queryConsultStudents = "SELECT matricula FROM alumno WHERE proyecto_asignado IS NULL";
+        String queryConsultStudents = "SELECT a.matricula FROM alumno a JOIN seleccion s ON a.matricula = s.matricula WHERE a.proyecto_asignado IS NULL GROUP BY a.matricula HAVING COUNT(DISTINCT s.proyecto_seleccionado) = 3";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudents)) {
             List<String> enrollmetns = new ArrayList<>();
@@ -316,9 +297,8 @@ public class StudentDAO implements IDAOStudent {
             if (assigned) {
                 PracticeDAO practiceDAO = new PracticeDAO();
                 String period = practiceDAO.getCurrentPeriod();
-                Practice registration = new Practice(student, experience, period);
-                practiceDAO.createPractice(registration);
-                student.setPractice(registration);
+                Practice practice = new Practice(student, experience, period, 0.0f);
+                practiceDAO.createPractice(practice);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al asignar una experiencia educativa",e);
