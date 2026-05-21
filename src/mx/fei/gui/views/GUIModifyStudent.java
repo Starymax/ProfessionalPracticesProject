@@ -34,7 +34,6 @@ public class GUIModifyStudent extends Application {
     private TextField textFieldNames;
     private TextField textFieldLastName;
     private TextField textFieldMail;
-    private TextField textFieldGrade;
     private RadioButton radioButtonMan;
     private RadioButton radioButtonWoman;
     private RadioButton radioButtonSpeakIndigenousLanguage;
@@ -72,11 +71,7 @@ public class GUIModifyStudent extends Application {
         textFieldMail = new TextField();
         GridPane.setColumnSpan(textFieldMail, 3);
         formGrid.add(textFieldMail, 1, 2);
-        formGrid.add(new Label("Calificación:"), 0, 3);
-        textFieldGrade = new TextField();
-        textFieldGrade.setPrefWidth(120);
-        formGrid.add(textFieldGrade, 1, 3);
-        formGrid.add(new Label("Genero"), 0, 4);
+        formGrid.add(new Label("Genero"), 0, 3);
         radioButtonMan = new RadioButton("Hombre");
         radioButtonWoman = new RadioButton("Mujer");
         ToggleGroup toggleGroupGender = new ToggleGroup();
@@ -105,7 +100,6 @@ public class GUIModifyStudent extends Application {
             textFieldNames.setText(student.getName());
             textFieldLastName.setText(student.getLastName());
             textFieldMail.setText(student.getEmail());
-            textFieldGrade.setText(String.valueOf(student.getGrade()));
             if (student.getGender() != null && student.getGender().equals("Hombre")) {
                 radioButtonMan.setSelected(true);
             } else {
@@ -149,7 +143,6 @@ public class GUIModifyStudent extends Application {
         GUIUtils.validateNames(textFieldNames.getText().trim(), "Nombres", errors);
         GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
         GUIUtils.validateEmail(textFieldMail.getText().trim(), errors);
-        GUIUtils.validateGrade(textFieldGrade.getText().trim(), errors);
         GUIUtils.validateRadioSelection(radioButtonMan.getToggleGroup().getSelectedToggle() != null, "un género", errors);
         GUIUtils.validateRadioSelection(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() != null, "si el alumno habla lengua indígena", errors);
         if (!errors.isEmpty()) {
@@ -189,10 +182,6 @@ public class GUIModifyStudent extends Application {
 
     public TextField getTextFieldMail() {
         return textFieldMail;
-    }
-
-    public TextField getTextFieldGrade() {
-        return textFieldGrade;
     }
 
     public RadioButton getRadioButtonMan() {

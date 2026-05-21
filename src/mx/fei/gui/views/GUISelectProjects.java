@@ -139,8 +139,7 @@ public class GUISelectProjects extends Application {
     }
 
     public int getSelectedCount() {
-        int count = (int) checkBoxes.stream().filter(CheckBox::isSelected).count();
-        return count;
+        return (int) checkBoxes.stream().filter(CheckBox::isSelected).count();
     }
 
     public Button getButtonSelect() {

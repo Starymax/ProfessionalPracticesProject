@@ -4,6 +4,7 @@ import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAssignProject;
 import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUISelectStudentForAssignProject;
+import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import javafx.event.ActionEvent;
@@ -35,7 +36,8 @@ public class ControllerSelectStudentForAssignProject {
             guiSelectStudentForAssignProject.getStage().close();
             try {
                 StudentDAO studentDAO = new StudentDAO();
-                guiAssignProject.loadProjects(studentDAO.getSelectedProjects(studentSelected));
+                ProjectDAO projectDAO = new ProjectDAO();
+                guiAssignProject.loadProjects(projectDAO.getActiveProjects(), studentDAO.getSelectedProjects(studentSelected));
             } catch (DataOperationException e) {
                 guiAssignProject.showError(e.getMessage());
             }

@@ -19,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIAssignProject extends Application {
@@ -30,6 +31,7 @@ public class GUIAssignProject extends Application {
     private ListView<Project> projectListView;
     private Stage stage;
     private Student student;
+    private ArrayList<Integer> selectedProjectIds = new ArrayList<>();
 
     @Override
     public void start(Stage stage) {
@@ -41,20 +43,43 @@ public class GUIAssignProject extends Application {
         HBox studentRow = buildInfoRow("Alumno:", labelStudentName);
         HBox enrollmentRow = buildInfoRow("Matrícula:", labelEnrollment);
 
-        Label projectsTitle = new Label("Proyectos seleccionados");
+        Label projectsTitle = new Label("Proyectos activos");
         projectsTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
 
         projectListView = new ListView<>();
-        projectListView.setCellFactory(listView -> new ListCell<>() {
-            @Override
-            protected void updateItem(Project project, boolean empty) {
-                super.updateItem(project, empty);
-                if (empty || project == null) {
-                    setText(null);
-                } else {
-                    setText(project.getNameProject());
+        projectListView.setCellFactory(listView -> {
+            ListCell<Project> cell = new ListCell<>() {
+                @Override
+                protected void updateItem(Project project, boolean empty) {
+                    super.updateItem(project, empty);
+                    if (empty || project == null) {
+                        setText(null);
+                        setStyle(null);
+                    } else {
+                        boolean selectedByStudent = selectedProjectIds.contains(project.getProjectId());
+                        String displayText = project.getNameProject();
+                        if (selectedByStudent) {
+                            displayText += " — Seleccionado";
+                            if (isSelected()) {
+                                setStyle("-fx-background-color: #a8d5a2; -fx-text-fill: #155724;");
+                            } else {
+                                setStyle("-fx-background-color: #d4edda; -fx-text-fill: #155724;");
+                            }
+                        } else if (isSelected()) {
+                            setStyle("-fx-background-color: -fx-selection-bar; -fx-text-fill: -fx-selection-bar-text;");
+                        } else {
+                            setStyle(null);
+                        }
+                        setText(displayText);
+                    }
                 }
-            }
+            };
+            cell.selectedProperty().addListener((observable, oldValue, newValue) -> {
+                if (!cell.isEmpty()) {
+                    cell.requestLayout();
+                }
+            });
+            return cell;
         });
         projectListView.setPrefHeight(200);
         projectListView.setStyle("-fx-font-size: 14px;");
@@ -106,9 +131,26 @@ public class GUIAssignProject extends Application {
         labelEnrollment.setText(student.getEnrollment());
     }
 
-    public void loadProjects(List<Project> projects) {
+    public void loadProjects(List<Project> projects, List<Project> selectedProjects) {
+        selectedProjectIds.clear();
+        if (selectedProjects != null) {
+            for (Project selectedProject : selectedProjects) {
+                selectedProjectIds.add(selectedProject.getProjectId());
+            }
+        }
         projectListView.getItems().clear();
-        projectListView.getItems().addAll(projects);
+        List<Project> orderedProjects = new ArrayList<>();
+        for (Project project : projects) {
+            if (selectedProjectIds.contains(project.getProjectId())) {
+                orderedProjects.add(project);
+            }
+        }
+        for (Project project : projects) {
+            if (!selectedProjectIds.contains(project.getProjectId())) {
+                orderedProjects.add(project);
+            }
+        }
+        projectListView.getItems().addAll(orderedProjects);
     }
 
     public void showError(String message) {

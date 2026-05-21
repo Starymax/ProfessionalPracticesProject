@@ -43,7 +43,6 @@ public class ControllerModifyStudent {
                 String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
                 boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
                 boolean active = guiModifyStudent.getToggleState().isSelected();
-                float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
                 Student updated = new Student(
                         original.getUserId(),
                         guiModifyStudent.getTextFieldNames().getText().trim(),
@@ -54,9 +53,7 @@ public class ControllerModifyStudent {
                         active,
                         original.getEnrollment(),
                         indigenousLanguage,
-                        grade,
-                        original.getAssignedProject(),
-                        original.getEducationalExperience()
+                        original.getAssignedProject()
                 );
                 userDAO.updateUser(updated);
                 boolean result = studentDAO.modifyStudent(updated);
@@ -67,8 +64,6 @@ public class ControllerModifyStudent {
                     stage.setTitle("Seleccionar estudiante");
                     guiChooseStudent.start(stage);
                 }
-            } catch (NumberFormatException e) {
-                guiModifyStudent.showError("La calificacion debe ser un número válido.");
             } catch (IllegalArgumentException e) {
                 guiModifyStudent.showError(e.getMessage());
             } catch (DataOperationException e) {

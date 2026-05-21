@@ -13,6 +13,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,13 +22,17 @@ public class ExpedientDAO implements IDAOExpedient {
     private Logger logger = Logger.getLogger(ExpedientDAO.class.getName());
 
     @Override
-    public boolean createExpedient(int studentId, int periodId) throws DataOperationException {
+    public boolean createExpedient(int studentId, String period) throws DataOperationException {
+        if (period == null || period.isBlank()) {
+            logger.log(Level.WARNING, "El periodo esta vacio");
+            throw new IllegalArgumentException("El periodo no puede estar vacio");
+        }
         boolean result = false;
-        String query = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, id_periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
+        String sql = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
             preparedStatement.setInt(1, studentId);
-            preparedStatement.setInt(2, periodId);
+            preparedStatement.setString(2, period);
             preparedStatement.executeUpdate();
             result = true;
         } catch (SQLException e) {
@@ -36,12 +42,38 @@ public class ExpedientDAO implements IDAOExpedient {
         return result;
     }
 
+    public String getPeriodByStudentEnrollment(String enrollment) throws DataOperationException {
+        if (enrollment == null || enrollment.isBlank()) {
+            logger.log(Level.WARNING, "La matricula esta vacia");
+            throw new IllegalArgumentException("La matricula no puede estar vacia");
+        }
+        String period = null;
+        String query = "SELECT periodo FROM vw_expediente_por_matricula WHERE matricula = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, enrollment);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                period = resultSet.getString("periodo");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener el periodo del expediente", e);
+            throw new DataOperationException("Error al obtener el periodo del expediente");
+        }
+        return period;
+    }
+
+    public String getCurrentPeriod() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        return LocalDate.now().format(formatter);
+    }
+
     @Override
     public boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataOperationException {
         boolean loaded = false;
-        String query = "UPDATE expediente_practicas ep INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente SET ep." + documentType + " = ? WHERE v.matricula = ?";
+        String queryLoad = "UPDATE expediente_practicas ep INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente SET ep." + documentType + " = ? WHERE v.matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryLoad)) {
             preparedStatement.setBoolean(1,true);
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;
@@ -55,9 +87,9 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean isLoaded(String enrollment, String documentType) throws DataOperationException {
         boolean isLoaded = false;
-        String query = "SELECT " + documentType + " FROM vw_expediente_por_matricula WHERE matricula = ?";
+        String queryIsLoaded = "SELECT " + documentType + " FROM vw_expediente_por_matricula WHERE matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(queryIsLoaded)) {
             preparedStatement.setString(1,enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

@@ -2,7 +2,6 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dto.Period;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOEducationalExperience;
@@ -33,22 +32,23 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         } catch (NoSuchElementException e) {
             logger.log(Level.INFO,"Nrc disponible para el registro");
         }
-        String query = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, id_periodo) values (?,?,?,?,?);";
+        String period = educationalExperience.getPeriod();
+        if (period == null || period.isBlank()) {
+            logger.log(Level.WARNING, "El periodo de la experiencia educativa esta vacio");
+            throw new IllegalArgumentException("El periodo de la experiencia educativa no puede estar vacio");
+        }
+        String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, periodo) values (?,?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1,educationalExperience.getNrc());
-            preparedStatement.setString(2,educationalExperience.getName());
-            preparedStatement.setString(3,educationalExperience.getEducationalProgram());
+             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEE)) {
+            preparedStatement.setString(1, educationalExperience.getNrc());
+            preparedStatement.setString(2, educationalExperience.getName());
+            preparedStatement.setString(3, educationalExperience.getEducationalProgram());
             if (educationalExperience.getProfessor() != null) {
-                preparedStatement.setInt(4,educationalExperience.getProfessor().getUserId());
+                preparedStatement.setInt(4, educationalExperience.getProfessor().getUserId());
             } else {
                 preparedStatement.setNull(4, Types.NULL);
             }
-            if (educationalExperience.getPeriod() != null) {
-                preparedStatement.setInt(5, educationalExperience.getPeriod().getPeriodId());
-            } else {
-                preparedStatement.setNull(5, Types.NULL);
-            }
+            preparedStatement.setString(5, period);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al registrar una experiencia educativa",e);
@@ -59,15 +59,18 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
         boolean updated = false;
-        String query = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,id_profesor=?, id_periodo=? where nrc=?;";
+        String queryModifyExperience = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,id_profesor=? where nrc=?;";
         if (educationalExperience != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setString(1,educationalExperience.getName());
-                preparedStatement.setString(2,educationalExperience.getEducationalProgram());
-                preparedStatement.setInt(3,educationalExperience.getProfessor().getUserId());
-                preparedStatement.setInt(4,educationalExperience.getPeriod().getPeriodId());
-                preparedStatement.setString(5, educationalExperience.getNrc());
+                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
+                preparedStatement.setString(1, educationalExperience.getName());
+                preparedStatement.setString(2, educationalExperience.getEducationalProgram());
+                if (educationalExperience.getProfessor() != null) {
+                    preparedStatement.setInt(3, educationalExperience.getProfessor().getUserId());
+                } else {
+                    preparedStatement.setNull(3, Types.NULL);
+                }
+                preparedStatement.setString(4, educationalExperience.getNrc());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al modificar una experiencia",e);
@@ -87,33 +90,31 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             throw new IllegalArgumentException("El nrc no puede ser nulo");
         }
         EducationalExperience experience = null;
-        String query = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
+        String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(queryEEByNrc)) {
             preparedStatement.setString(1,nrc);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String nrcEE = resultSet.getString("NRC");
                 String name = resultSet.getString("nombre_experiencia");
                 String career = resultSet.getString("programa_educativo");
+                String period = resultSet.getString("periodo");
+                if (period == null) {
+                    period = "";
+                }
                 int idProfessor = resultSet.getInt("id_profesor");
-                int idPeriod = resultSet.getInt("id_periodo");
                 resultSet.close();
                 Professor professor = null;
-                Period period = null;
                 if (idProfessor > 0) {
                     ProfessorDAO professorDAO = new ProfessorDAO();
                     professor = professorDAO.getProfessorById(idProfessor);
                 }
-                if (idPeriod > 0) {
-                    PeriodDAO periodDAO = new PeriodDAO();
-                    period = periodDAO.getPeriodById(idPeriod);
-                }
-                experience = new EducationalExperience(nrcEE,name,career,professor,period);
+                experience = new EducationalExperience(nrcEE, name, career, professor, period);
             }
             if (experience == null) {
                 logger.log(Level.WARNING, "No se encontro el experiencia con el nrc: "+ nrc);
-                throw  new NoSuchElementException("No se encontro la experiencia educativa");
+                throw new NoSuchElementException("No se encontro la experiencia educativa");
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener la experiencia educativa por NRC",e);
@@ -125,9 +126,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public List<EducationalExperience> getEducationalExperiences() throws DataOperationException {
         ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
-        String query = "SELECT nrc FROM experiencia_educativa;";
+        String queryGetEducationalExperiences = "SELECT nrc FROM experiencia_educativa;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(queryGetEducationalExperiences)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<String> nrcs = new ArrayList<>();
             while (resultSet.next()) {
