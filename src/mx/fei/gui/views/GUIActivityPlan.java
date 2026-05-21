@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class GUIActivityPlan extends Application {
 
-    public static final int TOTAL_PLAN_HOURS = 240;
+    public static final int TOTAL_PLAN_HOURS = 420;
 
     private ListView<Activity> listViewActivities;
     private Label labelActivityName;

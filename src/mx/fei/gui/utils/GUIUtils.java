@@ -83,23 +83,6 @@ public class GUIUtils {
         }
     }
 
-    public static void validateGrade(String gradeText, List<String> errors) {
-        if (gradeText.isEmpty()) {
-            errors.add("El campo de calificación es obligatorio.");
-        } else {
-            try {
-                double grade = Double.parseDouble(gradeText);
-                if (grade < 0 || grade > 10) {
-                    errors.add("La calificación no puede ser mayor a 10 o menor a 0.");
-                } else if (gradeText.matches(".*\\.[0-9]{3,}")) {
-                    errors.add("La calificación no puede tener más de dos decimales.");
-                }
-            } catch (NumberFormatException e) {
-                errors.add("La calificación debe de ser un número válido.");
-            }
-        }
-    }
-
     public static void validateEnrollment(String enrollment, String fieldName, List<String> errors) {
         if (enrollment.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");

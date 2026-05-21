@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import mx.fei.gui.views.GUIUploadDocuments;
+import mx.fei.gui.views.GUIRegisterAdvance;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Project;
@@ -32,6 +33,8 @@ public class ControllerStudentMenu {
             openSelectProjects();
         } else if (event.getSource() == guiStudentMenu.getButtonReports()) {
             openReports();
+        } else if (event.getSource() == guiStudentMenu.getButtonRegisterAdvance()) {
+            openRegisterAdvance();
         } else if (event.getSource() == guiStudentMenu.getButtonDocuments()) {
             openDocuments(guiStudentMenu.getStudent().getEnrollment());
         } else if (event.getSource() == guiStudentMenu.getButtonLogout()) {
@@ -59,7 +62,22 @@ public class ControllerStudentMenu {
     }
 
     private void openReports() {
-        // TODO: abrir GUIReports
+    }
+
+    private void openRegisterAdvance() {
+        if (guiStudentMenu.getStudent() == null) {
+            guiStudentMenu.showError("No hay estudiante asignado.");
+            return;
+        }
+        try {
+            GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            guiRegisterAdvance.start(stage);
+        } catch (Exception e) {
+            guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private void openDocuments(String enrollment) {

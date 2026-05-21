@@ -42,7 +42,7 @@ public class ControllerActivityPlan {
         try {
             int remainingHours = guiActivityPlan.getRemainingPlannedHours();
             if (remainingHours == 0) {
-                guiActivityPlan.showError("El plan ya tiene 240 horas planeadas. No se pueden agregar más actividades.");
+                guiActivityPlan.showError("El plan ya tiene " + GUIActivityPlan.TOTAL_PLAN_HOURS + " horas planeadas. No se pueden agregar más actividades.");
             } else {
                 GUIRegisterActivity guiRegisterActivity = new GUIRegisterActivity();
                 Stage stage = new Stage();

@@ -4,7 +4,6 @@ import mx.fei.gui.views.GUIRegisterActivity;
 import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.WeeklyLog;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 
 import java.util.ArrayList;
 

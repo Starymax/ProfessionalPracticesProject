@@ -53,13 +53,12 @@ public class ActivityDAO implements IDAOActivity {
     @Override
     public boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataOperationException {
         boolean success = false;
-        String query = "INSERT INTO registro_semanal (semana, horas_realizadas, horas_planificadas, id_actividad) VALUES (?,?,?,?)";
+        String query = "INSERT INTO registro_semanal (semana, horas_planificadas, id_actividad) VALUES (?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             for (WeeklyLog log : logs) {
                 preparedStatement.setInt(1, log.getWeek());
-                preparedStatement.setInt(2, log.getWorkedHours());
-                preparedStatement.setInt(3, log.getPlannedHours());
-                preparedStatement.setInt(4, activityId);
+                preparedStatement.setInt(2, log.getPlannedHours());
+                preparedStatement.setInt(3, activityId);
                 preparedStatement.executeUpdate();
             }
             success = true;
@@ -117,7 +116,7 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public WeeklyLog getWeeklyLogById(int weeklyLogId) throws DataOperationException {
-        String query = "SELECT semana, horas_realizadas, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
+        String query = "SELECT semana, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
         WeeklyLog weeklyLog = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -125,10 +124,9 @@ public class ActivityDAO implements IDAOActivity {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 int week = resultSet.getInt("semana");
-                int workedHours = resultSet.getInt("horas_realizadas");
                 int plannedHours = resultSet.getInt("horas_planificadas");
                 Activity activity = getActivityById(resultSet.getInt("id_actividad"));
-                weeklyLog = new WeeklyLog(weeklyLogId, week, workedHours, plannedHours, activity);
+                weeklyLog = new WeeklyLog(weeklyLogId, week, 0, plannedHours, activity);
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el horario de la actividad",e);

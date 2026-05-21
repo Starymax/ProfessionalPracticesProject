@@ -36,7 +36,7 @@ public class ProjectDAO implements IDAOProject {
                 String immediateObjectives = resultSet.getString("objetivos_inmediatos");
                 String mediateObjectives = resultSet.getString("objetivos_mediatos");
                 String methodology = resultSet.getString("metodologia");
-                String responsabilities = resultSet.getString("responsabilidades");
+                String responsibilities = resultSet.getString("responsabilidades");
                 String resources = resultSet.getString("recursos");
                 Date startDate = resultSet.getDate("fecha_inicio");
                 Date endDate = resultSet.getDate("fecha_final");
@@ -44,12 +44,24 @@ public class ProjectDAO implements IDAOProject {
                 int available_places = resultSet.getInt("lugares_disponibles");
                 int idCompany = resultSet.getInt("id_empresa");
                 int idProjectManager = resultSet.getInt("id_responsable");
-                EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
-                Enterprise enterprise = enterpriseDAO.getEnterpriseById(idCompany);
-                ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
-                ProjectManager projectManager = projectManagerDAO.getProjectManagerById(idProjectManager);
+                Enterprise enterprise = null;
+                ProjectManager projectManager = null;
+                try {
+                    EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
+                    enterprise = enterpriseDAO.getEnterpriseById(idCompany);
+                } catch (DataOperationException doe) {
+                    logger.log(Level.WARNING, "No se pudo obtener la empresa del proyecto idEmpresa=" + idCompany, doe);
+                    throw new DataOperationException("Error al obtener la empresa del proyecto: " + doe.getMessage());
+                }
+                try {
+                    ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
+                    projectManager = projectManagerDAO.getProjectManagerById(idProjectManager);
+                } catch (DataOperationException doe) {
+                    logger.log(Level.WARNING, "No se pudo obtener el responsable del proyecto idResponsable=" + idProjectManager, doe);
+                    throw new DataOperationException("Error al obtener el responsable del proyecto: " + doe.getMessage());
+                }
                 project = new Project(idProject, projectName, description, generalObjective,
-                        immediateObjectives, mediateObjectives, methodology, responsabilities, resources,
+                        immediateObjectives, mediateObjectives, methodology, responsibilities, resources,
                         startDate, endDate, activeStatus, available_places, enterprise, projectManager);
             }
             if (project == null) {
