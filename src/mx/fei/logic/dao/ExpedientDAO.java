@@ -22,9 +22,9 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean createExpedient(int studentId, int periodId) throws DataOperationException {
         boolean result = false;
-        String sql = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, id_periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
+        String query = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, id_periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, periodId);
             preparedStatement.executeUpdate();
@@ -39,9 +39,9 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataOperationException {
         boolean loaded = false;
-        String queryLoad = "UPDATE expediente_practicas ep INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente SET ep." + documentType + " = ? WHERE v.matricula = ?";
+        String query = "UPDATE expediente_practicas ep INNER JOIN vw_expediente_por_matricula v ON ep.id_expediente = v.id_expediente SET ep." + documentType + " = ? WHERE v.matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryLoad)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setBoolean(1,true);
             preparedStatement.setString(2,enrollment);
             loaded = preparedStatement.executeUpdate() > 0;
@@ -55,9 +55,9 @@ public class ExpedientDAO implements IDAOExpedient {
     @Override
     public boolean isLoaded(String enrollment, String documentType) throws DataOperationException {
         boolean isLoaded = false;
-        String queryIsLoaded = "SELECT " + documentType + " FROM vw_expediente_por_matricula WHERE matricula = ?";
+        String query = "SELECT " + documentType + " FROM vw_expediente_por_matricula WHERE matricula = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryIsLoaded)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1,enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

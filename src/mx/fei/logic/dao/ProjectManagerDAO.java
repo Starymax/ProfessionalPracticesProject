@@ -2,7 +2,6 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Enterprise;
-import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOProjectManager;
@@ -26,9 +25,9 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 logger.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
             } else {
                 try {
-                    String queryRegisterProfessor = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_empresa) VALUES (?, ?, ?, ?, ?);";
+                    String query = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_empresa) VALUES (?, ?, ?, ?, ?);";
                     try (Connection connection = DatabaseConnectionManager.getConnection();
-                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+                         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                         preparedStatement.setString(1, projectManager.getName());
                         preparedStatement.setString(2, projectManager.getEmailProjectManager());
                         preparedStatement.setString(3, projectManager.getPhoneNumberProjectManager());
@@ -73,9 +72,9 @@ public class ProjectManagerDAO implements IDAOProjectManager {
     public List<ProjectManager> getProjectManagersByEnterprise(Enterprise enterprise) throws DataOperationException {
         List<ProjectManager> projectManagers = new ArrayList<>();
         int enterpriseId = enterprise.getEnterpriseId();
-        String queryProjectManagers = "SELECT id_responsable FROM responsable_proyecto WHERE id_empresa = ?;";
+        String query = "SELECT id_responsable FROM responsable_proyecto WHERE id_empresa = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryProjectManagers)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, enterpriseId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {

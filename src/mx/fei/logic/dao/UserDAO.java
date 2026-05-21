@@ -20,10 +20,10 @@ public class UserDAO implements IDAOUser {
     private Logger logger = Logger.getLogger(UserDAO.class.getName());
     @Override
     public boolean userExist(int idUser) throws DataOperationException {
-        String queryUserExist = "SELECT id_usuario FROM  usuario where id_usuario=?;";
+        String query = "SELECT id_usuario FROM  usuario where id_usuario=?;";
         boolean exist;
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryUserExist)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1,idUser);
             ResultSet resultSet = preparedStatement.executeQuery();
             exist = resultSet.next();
@@ -66,9 +66,9 @@ public class UserDAO implements IDAOUser {
     public boolean updateUser(User user) throws DataOperationException {
         boolean updated = false;
         if (user != null) {
-            String queryModifyStudent = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
+            String query = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent);) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(query);) {
                 preparedStatement.setString(1, user.getName());
                 preparedStatement.setString(2, user.getLastName());
                 preparedStatement.setString(3, user.getEmail());
@@ -115,9 +115,9 @@ public class UserDAO implements IDAOUser {
 
     @Override
     public boolean isStudent(int idUser) throws DataOperationException {
-        String queryIsStudent = "SELECT COUNT(*) FROM alumno WHERE id_usuario = ?";
+        String query = "SELECT COUNT(*) FROM alumno WHERE id_usuario = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryIsStudent)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idUser);
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();

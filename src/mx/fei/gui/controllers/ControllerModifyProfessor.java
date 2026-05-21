@@ -35,11 +35,16 @@ public class ControllerModifyProfessor {
             Professor original = guiModifyProfessor.getProfessor();
             Professor updated = getProfessor(original);
             try {
-                userDAO.updateUser(updated);
-                boolean result = professorDAO.modifyProfessor(updated);
-                if (result) {
-                    guiModifyProfessor.showSuccess("Profesor actualizado exitosamente.");
-                    guiModifyProfessor.closeWindow();
+                boolean existCoordinator = updated.isCoordinator() && !original.isCoordinator() && professorDAO.existsCoordinator();
+                if (!existCoordinator) {
+                    userDAO.updateUser(updated);
+                    boolean result = professorDAO.modifyProfessor(updated);
+                    if (result) {
+                        guiModifyProfessor.showSuccess("Profesor actualizado exitosamente.");
+                        guiModifyProfessor.closeWindow();
+                    }
+                } else {
+                    guiModifyProfessor.showError("Ya existe un coordinador activo");
                 }
             } catch (IllegalArgumentException e) {
                 guiModifyProfessor.showError(e.getMessage());

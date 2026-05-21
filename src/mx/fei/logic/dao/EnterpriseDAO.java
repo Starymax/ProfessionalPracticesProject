@@ -56,9 +56,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             throw new IllegalArgumentException("La empresa no puede ser nula");
         }
         int generatedId = -1;
-        String queryRegisterEnterprise = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, ciudad, usuarios_directos, usuarios_indirectos, estado_activo, pais) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+        String query = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, ciudad, usuarios_directos, usuarios_indirectos, estado_activo, pais) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEnterprise, Statement.RETURN_GENERATED_KEYS);) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,enterprise.getName());
             preparedStatement.setString(2,enterprise.getSector());
             preparedStatement.setString(3,enterprise.getPhoneNumber());
@@ -83,9 +83,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
     @Override
     public List<Enterprise> getActiveEnterprises() throws DataOperationException {
         List<Enterprise> enterprises = new ArrayList<>();
-        String queryActiveEnterprises = "SELECT id_empresa from organizacion_vinculada WHERE estado_activo = true;";
+        String query = "SELECT id_empresa from organizacion_vinculada WHERE estado_activo = true;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryActiveEnterprises)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> enterprisesIds = new ArrayList<>();
             while (resultSet.next()){
@@ -104,9 +104,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
 
     public List<Enterprise> getEnterprises() throws DataOperationException {
         List<Enterprise> enterprises = new ArrayList<>();
-        String queryGetEnterprises = "SELECT id_empresa from organizacion_vinculada;";
+        String query = "SELECT id_empresa from organizacion_vinculada;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryGetEnterprises)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> enterprisesIds = new ArrayList<>();
             while (resultSet.next()) {
@@ -130,9 +130,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             throw new IllegalArgumentException("La empresa no puede ser nula");
         }
         boolean updated = false;
-        String queryModifyEnterprise = "UPDATE organizacion_vinculada SET nombre_empresa=?, sector=?, telefono=?, correo=?, ciudad=?, usuarios_directos=?, usuarios_indirectos=?, estado_activo=?, pais=? WHERE id_empresa=?";
+        String query = "UPDATE organizacion_vinculada SET nombre_empresa=?, sector=?, telefono=?, correo=?, ciudad=?, usuarios_directos=?, usuarios_indirectos=?, estado_activo=?, pais=? WHERE id_empresa=?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyEnterprise)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enterprise.getName());
             preparedStatement.setString(2, enterprise.getSector());
             preparedStatement.setString(3, enterprise.getPhoneNumber());

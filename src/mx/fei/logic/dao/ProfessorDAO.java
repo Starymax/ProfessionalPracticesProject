@@ -20,9 +20,9 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public Professor getProfessorByPersonalNumber(int personalNumber) throws DataOperationException {
         Professor professor = null;
-        String queryProfessor = "SELECT * FROM vw_profesor WHERE numero_de_personal = ?;";
+        String query = "SELECT * FROM vw_profesor WHERE numero_de_personal = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryProfessor)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, personalNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -48,9 +48,9 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public Professor getProfessorById(int idProfessor) throws DataOperationException {
         Professor professor = null;
-        String queryProfessor = "SELECT * FROM vw_profesor WHERE id_usuario = ?;";
+        String query = "SELECT * FROM vw_profesor WHERE id_usuario = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryProfessor)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idProfessor);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -81,9 +81,9 @@ public class ProfessorDAO implements IDAOProfessor {
                 UserDAO userDAO = new UserDAO();
                 int idUser = userDAO.registerUser(professor);
                 if (idUser != RegistrationStatus.FAILURE.getValue()) {
-                    String queryRegisterProfessor = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
+                    String query = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) " + "VALUES (?, ?, ?, ?, ?);";
                     try (Connection connection = DatabaseConnectionManager.getConnection();
-                         PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+                         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                         preparedStatement.setInt(1, idUser);
                         preparedStatement.setInt(2, professor.getPersonalNumber());
                         preparedStatement.setBoolean(3, professor.isCoordinator());
@@ -112,9 +112,9 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public List<Professor> getProfessors() throws DataOperationException {
         List<Professor> professors = new ArrayList<>();
-        String queryRegisterProfessor = "SELECT numero_de_personal FROM profesor;";
+        String query = "SELECT numero_de_personal FROM profesor;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProfessor)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> personalNumbers = new ArrayList<>();
             while (resultSet.next()) {
@@ -134,10 +134,10 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public boolean modifyProfessor(Professor professor) throws DataOperationException {
         boolean updated = false;
-        String queryModifyProfessor = "UPDATE profesor set es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
+        String query = "UPDATE profesor set es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
         if (professor != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProfessor)) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setBoolean(1, professor.isCoordinator());
                 preparedStatement.setBoolean(2, professor.isAdmin());
                 preparedStatement.setString(3, professor.getShift());
@@ -154,9 +154,9 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public boolean existsCoordinator() throws DataOperationException {
         boolean exists = false;
-        String queryExistsCoordinator = "SELECT 1 FROM profesor p join usuario u WHERE p.es_coordinador = true and u.estado_activo = true LIMIT 1;";
+        String query = "SELECT 1 FROM profesor p join usuario u WHERE p.es_coordinador = true and u.estado_activo = true LIMIT 1;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryExistsCoordinator)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 exists = true;

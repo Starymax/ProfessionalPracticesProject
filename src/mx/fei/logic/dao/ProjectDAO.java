@@ -43,11 +43,11 @@ public class ProjectDAO implements IDAOProject {
                 boolean activeStatus = resultSet.getBoolean("estado_activo");
                 int available_places = resultSet.getInt("lugares_disponibles");
                 int idCompany = resultSet.getInt("id_empresa");
-                int idResponsable = resultSet.getInt("id_responsable");
+                int idProjectManager = resultSet.getInt("id_responsable");
                 EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
                 Enterprise enterprise = enterpriseDAO.getEnterpriseById(idCompany);
                 ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
-                ProjectManager projectManager = projectManagerDAO.getProjectManagerById(idResponsable);
+                ProjectManager projectManager = projectManagerDAO.getProjectManagerById(idProjectManager);
                 project = new Project(idProject, projectName, description, generalObjective,
                         immediateObjectives, mediateObjectives, methodology, responsabilities, resources,
                         startDate, endDate, activeStatus, available_places, enterprise, projectManager);
@@ -66,9 +66,9 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public int registerProject(Project project) throws DataOperationException {
         int generatedID = -1;
-        String queryRegisterProject = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, responsabilidades, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa, id_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, responsabilidades, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa, id_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterProject, Statement.RETURN_GENERATED_KEYS);) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,project.getNameProject());
             preparedStatement.setString(2,project.getDescriptionProject());
             preparedStatement.setString(3,project.getGeneralObjective());
@@ -98,9 +98,9 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public List<Project> getActiveProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
-        String queryActiveProjects = "SELECT id_proyecto FROM proyecto WHERE estado_activo = true";
+        String query = "SELECT id_proyecto FROM proyecto WHERE estado_activo = true";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryActiveProjects)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> projectIDs = new ArrayList<>();
             while (resultSet.next()) {
@@ -120,9 +120,9 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public List<Project> getAllProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
-        String queryActiveProjects = "SELECT id_proyecto FROM proyecto";
+        String query = "SELECT id_proyecto FROM proyecto";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryActiveProjects)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> projectIDs = new ArrayList<>();
             while (resultSet.next()) {
@@ -154,9 +154,9 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public boolean modifyProject(Project project) throws DataOperationException {
         boolean updated = false;
-        String queryModifyProject = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ?, id_responsable = ?, responsabilidades = ? WHERE id_proyecto = ?";
+        String query = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ?, id_responsable = ?, responsabilidades = ? WHERE id_proyecto = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyProject)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, project.getNameProject());
             preparedStatement.setString(2, project.getDescriptionProject());
             preparedStatement.setString(3, project.getGeneralObjective());

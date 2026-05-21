@@ -44,14 +44,11 @@ public class GUIActivityPlan extends Application {
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-
         Label labelTitle = new Label("Plan de Actividades");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 18));
-
         labelHoursSummary = new Label();
         labelHoursSummary.setFont(Font.font("SansSerif", FontWeight.NORMAL, 14));
         updateHoursSummary();
-
         listViewActivities = new ListView<>();
         listViewActivities.setPrefWidth(360);
         listViewActivities.setPrefHeight(340);

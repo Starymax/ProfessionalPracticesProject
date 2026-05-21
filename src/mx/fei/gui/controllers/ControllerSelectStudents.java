@@ -49,7 +49,7 @@ public class ControllerSelectStudents {
         if (checkedStudents.isEmpty()) {
             guiSelectStudents.showError("Selecciona al menos un alumno.");
         } else {
-            guiSelectStudents.getGuiAddStudents().addStudents(checkedStudents);
+            guiSelectStudents.getGuiAddStudents().setStudentsToAdd(checkedStudents);
             guiSelectStudents.closeWindow();
         }
     }

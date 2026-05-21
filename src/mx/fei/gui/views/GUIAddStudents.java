@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -126,16 +127,13 @@ public class GUIAddStudents extends Application {
         return button;
     }
 
-    public void addStudents(List<Student> students) {
-        for (Student student : students) {
-            if (!studentsToAdd.contains(student)) {
-                studentsToAdd.add(student);
-            }
-        }
+    public void setStudentsToAdd(List<Student> students) {
+        studentsToAdd.clear();
+        studentsToAdd.addAll(students);
     }
 
     public boolean showConfirmation(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmación");
         alert.setHeaderText(null);
         alert.setContentText(message);

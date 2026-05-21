@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,9 +25,9 @@ public class ReportDAO implements IDAOReport {
             logger.log(Level.WARNING,"El reporte es nulo");
             throw new IllegalArgumentException("El reporte no puede ser nulo");
         }
-        String queryReport = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
+        String query = "INSERT INTO reporte (horas_realizadas, tipo_reporte, fecha, observaciones_reporte, id_alumno) VALUES (?,?,?,?,?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryReport);) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setFloat(1, report.getWorkedHours());
             preparedStatement.setString(2, report.getReportType());
             preparedStatement.setDate(3, (Date) report.getDate());
@@ -43,11 +42,11 @@ public class ReportDAO implements IDAOReport {
 
     @Override
     public List<Report> getReportsByStudentEnrollment(String enrollment) throws DataOperationException {
-        String queryViewReport = "SELECT id_reporte FROM vw_reportes WHERE matricula = ?";
+        String query = "SELECT id_reporte FROM vw_reportes WHERE matricula = ?";
         List<Report> reports = new ArrayList<>();
         List<Integer> idReports = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryViewReport);) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setString(1, enrollment);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
@@ -66,10 +65,10 @@ public class ReportDAO implements IDAOReport {
 
     @Override
     public Report getReportById(int reportId) throws DataOperationException {
-        String queryViewReport = "SELECT * FROM vw_reportes where id_reporte = ?";
+        String query = "SELECT * FROM vw_reportes where id_reporte = ?";
         Report report = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryViewReport);) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, reportId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {

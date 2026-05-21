@@ -67,7 +67,7 @@ public class GUIManageExperience extends Application {
         Button button = new Button(text);
         button.setPrefWidth(340);
         button.setPrefHeight(60);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; " + "-fx-background-radius: 20; -fx-font-size: 14px;");
+        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14px;");
         return button;
     }
 

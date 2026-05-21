@@ -33,9 +33,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         } catch (NoSuchElementException e) {
             logger.log(Level.INFO,"Nrc disponible para el registro");
         }
-        String queryRegisterEE = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, id_periodo) values (?,?,?,?,?);";
+        String query = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, id_periodo) values (?,?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryRegisterEE)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1,educationalExperience.getNrc());
             preparedStatement.setString(2,educationalExperience.getName());
             preparedStatement.setString(3,educationalExperience.getEducationalProgram());
@@ -59,10 +59,10 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
         boolean updated = false;
-        String queryModifyExperience = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,id_profesor=?, id_periodo=? where nrc=?;";
+        String query = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,id_profesor=?, id_periodo=? where nrc=?;";
         if (educationalExperience != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1,educationalExperience.getName());
                 preparedStatement.setString(2,educationalExperience.getEducationalProgram());
                 preparedStatement.setInt(3,educationalExperience.getProfessor().getUserId());
@@ -87,9 +87,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             throw new IllegalArgumentException("El nrc no puede ser nulo");
         }
         EducationalExperience experience = null;
-        String queryEEByNrc = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
+        String query = "SELECT * FROM experiencia_educativa WHERE NRC=?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryEEByNrc)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1,nrc);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -125,9 +125,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public List<EducationalExperience> getEducationalExperiences() throws DataOperationException {
         ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
-        String queryGetEducationalExperiences = "SELECT nrc FROM experiencia_educativa;";
+        String query = "SELECT nrc FROM experiencia_educativa;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryGetEducationalExperiences)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<String> nrcs = new ArrayList<>();
             while (resultSet.next()) {

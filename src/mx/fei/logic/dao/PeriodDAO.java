@@ -23,9 +23,9 @@ public class PeriodDAO implements IDAOPeriod {
     public boolean createPeriodIfNotExists(int year, int number) throws DataOperationException {
         boolean inserted = false;
         String name = year + "-" + number;
-        String sql = "INSERT INTO periodo (anio, numero, nombre, activo) VALUES (?, ?, ?, FALSE) ON DUPLICATE KEY UPDATE id_periodo = id_periodo";
+        String query = "INSERT INTO periodo (anio, numero, nombre, activo) VALUES (?, ?, ?, FALSE) ON DUPLICATE KEY UPDATE id_periodo = id_periodo";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, year);
             preparedStatement.setInt(2, number);
             preparedStatement.setString(3, name);
@@ -65,10 +65,10 @@ public class PeriodDAO implements IDAOPeriod {
 
     @Override
     public Period getActivePeriod() throws DataOperationException {
-        String queryGetActivePeriod = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo WHERE activo = TRUE";
+        String query = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo WHERE activo = TRUE";
         Period period = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryGetActivePeriod)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 int idPeriod = resultSet.getInt("id_periodo");
@@ -87,10 +87,10 @@ public class PeriodDAO implements IDAOPeriod {
 
     @Override
     public List<Period> getAllPeriods() throws DataOperationException {
-        String queryGetAllPeriods = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo ORDER BY anio DESC, numero DESC";
+        String query = "SELECT id_periodo, anio, numero, nombre, activo FROM periodo ORDER BY anio DESC, numero DESC";
         List<Period> periods = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryGetAllPeriods)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 int idPeriod = resultSet.getInt("id_periodo");
@@ -113,9 +113,9 @@ public class PeriodDAO implements IDAOPeriod {
             throw new IllegalArgumentException("El id de periodo no puede ser menor o igual a 0");
         }
         Period period = null;
-        String queryGetPeriodById = "SELECT * FROM periodo WHERE id_periodo = ?";
+        String query = "SELECT * FROM periodo WHERE id_periodo = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryGetPeriodById)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, periodId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -138,10 +138,10 @@ public class PeriodDAO implements IDAOPeriod {
     }
 
     public Period getPeriodByYearAndNumber(int year, int number) throws DataOperationException {
-        String queryGetPeriodByYearAndNumber = "SELECT * FROM periodo WHERE anio = ? AND numero = ?";
+        String query = "SELECT * FROM periodo WHERE anio = ? AND numero = ?";
         Period period = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryGetPeriodByYearAndNumber)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, year);
             preparedStatement.setInt(2, number);
             ResultSet resultSet = preparedStatement.executeQuery();

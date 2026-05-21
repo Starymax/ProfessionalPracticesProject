@@ -30,9 +30,9 @@ public class ActivityDAO implements IDAOActivity {
             throw new DataOperationException("Error al guardar el proyecto");
         } else {
             boolean success = false;
-            String queryActivity = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
+            String query = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryActivity, Statement.RETURN_GENERATED_KEYS);) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
                 preparedStatement.setString(1, activity.getName());
                 preparedStatement.setString(2, activity.getObservationsActivity());
                 preparedStatement.setInt(3, project.getProjectId());
@@ -53,8 +53,8 @@ public class ActivityDAO implements IDAOActivity {
     @Override
     public boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataOperationException {
         boolean success = false;
-        String queryWeeklyLog = "INSERT INTO registro_semanal (semana, horas_realizadas, horas_planificadas, id_actividad) VALUES (?,?,?,?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLog);) {
+        String query = "INSERT INTO registro_semanal (semana, horas_realizadas, horas_planificadas, id_actividad) VALUES (?,?,?,?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             for (WeeklyLog log : logs) {
                 preparedStatement.setInt(1, log.getWeek());
                 preparedStatement.setInt(2, log.getWorkedHours());
@@ -95,10 +95,10 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public List<Activity> getActivitiesByProjectId(int projectId) throws DataOperationException {
-        String queryActivities = "SELECT id_actividad FROM actividad WHERE id_proyecto = ?";
+        String query = "SELECT id_actividad FROM actividad WHERE id_proyecto = ?";
         List<Activity> activities = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryActivities)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, projectId);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> activitiesIds = new ArrayList<>();
@@ -117,10 +117,10 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public WeeklyLog getWeeklyLogById(int weeklyLogId) throws DataOperationException {
-        String queryWeeklyLog = "SELECT semana, horas_realizadas, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
+        String query = "SELECT semana, horas_realizadas, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
         WeeklyLog weeklyLog = null;
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLog)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, weeklyLogId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -139,10 +139,10 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public List<WeeklyLog> getWeeklyLogsByActivityId(int activityId) throws DataOperationException {
-        String queryWeeklyLogs = "SELECT id_registro FROM registro_semanal WHERE id_actividad = ?";
+        String query = "SELECT id_registro FROM registro_semanal WHERE id_actividad = ?";
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryWeeklyLogs)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, activityId);
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> weeklyLogIds = new ArrayList<>();

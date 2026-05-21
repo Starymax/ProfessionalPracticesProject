@@ -44,7 +44,7 @@ public class ControllerChooseProfessor {
         Professor professorSelected;
         try {
             professorSelected = guiChooseProfessor.getSelectedProfessor();
-            GUIModifyProfessor guiModifyProfessor = new GUIModifyProfessor();
+            GUIModifyProfessor guiModifyProfessor = new GUIModifyProfessor(professorSelected);
             Stage stage = new Stage();
             guiModifyProfessor.start(stage);
             guiChooseProfessor.closeWindow();
