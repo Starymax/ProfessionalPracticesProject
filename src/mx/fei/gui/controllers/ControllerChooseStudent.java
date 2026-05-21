@@ -48,7 +48,7 @@ public class ControllerChooseStudent {
         Student studentSelected;
         try {
             studentSelected = guiChooseStudent.getSelectedStudent();
-            GUIModifyStudent guiModifyStudent = new GUIModifyStudent();
+            GUIModifyStudent guiModifyStudent = new GUIModifyStudent(studentSelected);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             guiModifyStudent.start(stage);

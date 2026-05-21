@@ -1,14 +1,16 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Document;
+import mx.fei.logic.dto.Practice;
 import mx.fei.logic.exceptions.DataOperationException;
 
+import javax.print.Doc;
 import java.io.IOException;
 
-public interface IDAOExpedient {
+public interface IDAODocument {
     boolean createExpedient(int studentId, String period) throws DataOperationException;
 
-    boolean loadDocument(String enrollment, String documentType, boolean loadState) throws DataOperationException;
+    int loadDocument(Practice practice, Document document) throws DataOperationException;
 
     boolean isLoaded(String enrollment, String documentType) throws DataOperationException;
 

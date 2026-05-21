@@ -1,22 +1,31 @@
 package mx.fei.logic.dto;
 
 public class Document {
-    private String fileName;
+    private int id;
+    private String name;
     private String directory;
     private DocumentType documentType;
+    private Practice practice;
 
-    public Document(String fileName, String directory, DocumentType documentType) {
-        this.fileName = fileName;
+    public Document(String name, String directory, DocumentType documentType, Practice practice) {
+        this.name = name;
+        this.directory = directory;
+        this.documentType = documentType;
+        this.practice = practice;
+    }
+
+    public Document(String name, String directory, DocumentType documentType) {
+        this.name = name;
         this.directory = directory;
         this.documentType = documentType;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getName() {
+        return name;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDirectory() {
@@ -33,5 +42,21 @@ public class Document {
 
     public void setDocumentType(DocumentType documentType) {
         this.documentType = documentType;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Practice getPractice() {
+        return practice;
+    }
+
+    public void setPractice(Practice practice) {
+        this.practice = practice;
     }
 }

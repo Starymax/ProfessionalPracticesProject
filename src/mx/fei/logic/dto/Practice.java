@@ -1,10 +1,19 @@
 package mx.fei.logic.dto;
 
 public class Practice {
+    private int id;
     private Student student;
     private EducationalExperience educationalExperience;
     private String period;
     private float grade;
+
+    public Practice(int id ,Student student, EducationalExperience educationalExperience, String period, float grade) {
+        this.id = id;
+        this.student = student;
+        this.educationalExperience = educationalExperience;
+        this.period = period;
+        this.grade = grade;
+    }
 
     public Practice(Student student, EducationalExperience educationalExperience, String period, float grade) {
         this.student = student;
@@ -43,5 +52,13 @@ public class Practice {
 
     public void setGrade(float grade) {
         this.grade = grade;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

@@ -71,7 +71,7 @@ public class GUIModifyStudent extends Application {
         textFieldMail = new TextField();
         GridPane.setColumnSpan(textFieldMail, 3);
         formGrid.add(textFieldMail, 1, 2);
-        formGrid.add(new Label("Genero"), 0, 3);
+        formGrid.add(new Label("Genero:"), 0, 3);
         radioButtonMan = new RadioButton("Hombre");
         radioButtonWoman = new RadioButton("Mujer");
         ToggleGroup toggleGroupGender = new ToggleGroup();
@@ -80,8 +80,8 @@ public class GUIModifyStudent extends Application {
         HBox genderBox = new HBox(20, radioButtonMan, radioButtonWoman);
         genderBox.setAlignment(Pos.CENTER_LEFT);
         GridPane.setColumnSpan(genderBox, 3);
-        formGrid.add(genderBox, 1, 4);
-        formGrid.add(new Label("Lengua indigena:"), 0, 5);
+        formGrid.add(genderBox, 1, 3);
+        formGrid.add(new Label("Lengua indigena:"), 0, 4);
         radioButtonSpeakIndigenousLanguage = new RadioButton("Habla");
         radioButtonDontSpeakIndigenousLanguage = new RadioButton("No habla");
         ToggleGroup toggleGroupLanguage = new ToggleGroup();
@@ -90,12 +90,12 @@ public class GUIModifyStudent extends Application {
         HBox languageBox = new HBox(20, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
         languageBox.setAlignment(Pos.CENTER_LEFT);
         GridPane.setColumnSpan(languageBox, 3);
-        formGrid.add(languageBox, 1, 5);
-        formGrid.add(new Label("Estado:"), 0, 6);
+        formGrid.add(languageBox, 1, 4);
+        formGrid.add(new Label("Estado:"), 0, 5);
         toggleState = new ToggleButton("Inactivo");
         toggleState.setPrefWidth(110);
         toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
-        formGrid.add(toggleState, 1, 6);
+        formGrid.add(toggleState, 1, 5);
         if (student != null) {
             textFieldNames.setText(student.getName());
             textFieldLastName.setText(student.getLastName());
@@ -132,7 +132,7 @@ public class GUIModifyStudent extends Application {
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        Scene scene = new Scene(mainPanel, 620, 460);
+        Scene scene = new Scene(mainPanel, 380, 380);
         stage.setScene(scene);
         stage.show();
     }

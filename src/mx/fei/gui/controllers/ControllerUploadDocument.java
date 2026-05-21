@@ -1,9 +1,13 @@
 package mx.fei.gui.controllers;
 
 import mx.fei.gui.views.GUIUploadDocuments;
-import mx.fei.logic.dao.ExpedientDAO;
+import mx.fei.logic.dao.DocumentDAO;
+import mx.fei.logic.dao.PracticeDAO;
+import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentType;
+import mx.fei.logic.dto.Practice; // Asumo que tienes esta clase
+import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -11,20 +15,19 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ControllerUploadDocument {
     private GUIUploadDocuments guiUploadDocument;
-    private ExpedientDAO expedientDAO;
+    private DocumentDAO documentDAO;
     private Stage stage;
     private static final Logger logger = Logger.getLogger(ControllerUploadDocument.class.getName());
 
     public ControllerUploadDocument(GUIUploadDocuments guiUploadDocument, Stage stage) {
         this.guiUploadDocument = guiUploadDocument;
-        this.expedientDAO = new ExpedientDAO();
+        this.documentDAO = new DocumentDAO();
         this.stage = stage;
     }
 
@@ -38,58 +41,77 @@ public class ControllerUploadDocument {
     }
 
     private void handleSelect() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar documentos");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
-        List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
-        if (selectedFiles != null && !selectedFiles.isEmpty()) {
-            guiUploadDocument.processSelectedFiles(selectedFiles);
+        String selectedTypeStr = guiUploadDocument.getSelectedType();
+        if (selectedTypeStr == null || selectedTypeStr.isEmpty()) {
+            guiUploadDocument.showError("Por favor, selecciona una categoría y un tipo antes de buscar el archivo.");
+            return;
         }
-    }
 
-    private String getColumnName(DocumentType type) {
-        return switch (type) {
-            case COMPETENCE_EVALUATION -> "evaluacion_competencias";
-            case ACCEPTANCE_LETTER -> "oficio_aceptacion";
-            case WORK_PLAN -> "plan_trabajo";
-            case STUDENT_SCHEDULE -> "horario";
-            case LETTER_OF_RELEASE -> "carta_liberacion";
-            default -> throw new IllegalArgumentException("Tipo de documento no reconocido: " + type);
-        };
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Seleccionar documento para: " + selectedTypeStr);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+
+        File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            guiUploadDocument.processSingleFile(selectedFile, selectedTypeStr);
+        }
     }
 
     private void handleUpload() {
         Map<DocumentType, Document> selectedDocuments = guiUploadDocument.getSelectedDocuments();
         if (selectedDocuments.isEmpty()) {
             guiUploadDocument.showError("Selecciona al menos un documento antes de subir.");
-        } else if (guiUploadDocument.showConfirmation("¿Seguro de subir estos archivos?")) {
+            return;
+        }
+        if (guiUploadDocument.showConfirmation("¿Seguro de subir estos archivos?")) {
             boolean allUploaded = true;
             StringBuilder errors = new StringBuilder();
+            Practice currentPractice = null;
+            try {
+                StudentDAO studentDAO = new StudentDAO();
+                Student student = studentDAO.getStudentByEnrollment(guiUploadDocument.getStudentEnrollment());
+                PracticeDAO practiceDAO = new PracticeDAO();
+                currentPractice = practiceDAO.getPracticeByEnrollment(guiUploadDocument.getStudentEnrollment(), student);
+                if (currentPractice == null || currentPractice.getId() == 0) {
+                    guiUploadDocument.showError("No se encontró una práctica activa para este estudiante.");
+                    return;
+                }
+
+            } catch (DataOperationException e) {
+                logger.log(Level.SEVERE, "Error al obtener la práctica del estudiante", e);
+                guiUploadDocument.showError("Hubo un error al recuperar los datos de la práctica del estudiante.");
+                return;
+            }
             for (Map.Entry<DocumentType, Document> entry : selectedDocuments.entrySet()) {
                 Document document = entry.getValue();
                 try {
-                    boolean uploaded = expedientDAO.uploadDocument(guiUploadDocument.getStudentEnrollment(), document);
-                    if (uploaded) {
-                        expedientDAO.loadDocument(guiUploadDocument.getStudentEnrollment(), getColumnName(document.getDocumentType()), true);
+                    boolean physicalUpload = documentDAO.uploadDocument(guiUploadDocument.getStudentEnrollment(), document);
+                    if (physicalUpload) {
+                        int newId = documentDAO.loadDocument(currentPractice, document);
+                        if (newId <= 0) {
+                            allUploaded = false;
+                            errors.append("- ").append(document.getName()).append(" (Error en BD)\n");
+                        }
                     } else {
                         allUploaded = false;
-                        errors.append("- ").append(document.getFileName()).append("\n");
+                        errors.append("- ").append(document.getName()).append(" (Error al mover archivo)\n");
                     }
                 } catch (IOException e) {
-                    logger.log(Level.SEVERE, "Error al subir documento: " + document.getFileName(), e);
+                    logger.log(Level.SEVERE, "Error al subir físicamente el documento: " + document.getName(), e);
                     allUploaded = false;
-                    errors.append("- ").append(document.getFileName()).append("\n");
+                    errors.append("- ").append(document.getName()).append(" (Fallo IO)\n");
                 } catch (DataOperationException e) {
-                    logger.log(Level.SEVERE, "Error al actualizar estado del documento", e);
+                    logger.log(Level.SEVERE, "Error de base de datos al guardar: " + document.getName(), e);
                     allUploaded = false;
-                    errors.append("- ").append(document.getFileName()).append("\n");
+                    errors.append("- ").append(document.getName()).append(" (Fallo BD)\n");
                 }
             }
             if (allUploaded) {
-                guiUploadDocument.showSuccess("Todos los documentos se subieron exitosamente.");
+                guiUploadDocument.showSuccess("Todos los documentos se subieron y registraron exitosamente.");
                 guiUploadDocument.closeWindow();
             } else {
-                guiUploadDocument.showError("Los siguientes documentos no pudieron subirse:\n" + errors);
+                guiUploadDocument.showError("Los siguientes documentos no pudieron procesarse:\n" + errors);
             }
         }
     }
