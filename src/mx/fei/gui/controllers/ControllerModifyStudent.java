@@ -60,9 +60,6 @@ public class ControllerModifyStudent {
                 if (result) {
                     guiModifyStudent.showSuccess("Alumno actualizado exitosamente.");
                     guiModifyStudent.closeWindow();
-                    Stage stage = new Stage();
-                    stage.setTitle("Seleccionar estudiante");
-                    guiChooseStudent.start(stage);
                 }
             } catch (IllegalArgumentException e) {
                 guiModifyStudent.showError(e.getMessage());

@@ -1,6 +1,7 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.EducationalExperience;
+import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -28,5 +29,5 @@ public interface IDAOStudent {
 
     boolean assignProject(Student student,Project project) throws DataOperationException;
 
-    boolean assignEducationalExperience(Student student, EducationalExperience experience) throws DataOperationException;
+    boolean assignEducationalExperience(Student student, EducationalExperience educationalExperience) throws DataOperationException;
 }

@@ -34,7 +34,7 @@ public class GUIStudentMenu extends Application {
             this.stage = stage;
 
             HBox welcomeRow = buildInfoRow("Bienvenido Alumno:", "Nombre del Alumno");
-            HBox projectRow = buildInfoRow("Proyecto seleccionado:", "Nombre del proyecto");
+            HBox projectRow = buildInfoRow("Proyecto asignado:", "Nombre del proyecto");
             labelStudentName = (Label) welcomeRow.getChildren().get(1);
             labelProjectName = (Label) projectRow.getChildren().get(1);
 
