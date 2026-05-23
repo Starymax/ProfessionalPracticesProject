@@ -9,7 +9,7 @@ public interface IDAOPractice {
 
     boolean createPractice(Practice practice) throws DataOperationException;
 
-    Practice getPracticeByEnrollment(String enrollment, Student student) throws DataOperationException;
+    Practice getPracticeByEnrollment(String enrollment) throws DataOperationException;
 
     String getCurrentPeriod();
 }

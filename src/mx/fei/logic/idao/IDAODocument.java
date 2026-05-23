@@ -6,6 +6,7 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import javax.print.Doc;
 import java.io.IOException;
+import java.util.List;
 
 public interface IDAODocument {
     boolean createExpedient(int studentId, String period) throws DataOperationException;
@@ -15,4 +16,6 @@ public interface IDAODocument {
     boolean isLoaded(String enrollment, String documentType) throws DataOperationException;
 
     boolean uploadDocument(String enrollment, Document document) throws IOException;
+
+    List<Document> getDocumentsByPractice(Practice practice) throws DataOperationException;
 }

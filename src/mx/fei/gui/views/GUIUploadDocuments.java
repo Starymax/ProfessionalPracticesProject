@@ -7,6 +7,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -28,21 +29,27 @@ import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerUploadDocument;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentType;
+
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
 
 public class GUIUploadDocuments extends Application {
     private String studentEnrollment;
     private Map<DocumentType, Document> selectedDocuments;
+    private Set<DocumentType> uploadedDocuments;
     private ComboBox<String> comboBoxCategory;
     private ComboBox<String> comboBoxType;
+    private VBox statusBox;
     private VBox selectedFilesBox;
     private Button buttonSelect;
     private Button buttonUpload;
     private Button buttonCancel;
+
     private static final Map<String, DocumentType> TYPE_MAP = Map.of(
             "evaluacion_competencias", DocumentType.COMPETENCE_EVALUATION,
             "carta_asignacion", DocumentType.ACCEPTANCE_LETTER,
@@ -53,16 +60,22 @@ public class GUIUploadDocuments extends Application {
             "Mensual", DocumentType.MONTHLY_REPORT,
             "Final", DocumentType.FINAL_REPORT
     );
-    private final List<String> documentOptions = Arrays.asList("evaluacion_competencias", "carta_asignacion", "plan_trabajo", "horario", "carta_liberacion");
+
+    private final List<String> documentOptions = Arrays.asList(
+            "evaluacion_competencias", "carta_asignacion",
+            "plan_trabajo", "horario", "carta_liberacion"
+    );
     private final List<String> reportOptions = Arrays.asList("Parcial", "Mensual", "Final");
 
     public GUIUploadDocuments(String studentEnrollment) {
         this.studentEnrollment = studentEnrollment;
         this.selectedDocuments = new HashMap<>();
+        this.uploadedDocuments = new HashSet<>();
     }
 
     public GUIUploadDocuments() {
         this.selectedDocuments = new HashMap<>();
+        this.uploadedDocuments = new HashSet<>();
     }
 
     @Override
@@ -74,9 +87,13 @@ public class GUIUploadDocuments extends Application {
         formPanel.setAlignment(Pos.TOP_CENTER);
         formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
         formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
-
         Label labelTitle = new Label("Subir Documentos y Reportes");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 15));
+        Label labelStatus = new Label("Estado de documentos:");
+        labelStatus.setFont(Font.font("SansSerif", FontWeight.BOLD, 13));
+        statusBox = new VBox(5);
+        statusBox.setPadding(new Insets(5, 0, 10, 10));
+        refreshStatusBox();
         comboBoxCategory = new ComboBox<>(FXCollections.observableArrayList("Documento", "Reporte"));
         comboBoxCategory.setPromptText("Seleccione categoría");
         comboBoxCategory.setPrefWidth(250);
@@ -94,14 +111,14 @@ public class GUIUploadDocuments extends Application {
         combosBox.setAlignment(Pos.CENTER);
         selectedFilesBox = new VBox(5);
         selectedFilesBox.setAlignment(Pos.CENTER_LEFT);
-        selectedFilesBox.setPadding(new Insets(10, 0, 10, 0));
+        selectedFilesBox.setPadding(new Insets(5, 0, 5, 0));
         buttonSelect = createActionButton("Seleccionar");
         buttonUpload = createActionButton("Subir");
         buttonCancel = createActionButton("Cancelar");
         HBox buttonsBox = new HBox(20, buttonSelect, buttonUpload, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));
-        formPanel.getChildren().addAll(labelTitle, combosBox, selectedFilesBox, buttonsBox);
+        formPanel.getChildren().addAll(labelTitle, labelStatus, statusBox, combosBox, selectedFilesBox, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -109,9 +126,30 @@ public class GUIUploadDocuments extends Application {
         buttonSelect.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
         buttonUpload.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
         buttonCancel.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
-        Scene scene = new Scene(mainPanel, 560, 460);
+        Scene scene = new Scene(mainPanel, 560, 560);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void setUploadedDocuments(List<Document> documents) {
+        uploadedDocuments.clear();
+        for (Document document : documents) {
+            uploadedDocuments.add(document.getDocumentType());
+        }
+        refreshStatusBox();
+    }
+
+    private void refreshStatusBox() {
+        if (statusBox == null) return;
+        statusBox.getChildren().clear();
+        for (Map.Entry<String, DocumentType> entry : TYPE_MAP.entrySet()) {
+            boolean uploaded = uploadedDocuments.contains(entry.getValue());
+            String statusText = uploaded ? " ✔ Subido" : " ✘ Pendiente";
+            String color = uploaded ? "#2e7d32" : "#b71c1c";
+            Label label = new Label(entry.getValue().getDocumentType() + ":" + statusText);
+            label.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px;");
+            statusBox.getChildren().add(label);
+        }
     }
 
     private Button createActionButton(String text) {
@@ -130,7 +168,7 @@ public class GUIUploadDocuments extends Application {
         DocumentType type = TYPE_MAP.get(typeStr);
         if (type != null) {
             Document document = new Document(file.getName(), file.getAbsolutePath(), type);
-            selectedDocuments.put(type, document); // Si elige el mismo tipo, se reemplaza
+            selectedDocuments.put(type, document);
             updateSelectedFilesView();
         } else {
             showError("Tipo de archivo no reconocido.");
@@ -143,10 +181,17 @@ public class GUIUploadDocuments extends Application {
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 12));
         selectedFilesBox.getChildren().add(title);
         for (Map.Entry<DocumentType, Document> entry : selectedDocuments.entrySet()) {
-            Label label = new Label("- " + entry.getKey().name() + ": " + entry.getValue().getName());
-            label.setStyle("-fx-text-fill: #2e7d32;");
+            Label label = new Label("- " + entry.getKey().getDocumentType() + ": " + entry.getValue().getName());
+            label.setStyle("-fx-text-fill: #1565c0;");
             selectedFilesBox.getChildren().add(label);
         }
+    }
+
+    public void markAsUploaded(DocumentType type) {
+        uploadedDocuments.add(type);
+        selectedDocuments.remove(type);
+        refreshStatusBox();
+        updateSelectedFilesView();
     }
 
     public void showError(String message) {
@@ -158,7 +203,7 @@ public class GUIUploadDocuments extends Application {
     }
 
     public boolean showConfirmation(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Confirmación");
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -179,5 +224,29 @@ public class GUIUploadDocuments extends Application {
 
     public Map<DocumentType, Document> getSelectedDocuments() {
         return selectedDocuments;
+    }
+
+    public Set<DocumentType> getUploadedDocuments() {
+        return uploadedDocuments;
+    }
+
+    public ComboBox<String> getComboBoxCategory() {
+        return comboBoxCategory;
+    }
+
+    public ComboBox<String> getComboBoxType() {
+        return comboBoxType;
+    }
+
+    public Button getButtonSelect() {
+        return buttonSelect;
+    }
+
+    public Button getButtonUpload() {
+        return buttonUpload;
+    }
+
+    public Button getButtonCancel() {
+        return buttonCancel;
     }
 }

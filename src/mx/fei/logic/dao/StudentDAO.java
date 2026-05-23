@@ -12,7 +12,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -291,24 +290,18 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public boolean assignEducationalExperience(Student student, EducationalExperience educationalExperience) throws DataOperationException {
+    public boolean assignEducationalExperience(Student student, EducationalExperience experience) throws DataOperationException {
         boolean assigned = false;
-        int generatedID = RegistrationStatus.FAILURE.getValue();
-        String query = "INSERT INTO practicas (id_alumno, nrc, periodo) VALUES (?, ?, ?)";
+        String queryAssignEE = "UPDATE alumno SET nrc = ? where matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            preparedStatement.setInt(1, student.getUserId());
-            preparedStatement.setString(2, educationalExperience.getNrc());
-            preparedStatement.setString(3, educationalExperience.getPeriod());
+             PreparedStatement preparedStatement = connection.prepareStatement(queryAssignEE)) {
+            preparedStatement.setString(1, experience.getNrc());
+            preparedStatement.setString(2, student.getEnrollment());
             assigned = preparedStatement.executeUpdate() > 0;
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            if (resultSet.next()) {
-                generatedID = resultSet.getInt(1);
-            }
             if (assigned) {
                 PracticeDAO practiceDAO = new PracticeDAO();
                 String period = practiceDAO.getCurrentPeriod();
-                Practice practice = new Practice(student, educationalExperience, period, 0.0f);
+                Practice practice = new Practice(student, experience, period, 0.0f);
                 practiceDAO.createPractice(practice);
             }
         } catch (SQLException e) {

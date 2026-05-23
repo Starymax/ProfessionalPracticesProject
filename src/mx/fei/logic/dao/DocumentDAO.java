@@ -1,9 +1,7 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.Document;
-import mx.fei.logic.dto.Practice;
-import mx.fei.logic.dto.RegistrationStatus;
+import mx.fei.logic.dto.*;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAODocument;
 import java.io.IOException;
@@ -14,6 +12,8 @@ import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,7 +75,7 @@ public class DocumentDAO implements IDAODocument {
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, document.getName());
             preparedStatement.setString(2, document.getDirectory());
-            preparedStatement.setString(3, document.getDocumentType().getDocumentType());
+            preparedStatement.setString(3, document.getDocumentType().name());
             preparedStatement.setInt(4, practice.getId());
             preparedStatement.executeUpdate();
             try (ResultSet resultSet = preparedStatement.getGeneratedKeys()) {
@@ -126,4 +126,34 @@ public class DocumentDAO implements IDAODocument {
     }
     return uploaded;
     }
+
+    @Override
+    public List<Document> getDocumentsByPractice(Practice practice) throws DataOperationException {
+        if (practice == null) {
+            logger.log(Level.WARNING, "La practica es nula");
+            throw new IllegalArgumentException("La practica no puede ser nula");
+        }
+        List<Document> documents = new ArrayList<>();
+        String query = "SELECT id_documento, nombre, ruta, tipoDocumento FROM documentos WHERE id_practica = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                int idDocument = resultSet.getInt("id_documento");
+                String name = resultSet.getString("nombre");
+                String path = resultSet.getString("ruta");
+                String type = resultSet.getString("tipoDocumento");
+                DocumentType documentType = DocumentType.valueOf(type);
+                Document document = new Document(name, path, documentType, practice);
+                document.setId(idDocument);
+                documents.add(document);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener los documentos de la practica", e);
+            throw new DataOperationException("Error al obtener los documentos");
+        }
+        return documents;
+    }
+
 }

@@ -8,6 +8,8 @@ import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUISelectStudents;
 import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dto.EducationalExperience;
+import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
@@ -59,8 +61,11 @@ public class ControllerAddStudents {
         } else if (guiAddStudents.showConfirmation("¿Seguro que quiere dar de alta la experiencia educativa?")) {
             try {
                 boolean allAssigned = true;
+                EducationalExperience experience = guiAddStudents.getExperience();
+                String currentPeriod = experience.getPeriod();
                 for (Student student : studentsToAdd) {
-                    boolean assigned = studentDAO.assignEducationalExperience(student, guiAddStudents.getExperience());
+                    Practice practice = new Practice(student, experience, currentPeriod, 0.0f);
+                    boolean assigned = studentDAO.assignEducationalExperience(student, experience);
                     if (!assigned) {
                         allAssigned = false;
                         logger.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());

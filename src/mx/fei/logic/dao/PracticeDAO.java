@@ -83,14 +83,10 @@
         }
 
         @Override
-        public Practice getPracticeByEnrollment(String enrollment, Student student) throws DataOperationException {
+        public Practice getPracticeByEnrollment(String enrollment) throws DataOperationException {
             if (enrollment == null || enrollment.isBlank()) {
                 logger.log(Level.WARNING, "La matricula esta vacia");
                 throw new IllegalArgumentException("La matricula no puede estar vacia");
-            }
-            if (student == null) {
-                logger.log(Level.WARNING, "El estudiante es nulo");
-                throw new IllegalArgumentException("El estudiante no puede ser nulo");
             }
             String query = "SELECT p.id_practica, p.periodo, p.nrc, p.calificacion FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
             Practice practice = null;
@@ -106,6 +102,8 @@
                     if (nrc != null && !nrc.isBlank()) {
                         EducationalExperienceDAO experienceDAO = new EducationalExperienceDAO();
                         EducationalExperience educationalExperience = experienceDAO.getEducationalExperienceByNrc(nrc);
+                        StudentDAO studentDAO = new StudentDAO();
+                        Student student = studentDAO.getStudentByEnrollment(enrollment);
                         practice = new Practice(practiceId,student, educationalExperience, period != null ? period : "", grade);
                     }
                 }
