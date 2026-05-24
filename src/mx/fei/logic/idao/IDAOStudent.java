@@ -29,5 +29,5 @@ public interface IDAOStudent {
 
     boolean assignProject(Student student,Project project) throws DataOperationException;
 
-    boolean assignEducationalExperience(Student student, EducationalExperience educationalExperience) throws DataOperationException;
+    boolean assignEducationalExperience(Practice practice) throws DataOperationException;
 }

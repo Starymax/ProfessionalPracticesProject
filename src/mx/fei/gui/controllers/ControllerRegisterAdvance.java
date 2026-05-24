@@ -44,7 +44,6 @@ public class ControllerRegisterAdvance {
                         guiRegisterAdvance.addWeeklyLog(log.getWeek(), log);
                     }
                 }
-
                 if (weeks.isEmpty()) {
                     guiRegisterAdvance.showError("No hay registros semanales disponibles.");
                 } else {
@@ -179,7 +178,6 @@ public class ControllerRegisterAdvance {
         for (StudentAdvance advance : advances) {
             advanceByLogId.put(advance.getWeeklyLog().getWeeklyLogId(), advance);
         }
-
         int remaining = entered;
         for (WeeklyLog log : logs) {
             if (remaining <= 0) {

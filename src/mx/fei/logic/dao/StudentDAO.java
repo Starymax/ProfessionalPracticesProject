@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -290,18 +291,19 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public boolean assignEducationalExperience(Student student, EducationalExperience experience) throws DataOperationException {
+    public boolean assignEducationalExperience(Practice practice) throws DataOperationException {
         boolean assigned = false;
-        String queryAssignEE = "UPDATE alumno SET nrc = ? where matricula = ?;";
+        String query = "INSERT INTO practicas (id_alumno, nrc, periodo) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(queryAssignEE)) {
-            preparedStatement.setString(1, experience.getNrc());
-            preparedStatement.setString(2, student.getEnrollment());
+             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setInt(1, practice.getStudent().getUserId());
+            preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
+            preparedStatement.setString(3, practice.getEducationalExperience().getPeriod());
             assigned = preparedStatement.executeUpdate() > 0;
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
             if (assigned) {
                 PracticeDAO practiceDAO = new PracticeDAO();
                 String period = practiceDAO.getCurrentPeriod();
-                Practice practice = new Practice(student, experience, period, 0.0f);
                 practiceDAO.createPractice(practice);
             }
         } catch (SQLException e) {
