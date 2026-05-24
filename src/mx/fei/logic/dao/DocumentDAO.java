@@ -109,22 +109,24 @@ public class DocumentDAO implements IDAODocument {
     }
 
     @Override
-    public boolean uploadDocument(String enrollment, Document document) throws IOException{
-    boolean uploaded = false;
-    if (!document.getDirectory().isEmpty()) {
+    public String uploadDocument(String enrollment, Document document) throws IOException{
+    String targetPath = null;
+    if (document.getDirectory() == null || document.getDirectory().isEmpty()) {
+        logger.log(Level.WARNING, "La ruta del documento esta vacia");
+        throw new IllegalArgumentException("La ruta del documento no puede estar vacia");
+    }
         try {
             Path expedientDirectory = Paths.get(System.getProperty("user.home"), "practices/expedients", enrollment);
             Files.createDirectories(expedientDirectory);
             Path targetFilePath = expedientDirectory.resolve(document.getDocumentType().name() + ".pdf");
             Path sourceFilePath = Paths.get(document.getDirectory());
             Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
-            uploaded = true;
+            targetPath = targetFilePath.toString();
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Error al subir el documento", e);
             throw new IOException("Error al subir el documento");
         }
-    }
-    return uploaded;
+    return targetPath;
     }
 
     @Override

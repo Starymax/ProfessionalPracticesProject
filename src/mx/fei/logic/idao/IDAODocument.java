@@ -15,7 +15,7 @@ public interface IDAODocument {
 
     boolean isLoaded(String enrollment, String documentType) throws DataOperationException;
 
-    boolean uploadDocument(String enrollment, Document document) throws IOException;
+    String uploadDocument(String enrollment, Document document) throws IOException;
 
     List<Document> getDocumentsByPractice(Practice practice) throws DataOperationException;
 }
