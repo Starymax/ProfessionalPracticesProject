@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import mx.fei.gui.views.GUIUploadDocuments;
 import mx.fei.gui.views.GUIRegisterAdvance;
+import mx.fei.gui.views.GUIGenerateMonthlyReport;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Project;
@@ -62,21 +63,33 @@ public class ControllerStudentMenu {
     }
 
     private void openReports() {
+        if (guiStudentMenu.getStudent() == null) {
+            guiStudentMenu.showError("No hay estudiante seleccionado.");
+        } else {
+            try {
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                GUIGenerateMonthlyReport guiGenerateReport = new GUIGenerateMonthlyReport(guiStudentMenu.getStudent());
+                guiGenerateReport.start(stage);
+            } catch (Exception e) {
+                guiStudentMenu.showError("No se pudo abrir la generación de reportes: " + e);
+            }
+        }
     }
 
     private void openRegisterAdvance() {
         if (guiStudentMenu.getStudent() == null) {
             guiStudentMenu.showError("No hay estudiante asignado.");
-            return;
-        }
-        try {
-            GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiRegisterAdvance.start(stage);
-        } catch (Exception e) {
-            guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
-            e.printStackTrace();
+        } else {
+            try {
+                GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiRegisterAdvance.start(stage);
+            } catch (Exception e) {
+                guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 

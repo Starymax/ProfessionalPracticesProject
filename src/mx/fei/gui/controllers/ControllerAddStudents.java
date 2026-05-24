@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUISelectStudents;
+import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Practice;
@@ -65,7 +66,8 @@ public class ControllerAddStudents {
                 String currentPeriod = experience.getPeriod();
                 for (Student student : studentsToAdd) {
                     Practice practice = new Practice(student, experience, currentPeriod, 0.0f);
-                    boolean assigned = studentDAO.assignEducationalExperience(student, experience);
+                    PracticeDAO practiceDAO =  new PracticeDAO();
+                    boolean assigned = practiceDAO.createPractice(practice);
                     if (!assigned) {
                         allAssigned = false;
                         logger.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());
