@@ -57,20 +57,36 @@ public class ReportDAO implements IDAOReport {
         if (report == null) {
             throw new IllegalArgumentException("El reporte no puede ser nulo.");
         }
-        String query = "INSERT INTO reporte_mensual (id_reporte, numero_reporte, mes, horas_reportadas, horas_acumuladas) VALUES (?,?,?,?,?)";
+        String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
+        String queryWeeklyProgress = "INSERT INTO reporte_actividad_semana (semana, horas_plan, horas_real, id_reporte_actividad) VALUES (?,?,?,?)";
         try (Connection connection = DatabaseConnectionManager.getConnection()) {
             connection.setAutoCommit(false);
             int reportId = createReport(report);
             if (reportId == 0) {
                 connection.rollback();
             } else {
-                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                    preparedStatement.setInt(1, reportId);
-                    preparedStatement.setInt(2, report.getReportNumber());
-                    preparedStatement.setString(3, report.getMonth());
-                    preparedStatement.setFloat(4, report.getWorkedHours());
-                    preparedStatement.setFloat(5, report.getAccumulatedHours());
-                    preparedStatement.executeUpdate();
+                for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
+                    try (PreparedStatement preparedStatement = connection.prepareStatement(queryActivities, Statement.RETURN_GENERATED_KEYS)) {
+                        preparedStatement.setFloat(1, activityProgress.getProgressPercentage());
+                        preparedStatement.setString(2, activityProgress.getObservations());
+                        preparedStatement.setInt(3, reportId);
+                        preparedStatement.setInt(4, activityProgress.getActivity().getActivityId());
+                        preparedStatement.executeUpdate();
+                        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                        if (generatedKeys.next()) {
+                            int reportActivityId = generatedKeys.getInt(1);
+                            try (PreparedStatement prepareStatement = connection.prepareStatement(queryWeeklyProgress)) {
+                                for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
+                                    prepareStatement.setInt(1, weeklyProgress.getWeek());
+                                    prepareStatement.setFloat(2, weeklyProgress.getPlannedHours());
+                                    prepareStatement.setFloat(3, weeklyProgress.getWorkedHours());
+                                    prepareStatement.setInt(4, reportActivityId);
+                                    prepareStatement.addBatch();
+                                }
+                                prepareStatement.executeBatch();
+                            }
+                        }
+                    }
                 }
                 connection.commit();
                 success = true;

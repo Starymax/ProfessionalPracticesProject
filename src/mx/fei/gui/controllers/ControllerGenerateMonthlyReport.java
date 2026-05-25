@@ -233,7 +233,7 @@ public class ControllerGenerateMonthlyReport {
                 syncActivityObservationsFromTable();
                 if (validateObservations()) {
                     if (currentReport.getReportId() == 0) {
-                        boolean created = reportDAO.createPartialReport(currentReport);
+                        boolean created = reportDAO.createMonthlyReport(currentReport);
                         if (created) {
                             guiGenerateMonthlyReport.showSuccess("Reporte guardado en la base de datos exitosamente.");
                         } else {
@@ -285,7 +285,7 @@ public class ControllerGenerateMonthlyReport {
                 syncActivityObservationsFromTable();
                 if (validateObservations()) {
                     if (currentReport.getReportId() == 0) {
-                        boolean created = reportDAO.createPartialReport(currentReport);
+                        boolean created = reportDAO.createMonthlyReport(currentReport);
                         if (!created) {
                             guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos antes de exportar.");
                         }
