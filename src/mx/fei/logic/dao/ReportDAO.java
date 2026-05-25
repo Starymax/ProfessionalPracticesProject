@@ -2,7 +2,9 @@ package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dto.Report;
+import mx.fei.logic.dto.ReportActivityProgress;
 import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOReport;
 
@@ -51,10 +53,33 @@ public class ReportDAO implements IDAOReport {
 
     @Override
     public boolean createMonthlyReport(Report report) throws DataOperationException {
+        boolean success = false;
         if (report == null) {
             throw new IllegalArgumentException("El reporte no puede ser nulo.");
         }
-        return createPartialReport(report);
+        String query = "INSERT INTO reporte_mensual (id_reporte, numero_reporte, mes, horas_reportadas, horas_acumuladas) VALUES (?,?,?,?,?)";
+        try (Connection connection = DatabaseConnectionManager.getConnection()) {
+            connection.setAutoCommit(false);
+            int reportId = createReport(report);
+            if (reportId == 0) {
+                connection.rollback();
+            } else {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                    preparedStatement.setInt(1, reportId);
+                    preparedStatement.setInt(2, report.getReportNumber());
+                    preparedStatement.setString(3, report.getMonth());
+                    preparedStatement.setFloat(4, report.getWorkedHours());
+                    preparedStatement.setFloat(5, report.getAccumulatedHours());
+                    preparedStatement.executeUpdate();
+                }
+                connection.commit();
+                success = true;
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al crear el reporte mensual", e);
+            throw new DataOperationException("Error al crear el reporte mensual.");
+        }
+        return success;
     }
 
     @Override
@@ -71,7 +96,7 @@ public class ReportDAO implements IDAOReport {
             if (reportId == 0) {
                 connection.rollback();
             } else {
-                for (var activityProgress : report.getActivityProgressList()) {
+                for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
                     try (PreparedStatement preparedStatement = connection.prepareStatement(queryActivities, Statement.RETURN_GENERATED_KEYS)) {
                         preparedStatement.setFloat(1, activityProgress.getProgressPercentage());
                         preparedStatement.setString(2, activityProgress.getObservations());
@@ -82,7 +107,7 @@ public class ReportDAO implements IDAOReport {
                         if (generatedKeys.next()) {
                             int reportActivityId = generatedKeys.getInt(1);
                             try (PreparedStatement prepareStatement = connection.prepareStatement(queryWeeklyProgress)) {
-                                for (var weeklyProgress : activityProgress.getWeeklyProgressList()) {
+                                for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
                                     prepareStatement.setInt(1, weeklyProgress.getWeek());
                                     prepareStatement.setFloat(2, weeklyProgress.getPlannedHours());
                                     prepareStatement.setFloat(3, weeklyProgress.getWorkedHours());
@@ -117,7 +142,7 @@ public class ReportDAO implements IDAOReport {
             if (reportId == 0) {
                 connection.rollback();
             } else {
-                for (var activityProgress : report.getActivityProgressList()) {
+                for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
                     try (PreparedStatement psActivity = connection.prepareStatement(queryActivities)) {
                         psActivity.setFloat(1, activityProgress.getProgressPercentage());
                         psActivity.setString(2, activityProgress.getObservations());
@@ -215,6 +240,26 @@ public class ReportDAO implements IDAOReport {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar observaciones del reporte", e);
             throw new DataOperationException("Error al actualizar observaciones del reporte.");
+        }
+        return success;
+    }
+
+    public boolean updateActivityObservations(int reportId, List<ReportActivityProgress> activityProgressList) throws DataOperationException {
+        boolean success = false;
+        String query = "UPDATE reporte_actividad SET observaciones = ? WHERE id_reporte = ? AND id_actividad = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (ReportActivityProgress activityProgress : activityProgressList) {
+                preparedStatement.setString(1, activityProgress.getObservations());
+                preparedStatement.setInt(2, reportId);
+                preparedStatement.setInt(3, activityProgress.getActivity().getActivityId());
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+            success = true;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al actualizar observaciones de actividades del reporte", e);
+            throw new DataOperationException("Error al actualizar observaciones de actividades del reporte.");
         }
         return success;
     }

@@ -1,14 +1,15 @@
 package mx.fei.gui.views;
 
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -18,22 +19,22 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerGenerateMonthlyReport;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.ActivityRow;
 import mx.fei.logic.dto.Student;
 import javafx.scene.control.ScrollPane;
 
 public class GUIGenerateMonthlyReport extends Application {
 
     private Stage stage;
-    private ControllerGenerateMonthlyReport controller;
+    private ControllerGenerateMonthlyReport controllerGenerateMonthlyReport;
     private Student student;
     private Label labelStudentName;
-    private Label labelStudentMatricule;
+    private Label labelStudentEnrollment;
     private Label labelStudentEmail;
     private Label labelProjectName;
     private Label labelEnterprise;
     private Label labelProfessor;
     private TableView<ActivityRow> tableActivities;
-    private TextArea textAreaObservations;
     private Button buttonSave;
     private Button buttonExportPDF;
     private Button buttonCancel;
@@ -57,17 +58,16 @@ public class GUIGenerateMonthlyReport extends Application {
         VBox studentSection = createStudentInfoSection();
         VBox projectSection = createProjectInfoSection();
         VBox activitiesSection = createActivitiesSection();
-        VBox observationsSection = createObservationsSection();
+        controllerGenerateMonthlyReport = new ControllerGenerateMonthlyReport(this, stage, student);
         HBox buttonRow = createButtonRow();
-        VBox center = new VBox(10, studentSection, projectSection, activitiesSection, observationsSection, buttonRow);
+        VBox center = new VBox(10, studentSection, projectSection, activitiesSection, buttonRow);
         center.setPadding(new Insets(12));
         mainPane.setTop(header);
         mainPane.setCenter(new ScrollPane(center));
-        Scene scene = new Scene(mainPane, 900, 780);
+        Scene scene = new Scene(mainPane, 825, 650);
         stage.setTitle("Generación Reporte Mensual");
         stage.setResizable(false);
         stage.setScene(scene);
-        controller = new ControllerGenerateMonthlyReport(this, stage, student);
         stage.show();
     }
 
@@ -76,19 +76,19 @@ public class GUIGenerateMonthlyReport extends Application {
         section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
         Label title = new Label("Información del Estudiante");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        GridPane grid = new GridPane();
-        grid.setHgap(16);
-        grid.setVgap(10);
-        grid.add(new Label("Nombre:"), 0, 0);
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(16);
+        gridPane.setVgap(10);
+        gridPane.add(new Label("Nombre:"), 0, 0);
         labelStudentName = new Label("-");
-        grid.add(labelStudentName, 1, 0);
-        grid.add(new Label("Matrícula:"), 0, 1);
-        labelStudentMatricule = new Label("-");
-        grid.add(labelStudentMatricule, 1, 1);
-        grid.add(new Label("Email:"), 0, 2);
+        gridPane.add(labelStudentName, 1, 0);
+        gridPane.add(new Label("Matrícula:"), 0, 1);
+        labelStudentEnrollment = new Label("-");
+        gridPane.add(labelStudentEnrollment, 1, 1);
+        gridPane.add(new Label("Email:"), 0, 2);
         labelStudentEmail = new Label("-");
-        grid.add(labelStudentEmail, 1, 2);
-        section.getChildren().addAll(title, grid);
+        gridPane.add(labelStudentEmail, 1, 2);
+        section.getChildren().addAll(title, gridPane);
         return section;
     }
 
@@ -97,19 +97,19 @@ public class GUIGenerateMonthlyReport extends Application {
         section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
         Label title = new Label("Información del Proyecto y Práctica");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        GridPane grid = new GridPane();
-        grid.setHgap(16);
-        grid.setVgap(10);
-        grid.add(new Label("Proyecto:"), 0, 0);
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(16);
+        gridPane.setVgap(10);
+        gridPane.add(new Label("Proyecto:"), 0, 0);
         labelProjectName = new Label("-");
-        grid.add(labelProjectName, 1, 0);
-        grid.add(new Label("Empresa/Institución:"), 0, 1);
+        gridPane.add(labelProjectName, 1, 0);
+        gridPane.add(new Label("Empresa/Institución:"), 0, 1);
         labelEnterprise = new Label("-");
-        grid.add(labelEnterprise, 1, 1);
-        grid.add(new Label("Profesor Responsable:"), 0, 2);
+        gridPane.add(labelEnterprise, 1, 1);
+        gridPane.add(new Label("Profesor Responsable:"), 0, 2);
         labelProfessor = new Label("-");
-        grid.add(labelProfessor, 1, 2);
-        section.getChildren().addAll(title, grid);
+        gridPane.add(labelProfessor, 1, 2);
+        section.getChildren().addAll(title, gridPane);
         return section;
     }
 
@@ -120,47 +120,52 @@ public class GUIGenerateMonthlyReport extends Application {
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         tableActivities = new TableView<>();
         tableActivities.setPrefHeight(150);
-        TableColumn<ActivityRow, String> colName = new TableColumn<>("Actividad");
-        colName.setCellValueFactory(parameter -> new javafx.beans.property.SimpleStringProperty(parameter.getValue().name));
-        colName.setPrefWidth(200);
-        TableColumn<ActivityRow, String> colProgress = new TableColumn<>("Progreso");
-        colProgress.setCellValueFactory(parameter -> new javafx.beans.property.SimpleStringProperty(parameter.getValue().progress));
-        colProgress.setPrefWidth(100);
-        TableColumn<ActivityRow, String> colHours = new TableColumn<>("Horas Trabajadas");
-        colHours.setCellValueFactory(parameter -> new javafx.beans.property.SimpleStringProperty(parameter.getValue().workedHours));
-        colHours.setPrefWidth(120);
-        TableColumn<ActivityRow, String> colObservations = new TableColumn<>("Observaciones");
-        colObservations.setCellValueFactory(parameter -> new javafx.beans.property.SimpleStringProperty(parameter.getValue().observations));
-        colObservations.setPrefWidth(300);
-        tableActivities.getColumns().addAll(colName, colProgress, colHours, colObservations);
+        tableActivities.setEditable(true);
+        TableColumn<ActivityRow, String> columnName = new TableColumn<>("Actividad");
+        columnName.setCellValueFactory(parameter -> parameter.getValue().nameProperty());
+        columnName.setPrefWidth(200);
+        TableColumn<ActivityRow, String> columnProgress = new TableColumn<>("Progreso");
+        columnProgress.setCellValueFactory(parameter -> parameter.getValue().progressProperty());
+        columnProgress.setPrefWidth(100);
+        TableColumn<ActivityRow, String> columnHours = new TableColumn<>("Horas Trabajadas");
+        columnHours.setCellValueFactory(parameter -> parameter.getValue().workedHoursProperty());
+        columnHours.setPrefWidth(120);
+        TableColumn<ActivityRow, String> columnObservations = getActivityRowStringTableColumn();
+        tableActivities.getColumns().addAll(columnName, columnProgress, columnHours, columnObservations);
         section.getChildren().addAll(title, tableActivities);
         return section;
     }
 
-    private VBox createObservationsSection() {
-        VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
-        Label title = new Label("Observaciones Generales");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        textAreaObservations = new TextArea();
-        textAreaObservations.setWrapText(true);
-        textAreaObservations.isEditable();
-        textAreaObservations.setPrefHeight(120);
-        textAreaObservations.setStyle("-fx-control-inner-background: #fff; -fx-font-size: 12;");
-        section.getChildren().addAll(title, textAreaObservations);
-        return section;
+    private TableColumn<ActivityRow, String> getActivityRowStringTableColumn() {
+        TableColumn<ActivityRow, String> columnObservations = new TableColumn<>("Observaciones");
+        columnObservations.setCellValueFactory(parameter -> parameter.getValue().observationsProperty());
+        columnObservations.setCellFactory(TextFieldTableCell.forTableColumn());
+        columnObservations.setOnEditCommit(event -> {
+            ActivityRow row = event.getRowValue();
+            String newValue = event.getNewValue() != null ? event.getNewValue() : "";
+            row.setObservations(newValue);
+            if (row.getActivityProgress() != null) {
+                row.getActivityProgress().setObservations(newValue);
+            }
+        });
+        columnObservations.setPrefWidth(300);
+        columnObservations.setEditable(true);
+        return columnObservations;
     }
 
     private HBox createButtonRow() {
         buttonSave = new Button("Guardar");
         buttonSave.setPrefWidth(120);
-        buttonSave.setOnAction(e -> controller.handleSave());
+        buttonSave.setId("buttonSave");
+        buttonSave.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
         buttonExportPDF = new Button("Exportar PDF");
         buttonExportPDF.setPrefWidth(120);
-        buttonExportPDF.setOnAction(e -> controller.handleExportPDF());
+        buttonExportPDF.setId("buttonExportPdf");
+        buttonExportPDF.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
         buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(120);
-        buttonCancel.setOnAction(e -> closeWindow());
+        buttonCancel.setId("buttonCancel");
+        buttonCancel.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
         HBox buttonRow = new HBox(12, buttonSave, buttonExportPDF, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
         buttonRow.setPadding(new Insets(18, 0, 0, 0));
@@ -169,7 +174,7 @@ public class GUIGenerateMonthlyReport extends Application {
 
     public void setStudentInfo(String name, String matricule, String email) {
         labelStudentName.setText(name != null ? name : "-");
-        labelStudentMatricule.setText(matricule != null ? matricule : "-");
+        labelStudentEnrollment.setText(matricule != null ? matricule : "-");
         labelStudentEmail.setText(email != null ? email : "-");
     }
 
@@ -179,16 +184,18 @@ public class GUIGenerateMonthlyReport extends Application {
         labelProfessor.setText(professor != null ? professor : "-");
     }
 
-    public void setActivities(javafx.collections.ObservableList<ActivityRow> activities) {
+    public void setActivities(ObservableList<ActivityRow> activities) {
         tableActivities.setItems(activities);
     }
 
-    public String getObservations() {
-        return textAreaObservations.getText().trim();
+    public ObservableList<ActivityRow> getActivityRows() {
+        return tableActivities.getItems();
     }
 
-    public void setObservations(String observations) {
-        textAreaObservations.setText(observations != null ? observations : "");
+    public void commitTableEdits() {
+        if (tableActivities.getEditingCell() != null) {
+            tableActivities.edit(-1, null);
+        }
     }
 
     public void showError(String message) {
@@ -201,20 +208,6 @@ public class GUIGenerateMonthlyReport extends Application {
 
     public void closeWindow() {
         GUIUtils.closeWindow(stage);
-    }
-
-    public static class ActivityRow {
-        public String name;
-        public String progress;
-        public String workedHours;
-        public String observations;
-
-        public ActivityRow(String name, String progress, String workedHours, String observations) {
-            this.name = name;
-            this.progress = progress;
-            this.workedHours = workedHours;
-            this.observations = observations;
-        }
     }
 
     public static void main(String[] args) {

@@ -9,27 +9,34 @@ import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.ReportDAO;
 import mx.fei.logic.dao.StudentAdvanceDAO;
-import mx.fei.logic.dto.Activity;
-import mx.fei.logic.dto.Report;
 import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.Report;
+import mx.fei.logic.dto.ReportType;
+import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.dto.ReportActivityProgress;
+import mx.fei.logic.dto.ActivityRow;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.exceptions.DataOperationException;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import mx.fei.gui.utils.MonthlyReportGenerator;
+import mx.fei.gui.utils.GUIUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,109 +67,115 @@ public class ControllerGenerateMonthlyReport {
         if (student == null) {
             guiGenerateMonthlyReport.showError("No hay estudiante seleccionado para generar el reporte.");
         } else {
-        guiGenerateMonthlyReport.setStudentInfo(student.getName() + " " + student.getLastName(), student.getEnrollment(), student.getEmail());
-        if (student.getAssignedProject() != null) {
-            String projectName = student.getAssignedProject().getNameProject();
-            String enterpriseName = student.getAssignedProject().getEnterprise() != null ? student.getAssignedProject().getEnterprise().getName() : "-";
-            String professorName = student.getAssignedProject().getProjectManager() != null ? student.getAssignedProject().getProjectManager().getName() : "-";
-            guiGenerateMonthlyReport.setProjectInfo(projectName, enterpriseName, professorName);
-        } else {
-            guiGenerateMonthlyReport.setProjectInfo("No asignado", "-", "-");
-            guiGenerateMonthlyReport.showError("El estudiante no tiene proyecto asignado.");
+            guiGenerateMonthlyReport.setStudentInfo(student.getName() + " " + student.getLastName(), student.getEnrollment(), student.getEmail());
+            if (student.getAssignedProject() != null) {
+                String projectName = student.getAssignedProject().getNameProject();
+                String enterpriseName = student.getAssignedProject().getEnterprise() != null ? student.getAssignedProject().getEnterprise().getName() : "-";
+                String professorName = student.getAssignedProject().getProjectManager() != null ? student.getAssignedProject().getProjectManager().getName() : "-";
+                guiGenerateMonthlyReport.setProjectInfo(projectName, enterpriseName, professorName);
+            } else {
+                guiGenerateMonthlyReport.setProjectInfo("No asignado", "-", "-");
+                guiGenerateMonthlyReport.showError("El estudiante no tiene proyecto asignado.");
+            }
         }
-}
         loadStudentActivitiesWithProgress();
+    }
+
+    public void handleMonthlyReportButtons(ActionEvent event) {
+        Button sourceButton = (Button) event.getSource();
+        String buttonId = sourceButton.getId();
+        switch (buttonId) {
+            case "buttonSave" -> handleSave();
+            case "buttonExportPdf" -> handleExportPDF();
+            case "buttonCancel" -> handleCancel();
+        }
     }
 
     private void loadStudentActivitiesWithProgress() {
         try {
             if (student.getAssignedProject() == null) {
                 guiGenerateMonthlyReport.setActivities(FXCollections.observableArrayList());
-                return;
-            }
-            List<Activity> activities = activityDAO.getActivitiesByProjectId(student.getAssignedProject().getProjectId());
-            List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(student.getUserId());
+            } else {
+                List<Activity> activities = activityDAO.getActivitiesByProjectId(student.getAssignedProject().getProjectId());
+                List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(student.getUserId());
+                Map<Integer, Float> hoursWorkedByLog = getHoursWorkedByLog(advances);
 
-            Map<Integer, Float> horasTrabajadasPorLog = obtenerHorasTrabajadasPorLog(advances);
-
-            List<ReportActivityProgress> reportActivityProgressList = new ArrayList<>();
-            ObservableList<GUIGenerateMonthlyReport.ActivityRow> activityRows = FXCollections.observableArrayList();
-            for (Activity activity : activities) {
-                List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
-                ReportActivityProgress activityProgress = calcularProgresoActividad(activity, weeklyLogs, horasTrabajadasPorLog);
-                if (activityProgress == null) {
-                    continue;
+                List<ReportActivityProgress> reportActivityProgressList = new ArrayList<>();
+                ObservableList<ActivityRow> activityRows = FXCollections.observableArrayList();
+                for (Activity activity : activities) {
+                    List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
+                    ReportActivityProgress activityProgress = calculateActivityProgress(activity, weeklyLogs, hoursWorkedByLog);
+                    if (activityProgress != null) {
+                        reportActivityProgressList.add(activityProgress);
+                        activityRows.add(createActivityRow(activity.getName(), activityProgress.getProgressPercentage(), activityProgress));
+                    }
                 }
-                reportActivityProgressList.add(activityProgress);
-                activityRows.add(crearFilaUI(activity.getName(), activityProgress.getProgressPercentage(), activityProgress));
+                currentReport = buildReport(reportActivityProgressList);
+                guiGenerateMonthlyReport.setActivities(activityRows);
             }
-            currentReport = buildReport(reportActivityProgressList);
-            guiGenerateMonthlyReport.setActivities(activityRows);
-            guiGenerateMonthlyReport.setObservations(currentReport.getObservations());
-
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error crítico al procesar y cargar las actividades con progreso del estudiante", e);
-            guiGenerateMonthlyReport.showError("Error al cargar las actividades con progreso: " + e.getMessage());
+            guiGenerateMonthlyReport.showError("Error al cargar las actividades con progreso");
         }
     }
 
-    private Map<Integer, Float> obtenerHorasTrabajadasPorLog(List<StudentAdvance> advances) {
-        Map<Integer, Float> horasPorLog = new HashMap<>();
+    private Map<Integer, Float> getHoursWorkedByLog(List<StudentAdvance> advances) {
+        Map<Integer, Float> hoursByLog = new HashMap<>();
         for (StudentAdvance advance : advances) {
             if (advance.getWeeklyLog() != null) {
                 int weeklyLogId = advance.getWeeklyLog().getWeeklyLogId();
-                float horasExistentes = horasPorLog.getOrDefault(weeklyLogId, 0f);
-                horasPorLog.put(weeklyLogId, horasExistentes + advance.getRealizedHours());
+                float accumulatedHours = hoursByLog.getOrDefault(weeklyLogId, 0f);
+                hoursByLog.put(weeklyLogId, accumulatedHours + advance.getRealizedHours());
             }
         }
-        return horasPorLog;
+        return hoursByLog;
     }
 
-    private ReportActivityProgress calcularProgresoActividad(Activity activity, List<WeeklyLog> weeklyLogs, Map<Integer, Float> realizedHours) {
+    private ReportActivityProgress calculateActivityProgress(Activity activity, List<WeeklyLog> weeklyLogs, Map<Integer, Float> realizedHours) {
         float totalPlanned = 0f;
         float totalWorked = 0f;
-        boolean tieneAvancesValidos = false;
+        boolean validAdvances = false;
         ReportActivityProgress reportActivityProgress = null;
         for (WeeklyLog weeklyLog : weeklyLogs) {
             totalPlanned += weeklyLog.getPlannedHours();
             float workedHours = realizedHours.getOrDefault(weeklyLog.getWeeklyLogId(), 0f);
             if (workedHours > 0) {
-                tieneAvancesValidos = true;
+                validAdvances = true;
             }
             weeklyLog.setWorkedHours((int) workedHours);
             totalWorked += workedHours;
         }
-        if (tieneAvancesValidos) {
+        if (validAdvances) {
             float progressPercentage = totalPlanned > 0 ? (totalWorked / totalPlanned) * 100f : 100f;
             reportActivityProgress = new ReportActivityProgress(progressPercentage, "", activity, weeklyLogs);
         }
         return reportActivityProgress;
     }
 
-    private GUIGenerateMonthlyReport.ActivityRow crearFilaUI(String nombreActividad, float porcentaje, ReportActivityProgress progress) {
+    private ActivityRow createActivityRow(String activityName, float percentage, ReportActivityProgress progress) {
         float totalWorked = 0f;
         if (progress.getWeeklyProgressList() != null) {
             for (WeeklyLog log : progress.getWeeklyProgressList()) {
                 totalWorked += log.getWorkedHours();
             }
         }
-        String textoPorcentaje = String.format("%.1f%%", porcentaje);
-        String textoHoras = String.format("%.1f horas", totalWorked);
-        return new GUIGenerateMonthlyReport.ActivityRow(nombreActividad, textoPorcentaje, textoHoras, "");
+        String percentageText = String.format("%.1f%%", percentage);
+        String hoursText = String.format("%.1f horas", totalWorked);
+        return new ActivityRow(activityName, percentageText, hoursText, "", progress);
     }
 
     private Report buildReport(List<ReportActivityProgress> activityProgressList) {
-        Report report = new Report(0, "MENSUAL", new java.util.Date(), "", "", student, "");
+        ReportType reportType = ReportType.MONTHLY_REPORT;
+        Report report = new Report(0, reportType.getReportType(), new Date(), "", "", student, "");
         try {
-            report.setReportNumber(reportDAO.countReportsByTypeAndStudent("MENSUAL", student.getUserId()) + 1);
+            report.setReportNumber(reportDAO.countReportsByTypeAndStudent(reportType.getReportType(), student.getUserId()) + 1);
         } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "No se pudo calcular el número de reporte", e);
+            logger.log(Level.WARNING, "No se pudo calcular el número de reporte");
             report.setReportNumber(1);
         }
         report.setMonth(getCurrentMonthName());
         report.setNrc(getPracticeNrc());
         report.setActivityProgressList(activityProgressList);
-
         float totalWorked = 0f;
         for (ReportActivityProgress activityProgress : activityProgressList) {
             if (activityProgress.getWeeklyProgressList() != null) {
@@ -185,7 +198,7 @@ public class ControllerGenerateMonthlyReport {
                     practiceNrc = practice.getEducationalExperience().getNrc();
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.WARNING, "No se pudo obtener la práctica del estudiante para determinar el NRC", e);
+                logger.log(Level.WARNING, "No se pudo obtener la práctica del estudiante para determinar el NRC");
             }
         }
         return practiceNrc;
@@ -196,40 +209,71 @@ public class ControllerGenerateMonthlyReport {
         return today.getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES")) + " " + today.getYear();
     }
 
+    private void syncActivityObservationsFromTable() {
+        if (currentReport != null && currentReport.getActivityProgressList() != null) {
+            ObservableList<ActivityRow> activityRows = guiGenerateMonthlyReport.getActivityRows();
+            if (activityRows != null) {
+                for (ActivityRow activityRow : activityRows) {
+                    if (activityRow.getActivityProgress() != null) {
+                        activityRow.getActivityProgress().setObservations(activityRow.getObservations() != null ? activityRow.getObservations() : "");
+                    }
+                }
+            }
+        }
+    }
+
     public void handleSave() {
         if (currentReport == null || currentReport.getActivityProgressList() == null || currentReport.getActivityProgressList().isEmpty()) {
             guiGenerateMonthlyReport.showError("No hay actividades con avance para guardar.");
-            return;
-        }
-
-        if (currentReport.getNrc() == null || currentReport.getNrc().isBlank()) {
+        } else if (currentReport.getNrc() == null || currentReport.getNrc().isBlank()) {
             guiGenerateMonthlyReport.showError("No se pudo determinar el NRC de la práctica. Verifique que el estudiante tenga una práctica registrada.");
-            return;
-        }
-
-        try {
-            String observations = guiGenerateMonthlyReport.getObservations();
-            currentReport.setObservations(observations);
-
-            if (currentReport.getReportId() == 0) {
-                boolean created = reportDAO.createPartialReport(currentReport);
-                if (created) {
-                    guiGenerateMonthlyReport.showSuccess("Reporte guardado en la base de datos exitosamente.");
-                } else {
-                    guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos.");
+        } else {
+            try {
+                guiGenerateMonthlyReport.commitTableEdits();
+                syncActivityObservationsFromTable();
+                if (validateObservations()) {
+                    if (currentReport.getReportId() == 0) {
+                        boolean created = reportDAO.createPartialReport(currentReport);
+                        if (created) {
+                            guiGenerateMonthlyReport.showSuccess("Reporte guardado en la base de datos exitosamente.");
+                        } else {
+                            guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos.");
+                        }
+                    } else {
+                        boolean updatedReport = reportDAO.setObservations(currentReport.getReportId(), currentReport.getObservations());
+                        boolean updatedActivities = reportDAO.updateActivityObservations(currentReport.getReportId(), currentReport.getActivityProgressList());
+                        if (updatedReport || updatedActivities) {
+                            guiGenerateMonthlyReport.showSuccess("Observaciones guardadas correctamente.");
+                        } else {
+                            guiGenerateMonthlyReport.showError("No se pudo actualizar las observaciones.");
+                        }
+                    }
                 }
-            } else {
-                boolean updated = reportDAO.setObservations(currentReport.getReportId(), observations);
-                if (updated) {
-                    guiGenerateMonthlyReport.showSuccess("Observaciones guardadas correctamente.");
-                } else {
-                    guiGenerateMonthlyReport.showError("No se pudo actualizar las observaciones.");
-                }
+            } catch (DataOperationException e) {
+                guiGenerateMonthlyReport.showError("Error al guardar el reporte");
             }
-        } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al guardar el reporte", e);
-            guiGenerateMonthlyReport.showError("Error al guardar el reporte: " + e.getMessage());
         }
+    }
+
+    private void handleCancel() {
+        guiGenerateMonthlyReport.closeWindow();
+    }
+
+    private boolean validateObservations() {
+        boolean validated = true;
+        List<String> errors = new ArrayList<>();
+        if (currentReport != null && currentReport.getActivityProgressList() != null) {
+            int activityIndex = 1;
+            for (ReportActivityProgress activityProgress : currentReport.getActivityProgressList()) {
+                GUIUtils.validateShortText(activityProgress.getObservations(), "Observaciones de la actividad " + activityIndex, errors);
+                activityIndex++;
+            }
+        }
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
+        }
+        return validated;
     }
 
     public void handleExportPDF() {
@@ -237,43 +281,58 @@ public class ControllerGenerateMonthlyReport {
             guiGenerateMonthlyReport.showError("No hay actividades con avance para exportar.");
         } else {
             try {
-                String observations = guiGenerateMonthlyReport.getObservations();
-                currentReport.setObservations(observations);
-                if (currentReport.getReportId() == 0) {
-                    boolean created = reportDAO.createPartialReport(currentReport);
-                    if (!created) {
-                        guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos antes de exportar.");
-                    }
-                } else {
-                    reportDAO.setObservations(currentReport.getReportId(), observations);
-                }
-                DirectoryChooser dirChooser = new DirectoryChooser();
-                dirChooser.setTitle("Selecciona dónde guardar el reporte");
-                File selectedDir = dirChooser.showDialog(stage);
-                if (selectedDir != null) {
-                    String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis());
-                    String fileName = String.format("ReporteMensual_%s_%s.pdf", student.getEnrollment(), timestamp);
-                    String outputPath = new File(selectedDir, fileName).getAbsolutePath();
-                    MonthlyReportGenerator generator = new MonthlyReportGenerator();
-                    boolean generated = generator.generate(buildParameters(currentReport), outputPath);
-                    if (generated) {
-                        guiGenerateMonthlyReport.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
+                guiGenerateMonthlyReport.commitTableEdits();
+                syncActivityObservationsFromTable();
+                if (validateObservations()) {
+                    if (currentReport.getReportId() == 0) {
+                        boolean created = reportDAO.createPartialReport(currentReport);
+                        if (!created) {
+                            guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos antes de exportar.");
+                        }
                     } else {
-                        guiGenerateMonthlyReport.showError("Error al generar el PDF del reporte.");
+                        reportDAO.setObservations(currentReport.getReportId(), currentReport.getObservations());
+                        reportDAO.updateActivityObservations(currentReport.getReportId(), currentReport.getActivityProgressList());
+                    }
+                    DirectoryChooser directoryChooser = new DirectoryChooser();
+                    directoryChooser.setTitle("Selecciona dónde guardar el reporte");
+                    File selectedDirectory = directoryChooser.showDialog(stage);
+                    if (selectedDirectory != null) {
+                        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis());
+                        String fileName = String.format("ReporteMensual_%s_%s.pdf", student.getEnrollment(), timestamp);
+                        String outputPath = new File(selectedDirectory, fileName).getAbsolutePath();
+                        MonthlyReportGenerator monthlyReportGenerator = new MonthlyReportGenerator();
+                        boolean generated = monthlyReportGenerator.generate(buildParameters(currentReport), outputPath);
+                        if (generated) {
+                            guiGenerateMonthlyReport.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
+                        } else {
+                            guiGenerateMonthlyReport.showError("Error al generar el PDF del reporte.");
+                        }
                     }
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al exportar el reporte", e);
-                guiGenerateMonthlyReport.showError("Error al exportar el reporte: " + e.getMessage());
+                guiGenerateMonthlyReport.showError("Error al exportar el reporte");
             }
         }
     }
 
     private Map<String, Object> buildParameters(Report report) {
         Map<String, Object> parameters = new HashMap<>();
-        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+        parameters.put("Period", getPeriod(report));
+        parameters.put("NoReport", report.getReportNumber());
+        parameters.put("Month", report.getMonth() != null ? report.getMonth() : "");
+        parameters.put("ReportedHours", String.valueOf(report.getWorkedHours()));
+        parameters.put("AcumulatedHours", String.valueOf(report.getAccumulatedHours()));
+        parameters.put("AlumnName", getStudentName(report));
+        parameters.put("ResponsibleName", getResponsibleName(report));
+        parameters.put("ProfessorName", getProfessorName(report));
+        fillWeeklyLogs(parameters, report);
+        return parameters;
+    }
+
+    private String getPeriod(Report report) {
         String period = "";
         try {
+            EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
             EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(report.getNrc());
             if (educationalExperience != null) {
                 period = educationalExperience.getPeriod();
@@ -281,45 +340,69 @@ public class ControllerGenerateMonthlyReport {
         } catch (DataOperationException e) {
             guiGenerateMonthlyReport.showError("Error al obtener los datos del periodo");
         }
-        parameters.put("Period", period);
-        parameters.put("NoReport", report.getReportNumber());
-        parameters.put("Month", report.getMonth() != null ? report.getMonth() : "");
-        parameters.put("ReportedHours", String.valueOf(report.getWorkedHours()));
-        parameters.put("AcumulatedHours", String.valueOf(report.getAccumulatedHours()));
-        String fullStudentName = "N/A";
-        String responsibleName = "N/A";
+        return period;
+    }
+
+    private String getProfessorName(Report report) {
         String professorName = "N/A";
+        try {
+            EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+            EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(report.getNrc());
+            if (educationalExperience != null && educationalExperience.getProfessor() != null) {
+                professorName = educationalExperience.getProfessor().getName();
+            }
+        } catch (DataOperationException e) {
+            guiGenerateMonthlyReport.showError("Error al obtener los datos del profesor");
+        }
+        return professorName;
+    }
+
+    private String getStudentName(Report report) {
+        String fullStudentName = "N/A";
         if (report.getStudent() != null) {
-            fullStudentName = report.getStudent().getName() + " " + report.getStudent().getLastName();
-            if (report.getStudent().getAssignedProject() != null && report.getStudent().getAssignedProject().getProjectManager() != null) {
-                responsibleName = report.getStudent().getAssignedProject().getProjectManager().getName();
-                professorName = responsibleName;
+            Student student = report.getStudent();
+            fullStudentName = student.getName() + " " + student.getLastName();
+        }
+        return fullStudentName;
+    }
+
+    private String getResponsibleName(Report report) {
+        String responsibleName = "N/A";
+        if (report.getStudent() != null) {
+            Project project = report.getStudent().getAssignedProject();
+            if (project != null && project.getProjectManager() != null) {
+                responsibleName = project.getProjectManager().getName();
             }
         }
-        parameters.put("\tAlumnName", fullStudentName);
-        parameters.put("ResponsibleName", responsibleName);
-        parameters.put("ProfessorName", professorName);
+        return responsibleName;
+    }
+
+    private void fillWeeklyLogs(Map<String, Object> parameters, Report report) {
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
+        Map<WeeklyLog, String> observationsMap = new HashMap<>();
         if (report.getActivityProgressList() != null) {
-            for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
-                if (activityProgress.getWeeklyProgressList() != null) {
-                    weeklyLogs.addAll(activityProgress.getWeeklyProgressList());
+            for (ReportActivityProgress progress : report.getActivityProgressList()) {
+                String observations = progress.getObservations() != null ? progress.getObservations() : "";
+                if (progress.getWeeklyProgressList() != null) {
+                    for (WeeklyLog weeklyLog : progress.getWeeklyProgressList()) {
+                        weeklyLogs.add(weeklyLog);
+                        observationsMap.put(weeklyLog, observations);
+                    }
                 }
             }
         }
         for (int i = 0; i < 7; i++) {
             String index = String.valueOf(i + 1);
             if (i < weeklyLogs.size()) {
-                WeeklyLog log = weeklyLogs.get(i);
-                parameters.put("Period" + index, "Semana " + log.getWeek());
-                parameters.put("\tActivity" + index, log.getActivity() != null ? log.getActivity().getName() : "");
-                parameters.put("Observaciones" + index, report.getObservations() != null ? report.getObservations() : "");
+                WeeklyLog weeklyLog = weeklyLogs.get(i);
+                parameters.put("Period" + index, "Semana " + weeklyLog.getWeek());
+                parameters.put("Activity" + index, weeklyLog.getActivity() != null ? weeklyLog.getActivity().getName() : "");
+                parameters.put("Observaciones" + index, observationsMap.getOrDefault(weeklyLog, ""));
             } else {
                 parameters.put("Period" + index, "");
-                parameters.put("\tActivity" + index, "");
+                parameters.put("Activity" + index, "");
                 parameters.put("Observaciones" + index, "");
             }
         }
-        return parameters;
-    }
+}
 }
