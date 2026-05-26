@@ -28,6 +28,7 @@ import mx.fei.gui.utils.MonthlyReportGenerator;
 import mx.fei.gui.utils.GUIUtils;
 
 import java.io.File;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -325,6 +326,11 @@ public class ControllerGenerateMonthlyReport {
         parameters.put("AlumnName", getStudentName(report));
         parameters.put("ResponsibleName", getResponsibleName(report));
         parameters.put("ProfessorName", getProfessorName(report));
+        URL logoResource = getClass().getResource("/images/MonthlyReport.png");
+        if (logoResource == null) {
+            logger.log(Level.WARNING, "No se encontró el recurso del logo en classpath: /images/MonthlyReport.png");
+        }
+        parameters.put("Logo", logoResource);
         fillWeeklyLogs(parameters, report);
         return parameters;
     }

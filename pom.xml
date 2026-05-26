@@ -75,6 +75,7 @@
                     <include>**/*.properties</include>
                     <include>countries_cities.json</include>
                     <include>templates/*.jasper</include>
+                    <include>images/**</include>
                 </includes>
             </resource>
         </resources>

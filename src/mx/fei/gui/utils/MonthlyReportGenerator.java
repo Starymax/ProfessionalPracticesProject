@@ -22,13 +22,13 @@ public class MonthlyReportGenerator {
         boolean result = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
-                logger.log(Level.SEVERE, "No se encontró la plantilla en el classpath: {0}", TEMPLATE_PATH);
+                logger.log(Level.SEVERE, "No se encontró la plantilla");
             }
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
             result = true;
-        } catch (Exception exception) {
-            logger.log(Level.SEVERE, "Error crítico al rellenar o exportar el reporte mensual", exception);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error crítico al rellenar o exportar el reporte mensual", e);
         }
         return result;
     }
