@@ -41,7 +41,7 @@ public class GUIStudentMenu extends Application {
             VBox infoPanel = new VBox(12, welcomeRow, projectRow);
 
             buttonSelectProjects = buildMenuButton("Seleccionar Proyectos");
-            buttonReports = buildMenuButton("Gestión de Reportes");
+            buttonReports = buildMenuButton("Generar Reportes");
             buttonRegisterAdvance = buildMenuButton("Registro de Avances");
             buttonDocuments = buildMenuButton("Subir Documentos");
 
