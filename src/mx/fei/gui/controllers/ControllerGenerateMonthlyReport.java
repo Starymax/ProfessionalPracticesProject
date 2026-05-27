@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 public class ControllerGenerateMonthlyReport {
 
     private static final Logger logger = Logger.getLogger(ControllerGenerateMonthlyReport.class.getName());
-    private final GUIGenerateMonthlyReport guiGenerateMonthlyReport;
+    private final GUIGenerateMonthlyReport monthlyReportView;
     private final Stage stage;
     private final ReportDAO reportDAO;
     private final ActivityDAO activityDAO;
@@ -53,8 +53,8 @@ public class ControllerGenerateMonthlyReport {
     private final Student student;
     private Report currentReport;
 
-    public ControllerGenerateMonthlyReport(GUIGenerateMonthlyReport guiGenerateMonthlyReport, Stage stage, Student student) {
-        this.guiGenerateMonthlyReport = guiGenerateMonthlyReport;
+    public ControllerGenerateMonthlyReport(GUIGenerateMonthlyReport monthlyReportView, Stage stage, Student student) {
+        this.monthlyReportView = monthlyReportView;
         this.stage = stage;
         this.reportDAO = new ReportDAO();
         this.activityDAO = new ActivityDAO();
@@ -66,17 +66,17 @@ public class ControllerGenerateMonthlyReport {
 
     private void initialize() {
         if (student == null) {
-            guiGenerateMonthlyReport.showError("No hay estudiante seleccionado para generar el reporte.");
+            monthlyReportView.showError("No hay estudiante seleccionado para generar el reporte.");
         } else {
-            guiGenerateMonthlyReport.setStudentInfo(student.getName() + " " + student.getLastName(), student.getEnrollment(), student.getEmail());
+            monthlyReportView.setStudentInfo(student.getName() + " " + student.getLastName(), student.getEnrollment(), student.getEmail());
             if (student.getAssignedProject() != null) {
                 String projectName = student.getAssignedProject().getNameProject();
                 String enterpriseName = student.getAssignedProject().getEnterprise() != null ? student.getAssignedProject().getEnterprise().getName() : "-";
                 String professorName = student.getAssignedProject().getProjectManager() != null ? student.getAssignedProject().getProjectManager().getName() : "-";
-                guiGenerateMonthlyReport.setProjectInfo(projectName, enterpriseName, professorName);
+                monthlyReportView.setProjectInfo(projectName, enterpriseName, professorName);
             } else {
-                guiGenerateMonthlyReport.setProjectInfo("No asignado", "-", "-");
-                guiGenerateMonthlyReport.showError("El estudiante no tiene proyecto asignado.");
+                monthlyReportView.setProjectInfo("No asignado", "-", "-");
+                monthlyReportView.showError("El estudiante no tiene proyecto asignado.");
             }
         }
         loadStudentActivitiesWithProgress();
@@ -86,7 +86,6 @@ public class ControllerGenerateMonthlyReport {
         Button sourceButton = (Button) event.getSource();
         String buttonId = sourceButton.getId();
         switch (buttonId) {
-            case "buttonSave" -> handleSave();
             case "buttonExportPdf" -> handleExportPDF();
             case "buttonCancel" -> handleCancel();
         }
@@ -95,7 +94,7 @@ public class ControllerGenerateMonthlyReport {
     private void loadStudentActivitiesWithProgress() {
         try {
             if (student.getAssignedProject() == null) {
-                guiGenerateMonthlyReport.setActivities(FXCollections.observableArrayList());
+                monthlyReportView.setActivities(FXCollections.observableArrayList());
             } else {
                 List<Activity> activities = activityDAO.getActivitiesByProjectId(student.getAssignedProject().getProjectId());
                 List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(student.getUserId());
@@ -112,11 +111,11 @@ public class ControllerGenerateMonthlyReport {
                     }
                 }
                 currentReport = buildReport(reportActivityProgressList);
-                guiGenerateMonthlyReport.setActivities(activityRows);
+                monthlyReportView.setActivities(activityRows);
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error crítico al procesar y cargar las actividades con progreso del estudiante", e);
-            guiGenerateMonthlyReport.showError("Error al cargar las actividades con progreso");
+            logger.log(Level.SEVERE, "Error al procesar y cargar las actividades con progreso del estudiante", e);
+            monthlyReportView.showError("Error al cargar las actividades con progreso");
         }
     }
 
@@ -212,7 +211,7 @@ public class ControllerGenerateMonthlyReport {
 
     private void syncActivityObservationsFromTable() {
         if (currentReport != null && currentReport.getActivityProgressList() != null) {
-            ObservableList<ActivityRow> activityRows = guiGenerateMonthlyReport.getActivityRows();
+            ObservableList<ActivityRow> activityRows = monthlyReportView.getActivityRows();
             if (activityRows != null) {
                 for (ActivityRow activityRow : activityRows) {
                     if (activityRow.getActivityProgress() != null) {
@@ -223,41 +222,8 @@ public class ControllerGenerateMonthlyReport {
         }
     }
 
-    public void handleSave() {
-        if (currentReport == null || currentReport.getActivityProgressList() == null || currentReport.getActivityProgressList().isEmpty()) {
-            guiGenerateMonthlyReport.showError("No hay actividades con avance para guardar.");
-        } else if (currentReport.getNrc() == null || currentReport.getNrc().isBlank()) {
-            guiGenerateMonthlyReport.showError("No se pudo determinar el NRC de la práctica. Verifique que el estudiante tenga una práctica registrada.");
-        } else {
-            try {
-                guiGenerateMonthlyReport.commitTableEdits();
-                syncActivityObservationsFromTable();
-                if (validateObservations()) {
-                    if (currentReport.getReportId() == 0) {
-                        boolean created = reportDAO.createMonthlyReport(currentReport);
-                        if (created) {
-                            guiGenerateMonthlyReport.showSuccess("Reporte guardado en la base de datos exitosamente.");
-                        } else {
-                            guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos.");
-                        }
-                    } else {
-                        boolean updatedReport = reportDAO.setObservations(currentReport.getReportId(), currentReport.getObservations());
-                        boolean updatedActivities = reportDAO.updateActivityObservations(currentReport.getReportId(), currentReport.getActivityProgressList());
-                        if (updatedReport || updatedActivities) {
-                            guiGenerateMonthlyReport.showSuccess("Observaciones guardadas correctamente.");
-                        } else {
-                            guiGenerateMonthlyReport.showError("No se pudo actualizar las observaciones.");
-                        }
-                    }
-                }
-            } catch (DataOperationException e) {
-                guiGenerateMonthlyReport.showError("Error al guardar el reporte");
-            }
-        }
-    }
-
     private void handleCancel() {
-        guiGenerateMonthlyReport.closeWindow();
+        monthlyReportView.closeWindow();
     }
 
     private boolean validateObservations() {
@@ -279,16 +245,16 @@ public class ControllerGenerateMonthlyReport {
 
     public void handleExportPDF() {
         if (currentReport == null || currentReport.getActivityProgressList() == null || currentReport.getActivityProgressList().isEmpty()) {
-            guiGenerateMonthlyReport.showError("No hay actividades con avance para exportar.");
+            monthlyReportView.showError("No hay actividades con avance para exportar.");
         } else {
             try {
-                guiGenerateMonthlyReport.commitTableEdits();
+                monthlyReportView.commitTableEdits();
                 syncActivityObservationsFromTable();
                 if (validateObservations()) {
                     if (currentReport.getReportId() == 0) {
                         boolean created = reportDAO.createMonthlyReport(currentReport);
                         if (!created) {
-                            guiGenerateMonthlyReport.showError("No se pudo guardar el reporte en la base de datos antes de exportar.");
+                            monthlyReportView.showError("No se pudo guardar el reporte en la base de datos antes de exportar.");
                         }
                     } else {
                         reportDAO.setObservations(currentReport.getReportId(), currentReport.getObservations());
@@ -304,14 +270,14 @@ public class ControllerGenerateMonthlyReport {
                         MonthlyReportGenerator monthlyReportGenerator = new MonthlyReportGenerator();
                         boolean generated = monthlyReportGenerator.generate(buildParameters(currentReport), outputPath);
                         if (generated) {
-                            guiGenerateMonthlyReport.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
+                            monthlyReportView.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
                         } else {
-                            guiGenerateMonthlyReport.showError("Error al generar el PDF del reporte.");
+                            monthlyReportView.showError("Error al generar el PDF del reporte.");
                         }
                     }
                 }
             } catch (DataOperationException e) {
-                guiGenerateMonthlyReport.showError("Error al exportar el reporte");
+                monthlyReportView.showError("Error al exportar el reporte");
             }
         }
     }
@@ -344,7 +310,7 @@ public class ControllerGenerateMonthlyReport {
                 period = educationalExperience.getPeriod();
             }
         } catch (DataOperationException e) {
-            guiGenerateMonthlyReport.showError("Error al obtener los datos del periodo");
+            monthlyReportView.showError("Error al obtener los datos del periodo");
         }
         return period;
     }
@@ -358,7 +324,7 @@ public class ControllerGenerateMonthlyReport {
                 professorName = educationalExperience.getProfessor().getName();
             }
         } catch (DataOperationException e) {
-            guiGenerateMonthlyReport.showError("Error al obtener los datos del profesor");
+            monthlyReportView.showError("Error al obtener los datos del profesor");
         }
         return professorName;
     }

@@ -35,7 +35,6 @@ public class GUIGenerateMonthlyReport extends Application {
     private Label labelEnterprise;
     private Label labelProfessor;
     private TableView<ActivityRow> tableActivities;
-    private Button buttonSave;
     private Button buttonExportPDF;
     private Button buttonCancel;
 
@@ -62,8 +61,11 @@ public class GUIGenerateMonthlyReport extends Application {
         HBox buttonRow = createButtonRow();
         VBox center = new VBox(10, studentSection, projectSection, activitiesSection, buttonRow);
         center.setPadding(new Insets(12));
+        ScrollPane scrollPane = new ScrollPane(center);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
         mainPane.setTop(header);
-        mainPane.setCenter(new ScrollPane(center));
+        mainPane.setCenter(scrollPane);
         Scene scene = new Scene(mainPane, 825, 650);
         stage.setTitle("Generación Reporte Mensual");
         stage.setResizable(false);
@@ -119,8 +121,9 @@ public class GUIGenerateMonthlyReport extends Application {
         Label title = new Label("Actividades Realizadas");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         tableActivities = new TableView<>();
-        tableActivities.setPrefHeight(150);
+        tableActivities.setPrefHeight(240);
         tableActivities.setEditable(true);
+        tableActivities.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<ActivityRow, String> columnName = new TableColumn<>("Actividad");
         columnName.setCellValueFactory(parameter -> parameter.getValue().nameProperty());
         columnName.setPrefWidth(200);
@@ -154,10 +157,6 @@ public class GUIGenerateMonthlyReport extends Application {
     }
 
     private HBox createButtonRow() {
-        buttonSave = new Button("Guardar");
-        buttonSave.setPrefWidth(120);
-        buttonSave.setId("buttonSave");
-        buttonSave.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
         buttonExportPDF = new Button("Exportar PDF");
         buttonExportPDF.setPrefWidth(120);
         buttonExportPDF.setId("buttonExportPdf");
@@ -166,7 +165,7 @@ public class GUIGenerateMonthlyReport extends Application {
         buttonCancel.setPrefWidth(120);
         buttonCancel.setId("buttonCancel");
         buttonCancel.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
-        HBox buttonRow = new HBox(12, buttonSave, buttonExportPDF, buttonCancel);
+        HBox buttonRow = new HBox(12, buttonExportPDF, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
         buttonRow.setPadding(new Insets(18, 0, 0, 0));
         return buttonRow;

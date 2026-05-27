@@ -94,7 +94,7 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public List<Activity> getActivitiesByProjectId(int projectId) throws DataOperationException {
-        String query = "SELECT id_actividad FROM actividad WHERE id_proyecto = ?";
+        String query = "SELECT id_actividad FROM actividad WHERE id_proyecto = ? ORDER BY id_actividad ASC";
         List<Activity> activities = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {

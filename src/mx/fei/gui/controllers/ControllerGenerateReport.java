@@ -5,6 +5,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIGenerateMonthlyReport;
+import mx.fei.gui.views.GUIGenerateFinalReport;
 import mx.fei.gui.views.GUIGenerateReport;
 
 public class ControllerGenerateReport {
@@ -18,6 +19,9 @@ public class ControllerGenerateReport {
         switch(source.getText()) {
             case "Mensual" -> {
                 openMonthlyReport();
+            }
+            case "Final" -> {
+                openFinalReport();
             }
             case "Regresar" -> guiGenerateReport.closeWindow();
         }
@@ -34,6 +38,21 @@ public class ControllerGenerateReport {
                 generateMonthlyReport.start(stage);
             } catch (Exception e) {
                 guiGenerateReport.showError("No se pudo abrir la generación de reportes: " + e);
+            }
+        }
+    }
+
+    private void openFinalReport() {
+        if (guiGenerateReport.getPractice().getStudent() == null) {
+            guiGenerateReport.showError("No hay estudiante seleccionado.");
+        } else {
+            try {
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                GUIGenerateFinalReport generateFinalReport = new GUIGenerateFinalReport(guiGenerateReport.getPractice().getStudent(), guiGenerateReport.getPractice());
+                generateFinalReport.start(stage);
+            } catch (Exception e) {
+                guiGenerateReport.showError("No se pudo abrir la generación del reporte final: " + e);
             }
         }
     }
