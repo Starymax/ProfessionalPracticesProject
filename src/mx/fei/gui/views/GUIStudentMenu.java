@@ -34,6 +34,7 @@ public class GUIStudentMenu extends Application {
     private Stage stage;
     private Student student;
     private StackPane badgePane;
+    private ControllerStudentMenu controllerStudentMenu;
 
     @Override
     public void start(Stage stage) {
@@ -86,6 +87,7 @@ public class GUIStudentMenu extends Application {
         buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonNotifications.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonLogout.setOnAction(controllerStudentMenu::handleButtonsMenu);
+        this.controllerStudentMenu = controllerStudentMenu;
 
         BorderPane mainPanel = new BorderPane();
         mainPanel.setPadding(new Insets(32, 40, 32, 40));
@@ -147,6 +149,9 @@ public class GUIStudentMenu extends Application {
             labelProjectName.setText(project.getNameProject());
         } else {
             labelProjectName.setText("Proyecto sin asignar");
+        }
+        if (controllerStudentMenu != null) {
+            controllerStudentMenu.loadUnreadCount();
         }
     }
 

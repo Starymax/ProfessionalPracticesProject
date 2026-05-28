@@ -1,6 +1,8 @@
 package mx.fei.gui.controllers;
 
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUIAssignProject;
+import mx.fei.gui.views.GUISendNotificationOfAssign;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Project;
@@ -40,18 +42,35 @@ public class ControllerAssignProject {
             confirm.setContentText("¿Seguro que desea asignar este proyecto al estudiante?");
             Optional<ButtonType> result = confirm.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                try {
-                    updateAvailablePlaces(selected);
-                    StudentDAO studentDAO = new StudentDAO();
-                    studentDAO.assignProject(student, selected);
-                    guiAssignProject.showSuccess("Asignación realizada exitosamente.");
-                    guiAssignProject.getStage().close();
-                } catch (DataOperationException e) {
-                    guiAssignProject.showError(e.getMessage());
+                GUISendNotificationOfAssign sendNotification = new GUISendNotificationOfAssign(guiAssignProject.getStage(), student, selected);
+                sendNotification.showAndWait();
+                if (sendNotification.wasSent()) {
+                    if (student != null) {
+                        try {
+                            StudentDAO studentDAO = new StudentDAO();
+                            studentDAO.assignProject(student, selected);
+                            updateAvailablePlaces(selected);
+                            guiAssignProject.showSuccess("Asignación realizada exitosamente.");
+                            guiAssignProject.getStage().close();
+                        } catch (DataOperationException e) {
+                            guiAssignProject.showError("Error al asignar este proyecto al estudiante: " + e.getMessage());
+                        }
+                    }
                 }
             }
         } else {
             guiAssignProject.showError("Proyecto lleno, seleccione otro.");
+        }
+    }
+
+    private void updateAvailablePlaces(Project project) {
+        try {
+            ProjectDAO projectDAO = new ProjectDAO();
+            int availablePlaces = project.getAvailablePlaces() - 1;
+            project.setAvailablePlaces(availablePlaces);
+            projectDAO.modifyProject(project);
+        } catch (DataOperationException e) {
+            GUIUtils.showError(e.getMessage());
         }
     }
 
@@ -63,17 +82,6 @@ public class ControllerAssignProject {
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             guiAssignProject.getStage().close();
-        }
-    }
-
-    private void updateAvailablePlaces(Project project) {
-        try {
-            ProjectDAO projectDAO = new ProjectDAO();
-            int availablePlaces = project.getAvailablePlaces() - 1;
-            project.setAvailablePlaces(availablePlaces);
-            projectDAO.modifyProject(project);
-        } catch (DataOperationException e) {
-            guiAssignProject.showError(e.getMessage());
         }
     }
 }

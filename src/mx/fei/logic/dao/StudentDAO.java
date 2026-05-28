@@ -300,12 +300,6 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
             preparedStatement.setString(3, practice.getEducationalExperience().getPeriod());
             assigned = preparedStatement.executeUpdate() > 0;
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            if (assigned) {
-                PracticeDAO practiceDAO = new PracticeDAO();
-                String period = practiceDAO.getCurrentPeriod();
-                practiceDAO.createPractice(practice);
-            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al asignar una experiencia educativa",e);
             throw new DataOperationException("Error al asignar la experiencia educativa");

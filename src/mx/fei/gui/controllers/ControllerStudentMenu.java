@@ -29,7 +29,23 @@ public class ControllerStudentMenu {
     public ControllerStudentMenu(GUIStudentMenu guiStudentMenu) {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
-        loadUnreadCount();
+    }
+
+    public void loadUnreadCount() {
+        try {
+            if (guiStudentMenu.getStudent() == null) {
+                guiStudentMenu.updateUnreadCount(0);
+                return;
+            }
+            int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
+            guiStudentMenu.updateUnreadCount(unread);
+        } catch (DataOperationException e) {
+            logger.log(Level.WARNING, "Error al cargar notificaciones no leídas", e);
+            guiStudentMenu.updateUnreadCount(0);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error inesperado al cargar notificaciones no leídas", e);
+            guiStudentMenu.updateUnreadCount(0);
+        }
     }
 
     public void handleButtonsMenu(ActionEvent event) {
@@ -106,23 +122,6 @@ public class ControllerStudentMenu {
             newStage.setOnHidden(e -> loadUnreadCount());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error al abrir notificaciones", e);
-        }
-    }
-
-    private void loadUnreadCount() {
-        try {
-            if (guiStudentMenu.getStudent() == null) {
-                guiStudentMenu.updateUnreadCount(0);
-                return;
-            }
-            int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
-            guiStudentMenu.updateUnreadCount(unread);
-        } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "Error al cargar notificaciones no leídas", e);
-            guiStudentMenu.updateUnreadCount(0);
-        } catch (Exception e) {
-            logger.log(Level.WARNING, "Error inesperado al cargar notificaciones no leídas", e);
-            guiStudentMenu.updateUnreadCount(0);
         }
     }
 
