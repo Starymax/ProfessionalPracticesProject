@@ -15,6 +15,8 @@ public class WeeklyLog {
         this.activity = activity;
     }
 
+    public WeeklyLog() {}
+
     public int getWeeklyLogId() {
         return id;
     }
