@@ -50,14 +50,12 @@ public class GUIStudentMenu extends Application {
 
         buttonSelectProjects = buildMenuButton("Seleccionar Proyectos");
         buttonGenerateDocuments = buildMenuButton("Generar Documentos");
-            buttonReports = buildMenuButton("Generar Reportes");
-            buttonRegisterAdvance = buildMenuButton("Registro de Avances");
-            buttonDocuments = buildMenuButton("Subir Documentos");
+        buttonReports = buildMenuButton("Generar Reportes");
+        buttonRegisterAdvance = buildMenuButton("Registro de Avances");
+        buttonDocuments = buildMenuButton("Subir Documentos");
 
-        VBox centerButtons = new VBox(20, buttonSelectProjects, buttonReports, buttonRegisterAdvance, buttonDocuments);
+        VBox centerButtons = new VBox(20, buttonSelectProjects, buttonGenerateDocuments, buttonReports, buttonRegisterAdvance, buttonDocuments);
         centerButtons.setAlignment(Pos.CENTER);
-            VBox centerButtons = new VBox(20, buttonSelectProjects, buttonGenerateDocuments, buttonReports, buttonRegisterAdvance, buttonDocuments);
-            centerButtons.setAlignment(Pos.CENTER);
 
         buttonNotifications = new Button("🔔 Notificaciones");
         buttonNotifications.setPrefHeight(40);
@@ -87,9 +85,9 @@ public class GUIStudentMenu extends Application {
         ControllerStudentMenu controllerStudentMenu = new ControllerStudentMenu(this);
         buttonSelectProjects.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonGenerateDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
-            buttonReports.setOnAction(controllerStudentMenu::handleButtonsMenu);
-            buttonRegisterAdvance.setOnAction(controllerStudentMenu::handleButtonsMenu);
-            buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
+        buttonReports.setOnAction(controllerStudentMenu::handleButtonsMenu);
+        buttonRegisterAdvance.setOnAction(controllerStudentMenu::handleButtonsMenu);
+        buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonNotifications.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonLogout.setOnAction(controllerStudentMenu::handleButtonsMenu);
         this.controllerStudentMenu = controllerStudentMenu;
@@ -192,12 +190,11 @@ public class GUIStudentMenu extends Application {
         return stage;
     }
 
-        public Button getButtonGenerateDocuments() {
+    public Button getButtonGenerateDocuments() {
         return buttonGenerateDocuments;
     }
 
     public static void main(String[] args) {
-            launch(args);
-        }
+        launch(args);
     }
 }
