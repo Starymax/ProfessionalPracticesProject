@@ -19,6 +19,9 @@ public class EducationalExperience {
         this.period = period;
     }
 
+    public EducationalExperience() {
+    }
+
     public String getNrc() {
         return nrc;
     }
