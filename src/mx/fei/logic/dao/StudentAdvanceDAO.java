@@ -25,8 +25,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             logger.log(Level.WARNING, "El avance del alumno es nulo");
             throw new IllegalArgumentException("El avance del alumno no puede ser nulo");
         }
-        String query = "INSERT INTO avance_alumno (horas_realizadas, id_registro, id_alumno) VALUES (?,?,?) " +
-                "ON DUPLICATE KEY UPDATE horas_realizadas = VALUES(horas_realizadas)";
+        String query = "INSERT INTO avance_alumno (horas_realizadas, id_registro, id_alumno) VALUES (?,?,?) ON DUPLICATE KEY UPDATE horas_realizadas = VALUES(horas_realizadas)";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setFloat(1, advance.getRealizedHours());
