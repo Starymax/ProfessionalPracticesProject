@@ -25,11 +25,30 @@ import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerLogin;
 import mx.fei.gui.utils.GUIUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 public class GUILogin extends Application {
     private TextField textFieldMail;
     private PasswordField textFieldPassword;
     private Button buttonLogin;
     private Button buttonCancel;
+
+    private static final Logger logger = Logger.getLogger(GUILogin.class.getName());
+
+    static {
+        try {
+            InputStream configLogger = GUILogin.class.getResourceAsStream("/logging.properties");
+            if (configLogger != null) {
+                LogManager.getLogManager().readConfiguration(configLogger);
+            }
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error cargando configuración de logging", e);
+        }
+    }
 
     @Override
     public void start(Stage stage) {

@@ -61,7 +61,8 @@ public class GUIGeneratePartialReport extends Application {
         header.setAlignment(Pos.CENTER_LEFT);
         controller = new ControllerGeneratePartialReport(this, stage, student);
         VBox content = new VBox(15);
-        content.getChildren().addAll(createGeneralSection(), createProjectSection(), createObjectiveMethodologySection(), createActivitiesSection(), createResultsSection(), createButtonRow());
+        HBox infoSection = new HBox(15, createGeneralSection(), createProjectSection(), createObjectiveMethodologySection());
+        content.getChildren().addAll(infoSection, createActivitiesSection(), createResultsSection(), createButtonRow());
         content.setPadding(new Insets(12));
         mainPane.setTop(header);
         mainPane.setCenter(new ScrollPane(content));
