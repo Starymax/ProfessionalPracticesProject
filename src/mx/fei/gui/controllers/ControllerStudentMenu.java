@@ -60,19 +60,15 @@ public class ControllerStudentMenu {
     }
 
     private void openReports() {
-        if (guiStudentMenu.getStudent() == null) {
-            guiStudentMenu.showError("No hay estudiante seleccionado.");
-        } else {
-            try {
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                PracticeDAO practiceDAO = new PracticeDAO();
-                Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
-                GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
-                guiGenerateReport.start(stage);
-            } catch (Exception e) {
-                guiStudentMenu.showError("No se pudo abrir la generación de reportes: " + e);
-            }
+        try {
+            PracticeDAO practiceDAO = new PracticeDAO();
+            Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
+            GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            guiGenerateReport.start(stage);
+        } catch (DataOperationException e) {
+            guiStudentMenu.showError(e.getMessage());
         }
     }
 
@@ -87,7 +83,6 @@ public class ControllerStudentMenu {
                 guiRegisterAdvance.start(stage);
             } catch (Exception e) {
                 guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }

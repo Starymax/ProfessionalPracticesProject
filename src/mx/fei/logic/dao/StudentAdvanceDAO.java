@@ -125,4 +125,23 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         }
         return updated;
     }
+
+    @Override
+    public List<StudentAdvance> getAdvancesByStudentAndWeeklyLog(int studentId, int weeklyLogId) throws DataOperationException {
+        List<StudentAdvance> advances = new ArrayList<>();
+        String query = "SELECT id_avance from avance_alumno WHERE id_alumno = ? AND id_registro = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, studentId);
+            preparedStatement.setInt(2, weeklyLogId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                advances.add(getAdvanceById(resultSet.getInt("id_avance")));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener los avances del alumno", e);
+            throw new DataOperationException("Error obteniendo los avances del alumno");
+        }
+        return advances;
+    }
 }
