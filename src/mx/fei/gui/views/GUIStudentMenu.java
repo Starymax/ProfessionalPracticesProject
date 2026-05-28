@@ -22,6 +22,7 @@ public class GUIStudentMenu extends Application {
         private Label labelStudentName;
         private Label labelProjectName;
         private Button buttonSelectProjects;
+        private Button buttonGenerateDocuments;
         private Button buttonReports;
         private Button buttonRegisterAdvance;
         private Button buttonDocuments;
@@ -41,11 +42,12 @@ public class GUIStudentMenu extends Application {
             VBox infoPanel = new VBox(12, welcomeRow, projectRow);
 
             buttonSelectProjects = buildMenuButton("Seleccionar Proyectos");
+            buttonGenerateDocuments = buildMenuButton("Generar Documentos");
             buttonReports = buildMenuButton("Generar Reportes");
             buttonRegisterAdvance = buildMenuButton("Registro de Avances");
             buttonDocuments = buildMenuButton("Subir Documentos");
 
-            VBox centerButtons = new VBox(20, buttonSelectProjects, buttonReports, buttonRegisterAdvance, buttonDocuments);
+            VBox centerButtons = new VBox(20, buttonSelectProjects, buttonGenerateDocuments, buttonReports, buttonRegisterAdvance, buttonDocuments);
             centerButtons.setAlignment(Pos.CENTER);
 
             buttonLogout = buildMenuButton("Cerrar Sesión");
@@ -56,6 +58,7 @@ public class GUIStudentMenu extends Application {
 
             ControllerStudentMenu controllerStudentMenu = new ControllerStudentMenu(this);
             buttonSelectProjects.setOnAction(controllerStudentMenu::handleButtonsMenu);
+            buttonGenerateDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
             buttonReports.setOnAction(controllerStudentMenu::handleButtonsMenu);
             buttonRegisterAdvance.setOnAction(controllerStudentMenu::handleButtonsMenu);
             buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
@@ -139,7 +142,11 @@ public class GUIStudentMenu extends Application {
             return stage;
         }
 
-        public static void main(String[] args) {
+        public Button getButtonGenerateDocuments() {
+        return buttonGenerateDocuments;
+    }
+
+    public static void main(String[] args) {
             launch(args);
         }
     }

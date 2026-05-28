@@ -2,7 +2,13 @@ package mx.fei.gui.controllers;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import mx.fei.gui.views.*;
+import mx.fei.gui.views.GUIStudentMenu;
+import mx.fei.gui.views.GUISelectProjects;
+import mx.fei.gui.views.GUIGenerateReport;
+import mx.fei.gui.views.GUIRegisterAdvance;
+import mx.fei.gui.views.GUIUploadDocuments;
+import mx.fei.gui.views.GUILogin;
+import mx.fei.gui.views.GUIGenerateDocuments;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -12,7 +18,6 @@ import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -20,10 +25,12 @@ public class ControllerStudentMenu {
 
     private final GUIStudentMenu guiStudentMenu;
     private final ProjectDAO projectDAO;
+    private final PracticeDAO practiceDAO;
 
     public ControllerStudentMenu(GUIStudentMenu guiStudentMenu) {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
+        practiceDAO = new PracticeDAO();
     }
 
     public void handleButtonsMenu(ActionEvent event) {
@@ -37,6 +44,8 @@ public class ControllerStudentMenu {
             openDocuments(guiStudentMenu.getStudent().getEnrollment());
         } else if (event.getSource() == guiStudentMenu.getButtonLogout()) {
             logout();
+        } else if (event.getSource() == guiStudentMenu.getButtonGenerateDocuments()) {
+            openGenerateDocuments();
         }
     }
 
@@ -105,6 +114,22 @@ public class ControllerStudentMenu {
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);
             guiStudentMenu.getStage().close();
+        }
+    }
+
+    private void openGenerateDocuments() {
+        try {
+            Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
+            if (practice == null) {
+                guiStudentMenu.showError("No tiene ninguna practica asignada, intentelo mas tarde.");
+            } else {
+                GUIGenerateDocuments guiGenerateDocuments = new GUIGenerateDocuments(practice);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiGenerateDocuments.start(stage);
+            }
+        } catch (DataOperationException e) {
+            guiStudentMenu.showError("Error al obtener la practica del estudia.");
         }
     }
 }
