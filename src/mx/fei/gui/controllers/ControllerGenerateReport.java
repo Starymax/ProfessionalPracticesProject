@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import mx.fei.gui.views.GUIGenerateFinalReport;
 import mx.fei.gui.views.GUIGenerateMonthlyReport;
 import mx.fei.gui.views.GUIGeneratePartialReport;
 import mx.fei.gui.views.GUIGenerateReport;
@@ -14,7 +15,7 @@ public class ControllerGenerateReport {
         this.guiGenerateReport = guiGenerateReport;
     }
 
-    public void handleReportOptions(ActionEvent event) {
+    public void handleMensualPartialFinalBackButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch(source.getText()) {
             case "Mensual" -> {
@@ -23,7 +24,12 @@ public class ControllerGenerateReport {
             case "Parcial" -> {
                 openPartialReport();
             }
-            case "Regresar" -> guiGenerateReport.closeWindow();
+            case "Final" -> {
+                openFinalReport();
+            }
+            case "Regresar" -> {
+                guiGenerateReport.closeWindow();
+            }
         }
     }
 
@@ -31,14 +37,10 @@ public class ControllerGenerateReport {
         if (guiGenerateReport.getPractice().getStudent() == null) {
             guiGenerateReport.showError("No hay estudiante seleccionado.");
         } else {
-            try {
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                GUIGenerateMonthlyReport generateMonthlyReport = new GUIGenerateMonthlyReport(guiGenerateReport.getPractice().getStudent());
-                generateMonthlyReport.start(stage);
-            } catch (Exception e) {
-                guiGenerateReport.showError("No se pudo abrir la generación de reportes: " + e);
-            }
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            GUIGenerateMonthlyReport generateMonthlyReport = new GUIGenerateMonthlyReport(guiGenerateReport.getPractice().getStudent());
+            generateMonthlyReport.start(stage);
         }
     }
 
@@ -46,14 +48,21 @@ public class ControllerGenerateReport {
         if (guiGenerateReport.getPractice().getStudent() == null) {
             guiGenerateReport.showError("No hay estudiante seleccionado.");
         } else {
-            try {
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                GUIGeneratePartialReport generatePartialReport = new GUIGeneratePartialReport(guiGenerateReport.getPractice().getStudent());
-                generatePartialReport.start(stage);
-            } catch (Exception e) {
-                guiGenerateReport.showError("No se pudo abrir la generación de reportes: " + e);
-            }
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            GUIGeneratePartialReport generatePartialReport = new GUIGeneratePartialReport(guiGenerateReport.getPractice().getStudent());
+            generatePartialReport.start(stage);
+        }
+    }
+
+    private void openFinalReport() {
+        if(guiGenerateReport.getPractice().getStudent() == null) {
+            guiGenerateReport.showError("No hay estudiante seleccionado.");
+        }else {
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            GUIGenerateFinalReport generateFinalReport = new GUIGenerateFinalReport(guiGenerateReport.getPractice().getStudent(), guiGenerateReport.getPractice());
+            generateFinalReport.start(stage);
         }
     }
 }

@@ -46,7 +46,7 @@ public class GUIGenerateReport extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("GUIGenrarReporte");
+        stage.setTitle("Generar Reporte");
         stage.setResizable(false);
         VBox formPanel = new VBox(20);
         formPanel.setPadding(new Insets(30, 40, 30, 40));
@@ -84,10 +84,10 @@ public class GUIGenerateReport extends Application {
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerGenerateReport controllerGenerateReport = new ControllerGenerateReport(this);
-        buttonPartial.setOnAction(controllerGenerateReport::handleReportOptions);
-        buttonMonthly.setOnAction(controllerGenerateReport::handleReportOptions);
-        buttonFinal.setOnAction(controllerGenerateReport::handleReportOptions);
-        buttonBack.setOnAction(controllerGenerateReport::handleReportOptions);
+        buttonPartial.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
+        buttonMonthly.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
+        buttonFinal.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
+        buttonBack.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
         Scene scene = new Scene(mainPanel, 700, 380);
         stage.setScene(scene);
         stage.show();

@@ -130,7 +130,7 @@ public class ControllerGenerateFinalReport {
                         totalWorked += workedHoursByLog.getOrDefault(weeklyLog.getWeeklyLogId(), 0f);
                     }
                     String advanceText = totalPlanned > 0 ? String.format("%.1f%%", (totalWorked / totalPlanned) * 100f) : "";
-                    String observationText = activity.getObservationsActivity() != null ? activity.getObservationsActivity() : "";
+                    String observationText = ""; // El alumno debe introducir sus propias observaciones de actividad
                     rows.add(new FinalReportRow(activity.getName(), advanceText, observationText, "", "", ""));
                 }
             } catch (DataOperationException e) {
@@ -188,8 +188,14 @@ public class ControllerGenerateFinalReport {
     }
 
     private void handleExportPDF() {
-        finalReportView.commitTableEdits();
-        syncFinalReportDataFromGui();
+        try {
+            finalReportView.commitTableEdits();
+            syncFinalReportDataFromGui();
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error al sincronizar los datos del reporte final", e);
+            finalReportView.showError("Error en la tabla de actividades. Verifica los datos y vuelve a intentarlo.");
+            return;
+        }
         if (validateFinalReport()) {
             try {
                 boolean canExport = true;

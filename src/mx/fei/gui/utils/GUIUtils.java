@@ -18,7 +18,7 @@ public class GUIUtils {
     public static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^\\d{6,}$");
 
     public static void validateNames(String value, String fieldName, List<String> errors) {
-        if (value.isEmpty()) {
+        if (value == null || value.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (value.trim().isEmpty()) {
             errors.add(fieldName + " no puede contener solo espacios.");
@@ -50,7 +50,7 @@ public class GUIUtils {
     }
 
     public static void validateShortText(String value, String fieldName, List<String> errors) {
-        if (value.isEmpty()) {
+        if (value == null || value.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (value.trim().isEmpty()) {
             errors.add(fieldName + " no puede contener solo espacios.");
@@ -64,7 +64,7 @@ public class GUIUtils {
     }
 
     public static void validateEmail(String email, List<String> errors) {
-        if (email.isEmpty()) {
+        if (email == null || email.isEmpty()) {
             errors.add("El campo de correo es obligatorio.");
         } else if (!EMAIL_PATTERN.matcher(email).matches()) {
             errors.add("El correo electrónico no tiene un formato válido (ejemplo: usuario@dominio.com).");

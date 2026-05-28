@@ -30,6 +30,9 @@ import mx.fei.logic.dto.FinalReportRow;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.gui.utils.GUIUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 public class GUIGenerateFinalReport extends Application {
 
@@ -220,26 +223,22 @@ public class GUIGenerateFinalReport extends Application {
 
         TableColumn<FinalReportRow, String> observationColumn = new TableColumn<>("Observación");
         observationColumn.setCellValueFactory(parameter -> parameter.getValue().observationProperty());
-        observationColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        observationColumn.setOnEditCommit(event -> event.getRowValue().setObservation(event.getNewValue()));
+        configureEditableColumn(observationColumn, (row, value) -> row.setObservation(value));
         observationColumn.setPrefWidth(220);
 
         TableColumn<FinalReportRow, String> productColumn = new TableColumn<>("Producto");
         productColumn.setCellValueFactory(parameter -> parameter.getValue().productProperty());
-        productColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        productColumn.setOnEditCommit(event -> event.getRowValue().setProduct(event.getNewValue()));
+        configureEditableColumn(productColumn, (row, value) -> row.setProduct(value));
         productColumn.setPrefWidth(180);
 
         TableColumn<FinalReportRow, String> advancepColumn = new TableColumn<>("Avance p.");
         advancepColumn.setCellValueFactory(parameter -> parameter.getValue().advancepProperty());
-        advancepColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        advancepColumn.setOnEditCommit(event -> event.getRowValue().setAdvancep(event.getNewValue()));
+        configureEditableColumn(advancepColumn, (row, value) -> row.setAdvancep(value));
         advancepColumn.setPrefWidth(140);
 
         TableColumn<FinalReportRow, String> observationpColumn = new TableColumn<>("Observación p.");
         observationpColumn.setCellValueFactory(parameter -> parameter.getValue().observationpProperty());
-        observationpColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        observationpColumn.setOnEditCommit(event -> event.getRowValue().setObservationp(event.getNewValue()));
+        configureEditableColumn(observationpColumn, (row, value) -> row.setObservationp(value));
         observationpColumn.setPrefWidth(200);
 
         tableActivities.getColumns().addAll(activityColumn, advanceColumn, observationColumn, productColumn, advancepColumn, observationpColumn);
@@ -258,6 +257,30 @@ public class GUIGenerateFinalReport extends Application {
         });
         section.getChildren().addAll(title, tableActivities);
         return section;
+    }
+
+    private void configureEditableColumn(TableColumn<FinalReportRow, String> column, BiConsumer<FinalReportRow, String> setter) {
+        String fieldName = column.getText();
+        column.setCellFactory(TextFieldTableCell.forTableColumn());
+        column.setOnEditCommit(event -> {
+            FinalReportRow row = event.getRowValue();
+            String oldValue = event.getOldValue() != null ? event.getOldValue() : "";
+            String newValue = event.getNewValue() != null ? event.getNewValue().trim() : "";
+            if (newValue.isBlank()) {
+                setter.accept(row, "");
+            } else {
+                List<String> errors = new ArrayList<>();
+                GUIUtils.validateShortText(newValue, fieldName, errors);
+                if (errors.isEmpty()) {
+                    setter.accept(row, newValue);
+                } else {
+                    GUIUtils.showErrors(errors);
+                    setter.accept(row, oldValue);
+                    tableActivities.refresh();
+                }
+            }
+        });
+        column.setEditable(true);
     }
 
     private HBox createButtonRow() {

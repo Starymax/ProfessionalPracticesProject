@@ -20,17 +20,38 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ControllerStudentMenu {
 
     private final GUIStudentMenu guiStudentMenu;
     private final ProjectDAO projectDAO;
     private final PracticeDAO practiceDAO;
+    private final NotificationDAO notificationDAO = new NotificationDAO();
+    private static final Logger logger = Logger.getLogger(ControllerStudentMenu.class.getName());
 
     public ControllerStudentMenu(GUIStudentMenu guiStudentMenu) {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
         practiceDAO = new PracticeDAO();
+    }
+
+    public void loadUnreadCount() {
+        try {
+            if (guiStudentMenu.getStudent() == null) {
+                guiStudentMenu.updateUnreadCount(0);
+                return;
+            }
+            int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
+            guiStudentMenu.updateUnreadCount(unread);
+        } catch (DataOperationException e) {
+            logger.log(Level.WARNING, "Error al cargar notificaciones no leídas", e);
+            guiStudentMenu.updateUnreadCount(0);
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Error inesperado al cargar notificaciones no leídas", e);
+            guiStudentMenu.updateUnreadCount(0);
+        }
     }
 
     public void handleButtonsMenu(ActionEvent event) {
@@ -46,6 +67,8 @@ public class ControllerStudentMenu {
             logout();
         } else if (event.getSource() == guiStudentMenu.getButtonGenerateDocuments()) {
             openGenerateDocuments();
+        } else if (event.getSource() == guiStudentMenu.getButtonNotifications()) {
+            openNotifications();
         }
     }
 
@@ -96,8 +119,22 @@ public class ControllerStudentMenu {
         }
     }
 
+    private void openNotifications() {
+        try {
+            GUINotifications guiNotifications = new GUINotifications();
+            Stage newStage = new Stage();
+            guiNotifications.start(newStage);
+            guiNotifications.setStudent(guiStudentMenu.getStudent());
+            ControllerNotifications controller = new ControllerNotifications(guiNotifications);
+            controller.loadNotifications();
+            newStage.setOnHidden(e -> loadUnreadCount());
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al abrir notificaciones", e);
+        }
+    }
+
     private void openDocuments(String enrollment) {
-        GUIUploadDocuments  guiUploadDocuments = new GUIUploadDocuments(enrollment);
+        GUIUploadDocuments guiUploadDocuments = new GUIUploadDocuments(enrollment);
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiUploadDocuments.start(stage);
