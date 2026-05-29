@@ -238,6 +238,10 @@ public class ControllerGeneratePartialReport {
                 params.put("activity" + i + "RealS" + w, "");
             }
         }
+        URL logoResource2 = getClass().getResource("/images/partialReport2.png");
+        params.put("logoPartial2", logoResource2);
+        String observations = guiGeneratePartialReport.getTextAreaObservations().getText();
+        params.put("observations", observations);
         return params;
     }
 

@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class PartialReportGenerator {
     private static final Logger logger = Logger.getLogger(PartialReportGenerator.class.getName());
-    private static final String TEMPLATE_PATH = "/templates/partialReport.jasper";
+    private static final String TEMPLATE_PATH = "/templates/partialReport2.jasper";
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
         boolean result = false;
