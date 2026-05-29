@@ -2,7 +2,6 @@ package mx.fei.gui.views;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -19,8 +18,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;

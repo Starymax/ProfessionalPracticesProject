@@ -18,6 +18,7 @@ import mx.fei.gui.controllers.ControllerRegisterAdvance;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.WeeklyLog;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +29,15 @@ public class GUIRegisterAdvance {
     private final Student student;
     private Stage stage;
     private ComboBox<String> comboWeeks;
+    private ComboBox<String> comboActivities;
     private Label labelPlanned;
     private Label labelCurrent;
     private TextField fieldRealized;
+
     private final Map<Integer, List<WeeklyLog>> weeklyLogsByWeek = new HashMap<>();
-    private ControllerRegisterAdvance controller;
+    private final Map<String, WeeklyLog> logByActivityName = new HashMap<>();
+
+    private ControllerRegisterAdvance controllerRegisterAdvance;
 
     public GUIRegisterAdvance(Student student) {
         this.student = student;
@@ -40,20 +45,29 @@ public class GUIRegisterAdvance {
 
     public void start(Stage stage) {
         this.stage = stage;
-        controller = new ControllerRegisterAdvance(this);
+        controllerRegisterAdvance = new ControllerRegisterAdvance(this);
 
-        BorderPane main = new BorderPane();
-        main.setPadding(new Insets(24));
+        BorderPane root = new BorderPane();
+        root.setPadding(new Insets(24));
 
         Label title = new Label("Avance de actividades:");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 22));
 
+        Label labelSemana = new Label("Semana:");
         comboWeeks = new ComboBox<>();
-        comboWeeks.setPrefWidth(220);
-        comboWeeks.setOnAction(e -> controller.handleWeekSelection());
+        comboWeeks.setPrefWidth(160);
+        comboWeeks.setOnAction(event -> controllerRegisterAdvance.handleWeekSelection());
 
-        HBox topRow = new HBox(12, comboWeeks);
-        topRow.setAlignment(Pos.CENTER_LEFT);
+        HBox rowWeeks = new HBox(10, labelSemana, comboWeeks);
+        rowWeeks.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelActividad = new Label("Actividad:");
+        comboActivities = new ComboBox<>();
+        comboActivities.setPrefWidth(220);
+        comboActivities.setOnAction(e -> controllerRegisterAdvance.handleActivitySelection());
+
+        HBox rowActivities = new HBox(10, labelActividad, comboActivities);
+        rowActivities.setAlignment(Pos.CENTER_LEFT);
 
         labelPlanned = new Label("Horas planeadas: 0");
         labelPlanned.setFont(Font.font(15));
@@ -70,35 +84,35 @@ public class GUIRegisterAdvance {
             }
         });
 
-        HBox infoBox = new HBox(12, labelPlanned, labelCurrent, labelNew, fieldRealized);
-        infoBox.setAlignment(Pos.CENTER_LEFT);
+        HBox rowInfo = new HBox(12, labelPlanned, labelCurrent, labelNew, fieldRealized);
+        rowInfo.setAlignment(Pos.CENTER_LEFT);
 
         Button buttonSave = new Button("Guardar");
         buttonSave.setPrefWidth(120);
-        buttonSave.setOnAction(controller::handleSaveButton);
+        buttonSave.setOnAction(controllerRegisterAdvance::handleSaveButton);
 
         Button buttonBack = new Button("Regresar");
         buttonBack.setPrefWidth(120);
-        buttonBack.setOnAction(controller::handleBackButton);
+        buttonBack.setOnAction(controllerRegisterAdvance::handleBackButton);
 
         HBox buttons = new HBox(12, buttonSave, buttonBack);
         buttons.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox center = new VBox(18, title, topRow, infoBox, buttons);
+        VBox center = new VBox(18, title, rowWeeks, rowActivities, rowInfo, buttons);
         center.setPadding(new Insets(12));
-        main.setCenter(center);
+        root.setCenter(center);
 
-        Scene scene = new Scene(main, 640, 320);
+        Scene scene = new Scene(root, 700, 360);
         stage.setTitle("Registro de Avances");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
 
-        controller.loadWeeks();
+        controllerRegisterAdvance.loadWeeks();
     }
 
-    public void addWeeklyLog(int week, WeeklyLog log) {
-        weeklyLogsByWeek.computeIfAbsent(week, k -> new ArrayList<>()).add(log);
+    public void addWeeklyLog(int week, WeeklyLog weeklyLog) {
+        weeklyLogsByWeek.computeIfAbsent(week, i -> new ArrayList<>()).add(weeklyLog);
     }
 
     public void clearWeeklyLogs() {
@@ -112,7 +126,7 @@ public class GUIRegisterAdvance {
     public void selectFirstWeek() {
         if (!comboWeeks.getItems().isEmpty()) {
             comboWeeks.getSelectionModel().selectFirst();
-            controller.handleWeekSelection();
+            controllerRegisterAdvance.handleWeekSelection();
         }
     }
 
@@ -122,6 +136,34 @@ public class GUIRegisterAdvance {
 
     public List<WeeklyLog> getWeeklyLogsForWeek(int week) {
         return weeklyLogsByWeek.getOrDefault(week, new ArrayList<>());
+    }
+
+    public void setActivityOptions(List<WeeklyLog> weeklyLogs) {
+        logByActivityName.clear();
+        List<String> names = new ArrayList<>();
+        for (WeeklyLog weeklyLog : weeklyLogs) {
+            String name = weeklyLog.getActivity().getName();
+            names.add(name);
+            logByActivityName.put(name, weeklyLog);
+        }
+        comboActivities.setItems(FXCollections.observableArrayList(names));
+        if (!names.isEmpty()) {
+            comboActivities.getSelectionModel().selectFirst();
+            controllerRegisterAdvance.handleActivitySelection();
+        }
+    }
+
+    public WeeklyLog getSelectedWeeklyLog() {
+        WeeklyLog weeklyLog = null;
+        String selected = comboActivities.getSelectionModel().getSelectedItem();
+        if (selected != null && !selected.isEmpty()) {
+            weeklyLog = logByActivityName.get(selected);
+        }
+        return weeklyLog;
+    }
+
+    public String getSelectedActivity() {
+        return comboActivities.getSelectionModel().getSelectedItem();
     }
 
     public TextField getFieldRealized() {

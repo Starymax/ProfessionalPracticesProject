@@ -62,15 +62,13 @@ public class ActivityDAOTest {
 
     @Test
     void insertActivity_ActivityNull_ThrowsDataOperationException() {
-        DataOperationException exception = assertThrows(DataOperationException.class,
-                () -> activityDAO.insertActivity(null, mock(Project.class), new ArrayList<>()));
+        DataOperationException exception = assertThrows(DataOperationException.class, () -> activityDAO.insertActivity(null, mock(Project.class), new ArrayList<>()));
         assertEquals("La actividad no puede estar vacía", exception.getMessage());
     }
 
     @Test
     void insertActivity_ProjectNull_ThrowsDataOperationException() {
-        DataOperationException exception = assertThrows(DataOperationException.class,
-                () -> activityDAO.insertActivity(mock(Activity.class), null, new ArrayList<>()));
+        DataOperationException exception = assertThrows(DataOperationException.class, () -> activityDAO.insertActivity(mock(Activity.class), null, new ArrayList<>()));
         assertEquals("Error al guardar el proyecto", exception.getMessage());
     }
 
@@ -152,8 +150,7 @@ public class ActivityDAOTest {
         when(log.getPlannedHours()).thenReturn(5);
         List<WeeklyLog> logs = new ArrayList<>();
         logs.add(log);
-        assertThrows(DataOperationException.class,
-                () -> activityDAO.insertWeeklyLogs(connection, logs, 5));
+        assertThrows(DataOperationException.class, () -> activityDAO.insertWeeklyLogs(connection, logs, 5));
     }
 
     @Test
@@ -164,8 +161,7 @@ public class ActivityDAOTest {
         when(resultSet.getString("observaciones_actividad")).thenReturn("Observaciones");
         when(resultSet.getInt("id_proyecto")).thenReturn(2);
         Project mockProject = mock(Project.class);
-        try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
-                (mock, context) -> when(mock.getProjectById(2)).thenReturn(mockProject))) {
+        try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class, (mock, context) -> when(mock.getProjectById(2)).thenReturn(mockProject))) {
             Activity result = activityDAO.getActivityById(1);
             assertNotNull(result);
             assertEquals("Actividad A", result.getName());
