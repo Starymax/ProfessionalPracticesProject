@@ -42,6 +42,7 @@ public class GUIGeneratePartialReport extends Application {
     private Label labelMethodology;
     private TableView<PartialActivityRow> tableActivities;
     private TextArea textAreaResults;
+    private TextArea textAreaObservations;
     private Button buttonExportPDF, buttonCancel;
     private final int totalWeeks = 8;
     private final int amountOfActivities = 6;
@@ -199,7 +200,12 @@ public class GUIGeneratePartialReport extends Application {
         textAreaResults = new TextArea();
         textAreaResults.setPrefRowCount(5);
         textAreaResults.setWrapText(true);
-        section.getChildren().addAll(title, textAreaResults);
+        Label observations = new Label("Observaciones:");
+        observations.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        textAreaObservations = new TextArea();
+        textAreaObservations.setPrefRowCount(5);
+        textAreaObservations.setWrapText(true);
+        section.getChildren().addAll(title, textAreaResults, observations,textAreaObservations);
         return section;
     }
 
@@ -403,5 +409,9 @@ public class GUIGeneratePartialReport extends Application {
 
     public int getAmountOfActivities() {
         return amountOfActivities;
+    }
+
+    public TextArea getTextAreaObservations() {
+        return textAreaObservations;
     }
 }
