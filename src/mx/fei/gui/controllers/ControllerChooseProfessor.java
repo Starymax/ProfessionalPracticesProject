@@ -2,6 +2,7 @@ package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseProfessor;
 import mx.fei.gui.views.GUIModifyProfessor;
@@ -47,6 +48,7 @@ public class ControllerChooseProfessor {
             professorSelected = guiChooseProfessor.getSelectedProfessor();
             GUIModifyProfessor guiModifyProfessor = new GUIModifyProfessor(professorSelected);
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             guiModifyProfessor.start(stage);
             guiChooseProfessor.closeWindow();
         } catch (NullPointerException | IndexOutOfBoundsException e) {

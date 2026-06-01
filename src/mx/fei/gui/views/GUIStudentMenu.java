@@ -103,6 +103,11 @@ public class GUIStudentMenu extends Application {
         stage.setTitle("Estudiante");
         stage.setResizable(false);
         stage.setScene(scene);
+        stage.setOnShown(event -> {
+            if (controllerStudentMenu != null && student != null) {
+                controllerStudentMenu.loadUnreadCount();
+            }
+        });
         stage.show();
     }
 

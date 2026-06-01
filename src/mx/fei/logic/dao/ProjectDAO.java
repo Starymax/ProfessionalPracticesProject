@@ -1,6 +1,7 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
+import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
@@ -157,9 +158,13 @@ public class ProjectDAO implements IDAOProject {
     public List<Project> getAvailableProjects() throws DataOperationException {
         List<Project> availableProjects = new ArrayList<>();
         List<Project> activeProjects = getActiveProjects();
+        ActivityDAO activityDAO = new ActivityDAO();
         for (Project project : activeProjects) {
             if (project.getAvailablePlaces() > 0) {
-                availableProjects.add(project);
+                List<Activity> activities = activityDAO.getActivitiesByProjectId(project.getProjectId());
+                if (!activities.isEmpty()) {
+                    availableProjects.add(project);
+                }
             }
         }
         return availableProjects;

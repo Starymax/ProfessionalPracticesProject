@@ -139,7 +139,7 @@ public class GUIModifyStudent extends Application {
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
-        Scene scene = new Scene(mainPanel, 380, 380);
+        Scene scene = new Scene(mainPanel, 430, 380);
         stage.setScene(scene);
         stage.show();
     }

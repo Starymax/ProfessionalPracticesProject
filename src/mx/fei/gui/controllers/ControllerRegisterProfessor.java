@@ -39,12 +39,15 @@ public class ControllerRegisterProfessor {
                     guiRegisterProfessor.showError("Ya existe un Coordinador registrado");
                 } else if (professorDAO.registerProfessor(professor)) {
                     guiRegisterProfessor.showSuccess("Coordinador registrado exitosamente.");
+                    guiRegisterProfessor.getStage().close();
                 }
             } else if (professorDAO.registerProfessor(professor)) {
                 if (professor.isAdmin()) {
                     guiRegisterProfessor.showSuccess("Administrador registrado exitosamente.");
+                    guiRegisterProfessor.getStage().close();
                 } else {
                     guiRegisterProfessor.showSuccess("Profesor registrado exitosamente.");
+                    guiRegisterProfessor.getStage().close();
                 }
             }
         } catch (IllegalArgumentException | IllegalStateException | DataOperationException e) {

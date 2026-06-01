@@ -82,9 +82,7 @@ public class GUIRegisterActivity extends Application {
         Label labelWeek = new Label("Semana:");
         labelWeek.setFont(Font.font("SansSerif", 14));
         comboBoxWeek = new ComboBox<>();
-        for (int week = 1; week <= TOTAL_WEEKS; week++) {
-            comboBoxWeek.getItems().add(week);
-        }
+        updateComboBoxWeeks();
         comboBoxWeek.setConverter(new StringConverter<>() {
             @Override public String toString(Integer week) {
                 return week == null ? "" : "S" + week;
@@ -93,7 +91,9 @@ public class GUIRegisterActivity extends Application {
                 return Integer.parseInt(string.replace("S", ""));
             }
         });
-        comboBoxWeek.getSelectionModel().selectFirst();
+        if (!comboBoxWeek.getItems().isEmpty()) {
+            comboBoxWeek.getSelectionModel().selectFirst();
+        }
         Label labelPlannedHours = new Label("Horas Planeadas:");
         labelPlannedHours.setFont(Font.font("SansSerif", 14));
         textFieldPlannedHours = new TextField("0");
@@ -241,6 +241,22 @@ public class GUIRegisterActivity extends Application {
         return usedHours;
     }
 
+    private void updateComboBoxWeeks() {
+        Integer currentSelection = comboBoxWeek.getValue();
+        comboBoxWeek.getItems().clear();
+        for (int week = 1; week <= TOTAL_WEEKS; week++) {
+            int usedHours = getAlreadyUsedHoursForWeek(week);
+            if (usedHours < MAX_HOURS_PER_WEEK) {
+                comboBoxWeek.getItems().add(week);
+            }
+        }
+        if (currentSelection != null && comboBoxWeek.getItems().contains(currentSelection)) {
+            comboBoxWeek.setValue(currentSelection);
+        } else if (!comboBoxWeek.getItems().isEmpty()) {
+            comboBoxWeek.getSelectionModel().selectFirst();
+        }
+    }
+
     public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Aviso");
@@ -259,10 +275,12 @@ public class GUIRegisterActivity extends Application {
 
     public void updateActivitiesList(Activity activity, ArrayList<WeeklyLog> weeklyLogs) {
         guiActivityPlan.addActivity(activity, weeklyLogs);
+        updateComboBoxWeeks();
     }
 
     public void setGuiActivityPlan(GUIActivityPlan guiActivityPlan) {
         this.guiActivityPlan = guiActivityPlan;
+        updateComboBoxWeeks();
     }
 
     public Project getProject() {
