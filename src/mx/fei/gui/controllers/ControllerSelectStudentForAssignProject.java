@@ -2,7 +2,6 @@ package mx.fei.gui.controllers;
 
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAssignProject;
-import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUISelectStudentForAssignProject;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;

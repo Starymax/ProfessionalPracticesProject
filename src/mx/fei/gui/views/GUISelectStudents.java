@@ -120,9 +120,24 @@ public class GUISelectStudents extends Application {
         launch(args);
     }
 
-    public GUIAddStudents getGuiAddStudents() { return guiAddStudents; }
-    public List<Student> getAvailableStudents() { return availableStudents; }
-    public ListView<CheckBox> getListViewStudents() { return listViewStudents; }
-    public Button getButtonSelect() { return buttonSelect; }
-    public Button getButtonBack() { return buttonBack; }
+    public GUIAddStudents getGuiAddStudents() { 
+        return guiAddStudents; 
+    }
+
+    public List<Student> getAvailableStudents() { 
+        return availableStudents; 
+    }
+
+    public ListView<CheckBox> getListViewStudents() { 
+        return listViewStudents; 
+    }
+
+    public Button getButtonSelect() { 
+        return buttonSelect; 
+    }
+
+    public Button getButtonBack() { 
+        return buttonBack; 
+    }
+
 }

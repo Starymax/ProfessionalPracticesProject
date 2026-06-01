@@ -102,8 +102,19 @@ public class GUIChooseStudent extends Application {
         launch(args);
     }
 
-    public ListView<String> getListViewStudents() { return listViewStudents; }
-    public Button getButtonSelect() { return buttonSelect; }
-    public Button getButtonBack() { return buttonBack; }
-    public List<Student> getStudents() { return students; }
+    public ListView<String> getListViewStudents() {
+        return listViewStudents;
+    }
+
+    public Button getButtonSelect() {
+        return buttonSelect;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
 }

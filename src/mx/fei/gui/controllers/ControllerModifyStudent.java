@@ -43,6 +43,7 @@ public class ControllerModifyStudent {
                 String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
                 boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
                 boolean active = guiModifyStudent.getToggleState().isSelected();
+                float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
                 Student updated = new Student(
                         original.getUserId(),
                         guiModifyStudent.getTextFieldNames().getText().trim(),
@@ -53,7 +54,8 @@ public class ControllerModifyStudent {
                         active,
                         original.getEnrollment(),
                         indigenousLanguage,
-                        original.getAssignedProject()
+                        original.getAssignedProject(),
+                        grade
                 );
                 userDAO.updateUser(updated);
                 boolean result = studentDAO.modifyStudent(updated);

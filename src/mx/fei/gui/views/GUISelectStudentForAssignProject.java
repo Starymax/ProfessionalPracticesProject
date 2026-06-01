@@ -39,7 +39,8 @@ public class GUISelectStudentForAssignProject extends Application {
                 if (empty || student == null) {
                     setText(null);
                 } else {
-                    setText(student.getName() + " " + student.getLastName());
+                        String grade = student.getGrade() != 0 ? " (" + student.getGrade() + ")" : "";
+                        setText(student.getName() + " " + student.getLastName() + grade);
                 }
             }
         });

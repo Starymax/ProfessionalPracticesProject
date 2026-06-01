@@ -9,8 +9,8 @@ import javafx.scene.control.Button;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ControllerRegisterStudent {
-    private GUIRegisterStudent guiRegisterStudent;
-    private StudentDAO studentDAO;
+    private final GUIRegisterStudent guiRegisterStudent;
+    private final StudentDAO studentDAO;
 
     public ControllerRegisterStudent(GUIRegisterStudent guiRegisterStudent) {
         this.guiRegisterStudent = guiRegisterStudent;
@@ -35,10 +35,11 @@ public class ControllerRegisterStudent {
         String rawPassword = guiRegisterStudent.getTextFieldPassword().getText();
         String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
         String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
+        float grade = Float.parseFloat(guiRegisterStudent.getTextFieldGrade().getText().trim());
         String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
         boolean active = guiRegisterStudent.getToggleButtonState().isSelected();
-        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, null);
+        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, null, grade);
         try {
             boolean registered = studentDAO.registerStudent(student);
             if (registered) {

@@ -45,15 +45,19 @@ public class ControllerChooseStudent {
     }
 
     private void handleSelectStudent() {
-        Student studentSelected;
-        try {
-            studentSelected = guiChooseStudent.getSelectedStudent();
-            GUIModifyStudent guiModifyStudent = new GUIModifyStudent(studentSelected);
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiModifyStudent.start(stage);
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
-            guiChooseStudent.showError("Seleccione un estudiante.");
+        if (guiChooseStudent.getStudents() == null || guiChooseStudent.getStudents().isEmpty()) {
+            guiChooseStudent.showError("No hay estudiantes disponibles para modificar.");
+        } else {
+            int selectedIndex = guiChooseStudent.getListViewStudents().getSelectionModel().getSelectedIndex();
+            if (selectedIndex < 0) {
+                guiChooseStudent.showError("Seleccione un estudiante.");
+            } else {
+                Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);
+                GUIModifyStudent guiModifyStudent = new GUIModifyStudent(studentSelected);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiModifyStudent.start(stage);
+            }
         }
     }
 }

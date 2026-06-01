@@ -44,12 +44,13 @@ public class StudentDAO implements IDAOStudent {
                     String gender = resultSet.getString("genero");
                     boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
                     int studentProjectId = resultSet.getInt("proyecto");
+                    float grade = resultSet.getFloat("calificacion");
                     Project project = null;
                     if (studentProjectId > 0) {
                         ProjectDAO projectDAO = new ProjectDAO();
                         project = projectDAO.getProjectById(studentProjectId);
                     }
-                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project);
+                    student = new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project, grade);
                 }
             }
             if (student == null) {
@@ -85,12 +86,13 @@ public class StudentDAO implements IDAOStudent {
                         String gender = resultSet.getString("genero");
                         boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
                         int studentProjectId = resultSet.getInt("proyecto");
+                        float grade = resultSet.getFloat("calificacion");
                         Project project = null;
                         if (studentProjectId > 0) {
                             ProjectDAO projectDAO = new ProjectDAO();
                             project = projectDAO.getProjectById(studentProjectId);
                         }
-                        student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project);
+                        student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project, grade);
                     }
                 }
                 if (student == null) {
@@ -126,12 +128,13 @@ public class StudentDAO implements IDAOStudent {
                     logger.log(Level.SEVERE, "No se logro registrar el usuario");
                     throw new DataOperationException("No se logro registrar el usuario");
                 }
-                String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, lengua_indigena) VALUES (?,?,?)";
+                String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, lengua_indigena, calificacion) VALUES (?,?,?,?)";
                 try (Connection connection = DatabaseConnectionManager.getConnection();
                      PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent)) {
                     preparedStatementStudent.setInt(1, idUser);
                     preparedStatementStudent.setString(2, student.getEnrollment());
                     preparedStatementStudent.setBoolean(3, student.isIndigenousLanguage());
+                    preparedStatementStudent.setFloat(4, student.getGrade());
                     result = preparedStatementStudent.executeUpdate() > 0;
                 }
             } catch (SQLException e) {
@@ -145,12 +148,13 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean modifyStudent(Student student) throws DataOperationException {
         boolean updated = false;
-        String queryModifyStudent = "UPDATE alumno SET lengua_indigena=? where id_usuario=?;";
+        String queryModifyStudent = "UPDATE alumno SET lengua_indigena=?, calificacion=? where id_usuario=?;";
         if (student != null) {
             try (Connection connection = DatabaseConnectionManager.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyStudent)) {
                 preparedStatement.setBoolean(1, student.isIndigenousLanguage());
-                preparedStatement.setInt(2, student.getUserId());
+                preparedStatement.setFloat(2, student.getGrade());
+                preparedStatement.setInt(3, student.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al modificar el alumno",e);
@@ -176,7 +180,13 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
             for(String enrollment : enrollments) {
-                students.add(getStudentByEnrollment(enrollment));
+                try {
+                    students.add(getStudentByEnrollment(enrollment));
+                } catch (NoSuchElementException e) {
+                    logger.log(Level.WARNING, "Estudiante no encontrado con matrícula: " + enrollment);
+                } catch (DataOperationException e) {
+                    logger.log(Level.WARNING, "Error al cargar el estudiante con matrícula: " + enrollment, e);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener todos los estudiantes",e);
@@ -198,7 +208,13 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
             for (String enrollment : enrollmetns) {
-                students.add(getStudentByEnrollment(enrollment));
+                try {
+                    students.add(getStudentByEnrollment(enrollment));
+                } catch (NoSuchElementException e) {
+                    logger.log(Level.WARNING, "Estudiante no encontrado con matrícula: " + enrollment);
+                } catch (DataOperationException e) {
+                    logger.log(Level.WARNING, "Error al cargar el estudiante con matrícula: " + enrollment, e);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener todos los estudiantes sin proyecto asignado",e);
@@ -220,7 +236,13 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
             for(String enrollment : enrollmetns) {
-                students.add(getStudentByEnrollment(enrollment));
+                try {
+                    students.add(getStudentByEnrollment(enrollment));
+                } catch (NoSuchElementException e) {
+                    logger.log(Level.WARNING, "Estudiante no encontrado con matrícula: " + enrollment);
+                } catch (DataOperationException e) {
+                    logger.log(Level.WARNING, "Error al cargar el estudiante con matrícula: " + enrollment, e);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener todos los estudiantes activos",e);

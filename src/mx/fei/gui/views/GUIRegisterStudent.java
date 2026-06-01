@@ -38,6 +38,7 @@ public class GUIRegisterStudent extends Application {
     private TextField textFieldMail;
     private PasswordField textFieldPassword;
     private TextField textFieldEnrollment;
+    private TextField textFieldGrade;
     private RadioButton radioButtonMan;
     private RadioButton radioButtonWoman;
     private RadioButton radioButtonSpeakIndigenousLanguage;
@@ -53,7 +54,7 @@ public class GUIRegisterStudent extends Application {
 
         GridPane formGrid = new GridPane();
         formGrid.setHgap(10);
-        formGrid.setVgap(12);
+        formGrid.setVgap(13);
         formGrid.setPadding(new Insets(20, 30, 20, 30));
         formGrid.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
         formGrid.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
@@ -85,7 +86,12 @@ public class GUIRegisterStudent extends Application {
         textFieldEnrollment = new TextField();
         formGrid.add(textFieldEnrollment, 1, 5);
 
-        formGrid.add(new Label("Genero:"), 0, 6);
+        formGrid.add(new Label("Calificación:"), 0, 6);
+        textFieldGrade = new TextField();
+        textFieldGrade.setPromptText("0.0 - 10.0");
+        formGrid.add(textFieldGrade, 1, 6);
+
+        formGrid.add(new Label("Genero:"), 0, 7);
         radioButtonMan = new RadioButton("Hombre");
         radioButtonWoman = new RadioButton("Mujer");
         ToggleGroup toggleGroupGender = new ToggleGroup();
@@ -93,9 +99,9 @@ public class GUIRegisterStudent extends Application {
         radioButtonWoman.setToggleGroup(toggleGroupGender);
         HBox genderBox = new HBox(15, radioButtonMan, radioButtonWoman);
         genderBox.setAlignment(Pos.CENTER_LEFT);
-        formGrid.add(genderBox, 1, 6);
+        formGrid.add(genderBox, 1, 7);
 
-        formGrid.add(new Label("Lengua indigena:"), 0, 7);
+        formGrid.add(new Label("Lengua indigena:"), 0, 8);
         radioButtonSpeakIndigenousLanguage = new RadioButton("Habla");
         radioButtonDontSpeakIndigenousLanguage = new RadioButton("No habla");
         ToggleGroup toggleGroupLanguage = new ToggleGroup();
@@ -103,15 +109,15 @@ public class GUIRegisterStudent extends Application {
         radioButtonDontSpeakIndigenousLanguage.setToggleGroup(toggleGroupLanguage);
         HBox languageBox = new HBox(15, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
         languageBox.setAlignment(Pos.CENTER_LEFT);
-        formGrid.add(languageBox, 1, 7);
+        formGrid.add(languageBox, 1, 8);
 
-        formGrid.add(new Label("Estado:"), 0, 8);
+        formGrid.add(new Label("Estado:"), 0, 9);
         toggleButtonState = new ToggleButton("Inactivo");
         toggleButtonState.setPrefWidth(100);
         toggleButtonState.setOnAction(e ->
                 toggleButtonState.setText(toggleButtonState.isSelected() ? "Activo" : "Inactivo")
         );
-        formGrid.add(toggleButtonState, 1, 8);
+        formGrid.add(toggleButtonState, 1, 9);
 
         buttonConfirm = new Button("Confirmar");
         buttonCancel = new Button("Cancelar");
@@ -125,7 +131,7 @@ public class GUIRegisterStudent extends Application {
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));
         GridPane.setColumnSpan(buttonsBox, 2);
         GridPane.setHalignment(buttonsBox, HPos.CENTER);
-        formGrid.add(buttonsBox, 0, 10);
+        formGrid.add(buttonsBox, 0, 11);
 
         ControllerRegisterStudent controllerRegisterStudent = new ControllerRegisterStudent(this);
         buttonConfirm.setOnAction(controllerRegisterStudent::handleConfirmCancelButtons);
@@ -147,6 +153,7 @@ public class GUIRegisterStudent extends Application {
         GUIUtils.validateNames(textFieldLastName.getText(), "Apellidos", errors);
         GUIUtils.validateEmail(textFieldMail.getText().trim(), errors);
         GUIUtils.validateEnrollment(textFieldEnrollment.getText().trim(), "Matrícula", errors);
+        GUIUtils.validateGrade(textFieldGrade.getText().trim(), "Calificación", errors);
         GUIUtils.validateStrongPassword(textFieldPassword.getText().trim(), errors);
         boolean genderSelected = radioButtonMan.isSelected() || radioButtonWoman.isSelected();
         GUIUtils.validateRadioSelection(genderSelected, "un género", errors);
@@ -193,6 +200,10 @@ public class GUIRegisterStudent extends Application {
 
     public TextField getTextFieldEnrollment() {
         return textFieldEnrollment;
+    }
+
+    public TextField getTextFieldGrade() {
+        return textFieldGrade;
     }
 
     public RadioButton getRadioButtonMan() {

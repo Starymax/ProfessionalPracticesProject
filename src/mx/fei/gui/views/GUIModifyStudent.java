@@ -34,6 +34,7 @@ public class GUIModifyStudent extends Application {
     private TextField textFieldNames;
     private TextField textFieldLastName;
     private TextField textFieldMail;
+    private TextField textFieldGrade;
     private RadioButton radioButtonMan;
     private RadioButton radioButtonWoman;
     private RadioButton radioButtonSpeakIndigenousLanguage;
@@ -71,7 +72,12 @@ public class GUIModifyStudent extends Application {
         textFieldMail = new TextField();
         GridPane.setColumnSpan(textFieldMail, 3);
         formGrid.add(textFieldMail, 1, 2);
-        formGrid.add(new Label("Genero:"), 0, 3);
+        formGrid.add(new Label("Calificación:"), 0, 3);
+        textFieldGrade = new TextField();
+        textFieldGrade.setPromptText("0.0 - 100.0");
+        GridPane.setColumnSpan(textFieldGrade, 3);
+        formGrid.add(textFieldGrade, 1, 3);
+        formGrid.add(new Label("Genero:"), 0, 4);
         radioButtonMan = new RadioButton("Hombre");
         radioButtonWoman = new RadioButton("Mujer");
         ToggleGroup toggleGroupGender = new ToggleGroup();
@@ -80,8 +86,8 @@ public class GUIModifyStudent extends Application {
         HBox genderBox = new HBox(20, radioButtonMan, radioButtonWoman);
         genderBox.setAlignment(Pos.CENTER_LEFT);
         GridPane.setColumnSpan(genderBox, 3);
-        formGrid.add(genderBox, 1, 3);
-        formGrid.add(new Label("Lengua indigena:"), 0, 4);
+        formGrid.add(genderBox, 1, 4);
+        formGrid.add(new Label("Lengua indigena:"), 0, 5);
         radioButtonSpeakIndigenousLanguage = new RadioButton("Habla");
         radioButtonDontSpeakIndigenousLanguage = new RadioButton("No habla");
         ToggleGroup toggleGroupLanguage = new ToggleGroup();
@@ -90,12 +96,12 @@ public class GUIModifyStudent extends Application {
         HBox languageBox = new HBox(20, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
         languageBox.setAlignment(Pos.CENTER_LEFT);
         GridPane.setColumnSpan(languageBox, 3);
-        formGrid.add(languageBox, 1, 4);
-        formGrid.add(new Label("Estado:"), 0, 5);
+        formGrid.add(languageBox, 1, 5);
+        formGrid.add(new Label("Estado:"), 0, 6);
         toggleState = new ToggleButton("Inactivo");
         toggleState.setPrefWidth(110);
         toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
-        formGrid.add(toggleState, 1, 5);
+        formGrid.add(toggleState, 1, 6);
         if (student != null) {
             textFieldNames.setText(student.getName());
             textFieldLastName.setText(student.getLastName());
@@ -110,6 +116,7 @@ public class GUIModifyStudent extends Application {
             } else {
                 radioButtonDontSpeakIndigenousLanguage.setSelected(true);
             }
+            textFieldGrade.setText(String.valueOf(student.getGrade()));
             toggleState.setSelected(student.isActive());
             toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
         }
@@ -143,6 +150,7 @@ public class GUIModifyStudent extends Application {
         GUIUtils.validateNames(textFieldNames.getText().trim(), "Nombres", errors);
         GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
         GUIUtils.validateEmail(textFieldMail.getText().trim(), errors);
+        GUIUtils.validateGrade(textFieldGrade.getText().trim(), "Calificación", errors);
         GUIUtils.validateRadioSelection(radioButtonMan.getToggleGroup().getSelectedToggle() != null, "un género", errors);
         GUIUtils.validateRadioSelection(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() != null, "si el alumno habla lengua indígena", errors);
         if (!errors.isEmpty()) {
@@ -190,6 +198,10 @@ public class GUIModifyStudent extends Application {
 
     public RadioButton getRadioButtonWoman() {
         return radioButtonWoman;
+    }
+
+    public TextField getTextFieldGrade() {
+        return textFieldGrade;
     }
 
     public RadioButton getRadioButtonSpeakIndigenousLanguage() {

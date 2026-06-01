@@ -91,6 +91,21 @@ public class GUIUtils {
         }
     }
 
+    public static void validateGrade(String value, String fieldName, List<String> errors) {
+        if (value == null || value.isEmpty()) {
+            errors.add("El campo de " + fieldName + " es obligatorio.");
+        } else {
+            try {
+                float grade = Float.parseFloat(value);
+                if (grade < 0.0f || grade > 10.0f) {
+                    errors.add(fieldName + " debe estar entre 0.0 y 10.0.");
+                }
+            } catch (NumberFormatException e) {
+                errors.add(fieldName + " debe ser un número válido (uso de punto decimal permitido). ");
+            }
+        }
+    }
+
     public static void validatePersonalNumber(String value, String fieldName, List<String> errors) {
         if (value.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
