@@ -61,7 +61,11 @@ public class ControllerGenerateFinalReport {
         if (student == null) {
             finalReportView.showError("No hay estudiante seleccionado para generar el reporte final.");
         } else {
-            finalReportView.setStudentInfo(student.getName() + " " + student.getLastName(), student.getEnrollment(), student.getEmail(), getPracticeNrc(), getPracticePeriod());
+            finalReportView.setStudentName(student.getName() + " " + student.getLastName());
+            finalReportView.setStudentEnrollment(student.getEnrollment());
+            finalReportView.setStudentEmail(student.getEmail());
+            finalReportView.setStudentNrc(getPracticeNrc());
+            finalReportView.setPeriod(getPracticePeriod());
             if (student.getAssignedProject() != null) {
                 String projectName = student.getAssignedProject().getNameProject();
                 String enterpriseName = student.getAssignedProject().getEnterprise() != null ? student.getAssignedProject().getEnterprise().getName() : "-";
@@ -181,7 +185,7 @@ public class ControllerGenerateFinalReport {
         try {
             currentReport.setWorkedHours(getRealizedHours());
             currentReport.setAccumulatedHours(currentReport.getWorkedHours());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             currentReport.setWorkedHours(0f);
             currentReport.setAccumulatedHours(0f);
         }
@@ -191,7 +195,7 @@ public class ControllerGenerateFinalReport {
         try {
             finalReportView.commitTableEdits();
             syncFinalReportDataFromGui();
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, "Error al sincronizar los datos del reporte final", e);
             finalReportView.showError("Error en la tabla de actividades. Verifica los datos y vuelve a intentarlo.");
             return;

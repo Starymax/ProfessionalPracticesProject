@@ -45,9 +45,11 @@ public class GUIRegisterProject extends Application {
     private ComboBox<Enterprise> comboBoxEnterprise;
     private ComboBox<ProjectManager> comboBoxProjectManager;
     private Button buttonAddProjectManager;
-    private Button buttonContinue;
+    private Button buttonSave;
+    private Button buttonActivityPlan;
     private Button buttonCancel;
     private Stage stage;
+    private GridPane form;
 
     @Override
     public void start(Stage stage) {
@@ -88,14 +90,15 @@ public class GUIRegisterProject extends Application {
 
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxEnterprise.setCellFactory(listView -> new ListCell<>() {
-            @Override protected void updateItem(Enterprise enterprise, boolean empty) {
+            @Override
+            protected void updateItem(Enterprise enterprise, boolean empty) {
                 super.updateItem(enterprise, empty);
                 setText(empty || enterprise == null ? null : enterprise.getName());
             }
         });
-
         comboBoxEnterprise.setButtonCell(new ListCell<>() {
-            @Override protected void updateItem(Enterprise enterprise, boolean empty) {
+            @Override
+            protected void updateItem(Enterprise enterprise, boolean empty) {
                 super.updateItem(enterprise, empty);
                 setText(empty || enterprise == null ? null : enterprise.getName());
             }
@@ -103,58 +106,65 @@ public class GUIRegisterProject extends Application {
 
         comboBoxProjectManager.setMaxWidth(Double.MAX_VALUE);
         comboBoxProjectManager.setCellFactory(lv -> new ListCell<>() {
-            @Override protected void updateItem(ProjectManager projectManager, boolean empty) {
+            @Override
+            protected void updateItem(ProjectManager projectManager, boolean empty) {
                 super.updateItem(projectManager, empty);
                 setText(empty || projectManager == null ? null : projectManager.getName());
             }
         });
         comboBoxProjectManager.setButtonCell(new ListCell<>() {
-            @Override protected void updateItem(ProjectManager projectManager, boolean empty) {
+            @Override
+            protected void updateItem(ProjectManager projectManager, boolean empty) {
                 super.updateItem(projectManager, empty);
                 setText(empty || projectManager == null ? null : projectManager.getName());
             }
         });
 
-        GridPane form = new GridPane();
+        form = new GridPane();
         form.setHgap(10);
         form.setVgap(10);
         form.getColumnConstraints().addAll(columnConstraint(160), columnConstraint(Double.MAX_VALUE));
 
         int row = 0;
-        addRow(form, row++, "Nombre:", textFieldName);
-        addRow(form, row++, "Descripción:", textAreaDescription);
-        addRow(form, row++, "Objetivo General:", textFieldGeneralObjective);
-        addRow(form, row++, "Objetivos Inmediatos:", textAreaImmediateObjective);
-        addRow(form, row++, "Objetivos Mediatos:", textAreaMediateObjectives);
-        addRow(form, row++, "Metodología:", textFieldMethodology);
-        addRow(form, row++, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
+        addNameRow(row++);
+        addDescriptionRow(row++);
+        addGeneralObjectiveRow(row++);
+        addImmediateObjectivesRow(row++);
+        addMediateObjectivesRow(row++);
+        addMethodologyRow(row++);
+        addResourcesRow(row++);
 
         HBox dateRow = new HBox(16);
         dateRow.setAlignment(Pos.CENTER_LEFT);
         dateRow.getChildren().addAll(new Label("Fecha Inicio:"), datePickerStartDate, new Label("Fecha Fin:"), datePickerFinalDate);
         form.add(dateRow, 0, row++, 2, 1);
 
-        addRow(form, row++, "Responsabilidades:", textAreaResponsibilities);
-        addRow(form, row++, "Lugares disponibles:", textFieldAvailablePlaces);
-        addRow(form, row++, "Organizacion:", comboBoxEnterprise);
-        addRow(form, row, "Responsable:", comboBoxProjectManager);
+        addResponsibilitiesRow(row++);
+        addAvailablePlacesRow(row++);
+        addEnterpriseRow(row++);
+        addProjectManagerRow(row);
 
         buttonAddProjectManager = new Button("Añadir Responsable");
-        buttonContinue = new Button("Continuar");
+        buttonSave = new Button("Guardar");
+        buttonActivityPlan = new Button("Plan de Actividades");
         buttonCancel = new Button("Cancelar");
 
         String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand;";
         buttonAddProjectManager.setStyle(buttonStyle);
-        buttonContinue.setStyle(buttonStyle);
+        buttonSave.setStyle(buttonStyle);
+        buttonActivityPlan.setStyle(buttonStyle);
         buttonCancel.setStyle(buttonStyle);
 
         ControllerRegisterProject controllerRegisterProject = new ControllerRegisterProject(this);
-        buttonAddProjectManager.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
-        buttonContinue.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
-        buttonCancel.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
-        comboBoxEnterprise.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueButtonsAndEnterpriseComboBox);
+        buttonAddProjectManager.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
+        buttonSave.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
+        buttonActivityPlan.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
+        buttonCancel.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
+        comboBoxEnterprise.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
 
-        HBox buttonRow = new HBox(12, buttonAddProjectManager, buttonContinue, buttonCancel);
+        buttonActivityPlan.setDisable(true);
+
+        HBox buttonRow = new HBox(12, buttonAddProjectManager, buttonSave, buttonActivityPlan, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_LEFT);
 
         VBox mainPanel = new VBox(16, title, form, buttonRow);
@@ -170,7 +180,51 @@ public class GUIRegisterProject extends Application {
         stage.show();
     }
 
-    private void addRow(GridPane grid, int row, String labelText, Node field) {
+    private void addNameRow(int rowIndex) {
+        addRow(rowIndex, "Nombre:", textFieldName);
+    }
+
+    private void addDescriptionRow(int rowIndex) {
+        addRow(rowIndex, "Descripción:", textAreaDescription);
+    }
+
+    private void addGeneralObjectiveRow(int rowIndex) {
+        addRow(rowIndex, "Objetivo General:", textFieldGeneralObjective);
+    }
+
+    private void addImmediateObjectivesRow(int rowIndex) {
+        addRow(rowIndex, "Objetivos Inmediatos:", textAreaImmediateObjective);
+    }
+
+    private void addMediateObjectivesRow(int rowIndex) {
+        addRow(rowIndex, "Objetivos Mediatos:", textAreaMediateObjectives);
+    }
+
+    private void addMethodologyRow(int rowIndex) {
+        addRow(rowIndex, "Metodología:", textFieldMethodology);
+    }
+
+    private void addResourcesRow(int rowIndex) {
+        addRow(rowIndex, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
+    }
+
+    private void addResponsibilitiesRow(int rowIndex) {
+        addRow(rowIndex, "Responsabilidades:", textAreaResponsibilities);
+    }
+
+    private void addAvailablePlacesRow(int rowIndex) {
+        addRow(rowIndex, "Lugares disponibles:", textFieldAvailablePlaces);
+    }
+
+    private void addEnterpriseRow(int rowIndex) {
+        addRow(rowIndex, "Organizacion:", comboBoxEnterprise);
+    }
+
+    private void addProjectManagerRow(int rowIndex) {
+        addRow(rowIndex, "Responsable:", comboBoxProjectManager);
+    }
+
+    private void addRow(int row, String labelText, Node field) {
         Label label = new Label(labelText);
         label.setFont(Font.font("SansSerif", 13));
         label.setWrapText(true);
@@ -178,8 +232,8 @@ public class GUIRegisterProject extends Application {
         if (field instanceof TextField textField) {
             textField.setMaxWidth(Double.MAX_VALUE);
         }
-        grid.add(label, 0, row);
-        grid.add(field, 1, row);
+        form.add(label, 0, row);
+        form.add(field, 1, row);
     }
 
     private ColumnConstraints columnConstraint(double width) {
@@ -233,6 +287,14 @@ public class GUIRegisterProject extends Application {
     public void loadProjectManagers(List<ProjectManager> projectManagers) {
         comboBoxProjectManager.getItems().clear();
         comboBoxProjectManager.getItems().addAll(projectManagers);
+    }
+
+    public void enableActivityPlanButton() {
+        buttonActivityPlan.setDisable(false);
+    }
+
+    public void disableActivityPlanButton() {
+        buttonActivityPlan.setDisable(true);
     }
 
     public void showError(String message) {
@@ -299,8 +361,12 @@ public class GUIRegisterProject extends Application {
         return buttonAddProjectManager;
     }
 
-    public Button getButtonContinue() {
-        return buttonContinue;
+    public Button getButtonSave() {
+        return buttonSave;
+    }
+
+    public Button getButtonActivityPlan() {
+        return buttonActivityPlan;
     }
 
     public Button getButtonCancel() {

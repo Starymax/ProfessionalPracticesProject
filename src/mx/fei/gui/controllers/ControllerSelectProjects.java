@@ -73,14 +73,7 @@ public class ControllerSelectProjects {
                 guiModifyProject.showError(e.getMessage());
             }
             guiModifyProject.getComboBoxProjectManager().setValue(project.getProjectManager());
-            stage.setOnHidden(event -> {
-                try {
-                    ProjectDAO projectDAO = new ProjectDAO();
-                    guiSelectProjects.loadProjects(projectDAO.getAllProjects());
-                } catch (DataOperationException e) {
-                    guiModifyProject.showError(e.getMessage());
-                }
-            });
+            stage.setOnHidden(event -> reloadProjects(guiModifyProject));
         }
     }
 
@@ -113,6 +106,15 @@ public class ControllerSelectProjects {
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             guiSelectProjects.getStage().close();
+        }
+    }
+
+    private void reloadProjects(GUIModifyProject guiModifyProject) {
+        try {
+            ProjectDAO projectDAO = new ProjectDAO();
+            guiSelectProjects.loadProjects(projectDAO.getAllProjects());
+        } catch (DataOperationException e) {
+            guiModifyProject.showError(e.getMessage());
         }
     }
 }

@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EducationalExperienceDAO implements IDAOEducationalExperience {
-    private Logger logger = Logger.getLogger(EducationalExperienceDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(EducationalExperienceDAO.class.getName());
 
     @Override
     public boolean registerEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
@@ -94,23 +94,23 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryEEByNrc)) {
             preparedStatement.setString(1,nrc);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String nrcEE = resultSet.getString("NRC");
-                String name = resultSet.getString("nombre_experiencia");
-                String career = resultSet.getString("programa_educativo");
-                String period = resultSet.getString("periodo");
-                if (period == null) {
-                    period = "";
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String nrcEE = resultSet.getString("NRC");
+                    String name = resultSet.getString("nombre_experiencia");
+                    String career = resultSet.getString("programa_educativo");
+                    String period = resultSet.getString("periodo");
+                    if (period == null) {
+                        period = "";
+                    }
+                    int idProfessor = resultSet.getInt("id_profesor");
+                    Professor professor = null;
+                    if (idProfessor > 0) {
+                        ProfessorDAO professorDAO = new ProfessorDAO();
+                        professor = professorDAO.getProfessorById(idProfessor);
+                    }
+                    experience = new EducationalExperience(nrcEE, name, career, professor, period);
                 }
-                int idProfessor = resultSet.getInt("id_profesor");
-                resultSet.close();
-                Professor professor = null;
-                if (idProfessor > 0) {
-                    ProfessorDAO professorDAO = new ProfessorDAO();
-                    professor = professorDAO.getProfessorById(idProfessor);
-                }
-                experience = new EducationalExperience(nrcEE, name, career, professor, period);
             }
             if (experience == null) {
                 logger.log(Level.WARNING, "No se encontro el experiencia con el nrc: "+ nrc);
@@ -129,10 +129,11 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         String queryGetEducationalExperiences = "SELECT nrc FROM experiencia_educativa;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryGetEducationalExperiences)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<String> nrcs = new ArrayList<>();
-            while (resultSet.next()) {
-                nrcs.add(resultSet.getString("NRC"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    nrcs.add(resultSet.getString("NRC"));
+                }
             }
             for (String nrc : nrcs) {
                 educationalExperiences.add(getEducationalExperienceByNrc(nrc));

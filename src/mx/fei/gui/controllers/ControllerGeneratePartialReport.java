@@ -73,13 +73,19 @@ public class ControllerGeneratePartialReport {
                     String nrc = educationalExperience.getNrc();
                     String professor = (educationalExperience.getProfessor() != null) ? educationalExperience.getProfessor().getName() + " " + educationalExperience.getProfessor().getLastName() : "N/A";
                     String period = educationalExperience.getPeriod();
-                    guiGeneratePartialReport.setGeneralInfo(career, nrc, professor, period);
+                    guiGeneratePartialReport.setCareer(career);
+                    guiGeneratePartialReport.setNrc(nrc);
+                    guiGeneratePartialReport.setProfessor(professor);
+                    guiGeneratePartialReport.setPeriod(period);
                     Project project = student.getAssignedProject();
                     String enterprise = (project != null && project.getEnterprise() != null) ? project.getEnterprise().getName() : "N/A";
                     String projectName = (project != null) ? project.getNameProject() : "N/A";
                     String objective = (project != null) ? project.getGeneralObjective() : "N/A";
                     String methodology = (project != null) ? project.getMethodology() : "N/A";
-                    guiGeneratePartialReport.setProjectInfo(student.getName() + " " + student.getLastName(), student.getEnrollment(), enterprise, projectName);
+                    guiGeneratePartialReport.setStudentName(student.getName() + " " + student.getLastName());
+                    guiGeneratePartialReport.setEnrollment(student.getEnrollment());
+                    guiGeneratePartialReport.setOrganization(enterprise);
+                    guiGeneratePartialReport.setProjectName(projectName);
                     guiGeneratePartialReport.setObjectiveAndMethodology(objective, methodology);
                     ActivityDAO activityDAO = new ActivityDAO();
                     activities = activityDAO.getActivitiesByProjectId(project.getProjectId());
@@ -215,7 +221,7 @@ public class ControllerGeneratePartialReport {
         params.put("generalObjective", project != null ? cleanNull(project.getGeneralObjective()) : "N/A");
         params.put("methodology", project != null ? cleanNull(project.getMethodology()) : "N/A");
         params.put("reportNumber", String.valueOf(calculateReportNumber()));
-        params.put("resultsObtaneid", cleanNull(results));
+        params.put("resultsObtained", cleanNull(results));
         String currentPeriod = formatPeriod(practice.getPeriod());
         params.put("period", cleanNull(currentPeriod));
         params.put("reportPeriod",  cleanNull(currentPeriod));
@@ -371,8 +377,8 @@ public class ControllerGeneratePartialReport {
     private int calculateReportNumber() {
         int reportNumber = 1;
         try {
-            int previousRepors = reportDAO.countReportsByTypeAndStudent("PARCIAL", student.getUserId());
-            reportNumber = previousRepors + 1;
+            int previousReports = reportDAO.countReportsByTypeAndStudent("PARCIAL", student.getUserId());
+            reportNumber = previousReports + 1;
         } catch (DataOperationException e) {
             logger.log(Level.WARNING, "Error al obtener el conteo  de los reportes previos. Se asignará 1", e);
         }

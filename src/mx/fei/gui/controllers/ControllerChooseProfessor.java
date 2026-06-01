@@ -7,6 +7,7 @@ import mx.fei.gui.views.GUIChooseProfessor;
 import mx.fei.gui.views.GUIModifyProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -26,7 +27,7 @@ public class ControllerChooseProfessor {
         try {
             List<Professor> professors = professorDAO.getProfessors();
             guiChooseProfessor.setProfessors(professors);
-        } catch (Exception e) {
+        } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar a los profesores", e);
             guiChooseProfessor.showError("Error al cargar la lista de profesores.");
         }

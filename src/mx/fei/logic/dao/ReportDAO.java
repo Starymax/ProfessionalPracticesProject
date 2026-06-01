@@ -39,10 +39,11 @@ public class ReportDAO implements IDAOReport {
             preparedStatement.setInt(5, report.getStudent().getUserId());
             preparedStatement.setString(6, report.getNrc());
             preparedStatement.executeUpdate();
-            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-            if (generatedKeys.next()) {
-                idGenerated = generatedKeys.getInt(1);
-                report.setReportId(idGenerated);
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    idGenerated = generatedKeys.getInt(1);
+                    report.setReportId(idGenerated);
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el reporte", e);
@@ -72,18 +73,19 @@ public class ReportDAO implements IDAOReport {
                         preparedStatement.setInt(3, reportId);
                         preparedStatement.setInt(4, activityProgress.getActivity().getActivityId());
                         preparedStatement.executeUpdate();
-                        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                        if (generatedKeys.next()) {
-                            int reportActivityId = generatedKeys.getInt(1);
-                            try (PreparedStatement prepareStatement = connection.prepareStatement(queryWeeklyProgress)) {
-                                for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
-                                    prepareStatement.setInt(1, weeklyProgress.getWeek());
-                                    prepareStatement.setFloat(2, weeklyProgress.getPlannedHours());
-                                    prepareStatement.setFloat(3, weeklyProgress.getWorkedHours());
-                                    prepareStatement.setInt(4, reportActivityId);
-                                    prepareStatement.addBatch();
+                        try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                            if (generatedKeys.next()) {
+                                int reportActivityId = generatedKeys.getInt(1);
+                                try (PreparedStatement prepareStatement = connection.prepareStatement(queryWeeklyProgress)) {
+                                    for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
+                                        prepareStatement.setInt(1, weeklyProgress.getWeek());
+                                        prepareStatement.setFloat(2, weeklyProgress.getPlannedHours());
+                                        prepareStatement.setFloat(3, weeklyProgress.getWorkedHours());
+                                        prepareStatement.setInt(4, reportActivityId);
+                                        prepareStatement.addBatch();
+                                    }
+                                    prepareStatement.executeBatch();
                                 }
-                                prepareStatement.executeBatch();
                             }
                         }
                     }
@@ -119,18 +121,19 @@ public class ReportDAO implements IDAOReport {
                         preparedStatement.setInt(3, reportId);
                         preparedStatement.setInt(4, activityProgress.getActivity().getActivityId());
                         preparedStatement.executeUpdate();
-                        ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                        if (generatedKeys.next()) {
-                            int reportActivityId = generatedKeys.getInt(1);
-                            try (PreparedStatement prepareStatement = connection.prepareStatement(queryWeeklyProgress)) {
-                                for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
-                                    prepareStatement.setInt(1, weeklyProgress.getWeek());
-                                    prepareStatement.setFloat(2, weeklyProgress.getPlannedHours());
-                                    prepareStatement.setFloat(3, weeklyProgress.getWorkedHours());
-                                    prepareStatement.setInt(4, reportActivityId);
-                                    prepareStatement.addBatch();
+                        try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                            if (generatedKeys.next()) {
+                                int reportActivityId = generatedKeys.getInt(1);
+                                try (PreparedStatement prepareStatement = connection.prepareStatement(queryWeeklyProgress)) {
+                                    for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
+                                        prepareStatement.setInt(1, weeklyProgress.getWeek());
+                                        prepareStatement.setFloat(2, weeklyProgress.getPlannedHours());
+                                        prepareStatement.setFloat(3, weeklyProgress.getWorkedHours());
+                                        prepareStatement.setInt(4, reportActivityId);
+                                        prepareStatement.addBatch();
+                                    }
+                                    prepareStatement.executeBatch();
                                 }
-                                prepareStatement.executeBatch();
                             }
                         }
                     }
@@ -184,17 +187,18 @@ public class ReportDAO implements IDAOReport {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reportId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String reportType = resultSet.getString("tipo_reporte");
-                Date reportDate = resultSet.getDate("fecha_reporte");
-                String observations = resultSet.getString("observaciones");
-                String resultsObtained = resultSet.getString("resultados_obtenidos");
-                int studentId = resultSet.getInt("id_alumno");
-                String nrc = resultSet.getString("nrc");
-                StudentDAO studentDAO = new StudentDAO();
-                Student student = studentDAO.getStudentById(studentId);
-                report = new Report(reportId, reportType, reportDate, observations, resultsObtained, student, nrc);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String reportType = resultSet.getString("tipo_reporte");
+                    Date reportDate = resultSet.getDate("fecha_reporte");
+                    String observations = resultSet.getString("observaciones");
+                    String resultsObtained = resultSet.getString("resultados_obtenidos");
+                    int studentId = resultSet.getInt("id_alumno");
+                    String nrc = resultSet.getString("nrc");
+                    StudentDAO studentDAO = new StudentDAO();
+                    Student student = studentDAO.getStudentById(studentId);
+                    report = new Report(reportId, reportType, reportDate, observations, resultsObtained, student, nrc);
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener el reporte por id", e);
@@ -211,9 +215,10 @@ public class ReportDAO implements IDAOReport {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enrollment);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                reportIds.add(resultSet.getInt("id_reporte"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    reportIds.add(resultSet.getInt("id_reporte"));
+                }
             }
             for (int reportId : reportIds) {
                 reports.add(getReportById(reportId));
@@ -233,9 +238,10 @@ public class ReportDAO implements IDAOReport {
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, reportType);
             preparedStatement.setInt(2, studentId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al contar reportes por tipo", e);

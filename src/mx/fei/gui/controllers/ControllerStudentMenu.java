@@ -50,7 +50,7 @@ public class ControllerStudentMenu {
         } catch (DataOperationException e) {
             logger.log(Level.WARNING, "Error al cargar notificaciones no leídas", e);
             guiStudentMenu.updateUnreadCount(0);
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.WARNING, "Error inesperado al cargar notificaciones no leídas", e);
             guiStudentMenu.updateUnreadCount(0);
         }
@@ -115,7 +115,7 @@ public class ControllerStudentMenu {
                 Stage stage = new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
                 guiRegisterAdvance.start(stage);
-            } catch (Exception e) {
+            } catch (IllegalStateException e) {
                 guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
             }
         }
@@ -130,7 +130,7 @@ public class ControllerStudentMenu {
             ControllerNotifications controller = new ControllerNotifications(guiNotifications);
             controller.loadNotifications();
             newStage.setOnHidden(e -> loadUnreadCount());
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
             logger.log(Level.SEVERE, "Error al abrir notificaciones", e);
         }
     }

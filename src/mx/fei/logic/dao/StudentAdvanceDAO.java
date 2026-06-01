@@ -45,16 +45,17 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, advanceId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                float realizedHours = resultSet.getFloat("horas_realizadas");
-                int weeklyLogId = resultSet.getInt("id_registro");
-                int studentId = resultSet.getInt("id_alumno");
-                ActivityDAO activityDAO = new ActivityDAO();
-                WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(weeklyLogId);
-                StudentDAO studentDAO = new StudentDAO();
-                Student student = studentDAO.getStudentById(studentId);
-                advance = new StudentAdvance(advanceId, realizedHours, weeklyLog, student);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    float realizedHours = resultSet.getFloat("horas_realizadas");
+                    int weeklyLogId = resultSet.getInt("id_registro");
+                    int studentId = resultSet.getInt("id_alumno");
+                    ActivityDAO activityDAO = new ActivityDAO();
+                    WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(weeklyLogId);
+                    StudentDAO studentDAO = new StudentDAO();
+                    Student student = studentDAO.getStudentById(studentId);
+                    advance = new StudentAdvance(advanceId, realizedHours, weeklyLog, student);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el avance del alumno", e);
@@ -71,11 +72,11 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                advanceIds.add(resultSet.getInt("id_avance"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    advanceIds.add(resultSet.getInt("id_avance"));
+                }
             }
-            resultSet.close();
             for (int id : advanceIds) {
                 advances.add(getAdvanceById(id));
             }
@@ -94,11 +95,11 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, weeklyLogId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                advanceIds.add(resultSet.getInt("id_avance"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    advanceIds.add(resultSet.getInt("id_avance"));
+                }
             }
-            resultSet.close();
             for (int id : advanceIds) {
                 advances.add(getAdvanceById(id));
             }
@@ -133,9 +134,10 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, weeklyLogId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                advances.add(getAdvanceById(resultSet.getInt("id_avance")));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    advances.add(getAdvanceById(resultSet.getInt("id_avance")));
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los avances del alumno", e);

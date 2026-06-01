@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class EnterpriseDAO implements IDAOEnterprise {
-    private Logger logger = Logger.getLogger(EnterpriseDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(EnterpriseDAO.class.getName());
     @Override
     public Enterprise getEnterpriseById(int idEnterprise) throws DataOperationException {
         Enterprise enterprise = null;
@@ -25,18 +25,19 @@ public class EnterpriseDAO implements IDAOEnterprise {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, idEnterprise);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String name = resultSet.getString("nombre_empresa");
-                String sector = resultSet.getString("sector");
-                String phone = resultSet.getString("telefono");
-                String mail = resultSet.getString("correo");
-                String city = resultSet.getString("ciudad");
-                long directUsers = resultSet.getLong("usuarios_directos");
-                long indirectUsers = resultSet.getLong("usuarios_indirectos");
-                boolean activeStatus = resultSet.getBoolean("estado_activo");
-                String country = resultSet.getString("pais");
-                enterprise = new Enterprise(idEnterprise, name, sector, phone, mail, city, directUsers, indirectUsers, activeStatus, country);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String name = resultSet.getString("nombre_empresa");
+                    String sector = resultSet.getString("sector");
+                    String phone = resultSet.getString("telefono");
+                    String mail = resultSet.getString("correo");
+                    String city = resultSet.getString("ciudad");
+                    long directUsers = resultSet.getLong("usuarios_directos");
+                    long indirectUsers = resultSet.getLong("usuarios_indirectos");
+                    boolean activeStatus = resultSet.getBoolean("estado_activo");
+                    String country = resultSet.getString("pais");
+                    enterprise = new Enterprise(idEnterprise, name, sector, phone, mail, city, directUsers, indirectUsers, activeStatus, country);
+                }
             }
             if (enterprise == null) {
                 logger.log(Level.WARNING, "No se encontro a la empresa con el id: " + idEnterprise);
@@ -69,9 +70,10 @@ public class EnterpriseDAO implements IDAOEnterprise {
             preparedStatement.setBoolean(8,enterprise.isActiveStatus());
             preparedStatement.setString(9,enterprise.getCountry());
             preparedStatement.executeUpdate();
-            ResultSet keys = preparedStatement.getGeneratedKeys();
-            if (keys.next()) {
-                generatedId = keys.getInt(1);
+            try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
+                if (keys.next()) {
+                    generatedId = keys.getInt(1);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error registrando la organizacion vinculada",e);
@@ -86,12 +88,12 @@ public class EnterpriseDAO implements IDAOEnterprise {
         String query = "SELECT id_empresa from organizacion_vinculada WHERE estado_activo = true;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> enterprisesIds = new ArrayList<>();
-            while (resultSet.next()){
-                enterprisesIds.add(resultSet.getInt("id_empresa"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()){
+                    enterprisesIds.add(resultSet.getInt("id_empresa"));
+                }
             }
-            resultSet.close();
             for (Integer id : enterprisesIds) {
                 enterprises.add(getEnterpriseById(id));
             }
@@ -107,12 +109,12 @@ public class EnterpriseDAO implements IDAOEnterprise {
         String query = "SELECT id_empresa from organizacion_vinculada;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> enterprisesIds = new ArrayList<>();
-            while (resultSet.next()) {
-                enterprisesIds.add(resultSet.getInt("id_empresa"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    enterprisesIds.add(resultSet.getInt("id_empresa"));
+                }
             }
-            resultSet.close();
             for (Integer enterpriseId : enterprisesIds) {
                 enterprises.add(getEnterpriseById(enterpriseId));
             }

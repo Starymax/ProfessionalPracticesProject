@@ -159,6 +159,23 @@ public class GUIGenerateAcceptanceLetter extends Application {
         return hours;
     }
 
+    private void updateEndHourOptions(int index, String newStartHour) {
+        if (newStartHour != null) {
+            ObservableList<String> filtered = hourOptions.filtered(hour -> timeToMinutes(hour) > timeToMinutes(newStartHour));
+            endHourCombo[index].setItems(filtered);
+            String currentEnd = endHourCombo[index].getValue();
+            if (currentEnd != null && !filtered.contains(currentEnd)) {
+                if (!filtered.isEmpty()) {
+                    endHourCombo[index].setValue(filtered.get(0));
+                } else {
+                    endHourCombo[index].setValue(null);
+                }
+            }
+        } else {
+            endHourCombo[index].setItems(hourOptions);
+        }
+    }
+
     private HBox createButtonRow() {
         buttonPrint = new Button("Imprimir");
         buttonPrint.setPrefWidth(120);
@@ -219,22 +236,7 @@ public class GUIGenerateAcceptanceLetter extends Application {
             startHourCombo[i].setValue("08:00");
             endHourCombo[i].setValue("12:00");
             final int index = i;
-            startHourCombo[i].valueProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal != null) {
-                    ObservableList<String> filtered = hourOptions.filtered(hour -> timeToMinutes(hour) > timeToMinutes(newVal));
-                    endHourCombo[index].setItems(filtered);
-                    String currentEnd = endHourCombo[index].getValue();
-                    if (currentEnd != null && !filtered.contains(currentEnd)) {
-                        if (!filtered.isEmpty()) {
-                            endHourCombo[index].setValue(filtered.get(0));
-                        } else {
-                            endHourCombo[index].setValue(null);
-                        }
-                    }
-                } else {
-                    endHourCombo[index].setItems(hourOptions);
-                }
-            });
+            startHourCombo[i].valueProperty().addListener((observableValue, oldValue, newValue) -> updateEndHourOptions(index, newValue));
             HBox box = new HBox(5);
             box.getChildren().addAll(new Label("Inicio:"), startHourCombo[i], new Label("Fin:"), endHourCombo[i]);
             scheduleGrid.add(box, i, 1);

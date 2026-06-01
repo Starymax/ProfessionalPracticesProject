@@ -1,6 +1,7 @@
 package mx.fei.gui.utils;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRPrintPage;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -8,6 +9,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,7 +38,7 @@ public class FinalReportGenerator {
                         JasperReport subreport1 = (JasperReport) JRLoader.loadObject(subreport1Stream);
                         JasperPrint subreport1Print = JasperFillManager.fillReport(subreport1, parameters, new JREmptyDataSource());
                         combinedPrint = subreport1Print;
-                    } catch (Exception e) {
+                    } catch (JRException e) {
                         logger.log(Level.WARNING, "Error al rellenar subFinalReport1.jasper", e);
                     }
                 } else {
@@ -58,13 +60,13 @@ public class FinalReportGenerator {
                                 combinedPrint.addPage(page);
                             }
                         }
-                    } catch (Exception e) {
+                    } catch (JRException e) {
                         logger.log(Level.WARNING, "Error al rellenar subFinalReport2.jasper", e);
                     }
                 } else {
                     logger.log(Level.WARNING, "No se encontró subFinalReport2.jasper en el classpath");
                 }
-            } catch (Exception e) {
+            } catch (IOException e) {
                 logger.log(Level.WARNING, "Error al cargar subreportes", e);
             }
 
@@ -76,7 +78,7 @@ public class FinalReportGenerator {
                 JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
                 result = true;
             }
-        } catch (Exception e) {
+        } catch (JRException | IOException e) {
             logger.log(Level.SEVERE, "Error crítico al rellenar o exportar el reporte final", e);
         }
         return result;

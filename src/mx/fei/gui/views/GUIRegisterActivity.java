@@ -32,7 +32,9 @@ import java.util.Map;
 
 public class GUIRegisterActivity extends Application {
 
-    private static final int TOTAL_WEEKS = 8;
+    private static final int TOTAL_WEEKS = 24;
+    private static final int MIN_HOURS_PER_WEEK = 18;
+    private static final int MAX_HOURS_PER_WEEK = 25;
 
     private TextField textFieldActivityName;
     private TextArea textAreaDescription;
@@ -106,6 +108,10 @@ public class GUIRegisterActivity extends Application {
             Integer currentWeek = comboBoxWeek.getValue();
             if (currentWeek != null) {
                 int parsed = parsePlannedHours(newText);
+                if (parsed > MAX_HOURS_PER_WEEK) {
+                    parsed = MAX_HOURS_PER_WEEK;
+                    textFieldPlannedHours.setText(String.valueOf(parsed));
+                }
                 plannedHoursPerWeek.put(currentWeek, parsed);
                 updatePlannedHoursMax();
             }
@@ -146,6 +152,19 @@ public class GUIRegisterActivity extends Application {
         if (weeksWithHours == 0) {
             errors.add("Debe asignar horas planeadas en al menos una semana.");
         }
+        for (Map.Entry<Integer, Integer> entry : plannedHoursPerWeek.entrySet()) {
+            int week = entry.getKey();
+            int hours = entry.getValue();
+            if (hours > 0 && hours < MIN_HOURS_PER_WEEK) {
+                errors.add("La semana " + week + " tiene " + hours + " horas. El mínimo por semana es " + MIN_HOURS_PER_WEEK + " horas.");
+            }
+            int alreadyUsed = getAlreadyUsedHoursForWeek(week);
+            int totalInWeek = alreadyUsed + hours;
+            if (totalInWeek > MAX_HOURS_PER_WEEK) {
+                errors.add("La semana " + week + " ya tiene " + alreadyUsed + " horas en otras actividades. "
+                        + "Agregar " + hours + " horas excede el máximo de " + MAX_HOURS_PER_WEEK + " horas por semana.");
+            }
+        }
         int totalActivityHours = getTotalPlannedHours();
         if (totalActivityHours > remainingAllowedHours) {
             errors.add("Las horas planeadas exceden las " + remainingAllowedHours + " horas disponibles.");
@@ -173,14 +192,15 @@ public class GUIRegisterActivity extends Application {
     }
 
     private int parsePlannedHours(String hoursText) {
-        if (hoursText == null || hoursText.isBlank()) {
-            return 0;
+        int plannedHours = 0;
+        if (hoursText != null && !hoursText.isBlank()) {
+            try {
+                plannedHours = Integer.parseInt(hoursText.trim());
+            } catch (NumberFormatException e) {
+                return 0;
+            }
         }
-        try {
-            return Integer.parseInt(hoursText.trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return plannedHours;
     }
 
     public void setRemainingAllowedHours(int remainingAllowedHours) {
@@ -192,20 +212,33 @@ public class GUIRegisterActivity extends Application {
 
     private void updatePlannedHoursMax() {
         Integer currentWeek = comboBoxWeek.getValue();
-        if (currentWeek == null) {
-            return;
+        if (currentWeek != null) {
+            int currentWeekHours = plannedHoursPerWeek.getOrDefault(currentWeek, 0);
+            int totalWithoutCurrentWeek = getTotalPlannedHours() - currentWeekHours;
+            int allowedForActivity = remainingAllowedHours - totalWithoutCurrentWeek;
+            if (allowedForActivity < 0) {
+                allowedForActivity = 0;
+            }
+            int alreadyUsedInWeek = getAlreadyUsedHoursForWeek(currentWeek);
+            int availableInWeek = MAX_HOURS_PER_WEEK - alreadyUsedInWeek;
+            if (availableInWeek < 0) {
+                availableInWeek = 0;
+            }
+            int effectiveMax = Math.min(allowedForActivity, availableInWeek);
+            if (currentWeekHours > effectiveMax) {
+                currentWeekHours = effectiveMax;
+                plannedHoursPerWeek.put(currentWeek, currentWeekHours);
+                textFieldPlannedHours.setText(String.valueOf(currentWeekHours));
+            }
         }
-        int currentWeekHours = plannedHoursPerWeek.getOrDefault(currentWeek, 0);
-        int totalWithoutCurrentWeek = getTotalPlannedHours() - currentWeekHours;
-        int allowedForActivity = remainingAllowedHours - totalWithoutCurrentWeek;
-        if (allowedForActivity < 0) {
-            allowedForActivity = 0;
+    }
+
+    private int getAlreadyUsedHoursForWeek(int week) {
+        int usedHours = 0;
+        if (guiActivityPlan != null) {
+            usedHours = guiActivityPlan.getWeeklyLogsMap().values().stream().flatMap(List::stream).filter(log -> log.getWeek() == week).mapToInt(WeeklyLog::getPlannedHours).sum();
         }
-        if (currentWeekHours > allowedForActivity) {
-            currentWeekHours = allowedForActivity;
-            plannedHoursPerWeek.put(currentWeek, currentWeekHours);
-            textFieldPlannedHours.setText(String.valueOf(currentWeekHours));
-        }
+        return usedHours;
     }
 
     public void showError(String message) {
@@ -225,7 +258,7 @@ public class GUIRegisterActivity extends Application {
     }
 
     public void updateActivitiesList(Activity activity, ArrayList<WeeklyLog> weeklyLogs) {
-        guiActivityPlan.addActivity(activity,  weeklyLogs);
+        guiActivityPlan.addActivity(activity, weeklyLogs);
     }
 
     public void setGuiActivityPlan(GUIActivityPlan guiActivityPlan) {

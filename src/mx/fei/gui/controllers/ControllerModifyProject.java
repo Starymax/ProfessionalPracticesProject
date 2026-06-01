@@ -2,8 +2,10 @@ package mx.fei.gui.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.stage.Modality;
+import mx.fei.gui.views.GUIActivityPlan;
 import mx.fei.gui.views.GUIModifyProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
+import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.Enterprise;
@@ -37,6 +39,8 @@ public class ControllerModifyProject {
             saveChanges();
         } else if (event.getSource() == guiModifyProject.getButtonCancel()) {
             cancel();
+        } else if (event.getSource() == guiModifyProject.getButtonActivityPlan()) {
+            openActivityPlan();
         }
     }
 
@@ -62,15 +66,36 @@ public class ControllerModifyProject {
             Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
             guiRegisterProjectManager.start(stage);
             guiRegisterProjectManager.loadEnterprise(enterprise);
-            stage.setOnHidden(event -> {
-                try {
-                    guiModifyProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(enterprise));
-                } catch (DataOperationException e) {
-                    guiModifyProject.showError(e.getMessage());
-                }
-            });
+            stage.setOnHidden(event -> refreshProjectManagers(projectManagerDAO, enterprise));
         } else {
             guiModifyProject.showError("Debe seleccionar una Organización para añadir un responsable");
+        }
+    }
+
+    private void openActivityPlan() {
+        try {
+            ActivityDAO activityDAO = new ActivityDAO();
+            boolean hasActivities = !activityDAO.getActivitiesByProjectId(guiModifyProject.getProject().getProjectId()).isEmpty();
+            if (hasActivities) {
+                guiModifyProject.showError("Este proyecto ya tiene un plan de actividades asignado.");
+                guiModifyProject.disableActivityPlanButton();
+            } else {
+                GUIActivityPlan guiActivityPlan = new GUIActivityPlan();
+                guiActivityPlan.setProject(guiModifyProject.getProject());
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiActivityPlan.start(stage);
+            }
+        } catch (DataOperationException e) {
+            guiModifyProject.showError(e.getMessage());
+        }
+    }
+
+    private void refreshProjectManagers(ProjectManagerDAO projectManagerDAO, Enterprise enterprise) {
+        try {
+            guiModifyProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(enterprise));
+        } catch (DataOperationException e) {
+            guiModifyProject.showError(e.getMessage());
         }
     }
 

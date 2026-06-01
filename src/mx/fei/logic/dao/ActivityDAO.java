@@ -18,7 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ActivityDAO implements IDAOActivity {
-    private Logger logger = Logger.getLogger(ActivityDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ActivityDAO.class.getName());
 
     @Override
     public boolean insertActivity(Activity activity, Project project, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException {
@@ -37,10 +37,11 @@ public class ActivityDAO implements IDAOActivity {
                 preparedStatement.setString(2, activity.getObservationsActivity());
                 preparedStatement.setInt(3, project.getProjectId());
                 preparedStatement.executeUpdate();
-                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    int activityId = generatedKeys.getInt(1);
-                    success = insertWeeklyLogs(connection, weeklyLogs, activityId);
+                try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int activityId = generatedKeys.getInt(1);
+                        success = insertWeeklyLogs(connection, weeklyLogs, activityId);
+                    }
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al insertar actividad", e);
@@ -76,14 +77,15 @@ public class ActivityDAO implements IDAOActivity {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, activityId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String nameActivity = resultSet.getString("nombre_actividad");
-                String observationsActivity = resultSet.getString("observaciones_actividad");
-                int projectId = resultSet.getInt("id_proyecto");
-                ProjectDAO projectDAO = new ProjectDAO();
-                Project project = projectDAO.getProjectById(projectId);
-                activity = new Activity(activityId, nameActivity, observationsActivity, project);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String nameActivity = resultSet.getString("nombre_actividad");
+                    String observationsActivity = resultSet.getString("observaciones_actividad");
+                    int projectId = resultSet.getInt("id_proyecto");
+                    ProjectDAO projectDAO = new ProjectDAO();
+                    Project project = projectDAO.getProjectById(projectId);
+                    activity = new Activity(activityId, nameActivity, observationsActivity, project);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener la actividad",e);
@@ -99,10 +101,11 @@ public class ActivityDAO implements IDAOActivity {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, projectId);
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> activitiesIds = new ArrayList<>();
-            while (resultSet.next()) {
-                activitiesIds.add(resultSet.getInt("id_actividad"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    activitiesIds.add(resultSet.getInt("id_actividad"));
+                }
             }
             for (int idActivity : activitiesIds) {
                 activities.add(getActivityById(idActivity));
@@ -121,12 +124,13 @@ public class ActivityDAO implements IDAOActivity {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, weeklyLogId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int week = resultSet.getInt("semana");
-                int plannedHours = resultSet.getInt("horas_planificadas");
-                Activity activity = getActivityById(resultSet.getInt("id_actividad"));
-                weeklyLog = new WeeklyLog(weeklyLogId, week, 0, plannedHours, activity);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int week = resultSet.getInt("semana");
+                    int plannedHours = resultSet.getInt("horas_planificadas");
+                    Activity activity = getActivityById(resultSet.getInt("id_actividad"));
+                    weeklyLog = new WeeklyLog(weeklyLogId, week, 0, plannedHours, activity);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el horario de la actividad",e);
@@ -142,12 +146,12 @@ public class ActivityDAO implements IDAOActivity {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, activityId);
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> weeklyLogIds = new ArrayList<>();
-            while (resultSet.next()) {
-                weeklyLogIds.add(resultSet.getInt("id_registro"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    weeklyLogIds.add(resultSet.getInt("id_registro"));
+                }
             }
-            resultSet.close();
             for (Integer weeklyLogId: weeklyLogIds) {
                 weeklyLogs.add(getWeeklyLogById(weeklyLogId));
             }

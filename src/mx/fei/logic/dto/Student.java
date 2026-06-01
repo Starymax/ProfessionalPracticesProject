@@ -5,11 +5,11 @@ public class Student extends User{
     private boolean indigenousLanguage;
     private Project assignedProject;
 
-    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean active_status,  String enrollment, boolean indigenousLanguage, Project asignedProject) {
-        super(userId, name, lastName, email, password, gender, active_status);
+    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean activeStatus,  String enrollment, boolean indigenousLanguage, Project assignedProject) {
+        super(userId, name, lastName, email, password, gender, activeStatus);
         this.enrollment = enrollment;
         this.indigenousLanguage = indigenousLanguage;
-        this.assignedProject = asignedProject;
+        this.assignedProject = assignedProject;
     }
 
     public String getEnrollment() {

@@ -4,6 +4,8 @@ import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JRException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Level;
@@ -23,7 +25,7 @@ public class AcceptanceLetterGenerator {
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
             return true;
-        } catch (Exception e) {
+        } catch (JRException | IOException e) {
             logger.log(Level.SEVERE, "Error al generar la carta de aceptación", e);
             return false;
         }

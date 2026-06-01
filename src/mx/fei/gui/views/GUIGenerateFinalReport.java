@@ -257,27 +257,29 @@ public class GUIGenerateFinalReport extends Application {
     }
 
     private void configureEditableColumn(TableColumn<FinalReportRow, String> column, BiConsumer<FinalReportRow, String> setter) {
-        String fieldName = column.getText();
         column.setCellFactory(TextFieldTableCell.forTableColumn());
-        column.setOnEditCommit(event -> {
-            FinalReportRow row = event.getRowValue();
-            String oldValue = event.getOldValue() != null ? event.getOldValue() : "";
-            String newValue = event.getNewValue() != null ? event.getNewValue().trim() : "";
-            if (newValue.isBlank()) {
-                setter.accept(row, "");
-            } else {
-                List<String> errors = new ArrayList<>();
-                GUIUtils.validateShortText(newValue, fieldName, errors);
-                if (errors.isEmpty()) {
-                    setter.accept(row, newValue);
-                } else {
-                    GUIUtils.showErrors(errors);
-                    setter.accept(row, oldValue);
-                    tableActivities.refresh();
-                }
-            }
-        });
+        column.setOnEditCommit(event -> handleEditableColumnCommit(event, setter));
         column.setEditable(true);
+    }
+
+    private void handleEditableColumnCommit(TableColumn.CellEditEvent<FinalReportRow, String> event, BiConsumer<FinalReportRow, String> setter) {
+        FinalReportRow row = event.getRowValue();
+        String fieldName = event.getTableColumn().getText();
+        String oldValue = event.getOldValue() != null ? event.getOldValue() : "";
+        String newValue = event.getNewValue() != null ? event.getNewValue().trim() : "";
+        if (newValue.isBlank()) {
+            setter.accept(row, "");
+        } else {
+            List<String> errors = new ArrayList<>();
+            GUIUtils.validateShortText(newValue, fieldName, errors);
+            if (errors.isEmpty()) {
+                setter.accept(row, newValue);
+            } else {
+                GUIUtils.showErrors(errors);
+                setter.accept(row, oldValue);
+                tableActivities.refresh();
+            }
+        }
     }
 
     private HBox createButtonRow() {
@@ -297,11 +299,23 @@ public class GUIGenerateFinalReport extends Application {
         return buttonRow;
     }
 
-    public void setStudentInfo(String name, String matricule, String email, String nrc, String period) {
+    public void setStudentName(String name) {
         labelStudentName.setText(name != null ? name : "-");
-        labelStudentEnrollment.setText(matricule != null ? matricule : "-");
+    }
+
+    public void setStudentEnrollment(String enrollment) {
+        labelStudentEnrollment.setText(enrollment != null ? enrollment : "-");
+    }
+
+    public void setStudentEmail(String email) {
         labelStudentEmail.setText(email != null ? email : "-");
+    }
+
+    public void setStudentNrc(String nrc) {
         labelStudentNrc.setText(nrc != null ? nrc : "-");
+    }
+
+    public void setPeriod(String period) {
         labelPeriod.setText(period != null ? period : "-");
     }
 

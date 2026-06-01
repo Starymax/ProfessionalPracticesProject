@@ -17,7 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UserDAO implements IDAOUser {
-    private Logger logger = Logger.getLogger(UserDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
     @Override
     public boolean userExist(int idUser) throws DataOperationException {
         String query = "SELECT id_usuario FROM  usuario where id_usuario=?;";
@@ -25,8 +25,9 @@ public class UserDAO implements IDAOUser {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1,idUser);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            exist = resultSet.next();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                exist = resultSet.next();
+            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al verificar si existe un usuario",e);
             throw new DataOperationException("Error al verificar si existe un usuario ");
@@ -51,9 +52,10 @@ public class UserDAO implements IDAOUser {
             preparedStatement.setBoolean(5, user.isActive());
             preparedStatement.setString(6, user.getGender());
             preparedStatement.executeUpdate();
-            ResultSet keys = preparedStatement.getGeneratedKeys();
-            if (keys.next()) {
-                generatedID = keys.getInt(1);
+            try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
+                if (keys.next()) {
+                    generatedID = keys.getInt(1);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al registrar el usuario",e);
@@ -96,13 +98,14 @@ public class UserDAO implements IDAOUser {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, email);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int idUser = resultSet.getInt("id_usuario");
-                if (isStudent(idUser)) {
-                    return studentDAO.getStudentById(idUser);
-                } else {
-                    return professorDAO.getProfessorById(idUser);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int idUser = resultSet.getInt("id_usuario");
+                    if (isStudent(idUser)) {
+                        return studentDAO.getStudentById(idUser);
+                    } else {
+                        return professorDAO.getProfessorById(idUser);
+                    }
                 }
             }
             logger.log(Level.WARNING, "Error al obtener el usuario");
@@ -119,9 +122,10 @@ public class UserDAO implements IDAOUser {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idUser);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1) > 0;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                return resultSet.getInt(1) > 0;
+            }
         } catch (SQLException e) {
             throw new DataOperationException("Error al obtener los datos del usuario");
         }

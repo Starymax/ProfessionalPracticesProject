@@ -100,7 +100,7 @@ public class EnterpriseDAOTest {
 
     @Test
     void registerEnterprise_Successful_ReturnsGeneratedId() throws SQLException {
-        Enterprise enterprise = new Enterprise();
+        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
         enterprise.setName("UV Software");
         enterprise.setSector("Educación");
         enterprise.setPhoneNumber("2281000000");
@@ -188,7 +188,7 @@ public class EnterpriseDAOTest {
 
     @Test
     void modifyEnterprise_Successful_ReturnsTrue() throws SQLException {
-        Enterprise enterprise = new Enterprise();
+        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
         enterprise.setEnterpriseId(1);
         enterprise.setName("UV Software Actualizada");
         enterprise.setSector("Tecnología");
@@ -210,7 +210,7 @@ public class EnterpriseDAOTest {
 
     @Test
     void modifyEnterprise_NotFound_ReturnsFalse() throws Exception {
-        Enterprise enterprise = new Enterprise();
+        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
         enterprise.setEnterpriseId(999);
         enterprise.setName("Empresa Fantasma");
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -222,7 +222,7 @@ public class EnterpriseDAOTest {
 
     @Test
     void modifyEnterprise_SQLException_ThrowsDataOperationException() throws Exception {
-        Enterprise enterprise = new Enterprise();
+        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
         enterprise.setEnterpriseId(1);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Conexión perdida"));

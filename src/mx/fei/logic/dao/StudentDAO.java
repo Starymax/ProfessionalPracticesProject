@@ -20,7 +20,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class StudentDAO implements IDAOStudent {
-    private  Logger logger = Logger.getLogger(StudentDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(StudentDAO.class.getName());
 
     @Override
     public Student getStudentByEnrollment(String enrollment) throws DataOperationException, NoSuchElementException {
@@ -74,24 +74,24 @@ public class StudentDAO implements IDAOStudent {
             try (Connection connection = DatabaseConnectionManager.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(queryStudentById)) {
                 preparedStatement.setInt(1,idStudent);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    String name = resultSet.getString("nombre");
-                    String lastName = resultSet.getString("apellidos");
-                    String mail = resultSet.getString("correo");
-                    String enrollment = resultSet.getString("matricula");
-                    String password = resultSet.getString("contrasena");
-                    boolean activeStatus = resultSet.getBoolean("activo");
-                    String gender = resultSet.getString("genero");
-                    boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
-                    int studentProjectId = resultSet.getInt("proyecto");
-                    resultSet.close();
-                    Project project = null;
-                    if (studentProjectId > 0) {
-                        ProjectDAO projectDAO = new ProjectDAO();
-                        project = projectDAO.getProjectById(studentProjectId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        String name = resultSet.getString("nombre");
+                        String lastName = resultSet.getString("apellidos");
+                        String mail = resultSet.getString("correo");
+                        String enrollment = resultSet.getString("matricula");
+                        String password = resultSet.getString("contrasena");
+                        boolean activeStatus = resultSet.getBoolean("activo");
+                        String gender = resultSet.getString("genero");
+                        boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
+                        int studentProjectId = resultSet.getInt("proyecto");
+                        Project project = null;
+                        if (studentProjectId > 0) {
+                            ProjectDAO projectDAO = new ProjectDAO();
+                            project = projectDAO.getProjectById(studentProjectId);
+                        }
+                        student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project);
                     }
-                    student = new Student(idStudent, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project);
                 }
                 if (student == null) {
                     logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
@@ -169,12 +169,12 @@ public class StudentDAO implements IDAOStudent {
         String queryConsultStudent = "SELECT matricula FROM alumno";
         try (Connection connection =DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudent)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<String> enrollments = new ArrayList<>();
-            while (resultSet.next()) {
-                enrollments.add((resultSet.getString("matricula")));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    enrollments.add((resultSet.getString("matricula")));
+                }
             }
-            resultSet.close();
             for(String enrollment : enrollments) {
                 students.add(getStudentByEnrollment(enrollment));
             }
@@ -192,11 +192,11 @@ public class StudentDAO implements IDAOStudent {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudents)) {
             List<String> enrollmetns = new ArrayList<>();
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                enrollmetns.add(resultSet.getString("matricula"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    enrollmetns.add(resultSet.getString("matricula"));
+                }
             }
-            resultSet.close();
             for (String enrollment : enrollmetns) {
                 students.add(getStudentByEnrollment(enrollment));
             }
@@ -213,12 +213,12 @@ public class StudentDAO implements IDAOStudent {
         String queryConsultActiveStudent = "SELECT matricula FROM alumno join usuario USING(id_usuario) WHERE estado_activo = true";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryConsultActiveStudent)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<String> enrollmetns = new ArrayList<>();
-            while (resultSet.next()) {
-                enrollmetns.add(resultSet.getString("matricula"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    enrollmetns.add(resultSet.getString("matricula"));
+                }
             }
-            resultSet.close();
             for(String enrollment : enrollmetns) {
                 students.add(getStudentByEnrollment(enrollment));
             }
@@ -253,10 +253,11 @@ public class StudentDAO implements IDAOStudent {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(queryGetSelectedProjects)){
             preparedStatement.setString(1,student.getEnrollment());
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> projectIds = new ArrayList<>();
-            while (resultSet.next()) {
-                projectIds.add(resultSet.getInt("proyecto_seleccionado"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    projectIds.add(resultSet.getInt("proyecto_seleccionado"));
+                }
             }
             ProjectDAO projectDAO = new ProjectDAO();
             for(Integer projectId : projectIds) {

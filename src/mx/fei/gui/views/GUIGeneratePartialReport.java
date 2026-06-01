@@ -224,17 +224,35 @@ public class GUIGeneratePartialReport extends Application {
         return box;
     }
 
-    public void setGeneralInfo(String career, String nrc, String professor, String period) {
+    public void setCareer(String career) {
         labelCareer.setText(career);
+    }
+
+    public void setNrc(String nrc) {
         labelNrc.setText(nrc);
+    }
+
+    public void setProfessor(String professor) {
         labelProfessor.setText(professor);
+    }
+
+    public void setPeriod(String period) {
         labelPeriod.setText(period);
     }
 
-    public void setProjectInfo(String studentName, String enrollment, String organization, String projectName) {
+    public void setStudentName(String studentName) {
         labelStudentName.setText(studentName);
+    }
+
+    public void setEnrollment(String enrollment) {
         labelEnrollment.setText(enrollment);
+    }
+
+    public void setOrganization(String organization) {
         labelOrganization.setText(organization);
+    }
+
+    public void setProjectName(String projectName) {
         labelProject.setText(projectName);
     }
 

@@ -6,8 +6,8 @@ public class Professor extends User{
     private boolean isAdmin;
     private String shift;
 
-    public Professor(int userId, String name, String lastName, String email, String password, String gender, boolean active_status, int personalNumber, boolean isCoordinator, boolean isAdmin, String shift) {
-        super(userId, name, lastName, email, password, gender, active_status);
+    public Professor(int userId, String name, String lastName, String email, String password, String gender, boolean activeStatus, int personalNumber, boolean isCoordinator, boolean isAdmin, String shift) {
+        super(userId, name, lastName, email, password, gender, activeStatus);
         this.personalNumber = personalNumber;
         this.isCoordinator = isCoordinator;
         this.isAdmin = isAdmin;

@@ -2,9 +2,11 @@ package mx.fei.gui.views;
 
 import mx.fei.gui.controllers.ControllerModifyProject;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
+import mx.fei.logic.exceptions.DataOperationException;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -52,10 +54,12 @@ public class GUIModifyProject extends Application {
     private RadioButton radioButtonInactive;
     private ToggleGroup toggleGroupStatus;
     private Button buttonAddProjectManager;
+    private Button buttonActivityPlan;
     private Button buttonContinue;
     private Button buttonCancel;
     private Stage stage;
     private Project project;
+    private GridPane formGrid;
 
     @Override
     public void start(Stage stage) {
@@ -124,7 +128,7 @@ public class GUIModifyProject extends Application {
             }
         });
 
-        GridPane formGrid = new GridPane();
+        formGrid = new GridPane();
         formGrid.setHgap(10);
         formGrid.setVgap(10);
 
@@ -138,13 +142,13 @@ public class GUIModifyProject extends Application {
         formGrid.getColumnConstraints().addAll(labelColumn, fieldColumn);
 
         int row = 0;
-        addFormRow(formGrid, row++, "Nombre:", textFieldName);
-        addFormRow(formGrid, row++, "Descripción:", textAreaDescription);
-        addFormRow(formGrid, row++, "Objetivo General:", textFieldGeneralObjective);
-        addFormRow(formGrid, row++, "Objetivos Inmediatos:", textAreaImmediateObjectives);
-        addFormRow(formGrid, row++, "Objetivos Mediatos:", textAreaMediateObjectives);
-        addFormRow(formGrid, row++, "Metodología:", textFieldMethodology);
-        addFormRow(formGrid, row++, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
+        addNameRow(row++);
+        addDescriptionRow(row++);
+        addGeneralObjectiveRow(row++);
+        addImmediateObjectivesRow(row++);
+        addMediateObjectivesRow(row++);
+        addMethodologyRow(row++);
+        addResourcesRow(row++);
 
         Label labelStartDate = new Label("Fecha Inicio:");
         labelStartDate.setFont(Font.font("SansSerif", 13));
@@ -154,10 +158,10 @@ public class GUIModifyProject extends Application {
         dateRow.setAlignment(Pos.CENTER_LEFT);
         formGrid.add(dateRow, 0, row++, 2, 1);
 
-        addFormRow(formGrid, row++, "Responsabilidades:", textAreaResponsibilities);
-        addFormRow(formGrid, row++, "Lugares disponibles:", textFieldAvailablePlaces);
-        addFormRow(formGrid, row++, "Organizacion:", comboBoxEnterprise);
-        addFormRow(formGrid, row++, "Responsable:", comboBoxProjectManager);
+        addResponsibilitiesRow(row++);
+        addAvailablePlacesRow(row++);
+        addEnterpriseRow(row++);
+        addProjectManagerRow(row++);
 
         toggleGroupStatus = new ToggleGroup();
         radioButtonActive = new RadioButton("Proyecto Activo");
@@ -173,25 +177,30 @@ public class GUIModifyProject extends Application {
         formGrid.add(statusRow, 0, row++, 2, 1);
 
         buttonAddProjectManager = new Button("Añadir Responsable");
+        buttonActivityPlan = new Button("Plan de Actividades");
         buttonContinue = new Button("Continuar");
         buttonCancel = new Button("Cancelar");
 
         String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand;";
         buttonAddProjectManager.setStyle(buttonStyle);
+        buttonActivityPlan.setStyle(buttonStyle);
         buttonContinue.setStyle(buttonStyle);
         buttonCancel.setStyle(buttonStyle);
 
         ControllerModifyProject controllerModifyProject = new ControllerModifyProject(this);
         buttonAddProjectManager.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
+        buttonActivityPlan.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
         buttonContinue.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
         buttonCancel.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
         comboBoxEnterprise.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
 
+        HBox buttonLeftPanel = new HBox(12, buttonAddProjectManager, buttonActivityPlan);
+        buttonLeftPanel.setAlignment(Pos.CENTER_LEFT);
         HBox buttonRightPanel = new HBox(12, buttonContinue, buttonCancel);
         buttonRightPanel.setAlignment(Pos.CENTER_RIGHT);
 
         BorderPane buttonPanel = new BorderPane();
-        buttonPanel.setLeft(buttonAddProjectManager);
+        buttonPanel.setLeft(buttonLeftPanel);
         buttonPanel.setRight(buttonRightPanel);
 
         VBox mainPanel = new VBox(16, labelTitle, formGrid, buttonPanel);
@@ -207,14 +216,58 @@ public class GUIModifyProject extends Application {
         stage.show();
     }
 
-    private void addFormRow(GridPane grid, int rowIndex, String labelText, javafx.scene.Node field) {
+    private void addNameRow(int rowIndex) {
+        addFormRow(rowIndex, "Nombre:", textFieldName);
+    }
+
+    private void addDescriptionRow(int rowIndex) {
+        addFormRow(rowIndex, "Descripción:", textAreaDescription);
+    }
+
+    private void addGeneralObjectiveRow(int rowIndex) {
+        addFormRow(rowIndex, "Objetivo General:", textFieldGeneralObjective);
+    }
+
+    private void addImmediateObjectivesRow(int rowIndex) {
+        addFormRow(rowIndex, "Objetivos Inmediatos:", textAreaImmediateObjectives);
+    }
+
+    private void addMediateObjectivesRow(int rowIndex) {
+        addFormRow(rowIndex, "Objetivos Mediatos:", textAreaMediateObjectives);
+    }
+
+    private void addMethodologyRow(int rowIndex) {
+        addFormRow(rowIndex, "Metodología:", textFieldMethodology);
+    }
+
+    private void addResourcesRow(int rowIndex) {
+        addFormRow(rowIndex, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
+    }
+
+    private void addResponsibilitiesRow(int rowIndex) {
+        addFormRow(rowIndex, "Responsabilidades:", textAreaResponsibilities);
+    }
+
+    private void addAvailablePlacesRow(int rowIndex) {
+        addFormRow(rowIndex, "Lugares disponibles:", textFieldAvailablePlaces);
+    }
+
+    private void addEnterpriseRow(int rowIndex) {
+        addFormRow(rowIndex, "Organizacion:", comboBoxEnterprise);
+    }
+
+    private void addProjectManagerRow(int rowIndex) {
+        addFormRow(rowIndex, "Responsable:", comboBoxProjectManager);
+    }
+
+    private void addFormRow(int rowIndex, String labelText, javafx.scene.Node field) {
         Label label = new Label(labelText);
         label.setFont(Font.font("SansSerif", 13));
         label.setWrapText(true);
         if (field instanceof TextField textField) textField.setMaxWidth(Double.MAX_VALUE);
         GridPane.setFillWidth(field, true);
-        grid.add(label, 0, rowIndex);
-        grid.add(field, 1, rowIndex);
+        formGrid.add(label, 0, rowIndex);
+        formGrid.add(field, 1, rowIndex);
     }
 
     public void loadProject(Project project) {
@@ -234,6 +287,21 @@ public class GUIModifyProject extends Application {
             radioButtonActive.setSelected(true);
         } else {
             radioButtonInactive.setSelected(true);
+        }
+        verifyActivityPlan();
+    }
+
+    private void verifyActivityPlan() {
+        if (project != null) {
+            try {
+                ActivityDAO activityDAO = new ActivityDAO();
+                boolean hasActivities = !activityDAO.getActivitiesByProjectId(project.getProjectId()).isEmpty();
+                if (hasActivities) {
+                    buttonActivityPlan.setDisable(true);
+                }
+            } catch (DataOperationException e) {
+                showError("Error al verificar plan de actividades: " + e.getMessage());
+            }
         }
     }
 
@@ -279,6 +347,14 @@ public class GUIModifyProject extends Application {
             validated = false;
         }
         return validated;
+    }
+
+    public void enableActivityPlanButton() {
+        buttonActivityPlan.setDisable(false);
+    }
+
+    public void disableActivityPlanButton() {
+        buttonActivityPlan.setDisable(true);
     }
 
     public void showError(String message) {
@@ -359,6 +435,10 @@ public class GUIModifyProject extends Application {
 
     public Button getButtonAddProjectManager() {
         return buttonAddProjectManager;
+    }
+
+    public Button getButtonActivityPlan() {
+        return buttonActivityPlan;
     }
 
     public Button getButtonContinue() {

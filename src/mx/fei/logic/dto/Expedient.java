@@ -5,17 +5,17 @@ public class Expedient {
     private boolean liberationLetter;
     private boolean acceptationOffice;
     private boolean workPlan;
-    private boolean schelude;
+    private boolean schedule;
     private boolean competenceEvaluation;
     private String period;
     private Student student;
 
-    public Expedient(int expedientId, boolean liberationLetter, boolean acceptationOffice, boolean workPlan, boolean schelude, boolean competenceEvaluation, String period, Student student) {
+    public Expedient(int expedientId, boolean liberationLetter, boolean acceptationOffice, boolean workPlan, boolean schedule, boolean competenceEvaluation, String period, Student student) {
         this.id = expedientId;
         this.liberationLetter = liberationLetter;
         this.acceptationOffice = acceptationOffice;
         this.workPlan = workPlan;
-        this.schelude = schelude;
+        this.schedule = schedule;
         this.competenceEvaluation = competenceEvaluation;
         this.period = period;
         this.student = student;
@@ -53,12 +53,12 @@ public class Expedient {
         this.workPlan = workPlan;
     }
 
-    public boolean isSchelude() {
-        return schelude;
+    public boolean isSchedule() {
+        return schedule;
     }
 
-    public void setSchelude(boolean schelude) {
-        this.schelude = schelude;
+    public void setSchedule(boolean schedule) {
+        this.schedule = schedule;
     }
 
     public boolean isCompetenceEvaluation() {

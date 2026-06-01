@@ -19,7 +19,7 @@ public class Project {
     private Enterprise enterprise;
     private ProjectManager projectManager;
 
-    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String responsibilities, String resources, Date startDate, Date finalDate, boolean activeStatus, int available_places, Enterprise enterprise, ProjectManager projectManager) {
+    public Project(int projectId, String nameProject, String descriptionProject, String generalObjective, String mediatesObjectives, String immediateObjectives, String methodology, String responsibilities, String resources, Date startDate, Date finalDate, boolean activeStatus, int availablePlaces, Enterprise enterprise, ProjectManager projectManager) {
         this.id = projectId;
         this.nameProject = nameProject;
         this.descriptionProject = descriptionProject;
@@ -32,7 +32,7 @@ public class Project {
         this.startDate = startDate;
         this.finalDate = finalDate;
         this.activeStatus = activeStatus;
-        this.availablePlaces = available_places;
+        this.availablePlaces = availablePlaces;
         this.enterprise = enterprise;
         this.projectManager = projectManager;
     }
@@ -129,8 +129,8 @@ public class Project {
         return availablePlaces;
     }
 
-    public void setAvailablePlaces(int available_places) {
-        this.availablePlaces = available_places;
+    public void setAvailablePlaces(int availablePlaces) {
+        this.availablePlaces = availablePlaces;
     }
 
     public boolean getActiveStatus() {

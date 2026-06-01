@@ -52,7 +52,7 @@ public class ControllerActivityPlan {
                 guiRegisterActivity.setGuiActivityPlan(guiActivityPlan);
                 guiRegisterActivity.setRemainingAllowedHours(remainingHours);
             }
-        } catch (Exception exception) {
+        } catch (RuntimeException exception) {
             guiActivityPlan.showError(exception.getMessage());
         }
     }

@@ -1,9 +1,11 @@
 package mx.fei.gui.utils;
 
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.logging.Level;
@@ -22,7 +24,7 @@ public class PartialReportGenerator {
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
             result = true;
-        } catch (Exception e) {
+        } catch (JRException | IOException e) {
             logger.log(Level.SEVERE, "Error al generar el reporte parcial", e);
         }
         return result;

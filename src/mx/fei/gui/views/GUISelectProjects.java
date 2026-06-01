@@ -93,21 +93,23 @@ public class GUISelectProjects extends Application {
 
         CheckBox checkBox = new CheckBox();
         checkBox.setUserData(project);
-        checkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
-            long selected = checkBoxes.stream().filter(CheckBox::isSelected).count();
-            if (newValue && selected > 3) {
-                checkBox.setSelected(false);
-                Alert alert = new Alert(AlertType.WARNING);
-                alert.setTitle("Límite alcanzado");
-                alert.setHeaderText(null);
-                alert.setContentText("Solo puedes seleccionar 3 proyectos.");
-                alert.showAndWait();
-            }
-        });
+        checkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> enforceSelectionLimit(checkBox, newValue));
         checkBoxes.add(checkBox);
         HBox row = new HBox(6, label, checkBox);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;
+    }
+
+    private void enforceSelectionLimit(CheckBox checkBox, boolean isSelected) {
+        long selected = checkBoxes.stream().filter(CheckBox::isSelected).count();
+        if (isSelected && selected > 3) {
+            checkBox.setSelected(false);
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Límite alcanzado");
+            alert.setHeaderText(null);
+            alert.setContentText("Solo puedes seleccionar 3 proyectos.");
+            alert.showAndWait();
+        }
     }
 
     public void showError(String message) {

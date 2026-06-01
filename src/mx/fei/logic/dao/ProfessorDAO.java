@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ProfessorDAO implements IDAOProfessor {
-    private final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
     @Override
     public Professor getProfessorByPersonalNumber(int personalNumber) throws DataOperationException {
         Professor professor = null;
@@ -24,19 +24,20 @@ public class ProfessorDAO implements IDAOProfessor {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, personalNumber);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int idUser = resultSet.getInt("id_usuario");
-                String name = resultSet.getString("nombre");
-                String lastName = resultSet.getString("apellidos");
-                String mail = resultSet.getString("correo");
-                String password = resultSet.getString("contrasena");
-                boolean activeStatus = resultSet.getBoolean("estado_activo");
-                String gender = resultSet.getString("genero");
-                boolean isCoordinator = resultSet.getBoolean("es_coordinador");
-                boolean isAdmin = resultSet.getBoolean("es_administrador");
-                String shift = resultSet.getString("turno");
-                professor = new Professor(idUser, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int idUser = resultSet.getInt("id_usuario");
+                    String name = resultSet.getString("nombre");
+                    String lastName = resultSet.getString("apellidos");
+                    String mail = resultSet.getString("correo");
+                    String password = resultSet.getString("contrasena");
+                    boolean activeStatus = resultSet.getBoolean("estado_activo");
+                    String gender = resultSet.getString("genero");
+                    boolean isCoordinator = resultSet.getBoolean("es_coordinador");
+                    boolean isAdmin = resultSet.getBoolean("es_administrador");
+                    String shift = resultSet.getString("turno");
+                    professor = new Professor(idUser, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el profesor",e);
@@ -52,19 +53,20 @@ public class ProfessorDAO implements IDAOProfessor {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idProfessor);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                int personalNumber = resultSet.getInt("numero_de_personal");
-                String name = resultSet.getString("nombre");
-                String lastName = resultSet.getString("apellidos");
-                String mail = resultSet.getString("correo");
-                String password = resultSet.getString("contrasena");
-                boolean activeStatus = resultSet.getBoolean("estado_activo");
-                String gender = resultSet.getString("genero");
-                boolean isCoordinator = resultSet.getBoolean("es_coordinador");
-                boolean isAdmin = resultSet.getBoolean("es_administrador");
-                String shift = resultSet.getString("turno");
-                professor = new Professor(idProfessor, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    int personalNumber = resultSet.getInt("numero_de_personal");
+                    String name = resultSet.getString("nombre");
+                    String lastName = resultSet.getString("apellidos");
+                    String mail = resultSet.getString("correo");
+                    String password = resultSet.getString("contrasena");
+                    boolean activeStatus = resultSet.getBoolean("estado_activo");
+                    String gender = resultSet.getString("genero");
+                    boolean isCoordinator = resultSet.getBoolean("es_coordinador");
+                    boolean isAdmin = resultSet.getBoolean("es_administrador");
+                    String shift = resultSet.getString("turno");
+                    professor = new Professor(idProfessor, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el profesor",e);
@@ -115,12 +117,12 @@ public class ProfessorDAO implements IDAOProfessor {
         String query = "SELECT numero_de_personal FROM profesor;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             List<Integer> personalNumbers = new ArrayList<>();
-            while (resultSet.next()) {
-                personalNumbers.add(resultSet.getInt("numero_de_personal"));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    personalNumbers.add(resultSet.getInt("numero_de_personal"));
+                }
             }
-            resultSet.close();
             for (Integer personalNumer : personalNumbers) {
                 professors.add(getProfessorByPersonalNumber(personalNumer));
             }
@@ -157,9 +159,10 @@ public class ProfessorDAO implements IDAOProfessor {
         String query = "SELECT 1 FROM profesor p join usuario u WHERE p.es_coordinador = true and u.estado_activo = true LIMIT 1;";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                exists = true;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    exists = true;
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al verificar si existe un coordinador");

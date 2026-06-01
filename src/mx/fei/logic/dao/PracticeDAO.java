@@ -93,18 +93,19 @@
             try (Connection connection = DatabaseConnectionManager.getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, enrollment);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
-                    int practiceId = resultSet.getInt("id_practica");
-                    String period = resultSet.getString("periodo");
-                    String nrc = resultSet.getString("nrc");
-                    float grade = resultSet.getFloat("calificacion");
-                    if (nrc != null && !nrc.isBlank()) {
-                        EducationalExperienceDAO experienceDAO = new EducationalExperienceDAO();
-                        EducationalExperience educationalExperience = experienceDAO.getEducationalExperienceByNrc(nrc);
-                        StudentDAO studentDAO = new StudentDAO();
-                        Student student = studentDAO.getStudentByEnrollment(enrollment);
-                        practice = new Practice(practiceId,student, educationalExperience, period != null ? period : "", grade);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        int practiceId = resultSet.getInt("id_practica");
+                        String period = resultSet.getString("periodo");
+                        String nrc = resultSet.getString("nrc");
+                        float grade = resultSet.getFloat("calificacion");
+                        if (nrc != null && !nrc.isBlank()) {
+                            EducationalExperienceDAO experienceDAO = new EducationalExperienceDAO();
+                            EducationalExperience educationalExperience = experienceDAO.getEducationalExperienceByNrc(nrc);
+                            StudentDAO studentDAO = new StudentDAO();
+                            Student student = studentDAO.getStudentByEnrollment(enrollment);
+                            practice = new Practice(practiceId,student, educationalExperience, period != null ? period : "", grade);
+                        }
                     }
                 }
             } catch (SQLException e) {

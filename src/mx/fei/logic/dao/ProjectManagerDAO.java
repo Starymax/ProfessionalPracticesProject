@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ProjectManagerDAO implements IDAOProjectManager {
-    private Logger logger = Logger.getLogger(ProjectManagerDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(ProjectManagerDAO.class.getName());
     @Override
     public boolean registerProjectManager(ProjectManager projectManager) throws DataOperationException {
         boolean sucess = false;
@@ -52,14 +52,15 @@ public class ProjectManagerDAO implements IDAOProjectManager {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, idProjectManager);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                String name = resultSet.getString("nombre_responsable");
-                String email = resultSet.getString("correo_responsable");
-                String phoneNumber = resultSet.getString("telefono_responsable");
-                String rol = resultSet.getString("cargo");
-                int enterpriseId = resultSet.getInt("id_empresa");
-                projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol, enterpriseId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String name = resultSet.getString("nombre_responsable");
+                    String email = resultSet.getString("correo_responsable");
+                    String phoneNumber = resultSet.getString("telefono_responsable");
+                    String rol = resultSet.getString("cargo");
+                    int enterpriseId = resultSet.getInt("id_empresa");
+                    projectManager = new ProjectManager(idProjectManager, name, email, phoneNumber, rol, enterpriseId);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el Responsable",e);
@@ -76,9 +77,10 @@ public class ProjectManagerDAO implements IDAOProjectManager {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, enterpriseId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                projectManagers.add(getProjectManagerById(resultSet.getInt("id_responsable")));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    projectManagers.add(getProjectManagerById(resultSet.getInt("id_responsable")));
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los responsables",e);

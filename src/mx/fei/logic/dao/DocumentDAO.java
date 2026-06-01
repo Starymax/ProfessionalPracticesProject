@@ -1,7 +1,10 @@
 package mx.fei.logic.dao;
 
 import mx.fei.dataaccess.DatabaseConnectionManager;
-import mx.fei.logic.dto.*;
+import mx.fei.logic.dto.Document;
+import mx.fei.logic.dto.DocumentType;
+import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAODocument;
 import java.io.IOException;
@@ -9,7 +12,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -18,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DocumentDAO implements IDAODocument {
-    private Logger logger = Logger.getLogger(DocumentDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(DocumentDAO.class.getName());
 
     @Override
     public boolean createExpedient(int studentId, String period) throws DataOperationException {
@@ -51,9 +58,10 @@ public class DocumentDAO implements IDAODocument {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enrollment);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                period = resultSet.getString("periodo");
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    period = resultSet.getString("periodo");
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el periodo del expediente", e);
@@ -97,9 +105,10 @@ public class DocumentDAO implements IDAODocument {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1,enrollment);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                isLoaded = resultSet.getBoolean(documentType);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    isLoaded = resultSet.getBoolean(documentType);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al comprobar los documentos");
@@ -140,16 +149,17 @@ public class DocumentDAO implements IDAODocument {
         try (Connection connection = DatabaseConnectionManager.getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, practice.getId());
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                int idDocument = resultSet.getInt("id_documento");
-                String name = resultSet.getString("nombre");
-                String path = resultSet.getString("ruta");
-                String type = resultSet.getString("tipoDocumento");
-                DocumentType documentType = DocumentType.valueOf(type);
-                Document document = new Document(name, path, documentType, practice);
-                document.setId(idDocument);
-                documents.add(document);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int idDocument = resultSet.getInt("id_documento");
+                    String name = resultSet.getString("nombre");
+                    String path = resultSet.getString("ruta");
+                    String type = resultSet.getString("tipoDocumento");
+                    DocumentType documentType = DocumentType.valueOf(type);
+                    Document document = new Document(name, path, documentType, practice);
+                    document.setId(idDocument);
+                    documents.add(document);
+                }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los documentos de la practica", e);

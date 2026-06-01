@@ -40,16 +40,17 @@ public class NotificationDAO implements IDAONotification {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                notifications.add(new Notification(
-                        resultSet.getInt("id_notificacion"),
-                        resultSet.getString("titulo"),
-                        resultSet.getString("mensaje"),
-                        resultSet.getTimestamp("fecha_emision"),
-                        resultSet.getBoolean("leida"),
-                        null
-                ));
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    notifications.add(new Notification(
+                            resultSet.getInt("id_notificacion"),
+                            resultSet.getString("titulo"),
+                            resultSet.getString("mensaje"),
+                            resultSet.getTimestamp("fecha_emision"),
+                            resultSet.getBoolean("leida"),
+                            null
+                    ));
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener notificaciones del alumno", e);
@@ -78,9 +79,10 @@ public class NotificationDAO implements IDAONotification {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                count = resultSet.getInt(1);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    count = resultSet.getInt(1);
+                }
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al contar notificaciones no leídas", e);
