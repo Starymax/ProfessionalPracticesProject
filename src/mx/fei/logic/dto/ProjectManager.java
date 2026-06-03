@@ -8,6 +8,8 @@ public class ProjectManager {
     private String rol;
     private int enterpriseId;
 
+
+
     public ProjectManager(int projectManagerId, String name, String emailProjectManager, String phoneNumberProjectManager, String rol, int enterpriseId) {
         this.id = projectManagerId;
         this.name = name;
@@ -15,6 +17,9 @@ public class ProjectManager {
         this.phoneNumberProjectManager = phoneNumberProjectManager;
         this.rol = rol;
         this.enterpriseId = enterpriseId;
+    }
+
+    public ProjectManager() {
     }
 
     public int getProjectManagerId() {
@@ -59,6 +64,10 @@ public class ProjectManager {
 
     public int getEnterpriseId() {
         return enterpriseId;
+    }
+
+    public void setEnterpriseId(int enterpriseId) {
+        this.enterpriseId = enterpriseId;
     }
 
     @Override
