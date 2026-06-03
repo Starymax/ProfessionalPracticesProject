@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUIRegisterAdvance;
 import mx.fei.logic.dao.ActivityDAO;
@@ -10,17 +9,19 @@ import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.TextField;
+
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ControllerRegisterAdvance {
 
     private final GUIRegisterAdvance guiRegisterAdvance;
     private final ActivityDAO activityDAO;
     private final StudentAdvanceDAO advanceDAO;
+    private int pastWeeksLimit;
+    private List<StudentAdvance> studentAdvances = new ArrayList<>();
 
     public ControllerRegisterAdvance(GUIRegisterAdvance guiRegisterAdvance) {
         this.guiRegisterAdvance = guiRegisterAdvance;
@@ -31,46 +32,40 @@ public class ControllerRegisterAdvance {
     public void loadWeeks() {
         if (guiRegisterAdvance.getStudent().getAssignedProject() == null) {
             guiRegisterAdvance.showError("No hay proyecto asignado.");
-        } else {
-            try {
-                guiRegisterAdvance.clearWeeklyLogs();
-                List<Activity> activities = activityDAO.getActivitiesByProjectId(guiRegisterAdvance.getStudent().getAssignedProject().getProjectId());
-                Set<Integer> weeks = new HashSet<>();
-                for (Activity activity : activities) {
-                    List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
-                    for (WeeklyLog weeklyLog : weeklyLogs) {
-                        weeks.add(weeklyLog.getWeek());
-                        guiRegisterAdvance.addWeeklyLog(weeklyLog.getWeek(), weeklyLog);
-                    }
-                }
-                if (weeks.isEmpty()) {
-                    guiRegisterAdvance.showError("No hay registros semanales disponibles.");
-                } else {
-                    List<Integer> sortedWeeks = new ArrayList<>(weeks);
-                    Collections.sort(sortedWeeks);
-                    List<String> items = new ArrayList<>();
-                    for (Integer week : sortedWeeks) {
-                        items.add("Semana " + week);
-                    }
-                    guiRegisterAdvance.setWeekOptions(items);
-                    guiRegisterAdvance.selectFirstWeek();
-                }
-            } catch (DataOperationException e) {
-                guiRegisterAdvance.showError(e.getMessage());
-            }
+            guiRegisterAdvance.closeWindow();
+            return;
         }
-    }
-
-    public void handleWeekSelection() {
-        String selected = guiRegisterAdvance.getSelectedWeek();
-        if (selected == null || selected.isEmpty()) {
-            guiRegisterAdvance.setPlannedHours(0);
-            guiRegisterAdvance.setCurrentRealized(0);
-            guiRegisterAdvance.resetRealizedField();
-        } else {
-            int week = parseWeekNumber(selected);
-            List<WeeklyLog> weeklyLogs = guiRegisterAdvance.getWeeklyLogsForWeek(week);
-            guiRegisterAdvance.setActivityOptions(weeklyLogs);
+        try {
+            refreshAdvances();
+            guiRegisterAdvance.clearWeeklyLogs();
+            List<Activity> activities = activityDAO.getActivitiesByProjectId(
+                    guiRegisterAdvance.getStudent().getAssignedProject().getProjectId());
+            int maxWeek = 0;
+            for (Activity activity : activities) {
+                List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
+                for (WeeklyLog weeklyLog : weeklyLogs) {
+                    guiRegisterAdvance.addWeeklyLog(weeklyLog.getWeek(), weeklyLog);
+                    if (weeklyLog.getWeek() > maxWeek) {
+                        maxWeek = weeklyLog.getWeek();
+                    }
+                }
+            }
+            int currentWeek = resolveCurrentWeek();
+            while (currentWeek <= maxWeek && guiRegisterAdvance.getWeeklyLogsForWeek(currentWeek).isEmpty()) {
+                currentWeek++;
+            }
+            if (currentWeek > maxWeek) {
+                guiRegisterAdvance.showError("Ya completaste los avances de todas las semanas del proyecto.");
+                guiRegisterAdvance.disableCurrentWeekSection();
+                pastWeeksLimit = maxWeek + 1;
+            } else {
+                guiRegisterAdvance.setCurrentWeek(currentWeek);
+                guiRegisterAdvance.setActivityOptions(guiRegisterAdvance.getWeeklyLogsForWeek(currentWeek));
+                pastWeeksLimit = currentWeek;
+            }
+            loadPastIncompleteWeeks(pastWeeksLimit);
+        } catch (DataOperationException e) {
+            guiRegisterAdvance.showError(e.getMessage());
         }
     }
 
@@ -82,87 +77,150 @@ public class ControllerRegisterAdvance {
             guiRegisterAdvance.resetRealizedField();
         } else {
             guiRegisterAdvance.setPlannedHours(weeklyLog.getPlannedHours());
-            try {
-                float existingRealized = getExistingRealized(weeklyLog);
-                guiRegisterAdvance.setCurrentRealized((int) existingRealized);
-            } catch (DataOperationException e) {
-                guiRegisterAdvance.showError(e.getMessage());
-            }
+            guiRegisterAdvance.setCurrentRealized((int) getExistingRealized(weeklyLog));
             guiRegisterAdvance.resetRealizedField();
         }
     }
 
+    public void handlePastWeekSelection() {
+        String selectedWeek = guiRegisterAdvance.getSelectedPastWeek();
+        if (selectedWeek == null || selectedWeek.isEmpty()) {
+            return;
+        }
+        int week = parseWeekNumber(selectedWeek);
+        guiRegisterAdvance.setPastActivityOptions(getIncompleteLogsForWeek(week));
+    }
+
+    public void handlePastActivitySelection() {
+        WeeklyLog weeklyLog = guiRegisterAdvance.getSelectedPastWeeklyLog();
+        if (weeklyLog == null) {
+            guiRegisterAdvance.setPastPlannedHours(0);
+            guiRegisterAdvance.setPastCurrentRealized(0);
+            guiRegisterAdvance.setPastMissingHours(0);
+            guiRegisterAdvance.resetPastRealizedField();
+        } else {
+            int plannedHours = weeklyLog.getPlannedHours();
+            int realizedHours = (int) getExistingRealized(weeklyLog);
+            guiRegisterAdvance.setPastPlannedHours(plannedHours);
+            guiRegisterAdvance.setPastCurrentRealized(realizedHours);
+            guiRegisterAdvance.setPastMissingHours(plannedHours - realizedHours);
+            guiRegisterAdvance.resetPastRealizedField();
+        }
+    }
+
     public void handleSaveButton(ActionEvent event) {
-        saveAdvance();
+        if (saveAdvance(guiRegisterAdvance.getSelectedWeeklyLog(), guiRegisterAdvance.getTextFieldRealized())) {
+            handleActivitySelection();
+        }
+    }
+
+    public void handleSavePastButton(ActionEvent event) {
+        if (saveAdvance(guiRegisterAdvance.getSelectedPastWeeklyLog(), guiRegisterAdvance.getTextFieldPastRealized())) {
+            loadPastIncompleteWeeks(pastWeeksLimit);
+        }
     }
 
     public void handleBackButton(ActionEvent event) {
         guiRegisterAdvance.closeWindow();
     }
 
-    private void saveAdvance() {
-        WeeklyLog weeklyLog = guiRegisterAdvance.getSelectedWeeklyLog();
-        if (weeklyLog == null) {
-            guiRegisterAdvance.showError("Seleccione una semana y una actividad.");
-        } else {
-            List<String> errors = validateNewHours();
-            if (!errors.isEmpty()) {
-                GUIUtils.showErrors(errors);
-            } else {
-                int entered = Integer.parseInt(guiRegisterAdvance.getFieldRealized().getText().trim());
-                try {
-                    float currentRealized = getExistingRealized(weeklyLog);
-                    int totalPlanned = weeklyLog.getPlannedHours();
-                    if (currentRealized + entered > totalPlanned) {
-                        guiRegisterAdvance.showError("La suma de horas actuales y nuevas no puede exceder las horas planeadas");
-                    } else {
-                        saveOrUpdateAdvance(weeklyLog, entered, (int) currentRealized);
-                        guiRegisterAdvance.showSuccess("Avance guardado correctamente.");
-                        guiRegisterAdvance.closeWindow();
-                    }
-                } catch (DataOperationException e) {
-                    guiRegisterAdvance.showError(e.getMessage());
+    private void refreshAdvances() throws DataOperationException {
+        studentAdvances = advanceDAO.getAdvancesByStudentId(guiRegisterAdvance.getStudent().getUserId());
+    }
+
+    private int resolveCurrentWeek() {
+        int maxSavedWeek = 0;
+        for (StudentAdvance advance : studentAdvances) {
+            if (advance.getWeeklyLog() != null) {
+                int week = advance.getWeeklyLog().getWeek();
+                if (week > maxSavedWeek) {
+                    maxSavedWeek = week;
                 }
             }
         }
+        return maxSavedWeek + 1;
     }
 
-    private float getExistingRealized(WeeklyLog weeklyLog) throws DataOperationException {
-        float existingRealized = 0;
-        List<StudentAdvance> advances = advanceDAO.getAdvancesByStudentId(guiRegisterAdvance.getStudent().getUserId());
-        for (StudentAdvance advance : advances) {
-            if (advance.getWeeklyLog() != null && advance.getWeeklyLog().getWeeklyLogId() == weeklyLog.getWeeklyLogId()) {
-                existingRealized = advance.getRealizedHours();
+    private boolean saveAdvance(WeeklyLog weeklyLog, TextField hoursField) {
+        boolean saved = false;
+        if (weeklyLog == null) {
+            guiRegisterAdvance.showError("Seleccione una actividad.");
+        } else {
+            List<String> errors = new ArrayList<>();
+            GUIUtils.validateInt(hoursField.getText().trim(), "Horas nuevas", errors);
+            if (!errors.isEmpty()) {
+                GUIUtils.showErrors(errors);
+            } else {
+                saved = trySaveValidatedAdvance(weeklyLog, Integer.parseInt(hoursField.getText().trim()));
             }
         }
-        return existingRealized;
+        return saved;
+    }
+
+    private boolean trySaveValidatedAdvance(WeeklyLog weeklyLog, int enteredHours) {
+        boolean saved = false;
+        try {
+            int currentRealized = (int) getExistingRealized(weeklyLog);
+            if (currentRealized + enteredHours > weeklyLog.getPlannedHours()) {
+                guiRegisterAdvance.showError("La suma de horas actuales y nuevas no puede exceder las horas planeadas.");
+            } else {
+                saveOrUpdateAdvance(weeklyLog, enteredHours, currentRealized);
+                guiRegisterAdvance.showSuccess("Avance guardado correctamente.");
+                saved = true;
+            }
+        } catch (DataOperationException e) {
+            guiRegisterAdvance.showError(e.getMessage());
+        }
+        return saved;
+    }
+
+    private float getExistingRealized(WeeklyLog weeklyLog) {
+        float realizedHours = 0;
+        for (StudentAdvance advance : studentAdvances) {
+            if (advance.getWeeklyLog() != null && advance.getWeeklyLog().getWeeklyLogId() == weeklyLog.getWeeklyLogId()) {
+                realizedHours = advance.getRealizedHours();
+            }
+        }
+        return realizedHours;
     }
 
     private void saveOrUpdateAdvance(WeeklyLog weeklyLog, int newHours, int currentRealized) throws DataOperationException {
-        List<StudentAdvance> advances = advanceDAO.getAdvancesByStudentId(guiRegisterAdvance.getStudent().getUserId());
-        StudentAdvance existing = null;
-        for (StudentAdvance advance : advances) {
+        StudentAdvance existingAdvance = null;
+        for (StudentAdvance advance : studentAdvances) {
             if (advance.getWeeklyLog() != null && advance.getWeeklyLog().getWeeklyLogId() == weeklyLog.getWeeklyLogId()) {
-                existing = advance;
-                break;
+                existingAdvance = advance;
             }
         }
-        int newTotal = currentRealized + newHours;
-        if (existing != null) {
-            advanceDAO.updateRealizedHours(existing.getAdvanceId(), newTotal);
+        if (existingAdvance == null) {
+            advanceDAO.createAdvance(new StudentAdvance(0, currentRealized + newHours, weeklyLog, guiRegisterAdvance.getStudent()));
         } else {
-            StudentAdvance newAdvance = new StudentAdvance(0, newTotal, weeklyLog, guiRegisterAdvance.getStudent());
-            advanceDAO.createAdvance(newAdvance);
+            advanceDAO.updateRealizedHours(existingAdvance.getAdvanceId(), currentRealized + newHours);
         }
+        refreshAdvances();
     }
 
-    private List<String> validateNewHours() {
-        List<String> errors = new ArrayList<>();
-        GUIUtils.validateInt(guiRegisterAdvance.getFieldRealized().getText().trim(), "Horas nuevas", errors);
-        return errors;
+    private List<WeeklyLog> getIncompleteLogsForWeek(int week) {
+        List<WeeklyLog> weeklyLogs = guiRegisterAdvance.getWeeklyLogsForWeek(week);
+        List<WeeklyLog> incompleteLogs = new ArrayList<>();
+        for (WeeklyLog weeklyLog : weeklyLogs) {
+            if (getExistingRealized(weeklyLog) < weeklyLog.getPlannedHours()) {
+                incompleteLogs.add(weeklyLog);
+            }
+        }
+        return incompleteLogs;
     }
 
-    private int parseWeekNumber(String selected) {
-        return Integer.parseInt(selected.replaceAll("[^0-9]", ""));
+    private void loadPastIncompleteWeeks(int currentWeek) {
+        List<String> pastWeekOptions = new ArrayList<>();
+        for (int week = 1; week < currentWeek; week++) {
+            if (!getIncompleteLogsForWeek(week).isEmpty()) {
+                pastWeekOptions.add("Semana " + week);
+            }
+        }
+        guiRegisterAdvance.setPastWeekOptions(pastWeekOptions);
+    }
+
+    private int parseWeekNumber(String selectedWeek) {
+        return Integer.parseInt(selectedWeek.replaceAll("[^0-9]", ""));
     }
 }
