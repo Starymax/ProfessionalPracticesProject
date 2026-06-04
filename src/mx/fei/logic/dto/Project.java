@@ -48,6 +48,9 @@ public class Project {
         this.availablePlaces = availablePlaces;
     }
 
+    public Project() {
+    }
+
     public int getProjectId() {
         return id;
     }

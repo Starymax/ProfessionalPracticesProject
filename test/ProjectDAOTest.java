@@ -1,7 +1,9 @@
 import mx.fei.dataaccess.DatabaseConnectionManager;
+import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.ProjectManagerDAO;
+import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
@@ -18,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -270,13 +273,23 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getAvailableProjects_WithAvailablePlaces_ReturnsList() throws DataOperationException {
-        Project projectWithPlaces = mock(Project.class);
-        when(projectWithPlaces.getAvailablePlaces()).thenReturn(3);
+    void getAvailableProjects_WithAvailablePlacesAndActivities_ReturnsList() throws DataOperationException {
+        Project projectWithPlaces = new Project();
+        projectWithPlaces.setProjectId(1);
+        projectWithPlaces.setAvailablePlaces(3);
         ProjectDAO spyProjectDAO = spy(projectDAO);
         doReturn(List.of(projectWithPlaces)).when(spyProjectDAO).getActiveProjects();
-        List<Project> result = spyProjectDAO.getAvailableProjects();
-        assertEquals(1, result.size());
+        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
+                (mock, context) -> {
+                    List<Activity> mockActivities = new ArrayList<>();
+                    mockActivities.add(mock(Activity.class));
+                    when(mock.getActivitiesByProjectId(1)).thenReturn(mockActivities);
+                })) {
+            List<Project> result = spyProjectDAO.getAvailableProjects();
+            assertNotNull(result, "La lista no debería ser nula");
+            assertEquals(1, result.size(), "Debería tener 1 proyecto porque tiene cupos Y actividades");
+            assertEquals(3, result.get(0).getAvailablePlaces());
+        }
     }
 
     @Test
