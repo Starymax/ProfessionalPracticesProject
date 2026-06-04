@@ -182,10 +182,8 @@ public class GUIGenerateSelfEvaluation extends Application {
     private HBox createButtonRow() {
         buttonPrint = new Button("Imprimir");
         buttonPrint.setPrefWidth(120);
-        buttonPrint.setId("buttonPrint");
         buttonBack = new Button("Regresar");
         buttonBack.setPrefWidth(120);
-        buttonBack.setId("buttonBack");
         buttonPrint.setOnAction(controller::handleSelfEvaluationButtons);
         buttonBack.setOnAction(controller::handleSelfEvaluationButtons);
         HBox box = new HBox(12, buttonPrint, buttonBack);

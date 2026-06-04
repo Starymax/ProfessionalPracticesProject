@@ -37,6 +37,17 @@ public class Project {
         this.projectManager = projectManager;
     }
 
+    public Project(int id, String nameProject) {
+        this.id = id;
+        this.nameProject = nameProject;
+    }
+
+    public Project(int id, String nameProject, int availablePlaces) {
+        this.id = id;
+        this.nameProject = nameProject;
+        this.availablePlaces = availablePlaces;
+    }
+
     public int getProjectId() {
         return id;
     }

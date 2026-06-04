@@ -67,9 +67,9 @@
                 throw new IllegalArgumentException("El periodo de la practica no puede estar vacio");
             }
             boolean result = false;
-            String sql = "INSERT INTO practicas (id_alumno, nrc, periodo, calificacion) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO practicas (id_alumno, nrc, periodo, calificacion) VALUES (?, ?, ?, ?)";
             try (Connection connection = DatabaseConnectionManager.getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, practice.getStudent().getUserId());
                 preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
                 preparedStatement.setString(3, period);

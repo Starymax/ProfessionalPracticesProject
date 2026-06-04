@@ -73,12 +73,15 @@ public class ControllerGenerateSelfEvaluation {
 
     public void handleSelfEvaluationButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        String id = source.getId();
-        if ("buttonPrint".equals(id)) {
-            if (!validateAnswers()) return;
-            printPDF();
-        } else if ("buttonBack".equals(id)) {
-            guiGenerateSelfEvaluation.closeWindow();
+        switch (source.getText()) {
+            case "Imprimir" -> {
+                if (!validateAnswers()) {
+                    guiGenerateSelfEvaluation.showError("Las respuestas incluidas no son validas.");
+                } else {
+                    printPDF();
+                }
+            }
+            case "Regresar" -> guiGenerateSelfEvaluation.closeWindow();
         }
     }
 

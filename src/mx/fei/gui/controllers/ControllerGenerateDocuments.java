@@ -32,7 +32,7 @@ public class ControllerGenerateDocuments {
         if(student == null) {
             guiGenerateDocuments.showError("El estudiante no puede ser nulo");
         } else {
-            GUIGenerateAcceptanceLetter  guiGenerateAcceptanceLetter = new GUIGenerateAcceptanceLetter(student);
+            GUIGenerateAcceptanceLetter guiGenerateAcceptanceLetter = new GUIGenerateAcceptanceLetter(student);
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             guiGenerateAcceptanceLetter.start(stage);
@@ -45,11 +45,11 @@ public class ControllerGenerateDocuments {
             float totalHours = studentAdvanceDAO.getTotalHoursByIdStudent(guiGenerateDocuments.getPractice().getStudent().getUserId());
             if (totalHours < 420) {
                 guiGenerateDocuments.showError("No puedes generar la autoevaluación porque aún no has completado las 420 horas requeridas. Llevas " + totalHours + " horas.");
-                return;
+            } else {
+                Stage stage = new Stage();
+                GUIGenerateSelfEvaluation guiGenerateSelfEvaluation = new GUIGenerateSelfEvaluation(guiGenerateDocuments.getPractice().getStudent());
+                guiGenerateSelfEvaluation.start(stage);
             }
-            Stage stage = new Stage();
-            GUIGenerateSelfEvaluation guiGenerateSelfEvaluation = new GUIGenerateSelfEvaluation(guiGenerateDocuments.getPractice().getStudent());
-            guiGenerateSelfEvaluation.start(stage);
         } catch (DataOperationException e) {
             guiGenerateDocuments.showError("Error al verificar las horas");
         }

@@ -19,6 +19,12 @@ public class EducationalExperience {
         this.period = period;
     }
 
+    public EducationalExperience(String period, String name, String nrc) {
+        this.period = period;
+        this.name = name;
+        this.nrc = nrc;
+    }
+
     public EducationalExperience() {
     }
 

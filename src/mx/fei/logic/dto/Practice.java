@@ -22,6 +22,11 @@ public class Practice {
         this.grade = grade;
     }
 
+    public Practice(Student student, EducationalExperience educationalExperience) {
+        this.student = student;
+        this.educationalExperience = educationalExperience;
+    }
+
     public Student getStudent() {
         return student;
     }
