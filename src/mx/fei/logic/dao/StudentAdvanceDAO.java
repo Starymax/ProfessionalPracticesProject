@@ -145,4 +145,20 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         }
         return advances;
     }
+
+    public float getTotalHoursByIdStudent(int studentId) throws DataOperationException {
+        String query = "SELECT SUM(horas_realizadas) FROM avance_alumno WHERE id_alumno = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, studentId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getFloat(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al sumar horas del estudiante", e);
+            throw new DataOperationException("Error al obtener horas totales");
+        }
+        return 0f;
+    }
 }

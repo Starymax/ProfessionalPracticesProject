@@ -27,7 +27,6 @@ import mx.fei.gui.utils.GUIUtils;
 public class GUIGenerateDocuments extends Application {
 
     private Practice practice;
-    private Button buttonGeneratePracticeRequest;
     private Button buttonGenerateAcceptanceLetter;
     private Button buttonGenerateSelfEvaluation;
     private Button buttonBack;
@@ -51,18 +50,16 @@ public class GUIGenerateDocuments extends Application {
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 24));
         Region spacer = new Region();
         spacer.setPrefHeight(10);
-        buttonGeneratePracticeRequest = createMenuButton("Generar solicitud de prácticas");
         buttonGenerateAcceptanceLetter = createMenuButton("Generar oficio de aceptación");
         buttonGenerateSelfEvaluation = createMenuButton("Generar autoevaluación");
         buttonBack = createMenuButton("Regresar");
-        VBox buttonsBox = new VBox(18, buttonGeneratePracticeRequest, buttonGenerateAcceptanceLetter, buttonGenerateSelfEvaluation, buttonBack);
+        VBox buttonsBox = new VBox(18, buttonGenerateAcceptanceLetter, buttonGenerateSelfEvaluation, buttonBack);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelTitle, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerGenerateDocuments controllerGenerateDocuments = new ControllerGenerateDocuments(this);
-        buttonGeneratePracticeRequest.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
         buttonGenerateAcceptanceLetter.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
         buttonGenerateSelfEvaluation.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
         buttonBack.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
@@ -97,10 +94,6 @@ public class GUIGenerateDocuments extends Application {
 
     public Practice getPractice() {
         return practice;
-    }
-
-    public Button getButtonGeneratePracticeRequest() {
-        return buttonGeneratePracticeRequest;
     }
 
     public Button getButtonGenerateAcceptanceLetter() {

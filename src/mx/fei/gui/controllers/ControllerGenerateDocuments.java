@@ -6,7 +6,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIGenerateAcceptanceLetter;
 import mx.fei.gui.views.GUIGenerateDocuments;
+import mx.fei.gui.views.GUIGenerateSelfEvaluation;
+import mx.fei.logic.dao.StudentAdvanceDAO;
 import mx.fei.logic.dto.Student;
+import mx.fei.logic.exceptions.DataOperationException;
 
 public class ControllerGenerateDocuments {
     private GUIGenerateDocuments guiGenerateDocuments;
@@ -18,15 +21,10 @@ public class ControllerGenerateDocuments {
     public void handleButtonsGenerateDocuments(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Generar solicitud de prácticas" -> handlePracticeRequest();
             case "Generar oficio de aceptación" -> handleAcceptanceLetter();
             case "Generar autoevaluación" -> handleSelfEvaluation();
             case "Regresar" -> guiGenerateDocuments.closeWindow();
         }
-    }
-
-    private void handlePracticeRequest() {
-
     }
 
     private void handleAcceptanceLetter() {
@@ -42,6 +40,18 @@ public class ControllerGenerateDocuments {
     }
 
     private void handleSelfEvaluation() {
-        // TODO: abrir ventana o generar autoevaluación
+        try {
+            StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
+            float totalHours = studentAdvanceDAO.getTotalHoursByIdStudent(guiGenerateDocuments.getPractice().getStudent().getUserId());
+            if (totalHours < 420) {
+                guiGenerateDocuments.showError("No puedes generar la autoevaluación porque aún no has completado las 420 horas requeridas. Llevas " + totalHours + " horas.");
+                return;
+            }
+            Stage stage = new Stage();
+            GUIGenerateSelfEvaluation guiGenerateSelfEvaluation = new GUIGenerateSelfEvaluation(guiGenerateDocuments.getPractice().getStudent());
+            guiGenerateSelfEvaluation.start(stage);
+        } catch (DataOperationException e) {
+            guiGenerateDocuments.showError("Error al verificar las horas");
+        }
     }
 }
