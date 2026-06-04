@@ -562,4 +562,72 @@ public class StudentDAOTest {
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Foreign key constraint fails"));
         assertThrows(DataOperationException.class, () -> {studentDAO.assignEducationalExperience(practice);});
     }
+
+    @Test
+    void getStudentsByEducationalExperience_NrcNull_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> studentDAO.getStudentsByEducationalExperience(null));
+    }
+
+    @Test
+    void getStudentsByEducationalExperience_NrcBlank_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> studentDAO.getStudentsByEducationalExperience("   "));
+    }
+
+    @Test
+    void getStudentsByEducationalExperience_Empty_ReturnsEmptyList() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getStudentsByEducationalExperience_Successful_ReturnsList() throws SQLException {
+        String enrollment1 = "S21011001";
+        String enrollment2 = "S21011002";
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("matricula")).thenReturn(enrollment1, enrollment2);
+        Student student1 = mock(Student.class);
+        Student student2 = mock(Student.class);
+        StudentDAO spyDAO = spy(studentDAO);
+        doReturn(student1).when(spyDAO).getStudentByEnrollment(enrollment1);
+        doReturn(student2).when(spyDAO).getStudentByEnrollment(enrollment2);
+        List<Student> result = spyDAO.getStudentsByEducationalExperience("88421");
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getStudentsByEducationalExperience_PartialFailure_Continues() throws SQLException {
+        String enrollmentFail = "S99999999";
+        String enrollmentSucces = "S21011001";
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("matricula")).thenReturn(enrollmentFail, enrollmentSucces);
+        Student student = mock(Student.class);
+        StudentDAO spyDAO = spy(studentDAO);
+        doThrow(new NoSuchElementException()).when(spyDAO).getStudentByEnrollment(enrollmentFail);
+        doReturn(student).when(spyDAO).getStudentByEnrollment(enrollmentSucces);
+        List<Student> result = spyDAO.getStudentsByEducationalExperience("88421");
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getStudentsByEducationalExperience_SQLException_ThrowsDataOperationException() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de enlace"));
+        assertThrows(DataOperationException.class, () -> studentDAO.getStudentsByEducationalExperience("88421"));
+    }
+
+    @Test
+    void getStudentsByEducationalExperience_QueriesCorrectNrc_VerifiesParameter() throws SQLException, DataOperationException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        studentDAO.getStudentsByEducationalExperience("88421");
+        verify(preparedStatement).setString(1, "88421");
+    }
 }

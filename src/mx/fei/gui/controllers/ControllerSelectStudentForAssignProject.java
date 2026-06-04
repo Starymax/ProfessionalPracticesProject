@@ -1,5 +1,6 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAssignProject;
 import mx.fei.gui.views.GUISelectStudentForAssignProject;
@@ -30,6 +31,7 @@ public class ControllerSelectStudentForAssignProject {
         if (studentSelected != null) {
             GUIAssignProject guiAssignProject = new GUIAssignProject();
             Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
             guiAssignProject.start(stage);
             guiAssignProject.setStudent(studentSelected);
             guiSelectStudentForAssignProject.getStage().close();

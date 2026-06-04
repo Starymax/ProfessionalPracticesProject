@@ -50,6 +50,8 @@ public class GUIRegisterAdvance {
     private final Map<Integer, List<WeeklyLog>> weeklyLogsByWeek = new HashMap<>();
     private final Map<String, WeeklyLog> logByActivityName = new HashMap<>();
     private final Map<String, WeeklyLog> pastLogByActivityName = new HashMap<>();
+    private final Map<Integer, String> pendingHoursByLogId = new HashMap<>();
+    private WeeklyLog previouslySelectedLog;
 
     private ControllerRegisterAdvance controllerRegisterAdvance;
 
@@ -193,6 +195,8 @@ public class GUIRegisterAdvance {
 
     public void setActivityOptions(List<WeeklyLog> weeklyLogs) {
         logByActivityName.clear();
+        pendingHoursByLogId.clear();
+        previouslySelectedLog = null;
         List<String> activityNames = new ArrayList<>();
         for (WeeklyLog weeklyLog : weeklyLogs) {
             String activityName = weeklyLog.getActivity().getName();
@@ -209,6 +213,43 @@ public class GUIRegisterAdvance {
     public WeeklyLog getSelectedWeeklyLog() {
         String selectedActivity = comboBoxActivities.getSelectionModel().getSelectedItem();
         return (selectedActivity != null && !selectedActivity.isEmpty()) ? logByActivityName.get(selectedActivity) : null;
+    }
+
+    public void savePendingHoursForPreviousActivity() {
+        if (previouslySelectedLog != null) {
+            String currentText = textFieldRealized.getText().trim();
+            if (!currentText.isEmpty()) {
+                pendingHoursByLogId.put(previouslySelectedLog.getWeeklyLogId(), currentText);
+            } else {
+                pendingHoursByLogId.remove(previouslySelectedLog.getWeeklyLogId());
+            }
+        }
+    }
+
+    public void restorePendingHoursForCurrentActivity() {
+        WeeklyLog selected = getSelectedWeeklyLog();
+        previouslySelectedLog = selected;
+        if (selected != null) {
+            String pending = pendingHoursByLogId.getOrDefault(selected.getWeeklyLogId(), "");
+            textFieldRealized.setText(pending);
+        } else {
+            textFieldRealized.setText("");
+        }
+    }
+
+    public Map<Integer, String> getPendingHoursByLogId() {
+        savePendingHoursForPreviousActivity();
+        return pendingHoursByLogId;
+    }
+
+    public Map<String, WeeklyLog> getLogByActivityName() {
+        return logByActivityName;
+    }
+
+    public void clearPendingHours() {
+        pendingHoursByLogId.clear();
+        previouslySelectedLog = null;
+        textFieldRealized.setText("");
     }
 
     public TextField getTextFieldRealized() {

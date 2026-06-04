@@ -201,35 +201,33 @@ public class ControllerGenerateFinalReport {
             return;
         }
         if (validateFinalReport()) {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            directoryChooser.setTitle("Selecciona dónde guardar el reporte final");
+            File selectedDirectory = directoryChooser.showDialog(stage);
+            if (selectedDirectory != null) {
+                exportAndPersist(selectedDirectory);
+            }
+        }
+    }
+
+    private void exportAndPersist(File selectedDirectory) {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis());
+        String fileName = String.format("ReporteFinal_%s_%s.pdf", student.getEnrollment(), timestamp);
+        String outputPath = new File(selectedDirectory, fileName).getAbsolutePath();
+        FinalReportGenerator generator = new FinalReportGenerator();
+        boolean generated = generator.generate(buildParameters(currentReport), outputPath);
+        if (!generated) {
+            finalReportView.showError("Error al generar el PDF del reporte final.");
+        } else {
             try {
-                boolean canExport = true;
                 if (currentReport.getReportId() == 0) {
-                    boolean created = reportDAO.createFinalReport(currentReport);
-                    if (!created) {
-                        finalReportView.showError("No se pudo guardar el reporte final.");
-                        canExport = false;
-                    }
+                    reportDAO.createFinalReport(currentReport);
                 }
-                if (canExport) {
-                    DirectoryChooser directoryChooser = new DirectoryChooser();
-                    directoryChooser.setTitle("Selecciona dónde guardar el reporte final");
-                    File selectedDirectory = directoryChooser.showDialog(stage);
-                    if (selectedDirectory != null) {
-                        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis());
-                        String fileName = String.format("ReporteFinal_%s_%s.pdf", student.getEnrollment(), timestamp);
-                        String outputPath = new File(selectedDirectory, fileName).getAbsolutePath();
-                        FinalReportGenerator generator = new FinalReportGenerator();
-                        boolean generated = generator.generate(buildParameters(currentReport), outputPath);
-                        if (generated) {
-                            finalReportView.showSuccess("Reporte final exportado a PDF exitosamente en:\n" + outputPath);
-                        } else {
-                            finalReportView.showError("Error al generar el PDF del reporte final.");
-                        }
-                    }
-                }
+                finalReportView.showSuccess("Reporte final exportado a PDF exitosamente en:\n" + outputPath);
+                finalReportView.closeWindow();
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al exportar el reporte final", e);
-                finalReportView.showError("Error al exportar el reporte final");
+                logger.log(Level.SEVERE, "Error al guardar el reporte final en la base de datos", e);
+                finalReportView.showError("El PDF se generó pero no se pudo guardar el registro del reporte final.");
             }
         }
     }
@@ -276,31 +274,52 @@ public class ControllerGenerateFinalReport {
     }
 
     private boolean validateFinalReport() {
-        boolean validated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateLongText(finalReportData.getGeneralObjectives(), "Objetivos generales", errors);
         GUIUtils.validateLongText(finalReportData.getMethodology(), "Metodología", errors);
-        int rowIndex = 1;
-        for (FinalReportRow row : finalReportData.getFinalReportRows()) {
-            validateOptionalShortText(row.getActivity(), "Actividad " + rowIndex, errors);
-            validateOptionalShortText(row.getAdvance(), "Avance " + rowIndex, errors);
-            validateOptionalShortText(row.getObservation(), "Observación " + rowIndex, errors);
-            validateOptionalShortText(row.getProduct(), "Producto " + rowIndex, errors);
-            validateOptionalShortText(row.getAdvancep(), "Avance p. " + rowIndex, errors);
-            validateOptionalShortText(row.getObservationp(), "Observación p. " + rowIndex, errors);
-            rowIndex++;
-        }
+        GUIUtils.validateLongText(finalReportData.getObservations(), "Observaciones generales", errors);
+        validateActivityRows(errors);
+        validateProducts(errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
         }
-        return validated;
+        return errors.isEmpty();
     }
 
-    private void validateOptionalShortText(String value, String fieldName, List<String> errors) {
-        if (value != null && !value.isBlank()) {
-            GUIUtils.validateShortText(value, fieldName, errors);
+    private void validateActivityRows(List<String> errors) {
+        int rowIndex = 1;
+        for (FinalReportRow row : finalReportData.getFinalReportRows()) {
+            if (isNotBlank(row.getActivity())) {
+                GUIUtils.validateShortText(row.getActivity(), "Actividad " + rowIndex, errors);
+                GUIUtils.validateLongText(row.getObservation(), "Observación de la actividad " + rowIndex, errors);
+            }
+            rowIndex++;
         }
+    }
+
+    private void validateProducts(List<String> errors) {
+        int completeProducts = 0;
+        int rowIndex = 1;
+        for (FinalReportRow row : finalReportData.getFinalReportRows()) {
+            boolean anyFieldFilled = isNotBlank(row.getProduct()) || isNotBlank(row.getAdvancep()) || isNotBlank(row.getObservationp());
+            boolean allFieldsFilled = isNotBlank(row.getProduct()) && isNotBlank(row.getAdvancep()) && isNotBlank(row.getObservationp());
+            if (anyFieldFilled && !allFieldsFilled) {
+                errors.add("El producto de la fila " + rowIndex + " está incompleto. Debes llenar producto, avance y observación.");
+            } else if (allFieldsFilled) {
+                GUIUtils.validateShortText(row.getProduct(), "Producto de la fila " + rowIndex, errors);
+                GUIUtils.validateShortText(row.getAdvancep(), "Avance del producto de la fila " + rowIndex, errors);
+                GUIUtils.validateLongText(row.getObservationp(), "Observación del producto de la fila " + rowIndex, errors);
+                completeProducts++;
+            }
+            rowIndex++;
+        }
+        if (completeProducts == 0) {
+            errors.add("Debes agregar al menos un producto con todos sus campos (producto, avance y observación).");
+        }
+    }
+
+    private boolean isNotBlank(String value) {
+        return value != null && !value.isBlank();
     }
 
     private void handleCancel() {

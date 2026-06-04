@@ -258,4 +258,45 @@ public class EducationalExperienceDAOTest {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Conexión perdida"));
             assertThrows(DataOperationException.class, () -> {educationalExperienceDAO.getEducationalExperiences();});
     }
+
+    @Test
+    void getEducationalExperiencesByProfessor_Empty_ReturnsEmptyList() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiencesByProfessor(50);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getEducationalExperiencesByProfessor_Successful_ReturnsList() throws SQLException {
+        String nrc1 = "11111";
+        String nrc2 = "22222";
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("NRC")).thenReturn(nrc1, nrc2);
+        EducationalExperience experience1 = mock(EducationalExperience.class);
+        EducationalExperience experience2 = mock(EducationalExperience.class);
+        doReturn(experience1).when(spyEE).getEducationalExperienceByNrc(nrc1);
+        doReturn(experience2).when(spyEE).getEducationalExperienceByNrc(nrc2);
+        List<EducationalExperience> result = spyEE.getEducationalExperiencesByProfessor(50);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getEducationalExperiencesByProfessor_SQLException_ThrowsDataOperationException() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Conexión perdida"));
+        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperiencesByProfessor(50));
+    }
+
+    @Test
+    void getEducationalExperiencesByProfessor_QueriesCorrectProfessor_VerifiesParameter() throws SQLException, DataOperationException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        educationalExperienceDAO.getEducationalExperiencesByProfessor(77);
+        verify(preparedStatement).setInt(1, 77);
+    }
 }

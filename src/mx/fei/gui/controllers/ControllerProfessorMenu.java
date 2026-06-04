@@ -4,8 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import mx.fei.gui.views.GUIEvaluateStudentSelection;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import java.util.Optional;
@@ -22,8 +24,16 @@ public class ControllerProfessorMenu {
         switch (source.getText()) {
             case "Gestionar actividades" -> { /* TODO: abrir ventana */ }
             case "Gestionar reportes" -> { /* TODO: abrir ventana */ }
+            case "Evaluar" -> openEvaluateStudent();
             case "Cerrar Sesión" -> logout();
         }
+    }
+
+    private void openEvaluateStudent() {
+        GUIEvaluateStudentSelection guiEvaluateStudentSelection = new GUIEvaluateStudentSelection(guiProfessorMenu.getProfessor());
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        guiEvaluateStudentSelection.start(stage);
     }
 
     private void logout() {

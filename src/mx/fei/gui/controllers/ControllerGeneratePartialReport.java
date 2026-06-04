@@ -162,37 +162,32 @@ public class ControllerGeneratePartialReport {
     }
 
     private void exportPDF() {
-        String errorMessage = null;
-        String successMessage = null;
         String results = guiGeneratePartialReport.getResultsObtained();
         if (practice == null || educationalExperience == null) {
-            errorMessage = "No hay datos suficientes para generar el PDF.";
+            guiGeneratePartialReport.showError("No hay datos suficientes para generar el PDF.");
         } else if (results == null || results.isBlank()) {
-            errorMessage = "Debe escribir los resultados obtenidos al momento.";
+            guiGeneratePartialReport.showError("Debe escribir los resultados obtenidos al momento.");
         } else {
-            savePartialReport();
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle("Seleccionar carpeta para guardar el PDF");
             File directory = chooser.showDialog(stage);
             if (directory != null) {
-                String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                String fileName = String.format("ReporteParcial_%s_%s.pdf", student.getEnrollment(), timestamp);
-                String outputPath = new File(directory, fileName).getAbsolutePath();
-                Map<String, Object> params = buildParameters(results);
-                PartialReportGenerator generator = new PartialReportGenerator();
-                boolean isGenerated = generator.generate(params, outputPath);
-                if (isGenerated) {
-                    successMessage = "Reporte exportado exitosamente en:\n" + outputPath;
-                } else {
-                    errorMessage = "Error al generar el PDF.";
-                }
+                exportAndPersist(directory, results);
             }
         }
-        if (errorMessage != null) {
-            guiGeneratePartialReport.showError(errorMessage);
-        }
-        if (successMessage != null) {
-            guiGeneratePartialReport.showSuccess(successMessage);
+    }
+
+    private void exportAndPersist(File directory, String results) {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String fileName = String.format("ReporteParcial_%s_%s.pdf", student.getEnrollment(), timestamp);
+        String outputPath = new File(directory, fileName).getAbsolutePath();
+        Map<String, Object> params = buildParameters(results);
+        PartialReportGenerator generator = new PartialReportGenerator();
+        boolean isGenerated = generator.generate(params, outputPath);
+        if (!isGenerated) {
+            guiGeneratePartialReport.showError("Error al generar el PDF.");
+        } else if (savePartialReport()) {
+            guiGeneratePartialReport.showSuccess("Reporte exportado exitosamente en:\n" + outputPath);
             guiGeneratePartialReport.closeWindow();
         }
     }
@@ -282,7 +277,8 @@ public class ControllerGeneratePartialReport {
         }
     }
 
-    private void savePartialReport() {
+    private boolean savePartialReport() {
+        boolean saved = false;
         String errorMessage = null;
         String results = guiGeneratePartialReport.getResultsObtained();
         if (student == null || educationalExperience == null) {
@@ -303,9 +299,9 @@ public class ControllerGeneratePartialReport {
                     progressList.add(calculateActivityProgress(rows.get(i), activityList.get(i)));
                 }
                 report.setActivityProgressList(progressList);
-                boolean isSaved = reportDAO.createPartialReport(report);
-                if (isSaved) {
+                if (reportDAO.createPartialReport(report)) {
                     logger.log(Level.INFO, "Reporte guardado correctamente.");
+                    saved = true;
                 } else {
                     errorMessage = "No se pudo guardar el reporte.";
                 }
@@ -320,6 +316,7 @@ public class ControllerGeneratePartialReport {
         if (errorMessage != null) {
             guiGeneratePartialReport.showError(errorMessage);
         }
+        return saved;
     }
 
     private ReportActivityProgress calculateActivityProgress(PartialActivityRow row, Activity activity) {

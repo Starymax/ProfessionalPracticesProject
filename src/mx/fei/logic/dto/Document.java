@@ -6,6 +6,7 @@ public class Document {
     private String directory;
     private DocumentType documentType;
     private Practice practice;
+    private boolean accepted;
 
     public Document(String name, String directory, DocumentType documentType, Practice practice) {
         this.name = name;
@@ -58,5 +59,13 @@ public class Document {
 
     public void setPractice(Practice practice) {
         this.practice = practice;
+    }
+
+    public boolean isAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        this.accepted = accepted;
     }
 }

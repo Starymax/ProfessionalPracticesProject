@@ -168,4 +168,49 @@ public class DocumentDAO implements IDAODocument {
         return documents;
     }
 
+    public List<Document> getUploadedReportsByPractice(Practice practice) throws DataOperationException {
+        if (practice == null) {
+            logger.log(Level.WARNING, "La practica es nula");
+            throw new IllegalArgumentException("La practica no puede ser nula");
+        }
+        List<Document> reports = new ArrayList<>();
+        String query = "SELECT id_documento, nombre, ruta, tipoDocumento, aceptado FROM documentos WHERE id_practica = ? AND tipoDocumento IN ('PARTIAL_REPORT', 'MONTHLY_REPORT', 'FINAL_REPORT')";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int idDocument = resultSet.getInt("id_documento");
+                    String name = resultSet.getString("nombre");
+                    String path = resultSet.getString("ruta");
+                    String type = resultSet.getString("tipoDocumento");
+                    boolean accepted = resultSet.getBoolean("aceptado");
+                    DocumentType documentType = DocumentType.valueOf(type);
+                    Document document = new Document(name, path, documentType, practice);
+                    document.setId(idDocument);
+                    document.setAccepted(accepted);
+                    reports.add(document);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener los reportes subidos de la practica", e);
+            throw new DataOperationException("Error al obtener los reportes subidos");
+        }
+        return reports;
+    }
+
+    public boolean acceptReport(int documentId) throws DataOperationException {
+        boolean accepted = false;
+        String query = "UPDATE documentos SET aceptado = TRUE WHERE id_documento = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, documentId);
+            accepted = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al aceptar el reporte", e);
+            throw new DataOperationException("Error al aceptar el reporte");
+        }
+        return accepted;
+    }
+
 }

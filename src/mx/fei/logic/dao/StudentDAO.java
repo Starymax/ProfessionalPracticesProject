@@ -251,6 +251,38 @@ public class StudentDAO implements IDAOStudent {
         return students;
     }
 
+    public List<Student> getStudentsByEducationalExperience(String nrc) throws DataOperationException {
+        if (nrc == null || nrc.isBlank()) {
+            logger.log(Level.WARNING, "El nrc esta vacio");
+            throw new IllegalArgumentException("El nrc no puede estar vacio");
+        }
+        List<Student> students = new ArrayList<>();
+        String queryConsultStudentsByExperience = "SELECT a.matricula FROM practicas p JOIN alumno a ON p.id_alumno = a.id_usuario WHERE p.nrc = ?";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryConsultStudentsByExperience)) {
+            preparedStatement.setString(1, nrc);
+            List<String> enrollments = new ArrayList<>();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    enrollments.add(resultSet.getString("matricula"));
+                }
+            }
+            for (String enrollment : enrollments) {
+                try {
+                    students.add(getStudentByEnrollment(enrollment));
+                } catch (NoSuchElementException e) {
+                    logger.log(Level.WARNING, "Estudiante no encontrado con matrícula: " + enrollment);
+                } catch (DataOperationException e) {
+                    logger.log(Level.WARNING, "Error al cargar el estudiante con matrícula: " + enrollment, e);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener los estudiantes de la experiencia educativa", e);
+            throw new DataOperationException("Error al obtener los estudiantes de la experiencia educativa");
+        }
+        return students;
+    }
+
     @Override
     public void saveSelectedProjects(List<Project> selectedProjects, Student student) throws DataOperationException {
         String querySaveSelectedProjects = "INSERT INTO seleccion (matricula, proyecto_seleccionado) values (?,?);";

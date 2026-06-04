@@ -26,6 +26,7 @@ import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerGenerateReport;
 import mx.fei.gui.utils.GUIUtils;
 
+
 public class GUIGenerateReport extends Application {
 
     private Practice practice;

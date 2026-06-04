@@ -29,6 +29,7 @@ public class GUIProfessorMenu extends Application {
     private Label labelProfessorShift;
     private Button buttonManageActivities;
     private Button buttonManageReports;
+    private Button buttonEvaluate;
     private Button buttonLogout;
     private Stage stage;
 
@@ -59,8 +60,9 @@ public class GUIProfessorMenu extends Application {
         spacer.setPrefHeight(10);
         buttonManageActivities = createMenuButton("Gestionar actividades");
         buttonManageReports = createMenuButton("Gestionar reportes");
+        buttonEvaluate = createMenuButton("Evaluar");
         buttonLogout = createMenuButton("Cerrar Sesión");
-        VBox buttonsBox = new VBox(12, buttonManageActivities, buttonManageReports, buttonLogout);
+        VBox buttonsBox = new VBox(12, buttonManageActivities, buttonManageReports, buttonEvaluate, buttonLogout);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelProfessorName, labelProfessorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
@@ -69,6 +71,7 @@ public class GUIProfessorMenu extends Application {
         ControllerProfessorMenu controllerProfessorMenu = new ControllerProfessorMenu(this);
         buttonManageActivities.setOnAction(controllerProfessorMenu::handleButtonsMenu);
         buttonManageReports.setOnAction(controllerProfessorMenu::handleButtonsMenu);
+        buttonEvaluate.setOnAction(controllerProfessorMenu::handleButtonsMenu);
         buttonLogout.setOnAction(controllerProfessorMenu::handleButtonsMenu);
         Scene scene = new Scene(mainPanel, 500, 420);
         stage.setScene(scene);
@@ -110,6 +113,10 @@ public class GUIProfessorMenu extends Application {
 
     public Button getButtonManageReports() {
         return buttonManageReports;
+    }
+
+    public Button getButtonEvaluate() {
+        return buttonEvaluate;
     }
 
     public Button getButtonLogout() {

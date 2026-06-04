@@ -144,4 +144,26 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         }
         return educationalExperiences;
     }
+
+    public List<EducationalExperience> getEducationalExperiencesByProfessor(int professorId) throws DataOperationException {
+        ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
+        String queryGetExperiencesByProfessor = "SELECT NRC FROM experiencia_educativa WHERE id_profesor = ?;";
+        try (Connection connection = DatabaseConnectionManager.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryGetExperiencesByProfessor)) {
+            preparedStatement.setInt(1, professorId);
+            List<String> nrcs = new ArrayList<>();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    nrcs.add(resultSet.getString("NRC"));
+                }
+            }
+            for (String nrc : nrcs) {
+                educationalExperiences.add(getEducationalExperienceByNrc(nrc));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener las experiencias del profesor", e);
+            throw new DataOperationException("Error al obtener las experiencias educativas del profesor");
+        }
+        return educationalExperiences;
+    }
 }

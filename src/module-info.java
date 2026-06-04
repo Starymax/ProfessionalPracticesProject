@@ -7,6 +7,7 @@ module practicas.profesionales {
     requires java.desktop;
     requires java.logging;
     requires net.sf.jasperreports.core;
+    requires org.apache.pdfbox;
 
     opens mx.fei.gui.views to javafx.fxml;
     opens mx.fei.gui.controllers to javafx.fxml;

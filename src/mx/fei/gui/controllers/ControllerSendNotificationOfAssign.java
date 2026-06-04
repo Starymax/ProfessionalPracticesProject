@@ -1,8 +1,9 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUISendNotificationOfAssign;
+
+import javafx.event.ActionEvent;
 import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dto.Notification;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -30,21 +31,21 @@ public class ControllerSendNotificationOfAssign {
         GUIUtils.validateShortText(title, "Título", errors);
         GUIUtils.validateLongText(message, "Mensaje", errors);
         if (!errors.isEmpty()) {
-            GUIUtils.showErrors(errors);
+            guiSendNotificationOfAssign.showErrors(errors);
         } else {
             try {
                 Notification notification = new Notification(0, title, message, new Date(), false, guiSendNotificationOfAssign.getStudent());
                 boolean sent = notificationDAO.sendNotification(notification);
                 if (!sent) {
-                    GUIUtils.showError("No se pudo enviar la notificación.");
+                    guiSendNotificationOfAssign.showError("No se pudo enviar la notificación.");
                 } else {
-                    GUIUtils.showSuccess("Notificación enviada correctamente.");
+                    guiSendNotificationOfAssign.showSuccess("Notificación enviada correctamente.");
                     guiSendNotificationOfAssign.setWasSent(true);
                     guiSendNotificationOfAssign.close();
                 }
             } catch (DataOperationException e) {
                 LOGGER.log(Level.SEVERE, "Error al enviar notificación", e);
-                GUIUtils.showError(e.getMessage());
+                guiSendNotificationOfAssign.showError(e.getMessage());
             }
         }
     }

@@ -1,8 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.controllers.ControllerSendNotificationOfAssign;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
+
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -106,6 +109,18 @@ public class GUISendNotificationOfAssign {
 
     public boolean wasSent() {
         return wasSent;
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
+    public void showErrors(List<String> errors) {
+        GUIUtils.showErrors(errors);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
     }
 
     public void close() {

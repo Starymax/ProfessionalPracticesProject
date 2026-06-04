@@ -44,6 +44,7 @@ import java.util.logging.Logger;
 public class ControllerGenerateMonthlyReport {
 
     private static final Logger logger = Logger.getLogger(ControllerGenerateMonthlyReport.class.getName());
+    private static final int WEEKS_PER_MONTH = 4;
     private final GUIGenerateMonthlyReport monthlyReportView;
     private final Stage stage;
     private final ReportDAO reportDAO;
@@ -52,6 +53,8 @@ public class ControllerGenerateMonthlyReport {
     private final PracticeDAO practiceDAO;
     private final Student student;
     private Report currentReport;
+    private int currentBlockStartWeek;
+    private int currentBlockEndWeek;
 
     public ControllerGenerateMonthlyReport(GUIGenerateMonthlyReport monthlyReportView, Stage stage, Student student) {
         this.monthlyReportView = monthlyReportView;
@@ -96,6 +99,7 @@ public class ControllerGenerateMonthlyReport {
             if (student.getAssignedProject() == null) {
                 monthlyReportView.setActivities(FXCollections.observableArrayList());
             } else {
+                resolveCurrentBlockRange();
                 List<Activity> activities = activityDAO.getActivitiesByProjectId(student.getAssignedProject().getProjectId());
                 List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(student.getUserId());
                 Map<Integer, Float> hoursWorkedByLog = getHoursWorkedByLog(advances);
@@ -111,6 +115,7 @@ public class ControllerGenerateMonthlyReport {
                     }
                 }
                 currentReport = buildReport(reportActivityProgressList);
+                currentReport.setAccumulatedHours(calculateAccumulatedHours(advances));
                 monthlyReportView.setActivities(activityRows);
             }
         } catch (DataOperationException e) {
@@ -131,23 +136,46 @@ public class ControllerGenerateMonthlyReport {
         return hoursByLog;
     }
 
+    private void resolveCurrentBlockRange() {
+        int reportNumber = 1;
+        try {
+            reportNumber = reportDAO.countReportsByTypeAndStudent(ReportType.MONTHLY_REPORT.getReportType(), student.getUserId()) + 1;
+        } catch (DataOperationException e) {
+            logger.log(Level.WARNING, "No se pudo determinar el número de reporte mensual, se asume el primero");
+        }
+        currentBlockStartWeek = (reportNumber - 1) * WEEKS_PER_MONTH + 1;
+        currentBlockEndWeek = reportNumber * WEEKS_PER_MONTH;
+    }
+
+    private float calculateAccumulatedHours(List<StudentAdvance> advances) {
+        float accumulated = 0f;
+        for (StudentAdvance advance : advances) {
+            accumulated += advance.getRealizedHours();
+        }
+        return accumulated;
+    }
+
     private ReportActivityProgress calculateActivityProgress(Activity activity, List<WeeklyLog> weeklyLogs, Map<Integer, Float> realizedHours) {
         float totalPlanned = 0f;
         float totalWorked = 0f;
-        boolean validAdvances = false;
+        boolean hasAdvanceThisMonth = false;
+        List<WeeklyLog> currentMonthLogs = new ArrayList<>();
         ReportActivityProgress reportActivityProgress = null;
         for (WeeklyLog weeklyLog : weeklyLogs) {
             totalPlanned += weeklyLog.getPlannedHours();
             float workedHours = realizedHours.getOrDefault(weeklyLog.getWeeklyLogId(), 0f);
-            if (workedHours > 0) {
-                validAdvances = true;
-            }
             weeklyLog.setWorkedHours((int) workedHours);
             totalWorked += workedHours;
+            if (weeklyLog.getWeek() >= currentBlockStartWeek && weeklyLog.getWeek() <= currentBlockEndWeek) {
+                currentMonthLogs.add(weeklyLog);
+                if (workedHours > 0) {
+                    hasAdvanceThisMonth = true;
+                }
+            }
         }
-        if (validAdvances) {
+        if (hasAdvanceThisMonth) {
             float progressPercentage = totalPlanned > 0 ? (totalWorked / totalPlanned) * 100f : 100f;
-            reportActivityProgress = new ReportActivityProgress(progressPercentage, "", activity, weeklyLogs);
+            reportActivityProgress = new ReportActivityProgress(progressPercentage, "", activity, currentMonthLogs);
         }
         return reportActivityProgress;
     }
@@ -247,37 +275,40 @@ public class ControllerGenerateMonthlyReport {
         if (currentReport == null || currentReport.getActivityProgressList() == null || currentReport.getActivityProgressList().isEmpty()) {
             monthlyReportView.showError("No hay actividades con avance para exportar.");
         } else {
-            try {
-                monthlyReportView.commitTableEdits();
-                syncActivityObservationsFromTable();
-                if (validateObservations()) {
-                    if (currentReport.getReportId() == 0) {
-                        boolean created = reportDAO.createMonthlyReport(currentReport);
-                        if (!created) {
-                            monthlyReportView.showError("No se pudo guardar el reporte en la base de datos antes de exportar.");
-                        }
-                    } else {
-                        reportDAO.setObservations(currentReport.getReportId(), currentReport.getObservations());
-                        reportDAO.updateActivityObservations(currentReport.getReportId(), currentReport.getActivityProgressList());
-                    }
-                    DirectoryChooser directoryChooser = new DirectoryChooser();
-                    directoryChooser.setTitle("Selecciona dónde guardar el reporte");
-                    File selectedDirectory = directoryChooser.showDialog(stage);
-                    if (selectedDirectory != null) {
-                        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis());
-                        String fileName = String.format("ReporteMensual_%s_%s.pdf", student.getEnrollment(), timestamp);
-                        String outputPath = new File(selectedDirectory, fileName).getAbsolutePath();
-                        MonthlyReportGenerator monthlyReportGenerator = new MonthlyReportGenerator();
-                        boolean generated = monthlyReportGenerator.generate(buildParameters(currentReport), outputPath);
-                        if (generated) {
-                            monthlyReportView.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
-                        } else {
-                            monthlyReportView.showError("Error al generar el PDF del reporte.");
-                        }
-                    }
+            monthlyReportView.commitTableEdits();
+            syncActivityObservationsFromTable();
+            if (validateObservations()) {
+                DirectoryChooser directoryChooser = new DirectoryChooser();
+                directoryChooser.setTitle("Selecciona dónde guardar el reporte");
+                File selectedDirectory = directoryChooser.showDialog(stage);
+                if (selectedDirectory != null) {
+                    exportAndPersist(selectedDirectory);
                 }
+            }
+        }
+    }
+
+    private void exportAndPersist(File selectedDirectory) {
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(System.currentTimeMillis());
+        String fileName = String.format("ReporteMensual_%s_%s.pdf", student.getEnrollment(), timestamp);
+        String outputPath = new File(selectedDirectory, fileName).getAbsolutePath();
+        MonthlyReportGenerator monthlyReportGenerator = new MonthlyReportGenerator();
+        boolean generated = monthlyReportGenerator.generate(buildParameters(currentReport), outputPath);
+        if (!generated) {
+            monthlyReportView.showError("Error al generar el PDF del reporte.");
+        } else {
+            try {
+                if (currentReport.getReportId() == 0) {
+                    reportDAO.createMonthlyReport(currentReport);
+                } else {
+                    reportDAO.setObservations(currentReport.getReportId(), currentReport.getObservations());
+                    reportDAO.updateActivityObservations(currentReport.getReportId(), currentReport.getActivityProgressList());
+                }
+                monthlyReportView.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
+                monthlyReportView.closeWindow();
             } catch (DataOperationException e) {
-                monthlyReportView.showError("Error al exportar el reporte");
+                logger.log(Level.SEVERE, "Error al guardar el reporte mensual en la base de datos", e);
+                monthlyReportView.showError("El PDF se generó pero no se pudo guardar el registro del reporte.");
             }
         }
     }
