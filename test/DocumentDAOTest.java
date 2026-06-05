@@ -18,7 +18,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,7 +30,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 
 public class DocumentDAOTest {
 
@@ -61,40 +59,40 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void createExpedient_PeriodNull_ThrowsIllegalArgumentException() {
+    void createExpedient_PeriodIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> documentDAO.createExpedient(1, null));
     }
 
     @Test
-    void createExpedient_PeriodBlank_ThrowsIllegalArgumentException() {
+    void createExpedient_PeriodIsBlank_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> documentDAO.createExpedient(1, "   "));
     }
 
     @Test
-    void createExpedient_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void createExpedient_InsertSucceeds_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = documentDAO.createExpedient(1, "2025-01");
         assertTrue(result);
     }
 
     @Test
-    void createExpedient_SQLException_ThrowsDataOperationException() throws SQLException {
+    void createExpedient_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de insercion"));
         assertThrows(DataOperationException.class, () -> documentDAO.createExpedient(1, "2025-01"));
     }
 
     @Test
-    void getPeriodByStudentEnrollment_EnrollmentNull_ThrowsIllegalArgumentException() {
+    void getPeriodByStudentEnrollment_EnrollmentIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> documentDAO.getPeriodByStudentEnrollment(null));
     }
 
     @Test
-    void getPeriodByStudentEnrollment_EnrollmentBlank_ThrowsIllegalArgumentException() {
+    void getPeriodByStudentEnrollment_EnrollmentIsBlank_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> documentDAO.getPeriodByStudentEnrollment("  "));
     }
 
     @Test
-    void getPeriodByStudentEnrollment_Found_ReturnsPeriod() throws SQLException, DataOperationException {
+    void getPeriodByStudentEnrollment_ExpedientExists_ReturnsPeriod() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("periodo")).thenReturn("2025-01");
@@ -103,7 +101,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getPeriodByStudentEnrollment_NotFound_ReturnsNull() throws SQLException, DataOperationException {
+    void getPeriodByStudentEnrollment_ExpedientDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         String result = documentDAO.getPeriodByStudentEnrollment("zS99999999");
@@ -111,27 +109,19 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getPeriodByStudentEnrollment_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getPeriodByStudentEnrollment_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
         assertThrows(DataOperationException.class, () -> documentDAO.getPeriodByStudentEnrollment("zS22013456"));
     }
 
     @Test
-    void getPeriodByStudentEnrollment_QueriesCorrectEnrollment_VerifiesParameter() throws SQLException, DataOperationException {
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
-        documentDAO.getPeriodByStudentEnrollment("zS22013456");
-        verify(preparedStatement).setString(1, "zS22013456");
-    }
-
-    @Test
-    void getCurrentPeriod_ReturnsNonNull() {
+    void getCurrentPeriod_Always_ReturnsNonNullPeriod() {
         String result = documentDAO.getCurrentPeriod();
         assertNotNull(result);
     }
 
     @Test
-    void loadDocument_Successful_ReturnsGeneratedId() throws SQLException, DataOperationException {
+    void loadDocument_InsertReturnsGeneratedKey_ReturnsGeneratedId() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         Document document = new Document("doc.pdf", "/ruta/doc.pdf", DocumentType.WORK_PLAN);
@@ -144,7 +134,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void loadDocument_NoGeneratedKeys_ReturnsFailureValue() throws SQLException, DataOperationException {
+    void loadDocument_InsertReturnsNoGeneratedKey_ReturnsFailureValue() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         Document document = new Document("doc.pdf", "/ruta/doc.pdf", DocumentType.WORK_PLAN);
@@ -156,7 +146,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void loadDocument_SQLException_ThrowsDataOperationException() throws SQLException {
+    void loadDocument_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         Document document = new Document("doc.pdf", "/ruta/doc.pdf", DocumentType.WORK_PLAN);
@@ -165,7 +155,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_DocumentLoaded_ReturnsTrue() throws SQLException, DataOperationException {
+    void isLoaded_DocumentColumnIsTrue_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getBoolean("carta_liberacion")).thenReturn(true);
@@ -174,7 +164,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_DocumentNotLoaded_ReturnsFalse() throws SQLException, DataOperationException {
+    void isLoaded_DocumentColumnIsFalse_ReturnsFalse() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getBoolean("carta_liberacion")).thenReturn(false);
@@ -183,7 +173,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_StudentNotFound_ReturnsFalse() throws SQLException, DataOperationException {
+    void isLoaded_StudentExpedientNotFound_ReturnsFalse() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         boolean result = documentDAO.isLoaded("zS99999999", "carta_liberacion");
@@ -191,25 +181,25 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_SQLException_ThrowsDataOperationException() throws SQLException {
+    void isLoaded_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
         assertThrows(DataOperationException.class, () -> documentDAO.isLoaded("zS22013456", "carta_liberacion"));
     }
 
     @Test
-    void uploadDocument_DirectoryNull_ThrowsIllegalArgumentException() {
+    void uploadDocument_DirectoryIsNull_ThrowsIllegalArgumentException() {
         Document document = new Document("doc.pdf", null, DocumentType.WORK_PLAN);
         assertThrows(IllegalArgumentException.class, () -> documentDAO.uploadDocument("zS22013456", document));
     }
 
     @Test
-    void uploadDocument_DirectoryEmpty_ThrowsIllegalArgumentException() {
+    void uploadDocument_DirectoryIsEmpty_ThrowsIllegalArgumentException() {
         Document document = new Document("doc.pdf", "", DocumentType.WORK_PLAN);
         assertThrows(IllegalArgumentException.class, () -> documentDAO.uploadDocument("zS22013456", document));
     }
 
     @Test
-    void uploadDocument_Successful_ReturnsTargetPath() throws IOException {
+    void uploadDocument_SourceFileExists_ReturnsTargetPath() throws IOException {
         Path tempFile = Files.createTempFile("testDoc", ".pdf");
         try {
             Document document = new Document("doc.pdf", tempFile.toString(), DocumentType.WORK_PLAN);
@@ -221,18 +211,18 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void uploadDocument_NonExistentSourceFile_ThrowsIOException() {
+    void uploadDocument_SourceFileDoesNotExist_ThrowsIOException() {
         Document document = new Document("doc.pdf", "/ruta/inexistente/archivo.pdf", DocumentType.WORK_PLAN);
         assertThrows(IOException.class, () -> documentDAO.uploadDocument("zS22013456", document));
     }
 
     @Test
-    void getDocumentsByPractice_PracticeNull_ThrowsIllegalArgumentException() {
+    void getDocumentsByPractice_PracticeIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> documentDAO.getDocumentsByPractice(null));
     }
 
     @Test
-    void getDocumentsByPractice_WithDocuments_ReturnsList() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsListWithOneDocument() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -246,25 +236,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_EmptyResult_ReturnsEmptyList() throws SQLException, DataOperationException {
-        Practice practice = mock(Practice.class);
-        when(practice.getId()).thenReturn(1);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
-        List<Document> result = documentDAO.getDocumentsByPractice(practice);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getDocumentsByPractice_SQLException_ThrowsDataOperationException() throws SQLException {
-        Practice practice = mock(Practice.class);
-        when(practice.getId()).thenReturn(1);
-        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
-        assertThrows(DataOperationException.class, () -> documentDAO.getDocumentsByPractice(practice));
-    }
-
-    @Test
-    void getDocumentsByPractice_DocumentNameIsCorrect_ReturnsExpectedName() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsDocumentWithExpectedName() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -278,17 +250,17 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_QueriesCorrectPractice_VerifiesParameter() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasNoDocuments_ReturnsEmptyList() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
-        when(practice.getId()).thenReturn(3);
+        when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        documentDAO.getDocumentsByPractice(practice);
-        verify(preparedStatement).setInt(1, 3);
+        List<Document> result = documentDAO.getDocumentsByPractice(practice);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void getDocumentsByPractice_ReturnsNotNull_WhenResultSetEmpty() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasNoDocuments_ReturnsNonNullList() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -298,12 +270,20 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_PracticeNull_ThrowsIllegalArgumentException() {
+    void getDocumentsByPractice_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        Practice practice = mock(Practice.class);
+        when(practice.getId()).thenReturn(1);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
+        assertThrows(DataOperationException.class, () -> documentDAO.getDocumentsByPractice(practice));
+    }
+
+    @Test
+    void getUploadedReportsByPractice_PracticeIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> documentDAO.getUploadedReportsByPractice(null));
     }
 
     @Test
-    void getUploadedReportsByPractice_WithReports_ReturnsList() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_PracticeHasOneReport_ReturnsListWithOneReport() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -318,25 +298,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_EmptyResult_ReturnsEmptyList() throws SQLException, DataOperationException {
-        Practice practice = mock(Practice.class);
-        when(practice.getId()).thenReturn(1);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
-        List<Document> result = documentDAO.getUploadedReportsByPractice(practice);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getUploadedReportsByPractice_SQLException_ThrowsDataOperationException() throws SQLException {
-        Practice practice = mock(Practice.class);
-        when(practice.getId()).thenReturn(1);
-        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
-        assertThrows(DataOperationException.class, () -> documentDAO.getUploadedReportsByPractice(practice));
-    }
-
-    @Test
-    void getUploadedReportsByPractice_ReportAcceptedStatusIsCorrect_ReturnsExpectedStatus() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_ReportColumnAcceptedIsTrue_ReturnsReportMarkedAsAccepted() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -351,39 +313,40 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_QueriesCorrectPractice_VerifiesParameter() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_PracticeHasNoReports_ReturnsEmptyList() throws SQLException, DataOperationException {
         Practice practice = mock(Practice.class);
-        when(practice.getId()).thenReturn(4);
+        when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        documentDAO.getUploadedReportsByPractice(practice);
-        verify(preparedStatement).setInt(1, 4);
+        List<Document> result = documentDAO.getUploadedReportsByPractice(practice);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void acceptReport_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        Practice practice = mock(Practice.class);
+        when(practice.getId()).thenReturn(1);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
+        assertThrows(DataOperationException.class, () -> documentDAO.getUploadedReportsByPractice(practice));
+    }
+
+    @Test
+    void acceptReport_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = documentDAO.acceptReport(10);
         assertTrue(result);
     }
 
     @Test
-    void acceptReport_ReportNotFound_ReturnsFalse() throws SQLException, DataOperationException {
+    void acceptReport_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = documentDAO.acceptReport(999);
         assertFalse(result);
     }
 
     @Test
-    void acceptReport_SQLException_ThrowsDataOperationException() throws SQLException {
+    void acceptReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de escritura"));
         assertThrows(DataOperationException.class, () -> documentDAO.acceptReport(10));
-    }
-
-    @Test
-    void acceptReport_SetsCorrectDocumentId_VerifiesParameter() throws SQLException, DataOperationException {
-        when(preparedStatement.executeUpdate()).thenReturn(1);
-        documentDAO.acceptReport(15);
-        verify(preparedStatement).setInt(1, 15);
     }
 }

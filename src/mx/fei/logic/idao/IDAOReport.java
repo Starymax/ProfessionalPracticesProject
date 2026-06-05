@@ -1,11 +1,16 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Report;
+import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface IDAOReport {
+    Report buildReportFromResultSet(ResultSet resultSet, Student student) throws SQLException;
+
     int createReport(Report report) throws DataOperationException;
 
     boolean createMonthlyReport(Report report) throws DataOperationException;

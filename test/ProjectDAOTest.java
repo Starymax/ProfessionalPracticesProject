@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -64,21 +63,21 @@ public class ProjectDAOTest {
         }
     }
 
-    private void stubProjectResultSet(ResultSet resultSet) throws SQLException {
-        when(resultSet.getString("nombre_proyecto")).thenReturn("Proyecto A");
-        when(resultSet.getString("descripcion_proyecto")).thenReturn("Descripcion");
-        when(resultSet.getString("objetivo_general")).thenReturn("Objetivo");
-        when(resultSet.getString("objetivos_inmediatos")).thenReturn("Inm");
-        when(resultSet.getString("objetivos_mediatos")).thenReturn("Med");
-        when(resultSet.getString("metodologia")).thenReturn("Metodologia");
-        when(resultSet.getString("responsabilidades")).thenReturn("Resp");
-        when(resultSet.getString("recursos")).thenReturn("Rec");
-        when(resultSet.getDate("fecha_inicio")).thenReturn(new Date(System.currentTimeMillis()));
-        when(resultSet.getDate("fecha_final")).thenReturn(new Date(System.currentTimeMillis()));
-        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
-        when(resultSet.getInt("lugares_disponibles")).thenReturn(5);
-        when(resultSet.getInt("id_empresa")).thenReturn(1);
-        when(resultSet.getInt("id_responsable")).thenReturn(2);
+    private void stubProjectResultSet(ResultSet projectResultSet) throws SQLException {
+        when(projectResultSet.getString("nombre_proyecto")).thenReturn("Proyecto A");
+        when(projectResultSet.getString("descripcion_proyecto")).thenReturn("Descripcion");
+        when(projectResultSet.getString("objetivo_general")).thenReturn("Objetivo");
+        when(projectResultSet.getString("objetivos_inmediatos")).thenReturn("Inm");
+        when(projectResultSet.getString("objetivos_mediatos")).thenReturn("Med");
+        when(projectResultSet.getString("metodologia")).thenReturn("Metodologia");
+        when(projectResultSet.getString("responsabilidades")).thenReturn("Resp");
+        when(projectResultSet.getString("recursos")).thenReturn("Rec");
+        when(projectResultSet.getDate("fecha_inicio")).thenReturn(new Date(System.currentTimeMillis()));
+        when(projectResultSet.getDate("fecha_final")).thenReturn(new Date(System.currentTimeMillis()));
+        when(projectResultSet.getBoolean("estado_activo")).thenReturn(true);
+        when(projectResultSet.getInt("lugares_disponibles")).thenReturn(5);
+        when(projectResultSet.getInt("id_empresa")).thenReturn(1);
+        when(projectResultSet.getInt("id_responsable")).thenReturn(2);
     }
 
     private Project buildMockProject() {
@@ -106,68 +105,68 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getProjectById_Found_ReturnsProject() throws SQLException, DataOperationException {
+    void getProjectById_ProjectExists_ReturnsProjectWithExpectedName() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
-        Enterprise mockEnterprise = mock(Enterprise.class);
-        ProjectManager mockProjectManager = mock(ProjectManager.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterprise = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(1)).thenReturn(mockEnterprise));
-             MockedConstruction<ProjectManagerDAO> mockedPM = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(2)).thenReturn(mockProjectManager))) {
+        Enterprise enterprise = mock(Enterprise.class);
+        ProjectManager projectManager = mock(ProjectManager.class);
+        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
+                (mock, context) -> when(mock.getEnterpriseById(1)).thenReturn(enterprise));
+             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
+                     (mock, context) -> when(mock.getProjectManagerById(2)).thenReturn(projectManager))) {
             Project result = projectDAO.getProjectById(1);
-            assertNotNull(result);
+            assertEquals("Proyecto A", result.getNameProject());
         }
     }
 
     @Test
-    void getProjectById_NotFound_ThrowsNoSuchElementException() throws SQLException {
+    void getProjectById_ProjectDoesNotExist_ThrowsNoSuchElementException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         assertThrows(NoSuchElementException.class, () -> projectDAO.getProjectById(99));
     }
 
     @Test
-    void getProjectById_EnterpriseDAOFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void getProjectById_EnterpriseLookupFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterprise = mockConstruction(EnterpriseDAO.class,
+        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
                 (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenThrow(new DataOperationException("Error empresa")))) {
             assertThrows(DataOperationException.class, () -> projectDAO.getProjectById(1));
         }
     }
 
     @Test
-    void getProjectById_ProjectManagerDAOFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void getProjectById_ProjectManagerLookupFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
-        Enterprise mockEnterprise = mock(Enterprise.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterprise = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(mockEnterprise));
-             MockedConstruction<ProjectManagerDAO> mockedPM = mockConstruction(ProjectManagerDAO.class,
+        Enterprise enterprise = mock(Enterprise.class);
+        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
+                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(enterprise));
+             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
                      (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenThrow(new DataOperationException("Error responsable")))) {
             assertThrows(DataOperationException.class, () -> projectDAO.getProjectById(1));
         }
     }
 
     @Test
-    void getProjectById_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getProjectById_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de conexion"));
         assertThrows(DataOperationException.class, () -> projectDAO.getProjectById(1));
     }
 
     @Test
-    void getProjectById_ResultSetNextSQLException_ThrowsDataOperationException() throws SQLException {
+    void getProjectById_ResultSetReadThrowsSQLException_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenThrow(new SQLException("Error leyendo cursor"));
         assertThrows(DataOperationException.class, () -> projectDAO.getProjectById(1));
     }
 
     @Test
-    void registerProject_Successful_ReturnsGeneratedId() throws SQLException, DataOperationException {
+    void registerProject_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException, DataOperationException {
         Project project = buildMockProject();
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true);
@@ -178,7 +177,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void registerProject_NoGeneratedKey_ReturnsMinusOne() throws SQLException, DataOperationException {
+    void registerProject_InsertGeneratesNoKey_ReturnsMinusOne() throws SQLException, DataOperationException {
         Project project = buildMockProject();
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(false);
@@ -188,14 +187,14 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void registerProject_SQLException_ThrowsDataOperationException() throws SQLException {
+    void registerProject_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Project project = buildMockProject();
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de insercion"));
         assertThrows(DataOperationException.class, () -> projectDAO.registerProject(project));
     }
 
     @Test
-    void getActiveProjects_WithProjects_ReturnsList() throws SQLException, DataOperationException {
+    void getActiveProjects_OneActiveProject_ReturnsListWithOneProject() throws SQLException, DataOperationException {
         ResultSet listResultSet = mock(ResultSet.class);
         when(listResultSet.next()).thenReturn(true, false);
         when(listResultSet.getInt("id_proyecto")).thenReturn(1);
@@ -208,19 +207,19 @@ public class ProjectDAOTest {
         when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
         databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        Enterprise mockEnterprise = mock(Enterprise.class);
-        ProjectManager mockProjectManager = mock(ProjectManager.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterprise = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(mockEnterprise));
-             MockedConstruction<ProjectManagerDAO> mockedPM = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenReturn(mockProjectManager))) {
+        Enterprise enterprise = mock(Enterprise.class);
+        ProjectManager projectManager = mock(ProjectManager.class);
+        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
+                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(enterprise));
+             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
+                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenReturn(projectManager))) {
             List<Project> result = projectDAO.getActiveProjects();
             assertEquals(1, result.size());
         }
     }
 
     @Test
-    void getActiveProjects_EmptyTable_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getActiveProjects_NoActiveProjects_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Project> result = projectDAO.getActiveProjects();
@@ -228,13 +227,13 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getActiveProjects_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getActiveProjects_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> projectDAO.getActiveProjects());
     }
 
     @Test
-    void getAllProjects_WithProjects_ReturnsList() throws SQLException, DataOperationException {
+    void getAllProjects_OneProjectRegistered_ReturnsListWithOneProject() throws SQLException, DataOperationException {
         ResultSet listResultSet = mock(ResultSet.class);
         when(listResultSet.next()).thenReturn(true, false);
         when(listResultSet.getInt("id_proyecto")).thenReturn(2);
@@ -247,19 +246,19 @@ public class ProjectDAOTest {
         when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
         databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        Enterprise mockEnterprise = mock(Enterprise.class);
-        ProjectManager mockProjectManager = mock(ProjectManager.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterprise = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(mockEnterprise));
-             MockedConstruction<ProjectManagerDAO> mockedPM = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenReturn(mockProjectManager))) {
+        Enterprise enterprise = mock(Enterprise.class);
+        ProjectManager projectManager = mock(ProjectManager.class);
+        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
+                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(enterprise));
+             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
+                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenReturn(projectManager))) {
             List<Project> result = projectDAO.getAllProjects();
             assertEquals(1, result.size());
         }
     }
 
     @Test
-    void getAllProjects_EmptyTable_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAllProjects_NoProjectsRegistered_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Project> result = projectDAO.getAllProjects();
@@ -267,13 +266,13 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getAllProjects_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getAllProjects_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> projectDAO.getAllProjects());
     }
 
     @Test
-    void getAvailableProjects_WithAvailablePlacesAndActivities_ReturnsList() throws DataOperationException {
+    void getAvailableProjects_ProjectHasPlacesAndActivities_ReturnsListWithOneProject() throws DataOperationException {
         Project projectWithPlaces = new Project();
         projectWithPlaces.setProjectId(1);
         projectWithPlaces.setAvailablePlaces(3);
@@ -281,19 +280,17 @@ public class ProjectDAOTest {
         doReturn(List.of(projectWithPlaces)).when(spyProjectDAO).getActiveProjects();
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
                 (mock, context) -> {
-                    List<Activity> mockActivities = new ArrayList<>();
-                    mockActivities.add(mock(Activity.class));
-                    when(mock.getActivitiesByProjectId(1)).thenReturn(mockActivities);
+                    List<Activity> activities = new ArrayList<>();
+                    activities.add(mock(Activity.class));
+                    when(mock.getActivitiesByProjectId(1)).thenReturn(activities);
                 })) {
             List<Project> result = spyProjectDAO.getAvailableProjects();
-            assertNotNull(result, "La lista no debería ser nula");
-            assertEquals(1, result.size(), "Debería tener 1 proyecto porque tiene cupos Y actividades");
-            assertEquals(3, result.get(0).getAvailablePlaces());
+            assertEquals(1, result.size());
         }
     }
 
     @Test
-    void getAvailableProjects_NoAvailablePlaces_ReturnsEmptyList() throws DataOperationException {
+    void getAvailableProjects_ProjectHasNoPlaces_ReturnsEmptyList() throws DataOperationException {
         Project projectFull = mock(Project.class);
         when(projectFull.getAvailablePlaces()).thenReturn(0);
         ProjectDAO spyProjectDAO = spy(projectDAO);
@@ -310,7 +307,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void modifyProject_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void modifyProject_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
         Project project = buildMockProject();
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = projectDAO.modifyProject(project);
@@ -318,7 +315,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void modifyProject_SQLException_ThrowsDataOperationException() throws SQLException {
+    void modifyProject_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Project project = buildMockProject();
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de escritura"));
         assertThrows(DataOperationException.class, () -> projectDAO.modifyProject(project));

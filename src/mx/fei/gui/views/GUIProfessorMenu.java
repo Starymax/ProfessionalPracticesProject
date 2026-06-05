@@ -27,9 +27,8 @@ public class GUIProfessorMenu extends Application {
     private Professor professor;
     private Label labelProfessorName;
     private Label labelProfessorShift;
-    private Button buttonManageActivities;
-    private Button buttonManageReports;
-    private Button buttonEvaluate;
+    private Button buttonEvaluateReports;
+    private Button buttonGoBack;
     private Button buttonLogout;
     private Stage stage;
 
@@ -58,20 +57,18 @@ public class GUIProfessorMenu extends Application {
 
         Region spacer = new Region();
         spacer.setPrefHeight(10);
-        buttonManageActivities = createMenuButton("Gestionar actividades");
-        buttonManageReports = createMenuButton("Gestionar reportes");
-        buttonEvaluate = createMenuButton("Evaluar");
+        buttonEvaluateReports = createMenuButton("Evaluar");
+        buttonGoBack = createMenuButton("Regresar");
         buttonLogout = createMenuButton("Cerrar Sesión");
-        VBox buttonsBox = new VBox(12, buttonManageActivities, buttonManageReports, buttonEvaluate, buttonLogout);
+        VBox buttonsBox = new VBox(12, buttonEvaluateReports, buttonGoBack, buttonLogout);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelProfessorName, labelProfessorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerProfessorMenu controllerProfessorMenu = new ControllerProfessorMenu(this);
-        buttonManageActivities.setOnAction(controllerProfessorMenu::handleButtonsMenu);
-        buttonManageReports.setOnAction(controllerProfessorMenu::handleButtonsMenu);
-        buttonEvaluate.setOnAction(controllerProfessorMenu::handleButtonsMenu);
+        buttonEvaluateReports.setOnAction(controllerProfessorMenu::handleButtonsMenu);
+        buttonGoBack.setOnAction(controllerProfessorMenu::handleButtonsMenu);
         buttonLogout.setOnAction(controllerProfessorMenu::handleButtonsMenu);
         Scene scene = new Scene(mainPanel, 500, 420);
         stage.setScene(scene);
@@ -107,16 +104,8 @@ public class GUIProfessorMenu extends Application {
         return professor;
     }
 
-    public Button getButtonManageActivities() {
-        return buttonManageActivities;
-    }
-
-    public Button getButtonManageReports() {
-        return buttonManageReports;
-    }
-
-    public Button getButtonEvaluate() {
-        return buttonEvaluate;
+    public Button getButtonEvaluateReports() {
+        return buttonEvaluateReports;
     }
 
     public Button getButtonLogout() {

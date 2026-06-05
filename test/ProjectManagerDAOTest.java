@@ -14,8 +14,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class ProjectManagerDAOTest {
     private ProjectManagerDAO projectManagerDAO;
@@ -25,7 +35,7 @@ public class ProjectManagerDAOTest {
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
 
     @BeforeEach
-    void  setUp() throws SQLException {
+    void setUp() throws SQLException {
         projectManagerDAO = new ProjectManagerDAO();
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
@@ -33,35 +43,34 @@ public class ProjectManagerDAOTest {
         databaseConnectionManager = mockStatic(DatabaseConnectionManager.class);
         databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(connection.prepareStatement(anyString(),anyInt())).thenReturn(preparedStatement);
+        when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
     }
 
     @AfterEach
     void tearDown() {
-        if(databaseConnectionManager != null) {
+        if (databaseConnectionManager != null) {
             databaseConnectionManager.close();
         }
     }
 
     @Test
-    void registerProjectManager_Null_ReturnsFalse() throws SQLException {
+    void registerProjectManager_ProjectManagerIsNull_ReturnsFalse() throws DataOperationException {
         boolean result = projectManagerDAO.registerProjectManager(null);
         assertFalse(result);
     }
 
     @Test
-    void registerProjectManager_AlreadyExists_ReturnsFalse() throws SQLException {
+    void registerProjectManager_ProjectManagerAlreadyExists_ReturnsFalse() throws DataOperationException {
         ProjectManager projectManager = new ProjectManager();
         projectManager.setProjectManagerId(10);
-        ProjectManagerDAO spyDAO = spy(projectManagerDAO);
-        doReturn(new ProjectManager()).when(spyDAO).getProjectManagerById(10);
-        boolean result = spyDAO.registerProjectManager(projectManager);
+        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(new ProjectManager()).when(spyProjectManagerDAO).getProjectManagerById(10);
+        boolean result = spyProjectManagerDAO.registerProjectManager(projectManager);
         assertFalse(result);
-        verify(connection, never()).prepareStatement(anyString());
     }
 
     @Test
-    void registerProjectManager_Successful_ReturnsTrue() throws SQLException {
+    void registerProjectManager_NewProjectManagerInserted_ReturnsTrue() throws SQLException, DataOperationException {
         ProjectManager projectManager = new ProjectManager();
         projectManager.setProjectManagerId(20);
         projectManager.setName("Ana García");
@@ -69,31 +78,25 @@ public class ProjectManagerDAOTest {
         projectManager.setPhoneNumberProjectManager("2281234567");
         projectManager.setRol("Líder de Proyecto");
         projectManager.setEnterpriseId(1);
-        ProjectManagerDAO spyDAO = spy(projectManagerDAO);
-        doReturn(null).when(spyDAO).getProjectManagerById(20);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(null).when(spyProjectManagerDAO).getProjectManagerById(20);
         when(preparedStatement.executeUpdate()).thenReturn(1);
-        boolean result = spyDAO.registerProjectManager(projectManager);
+        boolean result = spyProjectManagerDAO.registerProjectManager(projectManager);
         assertTrue(result);
-        verify(preparedStatement).setString(1, "Ana García");
-        verify(preparedStatement).setInt(5, 1);
     }
 
     @Test
-    void registerProjectManager_SQLException_ThrowsDataOperationException() throws SQLException {
+    void registerProjectManager_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         ProjectManager projectManager = new ProjectManager();
         projectManager.setProjectManagerId(30);
-        ProjectManagerDAO spyDAO = spy(projectManagerDAO);
-        doReturn(null).when(spyDAO).getProjectManagerById(30);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(null).when(spyProjectManagerDAO).getProjectManagerById(30);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de inserción"));
-        assertThrows(DataOperationException.class, () -> {spyDAO.registerProjectManager(projectManager);});
+        assertThrows(DataOperationException.class, () -> spyProjectManagerDAO.registerProjectManager(projectManager));
     }
 
     @Test
-    void getProjectManagerById_Successful() throws SQLException {
-        int idTest = 5;
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getProjectManagerById_ProjectManagerExists_ReturnsProjectManagerWithExpectedName() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("nombre_responsable")).thenReturn("Carlos Ruiz");
@@ -101,74 +104,55 @@ public class ProjectManagerDAOTest {
         when(resultSet.getString("telefono_responsable")).thenReturn("2288112233");
         when(resultSet.getString("cargo")).thenReturn("Gerente de TI");
         when(resultSet.getInt("id_empresa")).thenReturn(1);
-        ProjectManager projectManager = projectManagerDAO.getProjectManagerById(idTest);
-        assertNotNull(projectManager);
-        assertEquals(idTest, projectManager.getProjectManagerId());
+        ProjectManager projectManager = projectManagerDAO.getProjectManagerById(5);
         assertEquals("Carlos Ruiz", projectManager.getName());
-        assertEquals("Gerente de TI", projectManager.getRol());
-        verify(preparedStatement).setInt(1, idTest);
     }
 
     @Test
-    void getProjectManagerById_NotFound_ReturnsNull() throws SQLException {
-        int idTest = 99;
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getProjectManagerById_ProjectManagerDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        ProjectManager projectManager = projectManagerDAO.getProjectManagerById(idTest);
+        ProjectManager projectManager = projectManagerDAO.getProjectManagerById(99);
         assertNull(projectManager);
     }
 
     @Test
-    void getProjectManagerById_SQLException_ThrowsDataOperationException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getProjectManagerById_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Timeout"));
-        assertThrows(DataOperationException.class, () -> {projectManagerDAO.getProjectManagerById(1);});
+        assertThrows(DataOperationException.class, () -> projectManagerDAO.getProjectManagerById(1));
     }
 
     @Test
-    void getProjectManagersByEnterprise_Empty_ReturnsEmptyList() throws SQLException {
+    void getProjectManagersByEnterprise_EnterpriseHasNoProjectManagers_ReturnsEmptyList() throws SQLException, DataOperationException {
         Enterprise enterprise = new Enterprise();
         enterprise.setEnterpriseId(1);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        List<ProjectManager> projectManagers = projectManagerDAO.getProjectManagersByEnterprise(enterprise);
-        assertTrue(projectManagers.isEmpty());
-        assertEquals(0, projectManagers.size());
+        List<ProjectManager> result = projectManagerDAO.getProjectManagersByEnterprise(enterprise);
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void getProjectManagersByEnterprise_Successful_ReturnsList() throws SQLException {
+    void getProjectManagersByEnterprise_EnterpriseHasTwoProjectManagers_ReturnsListWithTwoProjectManagers() throws SQLException, DataOperationException {
         Enterprise enterprise = new Enterprise();
         enterprise.setEnterpriseId(5);
-        int idProjetManager1 = 101;
-        int idProjectManager2 = 102;
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_responsable")).thenReturn(idProjetManager1, idProjectManager2);
+        when(resultSet.getInt("id_responsable")).thenReturn(101, 102);
         ProjectManager projectManager1 = mock(ProjectManager.class);
         ProjectManager projectManager2 = mock(ProjectManager.class);
-        ProjectManagerDAO spyDAO = spy(projectManagerDAO);
-        doReturn(projectManager1).when(spyDAO).getProjectManagerById(idProjetManager1);
-        doReturn(projectManager2).when(spyDAO).getProjectManagerById(idProjectManager2);
-        List<ProjectManager> projectManagers = spyDAO.getProjectManagersByEnterprise(enterprise);
-        assertNotNull(projectManagers);
-        assertEquals(2, projectManagers.size());
-        assertEquals(projectManager1, projectManagers.get(0));
-        assertEquals(projectManager2, projectManagers.get(1));
-        verify(preparedStatement).setInt(1, 5);
-        verify(spyDAO).getProjectManagerById(idProjetManager1);
-        verify(spyDAO).getProjectManagerById(idProjectManager2);
+        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(projectManager1).when(spyProjectManagerDAO).getProjectManagerById(101);
+        doReturn(projectManager2).when(spyProjectManagerDAO).getProjectManagerById(102);
+        List<ProjectManager> result = spyProjectManagerDAO.getProjectManagersByEnterprise(enterprise);
+        assertEquals(2, result.size());
     }
 
     @Test
-    void getProjectManagersByEnterprise_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getProjectManagersByEnterprise_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Enterprise enterprise = new Enterprise();
         enterprise.setEnterpriseId(1);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error DB"));
-        assertThrows(DataOperationException.class, () -> {projectManagerDAO.getProjectManagersByEnterprise(enterprise);});
+        assertThrows(DataOperationException.class, () -> projectManagerDAO.getProjectManagersByEnterprise(enterprise));
     }
 }

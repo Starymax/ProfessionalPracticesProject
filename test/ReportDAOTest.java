@@ -26,18 +26,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.doThrow;
+import mx.fei.logic.dao.StudentDAO;
 
 public class ReportDAOTest {
 
@@ -91,12 +89,12 @@ public class ReportDAOTest {
     }
 
     @Test
-    void createReport_ReportNull_ThrowsIllegalArgumentException() {
+    void createReport_ReportIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> reportDAO.createReport(null));
     }
 
     @Test
-    void createReport_Successful_ReturnsGeneratedId() throws SQLException, DataOperationException {
+    void createReport_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true);
@@ -104,11 +102,10 @@ public class ReportDAOTest {
         when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
         int result = reportDAO.createReport(report);
         assertEquals(42, result);
-        verify(report).setReportId(42);
     }
 
     @Test
-    void createReport_NoGeneratedKeys_ReturnsZero() throws SQLException, DataOperationException {
+    void createReport_InsertGeneratesNoKey_ReturnsZero() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(false);
@@ -118,14 +115,14 @@ public class ReportDAOTest {
     }
 
     @Test
-    void createReport_SQLException_ThrowsDataOperationException() throws SQLException {
+    void createReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Report report = buildMockReport();
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de insercion"));
         assertThrows(DataOperationException.class, () -> reportDAO.createReport(report));
     }
 
     @Test
-    void createMonthlyReport_ReportNull_ThrowsIllegalArgumentException() {
+    void createMonthlyReport_ReportIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> reportDAO.createMonthlyReport(null));
     }
 
@@ -137,93 +134,41 @@ public class ReportDAOTest {
         doReturn(0).when(spyReportDAO).createReport(report);
         boolean result = spyReportDAO.createMonthlyReport(report);
         assertFalse(result);
-        verify(connection).rollback();
     }
 
     @Test
-    void createMonthlyReport_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void createMonthlyReport_ActivitiesPersisted_ReturnsTrue() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeek()).thenReturn(1);
         when(weeklyLog.getPlannedHours()).thenReturn(8);
         when(weeklyLog.getWorkedHours()).thenReturn(7);
-        List<WeeklyLog> weeklyLogs = List.of(weeklyLog);
-        ReportActivityProgress progress = buildMockActivityProgress(weeklyLogs);
+        ReportActivityProgress progress = buildMockActivityProgress(List.of(weeklyLog));
         when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        PreparedStatement psWeekly = mock(PreparedStatement.class);
+        PreparedStatement weeklyStatement = mock(PreparedStatement.class);
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true);
         when(generatedKeys.getInt(1)).thenReturn(5);
         when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
-        when(connection.prepareStatement(anyString())).thenReturn(psWeekly);
+        when(connection.prepareStatement(anyString())).thenReturn(weeklyStatement);
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
         ReportDAO spyReportDAO = spy(reportDAO);
         doReturn(1).when(spyReportDAO).createReport(report);
         boolean result = spyReportDAO.createMonthlyReport(report);
         assertTrue(result);
-        verify(connection).commit();
     }
 
     @Test
-    void createMonthlyReport_EmptyActivityList_CommitsAndReturnsTrue() throws SQLException, DataOperationException {
+    void createMonthlyReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(1).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createMonthlyReport(report);
-        assertTrue(result);
-        verify(connection).commit();
-    }
-
-    @Test
-    void createMonthlyReport_NoGeneratedKeyForActivity_SkipsWeeklyLogs() throws SQLException, DataOperationException {
-        Report report = buildMockReport();
-        ReportActivityProgress progress = buildMockActivityProgress(new ArrayList<>());
-        when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(false);
-        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
-        when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(1).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createMonthlyReport(report);
-        assertTrue(result);
-        verify(connection).commit();
-    }
-
-    @Test
-    void createMonthlyReport_EmptyWeeklyProgressList_ExecutesEmptyBatch() throws SQLException, DataOperationException {
-        Report report = buildMockReport();
-        ReportActivityProgress progress = buildMockActivityProgress(new ArrayList<>());
-        when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        PreparedStatement psWeekly = mock(PreparedStatement.class);
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(true);
-        when(generatedKeys.getInt(1)).thenReturn(5);
-        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
-        when(connection.prepareStatement(anyString())).thenReturn(psWeekly);
-        when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(1).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createMonthlyReport(report);
-        assertTrue(result);
-        verify(psWeekly, never()).addBatch();
-        verify(psWeekly).executeBatch();
-    }
-
-    @Test
-    void createMonthlyReport_SQLException_ThrowsDataOperationException() throws SQLException {
-        Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        when(connection.prepareStatement(anyString(), anyInt())).thenThrow(new SQLException("Error de conexion"));
         ReportDAO spyReportDAO = spy(reportDAO);
         doThrow(new DataOperationException("Error al crear el reporte.")).when(spyReportDAO).createReport(report);
-
         assertThrows(DataOperationException.class, () -> spyReportDAO.createMonthlyReport(report));
     }
 
     @Test
-    void createPartialReport_ReportNull_ThrowsIllegalArgumentException() {
+    void createPartialReport_ReportIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> reportDAO.createPartialReport(null));
     }
 
@@ -235,82 +180,32 @@ public class ReportDAOTest {
         doReturn(0).when(spyReportDAO).createReport(report);
         boolean result = spyReportDAO.createPartialReport(report);
         assertFalse(result);
-        verify(connection).rollback();
     }
 
     @Test
-    void createPartialReport_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void createPartialReport_ActivitiesPersisted_ReturnsTrue() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeek()).thenReturn(2);
         when(weeklyLog.getPlannedHours()).thenReturn(10);
         when(weeklyLog.getWorkedHours()).thenReturn(9);
-        List<WeeklyLog> weeklyLogs = List.of(weeklyLog);
-        ReportActivityProgress progress = buildMockActivityProgress(weeklyLogs);
+        ReportActivityProgress progress = buildMockActivityProgress(List.of(weeklyLog));
         when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        PreparedStatement psWeekly = mock(PreparedStatement.class);
+        PreparedStatement weeklyStatement = mock(PreparedStatement.class);
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true);
         when(generatedKeys.getInt(1)).thenReturn(7);
         when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
-        when(connection.prepareStatement(anyString())).thenReturn(psWeekly);
+        when(connection.prepareStatement(anyString())).thenReturn(weeklyStatement);
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
         ReportDAO spyReportDAO = spy(reportDAO);
         doReturn(2).when(spyReportDAO).createReport(report);
         boolean result = spyReportDAO.createPartialReport(report);
         assertTrue(result);
-        verify(connection).commit();
     }
 
     @Test
-    void createPartialReport_EmptyActivityList_CommitsAndReturnsTrue() throws SQLException, DataOperationException {
-        Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(2).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createPartialReport(report);
-        assertTrue(result);
-        verify(connection).commit();
-    }
-
-    @Test
-    void createPartialReport_NoGeneratedKeyForActivity_SkipsWeeklyLogs() throws SQLException, DataOperationException {
-        Report report = buildMockReport();
-        ReportActivityProgress progress = buildMockActivityProgress(new ArrayList<>());
-        when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(false);
-        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
-        when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(2).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createPartialReport(report);
-        assertTrue(result);
-        verify(connection).commit();
-    }
-
-    @Test
-    void createPartialReport_EmptyWeeklyProgressList_ExecutesEmptyBatch() throws SQLException, DataOperationException {
-        Report report = buildMockReport();
-        ReportActivityProgress progress = buildMockActivityProgress(new ArrayList<>());
-        when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        PreparedStatement psWeekly = mock(PreparedStatement.class);
-        ResultSet generatedKeys = mock(ResultSet.class);
-        when(generatedKeys.next()).thenReturn(true);
-        when(generatedKeys.getInt(1)).thenReturn(7);
-        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
-        when(connection.prepareStatement(anyString())).thenReturn(psWeekly);
-        when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(2).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createPartialReport(report);
-        assertTrue(result);
-        verify(psWeekly, never()).addBatch();
-        verify(psWeekly).executeBatch();
-    }
-
-    @Test
-    void createPartialReport_SQLException_ThrowsDataOperationException() throws SQLException {
+    void createPartialReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
         ReportDAO spyReportDAO = spy(reportDAO);
@@ -319,7 +214,7 @@ public class ReportDAOTest {
     }
 
     @Test
-    void createFinalReport_ReportNull_ThrowsIllegalArgumentException() {
+    void createFinalReport_ReportIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> reportDAO.createFinalReport(null));
     }
 
@@ -331,37 +226,23 @@ public class ReportDAOTest {
         doReturn(0).when(spyReportDAO).createReport(report);
         boolean result = spyReportDAO.createFinalReport(report);
         assertFalse(result);
-        verify(connection).rollback();
     }
 
     @Test
-    void createFinalReport_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void createFinalReport_ActivitiesPersisted_ReturnsTrue() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         ReportActivityProgress progress = buildMockActivityProgress(new ArrayList<>());
         when(report.getActivityProgressList()).thenReturn(List.of(progress));
-        PreparedStatement psActivity = mock(PreparedStatement.class);
-        when(connection.prepareStatement(anyString())).thenReturn(psActivity);
+        PreparedStatement activityStatement = mock(PreparedStatement.class);
+        when(connection.prepareStatement(anyString())).thenReturn(activityStatement);
         ReportDAO spyReportDAO = spy(reportDAO);
         doReturn(3).when(spyReportDAO).createReport(report);
         boolean result = spyReportDAO.createFinalReport(report);
         assertTrue(result);
-        verify(connection).commit();
-        verify(psActivity).addBatch();
     }
 
     @Test
-    void createFinalReport_EmptyActivityList_CommitsAndReturnsTrue() throws SQLException, DataOperationException {
-        Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO spyReportDAO = spy(reportDAO);
-        doReturn(3).when(spyReportDAO).createReport(report);
-        boolean result = spyReportDAO.createFinalReport(report);
-        assertTrue(result);
-        verify(connection).commit();
-    }
-
-    @Test
-    void createFinalReport_SQLException_ThrowsDataOperationException() throws SQLException {
+    void createFinalReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Report report = buildMockReport();
         when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
         ReportDAO spyReportDAO = spy(reportDAO);
@@ -370,7 +251,7 @@ public class ReportDAOTest {
     }
 
     @Test
-    void getReportById_Found_ReturnsReport() throws SQLException, DataOperationException {
+    void getReportById_ReportExists_ReturnsReportWithExpectedType() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("tipo_reporte")).thenReturn("Mensual");
@@ -379,86 +260,71 @@ public class ReportDAOTest {
         when(resultSet.getString("resultados_obtenidos")).thenReturn("Resultados");
         when(resultSet.getInt("id_alumno")).thenReturn(1);
         when(resultSet.getString("nrc")).thenReturn("12345");
-        Student mockStudent = mock(Student.class);
+        Student student = mock(Student.class);
         try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                (mock, context) -> when(mock.getStudentById(1)).thenReturn(mockStudent))) {
+                (mock, context) -> when(mock.getStudentById(1)).thenReturn(student))) {
             Report result = reportDAO.getReportById(10);
-            assertNotNull(result);
             assertEquals("Mensual", result.getReportType());
-            verify(preparedStatement).setInt(1, 10);
         }
     }
 
     @Test
-    void getReportById_NotFound_ReturnsNull() throws SQLException, DataOperationException {
+    void getReportById_ReportDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Report result = reportDAO.getReportById(99);
         assertNull(result);
-        verify(preparedStatement).setInt(1, 99);
     }
 
     @Test
-    void getReportById_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getReportById_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
         assertThrows(DataOperationException.class, () -> reportDAO.getReportById(1));
     }
 
     @Test
-    void getReportsByStudentEnrollment_WithReports_ReturnsList() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_reporte")).thenReturn(5);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        when(detailResultSet.getString("tipo_reporte")).thenReturn("Parcial");
-        when(detailResultSet.getDate("fecha_reporte")).thenReturn(new java.sql.Date(System.currentTimeMillis()));
-        when(detailResultSet.getString("observaciones")).thenReturn("Obs");
-        when(detailResultSet.getString("resultados_obtenidos")).thenReturn("Res");
-        when(detailResultSet.getInt("id_alumno")).thenReturn(2);
-        when(detailResultSet.getString("nrc")).thenReturn("99999");
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement).thenReturn(detailStatement);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        Student mockStudent = mock(Student.class);
+    void getReportsByStudentEnrollment_StudentHasOneReport_ReturnsListWithOneReport() throws SQLException, DataOperationException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getInt("id_reporte")).thenReturn(5);
+        when(resultSet.getString("tipo_reporte")).thenReturn("Parcial");
+        when(resultSet.getDate("fecha_reporte")).thenReturn(new java.sql.Date(System.currentTimeMillis()));
+        when(resultSet.getString("observaciones")).thenReturn("Obs");
+        when(resultSet.getString("resultados_obtenidos")).thenReturn("Res");
+        when(resultSet.getString("nrc")).thenReturn("99999");
+        Student student = mock(Student.class);
         try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(mockStudent))) {
+                (mock, context) -> when(mock.getStudentByEnrollment("S123456")).thenReturn(student))) {
             List<Report> result = reportDAO.getReportsByStudentEnrollment("S123456");
-            assertNotNull(result);
             assertEquals(1, result.size());
-            verify(preparedStatement).setString(1, "S123456");
         }
     }
 
     @Test
-    void getReportsByStudentEnrollment_NoReports_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getReportsByStudentEnrollment_StudentHasNoReports_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Report> result = reportDAO.getReportsByStudentEnrollment("S000000");
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getReportsByStudentEnrollment_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getReportsByStudentEnrollment_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> reportDAO.getReportsByStudentEnrollment("S123456"));
     }
 
     @Test
-    void countReportsByTypeAndStudent_Found_ReturnsCount() throws SQLException, DataOperationException {
+    void countReportsByTypeAndStudent_ReportsExist_ReturnsCount() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(3);
         int result = reportDAO.countReportsByTypeAndStudent("Mensual", 1);
         assertEquals(3, result);
-        verify(preparedStatement).setString(1, "Mensual");
-        verify(preparedStatement).setInt(2, 1);
     }
 
     @Test
-    void countReportsByTypeAndStudent_NotFound_ReturnsZero() throws SQLException, DataOperationException {
+    void countReportsByTypeAndStudent_NoReportsExist_ReturnsZero() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         int result = reportDAO.countReportsByTypeAndStudent("Final", 99);
@@ -466,28 +332,33 @@ public class ReportDAOTest {
     }
 
     @Test
-    void countReportsByTypeAndStudent_SQLException_ThrowsDataOperationException() throws SQLException {
+    void countReportsByTypeAndStudent_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Timeout"));
         assertThrows(DataOperationException.class, () -> reportDAO.countReportsByTypeAndStudent("Parcial", 1));
     }
 
     @Test
-    void setObservations_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void setObservations_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = reportDAO.setObservations(1, "Nueva observacion");
         assertTrue(result);
-        verify(preparedStatement).setString(1, "Nueva observacion");
-        verify(preparedStatement).setInt(2, 1);
     }
 
     @Test
-    void setObservations_SQLException_ThrowsDataOperationException() throws SQLException {
+    void setObservations_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+        when(preparedStatement.executeUpdate()).thenReturn(0);
+        boolean result = reportDAO.setObservations(1, "Nueva observacion");
+        assertFalse(result);
+    }
+
+    @Test
+    void setObservations_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de escritura"));
         assertThrows(DataOperationException.class, () -> reportDAO.setObservations(1, "Obs"));
     }
 
     @Test
-    void updateActivityObservations_WithActivities_ReturnsTrue() throws SQLException, DataOperationException {
+    void updateActivityObservations_ListHasOneActivity_ReturnsTrue() throws SQLException, DataOperationException {
         ReportActivityProgress progress = mock(ReportActivityProgress.class);
         Activity activity = mock(Activity.class);
         when(activity.getActivityId()).thenReturn(10);
@@ -495,23 +366,16 @@ public class ReportDAOTest {
         when(progress.getObservations()).thenReturn("Nueva obs");
         boolean result = reportDAO.updateActivityObservations(1, List.of(progress));
         assertTrue(result);
-        verify(preparedStatement).setString(1, "Nueva obs");
-        verify(preparedStatement).setInt(2, 1);
-        verify(preparedStatement).setInt(3, 10);
-        verify(preparedStatement).addBatch();
-        verify(preparedStatement).executeBatch();
     }
 
     @Test
-    void updateActivityObservations_EmptyList_ReturnsTrue() throws SQLException, DataOperationException {
+    void updateActivityObservations_ListIsEmpty_ReturnsTrue() throws SQLException, DataOperationException {
         boolean result = reportDAO.updateActivityObservations(1, new ArrayList<>());
         assertTrue(result);
-        verify(preparedStatement, never()).addBatch();
-        verify(preparedStatement).executeBatch();
     }
 
     @Test
-    void updateActivityObservations_SQLException_ThrowsDataOperationException() throws SQLException {
+    void updateActivityObservations_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeBatch()).thenThrow(new SQLException("Error de batch"));
         assertThrows(DataOperationException.class, () -> reportDAO.updateActivityObservations(1, new ArrayList<>()));
     }

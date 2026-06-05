@@ -10,6 +10,8 @@ import javafx.stage.Window;
 import mx.fei.gui.views.GUIEvaluateStudentSelection;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
+
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
 
@@ -22,9 +24,8 @@ public class ControllerProfessorMenu {
     public void handleButtonsMenu(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Gestionar actividades" -> { /* TODO: abrir ventana */ }
-            case "Gestionar reportes" -> { /* TODO: abrir ventana */ }
             case "Evaluar" -> openEvaluateStudent();
+            case "Regresar" -> goBack();
             case "Cerrar Sesión" -> logout();
         }
     }
@@ -34,6 +35,10 @@ public class ControllerProfessorMenu {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiEvaluateStudentSelection.start(stage);
+    }
+
+    private void goBack() {
+        guiProfessorMenu.getStage().close();
     }
 
     private void logout() {
@@ -47,7 +52,7 @@ public class ControllerProfessorMenu {
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);
             
-            List<Window> windows = new java.util.ArrayList<>(Window.getWindows());
+            List<Window> windows = new ArrayList<>(Window.getWindows());
             for (Window window : windows) {
                 if (window instanceof Stage stage && stage != loginStage && stage.isShowing()) {
                     stage.close();

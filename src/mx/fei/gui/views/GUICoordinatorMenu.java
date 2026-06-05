@@ -32,7 +32,7 @@ public class GUICoordinatorMenu extends Application {
     private Button buttonManageOrganizations;
     private Button buttonManageEducationalExperience;
     private Button buttonConsultProfessor;
-    private Button buttonBack;
+    private Button buttonLogOut;
     private Stage stage;
 
     public GUICoordinatorMenu(Professor coordinator) {
@@ -64,8 +64,8 @@ public class GUICoordinatorMenu extends Application {
         buttonManageOrganizations = createMenuButton("Gestionar organizaciones");
         buttonManageEducationalExperience = createMenuButton("Gestionar experiencia educativa");
         buttonConsultProfessor = createMenuButton("Consultar profesor");
-        buttonBack = createMenuButton("Regresar");
-        VBox buttonsBox = new VBox(12, buttonManageStudents, buttonManageProjects, buttonManageOrganizations, buttonManageEducationalExperience, buttonConsultProfessor, buttonBack);
+        buttonLogOut = createMenuButton("Cerrar Sesión");
+        VBox buttonsBox = new VBox(12, buttonManageStudents, buttonManageProjects, buttonManageOrganizations, buttonManageEducationalExperience, buttonConsultProfessor, buttonLogOut);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelCoordinatorName, labelCoordinatorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
@@ -77,7 +77,7 @@ public class GUICoordinatorMenu extends Application {
         buttonManageOrganizations.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonManageEducationalExperience.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonConsultProfessor.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonBack.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonLogOut.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         Scene scene = new Scene(mainPanel, 500, 470);
         stage.setScene(scene);
         stage.show();
@@ -132,8 +132,8 @@ public class GUICoordinatorMenu extends Application {
         return buttonConsultProfessor;
     }
 
-    public Button getButtonBack() {
-        return buttonBack;
+    public Button getButtonLogOut() {
+        return buttonLogOut;
     }
 
     public Stage getStage() {

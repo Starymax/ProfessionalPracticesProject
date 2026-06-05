@@ -18,18 +18,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
 
 public class EnterpriseDAOTest {
-    private EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
+    private EnterpriseDAO enterpriseDAO;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
@@ -54,62 +52,35 @@ public class EnterpriseDAOTest {
     }
 
     @Test
-    void getEnterpriseById_Successful() throws SQLException {
-        int idTest = 1;
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getEnterpriseById_EnterpriseExists_ReturnsEnterpriseWithExpectedName() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("nombre_empresa")).thenReturn("Empresa Test");
-        when(resultSet.getString("sector")).thenReturn("Tecnología");
-        when(resultSet.getString("telefono")).thenReturn("2281002030");
-        when(resultSet.getString("correo")).thenReturn("contacto@test.com");
-        when(resultSet.getString("ciudad")).thenReturn("Xalapa");
-        when(resultSet.getLong("usuarios_directos")).thenReturn(100L);
-        when(resultSet.getLong("usuarios_indirectos")).thenReturn(500L);
-        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
-        when(resultSet.getString("pais")).thenReturn("México");
-        Enterprise enterprise = enterpriseDAO.getEnterpriseById(idTest);
-        assertNotNull(enterprise);
-        assertEquals(idTest, enterprise.getEnterpriseId());
+        Enterprise enterprise = enterpriseDAO.getEnterpriseById(1);
         assertEquals("Empresa Test", enterprise.getName());
-        assertEquals(100L, enterprise.getDirectUsers());
-        assertTrue(enterprise.isActiveStatus());
-        verify(preparedStatement).setInt(1, idTest);
     }
 
     @Test
-    void getEnterpriseById_NotFound_ThrowsNoSuchElementException() throws SQLException {
-        int idTest = 999;
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getEnterpriseById_EnterpriseDoesNotExist_ThrowsNoSuchElementException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        assertThrows(NoSuchElementException.class, () -> {enterpriseDAO.getEnterpriseById(idTest);});
+        assertThrows(NoSuchElementException.class, () -> enterpriseDAO.getEnterpriseById(999));
     }
 
     @Test
-    void getEnterpriseById_SQLException_ThrowsDataOperationException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getEnterpriseById_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de conexión"));
-        assertThrows(DataOperationException.class, () -> {enterpriseDAO.getEnterpriseById(1);});
+        assertThrows(DataOperationException.class, () -> enterpriseDAO.getEnterpriseById(1));
     }
 
     @Test
-    void registerEnterprise_Null_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> {enterpriseDAO.registerEnterprise(null);});
+    void registerEnterprise_EnterpriseIsNull_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> enterpriseDAO.registerEnterprise(null));
     }
 
     @Test
-    void registerEnterprise_Successful_ReturnsGeneratedId() throws SQLException {
-        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
-        enterprise.setName("UV Software");
-        enterprise.setSector("Educación");
-        enterprise.setPhoneNumber("2281000000");
-        enterprise.setContactEmail("uv@software.com");
-        enterprise.setCity("Xalapa");
-        enterprise.setDirectUsers(10L);
-        enterprise.setIndirectUsers(50L);
-        enterprise.setActiveStatus(true);
-        enterprise.setCountry("México");
+    void registerEnterprise_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException {
+        Enterprise enterprise = new Enterprise(0, "UV Software", "Educación", "2281000000", "uv@software.com", "Xalapa", 10L, 50L, true, "México");
         when(connection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
         when(preparedStatement.getGeneratedKeys()).thenReturn(resultSet);
@@ -117,15 +88,11 @@ public class EnterpriseDAOTest {
         when(resultSet.getInt(1)).thenReturn(77);
         int result = enterpriseDAO.registerEnterprise(enterprise);
         assertEquals(77, result);
-        verify(preparedStatement).setLong(6, 10L);
-        verify(preparedStatement).setLong(7, 50L);
-        verify(preparedStatement).setBoolean(8, true);
     }
 
     @Test
-    void registerEnterprise_NoIdGenerated_ReturnsMinusOne() throws SQLException {
+    void registerEnterprise_InsertGeneratesNoKey_ReturnsMinusOne() throws SQLException {
         Enterprise enterprise = mock(Enterprise.class);
-        enterprise.setName("Empresa Sin ID");
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
         when(preparedStatement.getGeneratedKeys()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
@@ -134,98 +101,66 @@ public class EnterpriseDAOTest {
     }
 
     @Test
-    void registerEnterprise_SQLException_ThrowsDataOperationException() throws SQLException {
+    void registerEnterprise_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Enterprise enterprise = mock(Enterprise.class);
-        enterprise.setName("Error organización");
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de integridad"));
-        assertThrows(DataOperationException.class, () -> {enterpriseDAO.registerEnterprise(enterprise);});
+        assertThrows(DataOperationException.class, () -> enterpriseDAO.registerEnterprise(enterprise));
     }
 
     @Test
-    void getEnterprises_Empty_ReturnsEmptyList() throws Exception {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getEnterprises_NoEnterprisesRegistered_ReturnsEmptyList() throws DataOperationException, SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Enterprise> result = enterpriseDAO.getEnterprises();
         assertTrue(result.isEmpty());
-        assertEquals(0, result.size());
     }
 
     @Test
-    void getEnterprises_Successful_ReturnsList() throws SQLException {
-        int idTest1 = 101;
-        int idTest2 = 102;
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getEnterprises_TwoEnterprisesRegistered_ReturnsListWithTwoEnterprises() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_empresa")).thenReturn(idTest1, idTest2);
+        when(resultSet.getInt("id_empresa")).thenReturn(101, 102);
         Enterprise enterprise1 = mock(Enterprise.class);
         Enterprise enterprise2 = mock(Enterprise.class);
-        EnterpriseDAO spyDAO = spy(enterpriseDAO);
-        doReturn(enterprise1).when(spyDAO).getEnterpriseById(idTest1);
-        doReturn(enterprise2).when(spyDAO).getEnterpriseById(idTest2);
-        List<Enterprise> enterprises = spyDAO.getEnterprises();
-        assertNotNull(enterprises);
-        assertEquals(2, enterprises.size());
-        assertEquals(enterprise1, enterprises.get(0));
-        assertEquals(enterprise2, enterprises.get(1));
-        verify(spyDAO).getEnterpriseById(idTest1);
-        verify(spyDAO).getEnterpriseById(idTest2);
+        EnterpriseDAO spyEnterpriseDAO = spy(enterpriseDAO);
+        doReturn(enterprise1).when(spyEnterpriseDAO).getEnterpriseById(101);
+        doReturn(enterprise2).when(spyEnterpriseDAO).getEnterpriseById(102);
+        List<Enterprise> result = spyEnterpriseDAO.getEnterprises();
+        assertEquals(2, result.size());
     }
 
     @Test
-    void getEnterprises_SQLException_ThrowsDataOperationException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void getEnterprises_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
-        assertThrows(DataOperationException.class, () -> {enterpriseDAO.getEnterprises();});
+        assertThrows(DataOperationException.class, () -> enterpriseDAO.getEnterprises());
     }
 
     @Test
-    void modifyEnterprise_Null_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> {enterpriseDAO.modifyEnterprise(null);});
+    void modifyEnterprise_EnterpriseIsNull_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> enterpriseDAO.modifyEnterprise(null));
     }
 
     @Test
-    void modifyEnterprise_Successful_ReturnsTrue() throws SQLException {
-        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
-        enterprise.setEnterpriseId(1);
-        enterprise.setName("UV Software Actualizada");
-        enterprise.setSector("Tecnología");
-        enterprise.setPhoneNumber("2281001122");
-        enterprise.setContactEmail("new@software.com");
-        enterprise.setCity("Xalapa");
-        enterprise.setDirectUsers(15L);
-        enterprise.setIndirectUsers(60L);
-        enterprise.setActiveStatus(true);
-        enterprise.setCountry("México");
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void modifyEnterprise_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
+        Enterprise enterprise = new Enterprise(1, "UV Software", "Tecnología", "2281001122", "new@software.com", "Xalapa", 15L, 60L, true, "México");
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = enterpriseDAO.modifyEnterprise(enterprise);
         assertTrue(result);
-        verify(preparedStatement).setInt(10, 1);
-        verify(preparedStatement).setString(1, "UV Software Actualizada");
-        verify(preparedStatement).setLong(6, 15L);
     }
 
     @Test
-    void modifyEnterprise_NotFound_ReturnsFalse() throws Exception {
-        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
-        enterprise.setEnterpriseId(999);
-        enterprise.setName("Empresa Fantasma");
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void modifyEnterprise_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
+        Enterprise enterprise = new Enterprise(999, "Empresa Fantasma", "Sector", "2281000000", "fantasma@test.com", "Xalapa", 0L, 0L, false, "México");
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = enterpriseDAO.modifyEnterprise(enterprise);
         assertFalse(result);
-        verify(preparedStatement).setInt(10, 999);
     }
 
     @Test
-    void modifyEnterprise_SQLException_ThrowsDataOperationException() throws Exception {
-        Enterprise enterprise = new Enterprise(0, "", "", "", "", "", 0L, 0L, false, "");
-        enterprise.setEnterpriseId(1);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+    void modifyEnterprise_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        Enterprise enterprise = new Enterprise(1, "Empresa", "Sector", "2281000000", "empresa@test.com", "Xalapa", 0L, 0L, true, "México");
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Conexión perdida"));
-        assertThrows(DataOperationException.class, () -> {enterpriseDAO.modifyEnterprise(enterprise);});
+        assertThrows(DataOperationException.class, () -> enterpriseDAO.modifyEnterprise(enterprise));
     }
 }

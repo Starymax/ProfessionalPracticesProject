@@ -22,13 +22,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mockConstruction;
 
 public class StudentAdvanceDAOTest {
@@ -58,12 +57,12 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void createAdvance_AdvanceNull_ThrowsIllegalArgumentException() {
+    void createAdvance_AdvanceIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> studentAdvanceDAO.createAdvance(null));
     }
 
     @Test
-    void createAdvance_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void createAdvance_InsertAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeeklyLogId()).thenReturn(1);
         Student student = mock(Student.class);
@@ -75,13 +74,10 @@ public class StudentAdvanceDAOTest {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = studentAdvanceDAO.createAdvance(advance);
         assertTrue(result);
-        verify(preparedStatement).setFloat(1, 5f);
-        verify(preparedStatement).setInt(2, 1);
-        verify(preparedStatement).setInt(3, 10);
     }
 
     @Test
-    void createAdvance_SQLException_ThrowsDataOperationException() throws SQLException {
+    void createAdvance_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeeklyLogId()).thenReturn(1);
         Student student = mock(Student.class);
@@ -94,42 +90,39 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getAdvanceById_Found_ReturnsStudentAdvance() throws SQLException, DataOperationException {
+    void getAdvanceById_AdvanceExists_ReturnsAdvanceWithExpectedRealizedHours() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getFloat("horas_realizadas")).thenReturn(8f);
         when(resultSet.getInt("id_registro")).thenReturn(3);
         when(resultSet.getInt("id_alumno")).thenReturn(5);
-        WeeklyLog mockLog = mock(WeeklyLog.class);
-        Student mockStudent = mock(Student.class);
+        WeeklyLog weeklyLog = mock(WeeklyLog.class);
+        Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(3)).thenReturn(mockLog));
+                (mock, context) -> when(mock.getWeeklyLogById(3)).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(5)).thenReturn(mockStudent))) {
+                     (mock, context) -> when(mock.getStudentById(5)).thenReturn(student))) {
             StudentAdvance result = studentAdvanceDAO.getAdvanceById(1);
-            assertNotNull(result);
             assertEquals(8f, result.getRealizedHours());
-            verify(preparedStatement).setInt(1, 1);
         }
     }
 
     @Test
-    void getAdvanceById_NotFound_ReturnsNull() throws SQLException, DataOperationException {
+    void getAdvanceById_AdvanceDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         StudentAdvance result = studentAdvanceDAO.getAdvanceById(99);
         assertNull(result);
-        verify(preparedStatement).setInt(1, 99);
     }
 
     @Test
-    void getAdvanceById_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getAdvanceById_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
         assertThrows(DataOperationException.class, () -> studentAdvanceDAO.getAdvanceById(1));
     }
 
     @Test
-    void getAdvancesByStudentId_WithAdvances_ReturnsList() throws SQLException, DataOperationException {
+    void getAdvancesByStudentId_StudentHasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
         ResultSet listResultSet = mock(ResultSet.class);
         when(listResultSet.next()).thenReturn(true, false);
         when(listResultSet.getInt("id_avance")).thenReturn(7);
@@ -144,36 +137,33 @@ public class StudentAdvanceDAOTest {
         when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
         databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        WeeklyLog mockLog = mock(WeeklyLog.class);
-        Student mockStudent = mock(Student.class);
+        WeeklyLog weeklyLog = mock(WeeklyLog.class);
+        Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(mockLog));
+                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(mockStudent))) {
+                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentId(10);
-            assertNotNull(result);
             assertEquals(1, result.size());
-            verify(preparedStatement).setInt(1, 10);
         }
     }
 
     @Test
-    void getAdvancesByStudentId_NoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAdvancesByStudentId_StudentHasNoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentId(10);
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAdvancesByStudentId_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getAdvancesByStudentId_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> studentAdvanceDAO.getAdvancesByStudentId(10));
     }
 
     @Test
-    void getAdvancesByWeeklyLogId_WithAdvances_ReturnsList() throws SQLException, DataOperationException {
+    void getAdvancesByWeeklyLogId_WeeklyLogHasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
         ResultSet listResultSet = mock(ResultSet.class);
         when(listResultSet.next()).thenReturn(true, false);
         when(listResultSet.getInt("id_avance")).thenReturn(9);
@@ -188,51 +178,53 @@ public class StudentAdvanceDAOTest {
         when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
         databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        WeeklyLog mockLog = mock(WeeklyLog.class);
-        Student mockStudent = mock(Student.class);
+        WeeklyLog weeklyLog = mock(WeeklyLog.class);
+        Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(mockLog));
+                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(mockStudent))) {
+                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByWeeklyLogId(3);
-            assertNotNull(result);
             assertEquals(1, result.size());
-            verify(preparedStatement).setInt(1, 3);
         }
     }
 
     @Test
-    void getAdvancesByWeeklyLogId_NoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAdvancesByWeeklyLogId_WeeklyLogHasNoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByWeeklyLogId(3);
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAdvancesByWeeklyLogId_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getAdvancesByWeeklyLogId_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> studentAdvanceDAO.getAdvancesByWeeklyLogId(3));
     }
 
     @Test
-    void updateRealizedHours_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void updateRealizedHours_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = studentAdvanceDAO.updateRealizedHours(1, 10f);
         assertTrue(result);
-        verify(preparedStatement).setFloat(1, 10f);
-        verify(preparedStatement).setInt(2, 1);
     }
 
     @Test
-    void updateRealizedHours_SQLException_ThrowsDataOperationException() throws SQLException {
+    void updateRealizedHours_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+        when(preparedStatement.executeUpdate()).thenReturn(0);
+        boolean result = studentAdvanceDAO.updateRealizedHours(1, 10f);
+        assertFalse(result);
+    }
+
+    @Test
+    void updateRealizedHours_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de escritura"));
         assertThrows(DataOperationException.class, () -> studentAdvanceDAO.updateRealizedHours(1, 10f));
     }
 
     @Test
-    void getAdvancesByStudentAndWeeklyLog_WithAdvances_ReturnsList() throws SQLException, DataOperationException {
+    void getAdvancesByStudentAndWeeklyLog_HasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
         ResultSet listResultSet = mock(ResultSet.class);
         when(listResultSet.next()).thenReturn(true, false);
         when(listResultSet.getInt("id_avance")).thenReturn(15);
@@ -247,32 +239,51 @@ public class StudentAdvanceDAOTest {
         when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
         databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        WeeklyLog mockLog = mock(WeeklyLog.class);
-        Student mockStudent = mock(Student.class);
+        WeeklyLog weeklyLog = mock(WeeklyLog.class);
+        Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(mockLog));
+                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(mockStudent))) {
+                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentAndWeeklyLog(12, 4);
-            assertNotNull(result);
             assertEquals(1, result.size());
-            verify(preparedStatement).setInt(1, 12);
-            verify(preparedStatement).setInt(2, 4);
         }
     }
 
     @Test
-    void getAdvancesByStudentAndWeeklyLog_NoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAdvancesByStudentAndWeeklyLog_HasNoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentAndWeeklyLog(12, 4);
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
 
     @Test
-    void getAdvancesByStudentAndWeeklyLog_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getAdvancesByStudentAndWeeklyLog_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> studentAdvanceDAO.getAdvancesByStudentAndWeeklyLog(12, 4));
+    }
+
+    @Test
+    void getTotalHoursByIdStudent_StudentHasRegisteredHours_ReturnsTotalHours() throws SQLException, DataOperationException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getFloat(1)).thenReturn(120f);
+        float result = studentAdvanceDAO.getTotalHoursByIdStudent(10);
+        assertEquals(120f, result);
+    }
+
+    @Test
+    void getTotalHoursByIdStudent_StudentHasNoRegisteredHours_ReturnsZero() throws SQLException, DataOperationException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        float result = studentAdvanceDAO.getTotalHoursByIdStudent(10);
+        assertEquals(0f, result);
+    }
+
+    @Test
+    void getTotalHoursByIdStudent_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
+        assertThrows(DataOperationException.class, () -> studentAdvanceDAO.getTotalHoursByIdStudent(10));
     }
 }

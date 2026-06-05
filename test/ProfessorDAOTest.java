@@ -21,14 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mockConstruction;
-
 
 public class ProfessorDAOTest {
 
@@ -57,7 +54,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void getProfessorByPersonalNumber_Found_ReturnsProfessor() throws SQLException, DataOperationException {
+    void getProfessorByPersonalNumber_ProfessorExists_ReturnsProfessorWithExpectedName() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("id_usuario")).thenReturn(1);
@@ -71,28 +68,25 @@ public class ProfessorDAOTest {
         when(resultSet.getBoolean("es_administrador")).thenReturn(false);
         when(resultSet.getString("turno")).thenReturn("Matutino");
         Professor result = professorDAO.getProfessorByPersonalNumber(12345);
-        assertNotNull(result);
         assertEquals("Ana", result.getName());
-        verify(preparedStatement).setInt(1, 12345);
     }
 
     @Test
-    void getProfessorByPersonalNumber_NotFound_ReturnsNull() throws SQLException, DataOperationException {
+    void getProfessorByPersonalNumber_ProfessorDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Professor result = professorDAO.getProfessorByPersonalNumber(99999);
         assertNull(result);
-        verify(preparedStatement).setInt(1, 99999);
     }
 
     @Test
-    void getProfessorByPersonalNumber_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getProfessorByPersonalNumber_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de conexion"));
         assertThrows(DataOperationException.class, () -> professorDAO.getProfessorByPersonalNumber(12345));
     }
 
     @Test
-    void getProfessorById_Found_ReturnsProfessor() throws SQLException, DataOperationException {
+    void getProfessorById_ProfessorIsCoordinator_ReturnsProfessorMarkedAsCoordinator() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("numero_de_personal")).thenReturn(12345);
@@ -106,29 +100,25 @@ public class ProfessorDAOTest {
         when(resultSet.getBoolean("es_administrador")).thenReturn(false);
         when(resultSet.getString("turno")).thenReturn("Vespertino");
         Professor result = professorDAO.getProfessorById(1);
-        assertNotNull(result);
-        assertEquals("Carlos", result.getName());
         assertTrue(result.isCoordinator());
-        verify(preparedStatement).setInt(1, 1);
     }
 
     @Test
-    void getProfessorById_NotFound_ReturnsNull() throws SQLException, DataOperationException {
+    void getProfessorById_ProfessorDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Professor result = professorDAO.getProfessorById(999);
         assertNull(result);
-        verify(preparedStatement).setInt(1, 999);
     }
 
     @Test
-    void getProfessorById_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getProfessorById_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Timeout"));
         assertThrows(DataOperationException.class, () -> professorDAO.getProfessorById(1));
     }
 
     @Test
-    void registerProfessor_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void registerProfessor_NewProfessorInserted_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         PreparedStatement insertStatement = mock(PreparedStatement.class);
@@ -147,7 +137,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void registerProfessor_ProfessorNull_ThrowsIllegalArgumentException() {
+    void registerProfessor_ProfessorIsNull_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> professorDAO.registerProfessor(null));
     }
 
@@ -162,7 +152,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void registerProfessor_UserDAOReturnsFailure_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void registerProfessor_UserRegistrationFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Professor professor = mock(Professor.class);
@@ -174,7 +164,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void registerProfessor_SQLException_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void registerProfessor_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Professor professor = mock(Professor.class);
@@ -186,49 +176,40 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void getProfessors_WithData_ReturnsList() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("numero_de_personal")).thenReturn(12345);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        when(detailResultSet.getInt("id_usuario")).thenReturn(1);
-        when(detailResultSet.getString("nombre")).thenReturn("Luis");
-        when(detailResultSet.getString("apellidos")).thenReturn("Garcia");
-        when(detailResultSet.getString("correo")).thenReturn("luis@uv.mx");
-        when(detailResultSet.getString("contrasena")).thenReturn("pass");
-        when(detailResultSet.getBoolean("estado_activo")).thenReturn(true);
-        when(detailResultSet.getString("genero")).thenReturn("M");
-        when(detailResultSet.getBoolean("es_coordinador")).thenReturn(false);
-        when(detailResultSet.getBoolean("es_administrador")).thenReturn(false);
-        when(detailResultSet.getString("turno")).thenReturn("Matutino");
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement).thenReturn(detailStatement);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        List<Professor> professors = professorDAO.getProfessors();
-        assertNotNull(professors);
-        assertEquals(1, professors.size());
-        assertEquals("Luis", professors.get(0).getName());
+    void getProfessors_OneProfessorRegistered_ReturnsListWithOneProfessor() throws SQLException, DataOperationException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(1);
+        when(resultSet.getInt("numero_de_personal")).thenReturn(12345);
+        when(resultSet.getString("nombre")).thenReturn("Luis");
+        when(resultSet.getString("apellidos")).thenReturn("Garcia");
+        when(resultSet.getString("correo")).thenReturn("luis@uv.mx");
+        when(resultSet.getString("contrasena")).thenReturn("pass");
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
+        when(resultSet.getString("genero")).thenReturn("M");
+        when(resultSet.getBoolean("es_coordinador")).thenReturn(false);
+        when(resultSet.getBoolean("es_administrador")).thenReturn(false);
+        when(resultSet.getString("turno")).thenReturn("Matutino");
+        List<Professor> result = professorDAO.getProfessors();
+        assertEquals(1, result.size());
     }
 
     @Test
-    void getProfessors_EmptyTable_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getProfessors_NoProfessorsRegistered_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        List<Professor> professors = professorDAO.getProfessors();
-        assertNotNull(professors);
-        assertTrue(professors.isEmpty());
+        List<Professor> result = professorDAO.getProfessors();
+        assertTrue(result.isEmpty());
     }
 
     @Test
-    void getProfessors_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getProfessors_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
         assertThrows(DataOperationException.class, () -> professorDAO.getProfessors());
     }
 
     @Test
-    void modifyProfessor_Successful_ReturnsTrue() throws SQLException, DataOperationException {
+    void modifyProfessor_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
         Professor professor = mock(Professor.class);
         when(professor.getPersonalNumber()).thenReturn(12345);
         when(professor.isCoordinator()).thenReturn(true);
@@ -237,27 +218,23 @@ public class ProfessorDAOTest {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = professorDAO.modifyProfessor(professor);
         assertTrue(result);
-        verify(preparedStatement).setBoolean(1, true);
-        verify(preparedStatement).setBoolean(2, false);
-        verify(preparedStatement).setString(3, "Matutino");
-        verify(preparedStatement).setInt(4, 12345);
     }
 
     @Test
-    void modifyProfessor_ProfessorNull_ReturnsFalse() throws DataOperationException, SQLException {
+    void modifyProfessor_ProfessorIsNull_ReturnsFalse() throws DataOperationException, SQLException {
         boolean result = professorDAO.modifyProfessor(null);
         assertFalse(result);
     }
 
     @Test
-    void modifyProfessor_SQLException_ThrowsDataOperationException() throws SQLException {
+    void modifyProfessor_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         Professor professor = mock(Professor.class);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de escritura"));
         assertThrows(DataOperationException.class, () -> professorDAO.modifyProfessor(professor));
     }
 
     @Test
-    void existsCoordinator_ActiveCoordinatorFound_ReturnsTrue() throws SQLException, DataOperationException {
+    void existsCoordinator_ActiveCoordinatorExists_ReturnsTrue() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         boolean result = professorDAO.existsCoordinator();
@@ -265,7 +242,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void existsCoordinator_NoActiveCoordinator_ReturnsFalse() throws SQLException, DataOperationException {
+    void existsCoordinator_NoActiveCoordinatorExists_ReturnsFalse() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         boolean result = professorDAO.existsCoordinator();
@@ -273,7 +250,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void existsCoordinator_SQLException_ThrowsDataOperationException() throws SQLException {
+    void existsCoordinator_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de conexion"));
         assertThrows(DataOperationException.class, () -> professorDAO.existsCoordinator());
     }

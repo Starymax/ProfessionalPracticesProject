@@ -6,10 +6,14 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface IDAOStudent {
     Student getStudentById(Integer studentId) throws DataOperationException;
+
+    Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException, DataOperationException;
 
     Student getStudentByEnrollment(String enrollment) throws DataOperationException;
 

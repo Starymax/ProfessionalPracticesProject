@@ -61,7 +61,7 @@ public class ControllerCoordinatorMenu {
                 guiProfessorMenu.start(stage);
                 guiProfessorMenu.setProfessorInfo(guiCoordinatorMenu.getCoordinator());
             }
-            case "Regresar" -> {
+            case "Cerrar Sesión" -> {
                 logout();
             }
         }

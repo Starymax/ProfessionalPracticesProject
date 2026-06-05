@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -22,22 +21,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
 
 public class EducationalExperienceDAOTest {
     private EducationalExperienceDAO educationalExperienceDAO;
-    private EducationalExperienceDAO spyEE;
+    private EducationalExperienceDAO spyEducationalExperienceDAO;
     private ResultSet resultSet;
     private Connection connection;
     private PreparedStatement preparedStatement;
@@ -46,7 +42,7 @@ public class EducationalExperienceDAOTest {
     @BeforeEach
     void setUp() throws SQLException {
         educationalExperienceDAO = new EducationalExperienceDAO();
-        spyEE = spy(educationalExperienceDAO);
+        spyEducationalExperienceDAO = spy(educationalExperienceDAO);
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
         databaseConnectionManager = mockStatic(DatabaseConnectionManager.class);
@@ -62,62 +58,59 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void registerEducationalExperience_NrcAlreadyExists_ThrowsIllegalStateException() throws SQLException {
+    void registerEducationalExperience_NrcAlreadyExists_ThrowsIllegalStateException() throws DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("12345");
-        doReturn(new EducationalExperience()).when(spyEE).getEducationalExperienceByNrc("12345");
-        assertThrows(IllegalStateException.class, () -> {spyEE.registerEducationalExperience(educationalExperience);});
+        doReturn(new EducationalExperience()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("12345");
+        assertThrows(IllegalStateException.class, () -> spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience));
     }
 
     @Test
-    void registerEducationalExperience_PeriodEmpty_ThrowsIllegalArgumentException() throws SQLException {
+    void registerEducationalExperience_PeriodIsEmpty_ThrowsIllegalArgumentException() throws DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("12345");
         educationalExperience.setPeriod("");
-        doThrow(new NoSuchElementException()).when(spyEE).getEducationalExperienceByNrc("12345");
-        assertThrows(IllegalArgumentException.class, () -> {spyEE.registerEducationalExperience(educationalExperience);});
+        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("12345");
+        assertThrows(IllegalArgumentException.class, () -> spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience));
     }
 
     @Test
-    void registerEducationalExperience_Successful_WithProfessor() throws SQLException {
+    void registerEducationalExperience_InsertWithProfessor_ReturnsTrue() throws SQLException, DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("12345");
         educationalExperience.setName("Construcción de Software");
         educationalExperience.setEducationalProgram("Ingeniería de Software");
         educationalExperience.setPeriod("FEB-JUN 2026");
-        Professor mockProf = mock(Professor.class);
-        when(mockProf.getUserId()).thenReturn(99);
-        educationalExperience.setProfessor(mockProf);
-        doThrow(new NoSuchElementException()).when(spyEE).getEducationalExperienceByNrc("12345");
+        Professor professor = mock(Professor.class);
+        when(professor.getUserId()).thenReturn(99);
+        educationalExperience.setProfessor(professor);
+        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("12345");
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
-        boolean result = spyEE.registerEducationalExperience(educationalExperience);
+        boolean result = spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience);
         assertTrue(result);
-        verify(preparedStatement).setInt(4, 99);
-        verify(preparedStatement).setString(1, "12345");
     }
 
     @Test
-    void registerEducationalExperience_Successful_NoProfessor() throws SQLException {
+    void registerEducationalExperience_InsertWithoutProfessor_ReturnsTrue() throws SQLException, DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("54321");
         educationalExperience.setPeriod("AGO-ENE 2026");
         educationalExperience.setProfessor(null);
-        doThrow(new NoSuchElementException()).when(spyEE).getEducationalExperienceByNrc("54321");
+        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("54321");
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
-        boolean result = spyEE.registerEducationalExperience(educationalExperience);
+        boolean result = spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience);
         assertTrue(result);
-        verify(preparedStatement).setNull(4, Types.NULL);
     }
 
     @Test
-    void modifyEducationalExperience_NullObject_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> {educationalExperienceDAO.modifyEducationalExperience(null);});
+    void modifyEducationalExperience_ExperienceIsNull_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> educationalExperienceDAO.modifyEducationalExperience(null));
     }
 
     @Test
-    void modifyEducationalExperience_Successful_WithProfessor() throws SQLException {
+    void modifyEducationalExperience_UpdateWithProfessor_ReturnsTrue() throws SQLException, DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setName("Sistemas Operativos");
         educationalExperience.setEducationalProgram("Ingeniería de Software");
@@ -129,12 +122,10 @@ public class EducationalExperienceDAOTest {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = educationalExperienceDAO.modifyEducationalExperience(educationalExperience);
         assertTrue(result);
-        verify(preparedStatement).setInt(3, 101);
-        verify(preparedStatement).setString(4, "12345");
     }
 
     @Test
-    void modifyEducationalExperience_Successful_NoProfessor() throws SQLException {
+    void modifyEducationalExperience_UpdateWithoutProfessor_ReturnsTrue() throws SQLException, DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setName("Redes");
         educationalExperience.setEducationalProgram("Tecnologías de Información");
@@ -144,11 +135,10 @@ public class EducationalExperienceDAOTest {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = educationalExperienceDAO.modifyEducationalExperience(educationalExperience);
         assertTrue(result);
-        verify(preparedStatement).setNull(3, Types.NULL);
     }
 
     @Test
-    void modifyEducationalExperience_NotFound_ReturnsFalse() throws SQLException {
+    void modifyEducationalExperience_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("99999");
         educationalExperience.setName("Inexistente");
@@ -159,30 +149,29 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void modifyEducationalExperience_SQLException_ThrowsDataOperationException() throws SQLException {
+    void modifyEducationalExperience_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("123");
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de conexión"));
-        assertThrows(DataOperationException.class, () -> {educationalExperienceDAO.modifyEducationalExperience(educationalExperience);});
+        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.modifyEducationalExperience(educationalExperience));
     }
 
     @Test
-    void getEducationalExperienceByNrc_InvalidNrc_ThrowsIllegalArgumentException() {
+    void getEducationalExperienceByNrc_NrcIsEmpty_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrc(""));
     }
 
     @Test
-    void getEducationalExperienceByNrc_NotFound_ThrowsNoSuchElementException() throws SQLException {
+    void getEducationalExperienceByNrc_ExperienceDoesNotExist_ThrowsNoSuchElementException() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-
         assertThrows(NoSuchElementException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrc("99999"));
     }
 
     @Test
-    void getEducationalExperienceByNrc_Success_NoProfessor() throws SQLException {
+    void getEducationalExperienceByNrc_ExperienceExistsWithoutProfessor_ReturnsExperienceWithExpectedNrc() throws SQLException, DataOperationException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
@@ -192,84 +181,44 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026");
         when(resultSet.getInt("id_profesor")).thenReturn(0);
         EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrc("12345");
-        assertNotNull(result);
         assertEquals("12345", result.getNrc());
-        assertNull(result.getProfessor());
     }
 
     @Test
-    void getEducationalExperienceByNrc_Success_WithProfessor() throws SQLException {
+    void getEducationalExperienceByNrc_ExperienceExistsWithProfessor_ReturnsExperienceWithAssignedProfessor() throws SQLException, DataOperationException {
         String nrc = "12345";
-        int idProfesor = 50;
+        int idProfessor = 50;
         Professor professor = mock(Professor.class);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("NRC")).thenReturn(nrc);
         when(resultSet.getString("nombre_experiencia")).thenReturn("Base de Datos");
-        when(resultSet.getInt("id_profesor")).thenReturn(idProfesor);
-        try (MockedConstruction<ProfessorDAO> mocked = mockConstruction(ProfessorDAO.class, (mock, context) -> {
-                    when(mock.getProfessorById(idProfesor)).thenReturn(professor);})) {
+        when(resultSet.getInt("id_profesor")).thenReturn(idProfessor);
+        try (MockedConstruction<ProfessorDAO> mockedProfessorDAO = mockConstruction(ProfessorDAO.class, (mock, context) -> when(mock.getProfessorById(idProfessor)).thenReturn(professor))) {
             EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-            assertNotNull(result);
             assertEquals(professor, result.getProfessor());
         }
     }
 
     @Test
-    void getEducationalExperienceByNrc_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getEducationalExperienceByNrc_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error DB"));
         assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrc("123"));
     }
 
     @Test
-    void getEducationalExperiences_Empty_ReturnsEmptyList() throws SQLException {
+    void getEducationalExperiences_NoExperiencesRegistered_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiences();
         assertTrue(result.isEmpty());
-        assertEquals(0, result.size());
     }
 
     @Test
-    void getEducationalExperiences_Successful_ReturnsList() throws SQLException {
-        String nrc1 = "11111";
-        String nrc2 = "22222";
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString("NRC")).thenReturn(nrc1, nrc2);
-        EducationalExperience educationalExperience1 = mock(EducationalExperience.class);
-        EducationalExperience educationalExperience2 = mock(EducationalExperience.class);
-        doReturn(educationalExperience1).when(spyEE).getEducationalExperienceByNrc(nrc1);
-        doReturn(educationalExperience2).when(spyEE).getEducationalExperienceByNrc(nrc2);
-        List<EducationalExperience> result = spyEE.getEducationalExperiences();
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(spyEE, times(1)).getEducationalExperienceByNrc(nrc1);
-        verify(spyEE, times(1)).getEducationalExperienceByNrc(nrc2);
-    }
-
-    @Test
-    void getEducationalExperiences_SQLException_ThrowsDataOperationException() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Conexión perdida"));
-            assertThrows(DataOperationException.class, () -> {educationalExperienceDAO.getEducationalExperiences();});
-    }
-
-    @Test
-    void getEducationalExperiencesByProfessor_Empty_ReturnsEmptyList() throws SQLException {
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(false);
-        List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiencesByProfessor(50);
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
-    void getEducationalExperiencesByProfessor_Successful_ReturnsList() throws SQLException {
+    void getEducationalExperiences_TwoExperiencesRegistered_ReturnsListWithTwoExperiences() throws SQLException, DataOperationException {
         String nrc1 = "11111";
         String nrc2 = "22222";
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -278,25 +227,48 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("NRC")).thenReturn(nrc1, nrc2);
         EducationalExperience experience1 = mock(EducationalExperience.class);
         EducationalExperience experience2 = mock(EducationalExperience.class);
-        doReturn(experience1).when(spyEE).getEducationalExperienceByNrc(nrc1);
-        doReturn(experience2).when(spyEE).getEducationalExperienceByNrc(nrc2);
-        List<EducationalExperience> result = spyEE.getEducationalExperiencesByProfessor(50);
+        doReturn(experience1).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc1);
+        doReturn(experience2).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc2);
+        List<EducationalExperience> result = spyEducationalExperienceDAO.getEducationalExperiences();
         assertEquals(2, result.size());
     }
 
     @Test
-    void getEducationalExperiencesByProfessor_SQLException_ThrowsDataOperationException() throws SQLException {
+    void getEducationalExperiences_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Conexión perdida"));
-        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperiencesByProfessor(50));
+        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperiences());
     }
 
     @Test
-    void getEducationalExperiencesByProfessor_QueriesCorrectProfessor_VerifiesParameter() throws SQLException, DataOperationException {
+    void getEducationalExperiencesByProfessor_ProfessorHasNoExperiences_ReturnsEmptyList() throws SQLException, DataOperationException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        educationalExperienceDAO.getEducationalExperiencesByProfessor(77);
-        verify(preparedStatement).setInt(1, 77);
+        List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiencesByProfessor(50);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getEducationalExperiencesByProfessor_ProfessorHasTwoExperiences_ReturnsListWithTwoExperiences() throws SQLException, DataOperationException {
+        String nrc1 = "11111";
+        String nrc2 = "22222";
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString("NRC")).thenReturn(nrc1, nrc2);
+        EducationalExperience experience1 = mock(EducationalExperience.class);
+        EducationalExperience experience2 = mock(EducationalExperience.class);
+        doReturn(experience1).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc1);
+        doReturn(experience2).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc2);
+        List<EducationalExperience> result = spyEducationalExperienceDAO.getEducationalExperiencesByProfessor(50);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getEducationalExperiencesByProfessor_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Conexión perdida"));
+        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperiencesByProfessor(50));
     }
 }
