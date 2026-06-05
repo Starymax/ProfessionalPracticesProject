@@ -52,7 +52,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void sendNotification_InsertAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void sendNotification_InsertAffectsOneRow_ReturnsTrue() throws SQLException {
         Student student = mock(Student.class);
         when(student.getUserId()).thenReturn(1);
         Notification notification = new Notification(0, "Titulo", "Mensaje", null, false, student);
@@ -62,7 +62,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void sendNotification_InsertAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void sendNotification_InsertAffectsZeroRows_ReturnsFalse() throws SQLException {
         Student student = mock(Student.class);
         when(student.getUserId()).thenReturn(1);
         Notification notification = new Notification(0, "Titulo", "Mensaje", null, false, student);
@@ -81,7 +81,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsListWithOneNotification() throws SQLException, DataOperationException {
+    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsListWithOneNotification() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_notificacion")).thenReturn(10);
@@ -94,7 +94,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsNotificationWithExpectedTitle() throws SQLException, DataOperationException {
+    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsNotificationWithExpectedTitle() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_notificacion")).thenReturn(7);
@@ -107,7 +107,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void getNotificationsByStudentId_ReadNotification_ReturnsNotificationMarkedAsRead() throws SQLException, DataOperationException {
+    void getNotificationsByStudentId_ReadNotification_ReturnsNotificationMarkedAsRead() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_notificacion")).thenReturn(3);
@@ -120,7 +120,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasNoNotifications_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getNotificationsByStudentId_StudentHasNoNotifications_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(1);
@@ -128,7 +128,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasNoNotifications_ReturnsNonNullList() throws SQLException, DataOperationException {
+    void getNotificationsByStudentId_StudentHasNoNotifications_ReturnsNonNullList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(1);
@@ -142,14 +142,14 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void markAsRead_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void markAsRead_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = notificationDAO.markAsRead(5);
         assertTrue(result);
     }
 
     @Test
-    void markAsRead_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void markAsRead_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = notificationDAO.markAsRead(999);
         assertFalse(result);
@@ -162,7 +162,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void countUnreadNotifications_StudentHasThreeUnread_ReturnsThree() throws SQLException, DataOperationException {
+    void countUnreadNotifications_StudentHasThreeUnread_ReturnsThree() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(3);
@@ -171,7 +171,7 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void countUnreadNotifications_StudentHasNoUnread_ReturnsZero() throws SQLException, DataOperationException {
+    void countUnreadNotifications_StudentHasNoUnread_ReturnsZero() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         int result = notificationDAO.countUnreadNotifications(1);

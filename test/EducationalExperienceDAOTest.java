@@ -75,7 +75,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void registerEducationalExperience_InsertWithProfessor_ReturnsTrue() throws SQLException, DataOperationException {
+    void registerEducationalExperience_InsertWithProfessor_ReturnsTrue() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("12345");
         educationalExperience.setName("Construcción de Software");
@@ -92,7 +92,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void registerEducationalExperience_InsertWithoutProfessor_ReturnsTrue() throws SQLException, DataOperationException {
+    void registerEducationalExperience_InsertWithoutProfessor_ReturnsTrue() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("54321");
         educationalExperience.setPeriod("AGO-ENE 2026");
@@ -110,7 +110,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void modifyEducationalExperience_UpdateWithProfessor_ReturnsTrue() throws SQLException, DataOperationException {
+    void modifyEducationalExperience_UpdateWithProfessor_ReturnsTrue() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setName("Sistemas Operativos");
         educationalExperience.setEducationalProgram("Ingeniería de Software");
@@ -125,7 +125,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void modifyEducationalExperience_UpdateWithoutProfessor_ReturnsTrue() throws SQLException, DataOperationException {
+    void modifyEducationalExperience_UpdateWithoutProfessor_ReturnsTrue() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setName("Redes");
         educationalExperience.setEducationalProgram("Tecnologías de Información");
@@ -138,7 +138,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void modifyEducationalExperience_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void modifyEducationalExperience_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("99999");
         educationalExperience.setName("Inexistente");
@@ -171,7 +171,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperienceByNrc_ExperienceExistsWithoutProfessor_ReturnsExperienceWithExpectedNrc() throws SQLException, DataOperationException {
+    void getEducationalExperienceByNrc_ExperienceExistsWithoutProfessor_ReturnsExperienceWithExpectedNrc() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
@@ -185,7 +185,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperienceByNrc_ExperienceExistsWithProfessor_ReturnsExperienceWithAssignedProfessor() throws SQLException, DataOperationException {
+    void getEducationalExperienceByNrc_ExperienceExistsWithProfessor_ReturnsExperienceWithAssignedProfessor() throws SQLException {
         String nrc = "12345";
         int idProfessor = 50;
         Professor professor = mock(Professor.class);
@@ -209,7 +209,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperiences_NoExperiencesRegistered_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getEducationalExperiences_NoExperiencesRegistered_ReturnsEmptyList() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
@@ -218,7 +218,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperiences_TwoExperiencesRegistered_ReturnsListWithTwoExperiences() throws SQLException, DataOperationException {
+    void getEducationalExperiences_TwoExperiencesRegistered_ReturnsListWithTwoExperiences() throws SQLException {
         String nrc1 = "11111";
         String nrc2 = "22222";
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
@@ -241,7 +241,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperiencesByProfessor_ProfessorHasNoExperiences_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getEducationalExperiencesByProfessor_ProfessorHasNoExperiences_ReturnsEmptyList() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
@@ -250,7 +250,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperiencesByProfessor_ProfessorHasTwoExperiences_ReturnsListWithTwoExperiences() throws SQLException, DataOperationException {
+    void getEducationalExperiencesByProfessor_ProfessorHasTwoExperiences_ReturnsListWithTwoExperiences() throws SQLException {
         String nrc1 = "11111";
         String nrc2 = "22222";
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);

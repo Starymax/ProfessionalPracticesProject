@@ -69,7 +69,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void createExpedient_InsertSucceeds_ReturnsTrue() throws SQLException, DataOperationException {
+    void createExpedient_InsertSucceeds_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = documentDAO.createExpedient(1, "2025-01");
         assertTrue(result);
@@ -92,7 +92,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getPeriodByStudentEnrollment_ExpedientExists_ReturnsPeriod() throws SQLException, DataOperationException {
+    void getPeriodByStudentEnrollment_ExpedientExists_ReturnsPeriod() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("periodo")).thenReturn("2025-01");
@@ -101,7 +101,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getPeriodByStudentEnrollment_ExpedientDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
+    void getPeriodByStudentEnrollment_ExpedientDoesNotExist_ReturnsNull() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         String result = documentDAO.getPeriodByStudentEnrollment("zS99999999");
@@ -121,7 +121,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void loadDocument_InsertReturnsGeneratedKey_ReturnsGeneratedId() throws SQLException, DataOperationException {
+    void loadDocument_InsertReturnsGeneratedKey_ReturnsGeneratedId() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         Document document = new Document("doc.pdf", "/ruta/doc.pdf", DocumentType.WORK_PLAN);
@@ -134,7 +134,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void loadDocument_InsertReturnsNoGeneratedKey_ReturnsFailureValue() throws SQLException, DataOperationException {
+    void loadDocument_InsertReturnsNoGeneratedKey_ReturnsFailureValue() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         Document document = new Document("doc.pdf", "/ruta/doc.pdf", DocumentType.WORK_PLAN);
@@ -155,7 +155,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_DocumentColumnIsTrue_ReturnsTrue() throws SQLException, DataOperationException {
+    void isLoaded_DocumentColumnIsTrue_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getBoolean("carta_liberacion")).thenReturn(true);
@@ -164,7 +164,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_DocumentColumnIsFalse_ReturnsFalse() throws SQLException, DataOperationException {
+    void isLoaded_DocumentColumnIsFalse_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getBoolean("carta_liberacion")).thenReturn(false);
@@ -173,7 +173,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void isLoaded_StudentExpedientNotFound_ReturnsFalse() throws SQLException, DataOperationException {
+    void isLoaded_StudentExpedientNotFound_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         boolean result = documentDAO.isLoaded("zS99999999", "carta_liberacion");
@@ -222,7 +222,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsListWithOneDocument() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsListWithOneDocument() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -236,7 +236,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsDocumentWithExpectedName() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsDocumentWithExpectedName() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -250,7 +250,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_PracticeHasNoDocuments_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasNoDocuments_ReturnsEmptyList() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -260,7 +260,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_PracticeHasNoDocuments_ReturnsNonNullList() throws SQLException, DataOperationException {
+    void getDocumentsByPractice_PracticeHasNoDocuments_ReturnsNonNullList() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -283,7 +283,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_PracticeHasOneReport_ReturnsListWithOneReport() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_PracticeHasOneReport_ReturnsListWithOneReport() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -298,7 +298,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_ReportColumnAcceptedIsTrue_ReturnsReportMarkedAsAccepted() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_ReportColumnAcceptedIsTrue_ReturnsReportMarkedAsAccepted() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -313,7 +313,7 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_PracticeHasNoReports_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getUploadedReportsByPractice_PracticeHasNoReports_ReturnsEmptyList() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -331,14 +331,14 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void acceptReport_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void acceptReport_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = documentDAO.acceptReport(10);
         assertTrue(result);
     }
 
     @Test
-    void acceptReport_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void acceptReport_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = documentDAO.acceptReport(999);
         assertFalse(result);

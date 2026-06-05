@@ -109,7 +109,7 @@ public class EnterpriseDAOTest {
     }
 
     @Test
-    void getEnterprises_NoEnterprisesRegistered_ReturnsEmptyList() throws DataOperationException, SQLException {
+    void getEnterprises_NoEnterprisesRegistered_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Enterprise> result = enterpriseDAO.getEnterprises();
@@ -123,10 +123,10 @@ public class EnterpriseDAOTest {
         when(resultSet.getInt("id_empresa")).thenReturn(101, 102);
         Enterprise enterprise1 = mock(Enterprise.class);
         Enterprise enterprise2 = mock(Enterprise.class);
-        EnterpriseDAO spyEnterpriseDAO = spy(enterpriseDAO);
-        doReturn(enterprise1).when(spyEnterpriseDAO).getEnterpriseById(101);
-        doReturn(enterprise2).when(spyEnterpriseDAO).getEnterpriseById(102);
-        List<Enterprise> result = spyEnterpriseDAO.getEnterprises();
+        EnterpriseDAO secondEnterpriseDAO = spy(enterpriseDAO);
+        doReturn(enterprise1).when(secondEnterpriseDAO).getEnterpriseById(101);
+        doReturn(enterprise2).when(secondEnterpriseDAO).getEnterpriseById(102);
+        List<Enterprise> result = secondEnterpriseDAO.getEnterprises();
         assertEquals(2, result.size());
     }
 

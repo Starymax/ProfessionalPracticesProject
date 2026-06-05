@@ -54,7 +54,7 @@ public class PracticeDAOTest {
     }
 
     @Test
-    void getPracticeById_PracticeExists_ReturnsPracticeWithMappedStudent() throws SQLException, DataOperationException {
+    void getPracticeById_PracticeExists_ReturnsPracticeWithMappedStudent() throws SQLException {
         int idStudent = 45;
         String nrc = "88421";
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -104,7 +104,7 @@ public class PracticeDAOTest {
     }
 
     @Test
-    void createPractice_InsertAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void createPractice_InsertAffectsOneRow_ReturnsTrue() throws SQLException {
         Student student = new Student(10, "Juan", "Perez", "juan@test.com", "123", "M", true, "S21011001", false, null, 0.0f);
         EducationalExperience educationalExperience = new EducationalExperience("FEB-JUN 2026", "Prácticas", "88421");
         Practice practice = new Practice(student, educationalExperience, "FEB-JUN 2026", 9.5f);
@@ -127,7 +127,7 @@ public class PracticeDAOTest {
     }
 
     @Test
-    void getPracticeByEnrollment_PracticeDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
+    void getPracticeByEnrollment_PracticeDoesNotExist_ReturnsNull() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         Practice practice = practiceDAO.getPracticeByEnrollment("S21011001");
@@ -135,7 +135,7 @@ public class PracticeDAOTest {
     }
 
     @Test
-    void getPracticeByEnrollment_PracticeExists_ReturnsPracticeWithExpectedId() throws SQLException, DataOperationException {
+    void getPracticeByEnrollment_PracticeExists_ReturnsPracticeWithExpectedId() throws SQLException {
         String enrollment = "S21011001";
         String nrc = "88421";
         int practiceId = 10;
