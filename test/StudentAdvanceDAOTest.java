@@ -65,7 +65,7 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void createAdvance_InsertAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void createAdvance_InsertAffectsOneRow_ReturnsTrue() throws SQLException {
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeeklyLogId()).thenReturn(1);
         Student student = mock(Student.class);
@@ -93,7 +93,7 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getAdvanceById_AdvanceExists_ReturnsAdvanceWithExpectedRealizedHours() throws SQLException, DataOperationException {
+    void getAdvanceById_AdvanceExists_ReturnsAdvanceWithExpectedRealizedHours() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getFloat("horas_realizadas")).thenReturn(8f);
@@ -101,17 +101,15 @@ public class StudentAdvanceDAOTest {
         when(resultSet.getInt("id_alumno")).thenReturn(5);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
-        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(3)).thenReturn(weeklyLog));
-             MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(5)).thenReturn(student))) {
+        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class, (mock, context) -> when(mock.getWeeklyLogById(3)).thenReturn(weeklyLog));
+             MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(5)).thenReturn(student))) {
             StudentAdvance result = studentAdvanceDAO.getAdvanceById(1);
             assertEquals(8f, result.getRealizedHours());
         }
     }
 
     @Test
-    void getAdvanceById_AdvanceDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
+    void getAdvanceById_AdvanceDoesNotExist_ReturnsNull() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         StudentAdvance result = studentAdvanceDAO.getAdvanceById(99);
@@ -144,7 +142,7 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getAdvancesByStudentId_StudentHasNoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAdvancesByStudentId_StudentHasNoAdvances_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentId(10);
@@ -167,17 +165,15 @@ public class StudentAdvanceDAOTest {
         when(resultSet.getInt("id_alumno")).thenReturn(11);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
-        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
-             MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
+        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class, (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
+             MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByWeeklyLogId(3);
             assertEquals(1, result.size());
         }
     }
 
     @Test
-    void getAdvancesByWeeklyLogId_WeeklyLogHasNoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAdvancesByWeeklyLogId_WeeklyLogHasNoAdvances_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByWeeklyLogId(3);
@@ -191,14 +187,14 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void updateRealizedHours_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void updateRealizedHours_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = studentAdvanceDAO.updateRealizedHours(1, 10f);
         assertTrue(result);
     }
 
     @Test
-    void updateRealizedHours_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void updateRealizedHours_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = studentAdvanceDAO.updateRealizedHours(1, 10f);
         assertFalse(result);
@@ -218,17 +214,15 @@ public class StudentAdvanceDAOTest {
         when(resultSet.getFloat("horas_realizadas")).thenReturn(3f);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
-        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
-                (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
-             MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                     (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
+        try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class, (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
+             MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentAndWeeklyLog(12, 4);
             assertEquals(1, result.size());
         }
     }
 
     @Test
-    void getAdvancesByStudentAndWeeklyLog_HasNoAdvances_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAdvancesByStudentAndWeeklyLog_HasNoAdvances_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentAndWeeklyLog(12, 4);
@@ -242,7 +236,7 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getTotalHoursByIdStudent_StudentHasRegisteredHours_ReturnsTotalHours() throws SQLException, DataOperationException {
+    void getTotalHoursByIdStudent_StudentHasRegisteredHours_ReturnsTotalHours() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getFloat(1)).thenReturn(120f);
@@ -251,7 +245,7 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getTotalHoursByIdStudent_StudentHasNoRegisteredHours_ReturnsZero() throws SQLException, DataOperationException {
+    void getTotalHoursByIdStudent_StudentHasNoRegisteredHours_ReturnsZero() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         float result = studentAdvanceDAO.getTotalHoursByIdStudent(10);

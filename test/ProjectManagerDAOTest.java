@@ -66,14 +66,14 @@ public class ProjectManagerDAOTest {
     void registerProjectManager_ProjectManagerAlreadyExists_ReturnsFalse() throws DataOperationException {
         ProjectManager projectManager = new ProjectManager();
         projectManager.setProjectManagerId(10);
-        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
-        doReturn(new ProjectManager()).when(spyProjectManagerDAO).getProjectManagerById(10);
-        boolean result = spyProjectManagerDAO.registerProjectManager(projectManager);
+        ProjectManagerDAO secondProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(new ProjectManager()).when(secondProjectManagerDAO).getProjectManagerById(10);
+        boolean result = secondProjectManagerDAO.registerProjectManager(projectManager);
         assertFalse(result);
     }
 
     @Test
-    void registerProjectManager_NewProjectManagerInserted_ReturnsTrue() throws SQLException, DataOperationException {
+    void registerProjectManager_NewProjectManagerInserted_ReturnsTrue() throws SQLException {
         ProjectManager projectManager = new ProjectManager();
         projectManager.setProjectManagerId(20);
         projectManager.setName("Ana García");
@@ -81,25 +81,25 @@ public class ProjectManagerDAOTest {
         projectManager.setPhoneNumberProjectManager("2281234567");
         projectManager.setRol("Líder de Proyecto");
         projectManager.setEnterpriseId(1);
-        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
-        doReturn(null).when(spyProjectManagerDAO).getProjectManagerById(20);
+        ProjectManagerDAO secondProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(null).when(secondProjectManagerDAO).getProjectManagerById(20);
         when(preparedStatement.executeUpdate()).thenReturn(1);
-        boolean result = spyProjectManagerDAO.registerProjectManager(projectManager);
+        boolean result = secondProjectManagerDAO.registerProjectManager(projectManager);
         assertTrue(result);
     }
 
     @Test
-    void registerProjectManager_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void registerProjectManager_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         ProjectManager projectManager = new ProjectManager();
         projectManager.setProjectManagerId(30);
-        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
-        doReturn(null).when(spyProjectManagerDAO).getProjectManagerById(30);
+        ProjectManagerDAO secondProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(null).when(secondProjectManagerDAO).getProjectManagerById(30);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de inserción"));
-        assertThrows(DataOperationException.class, () -> spyProjectManagerDAO.registerProjectManager(projectManager));
+        assertThrows(DataOperationException.class, () -> secondProjectManagerDAO.registerProjectManager(projectManager));
     }
 
     @Test
-    void getProjectManagerById_ProjectManagerExists_ReturnsProjectManagerWithExpectedName() throws SQLException, DataOperationException {
+    void getProjectManagerById_ProjectManagerExists_ReturnsProjectManagerWithExpectedName() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("nombre_responsable")).thenReturn("Carlos Ruiz");
@@ -112,7 +112,7 @@ public class ProjectManagerDAOTest {
     }
 
     @Test
-    void getProjectManagerById_ProjectManagerDoesNotExist_ReturnsNull() throws SQLException, DataOperationException {
+    void getProjectManagerById_ProjectManagerDoesNotExist_ReturnsNull() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         ProjectManager projectManager = projectManagerDAO.getProjectManagerById(99);
@@ -126,7 +126,7 @@ public class ProjectManagerDAOTest {
     }
 
     @Test
-    void getProjectManagersByEnterprise_EnterpriseHasNoProjectManagers_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getProjectManagersByEnterprise_EnterpriseHasNoProjectManagers_ReturnsEmptyList() throws SQLException {
         Enterprise enterprise = new Enterprise();
         enterprise.setEnterpriseId(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -136,7 +136,7 @@ public class ProjectManagerDAOTest {
     }
 
     @Test
-    void getProjectManagersByEnterprise_EnterpriseHasTwoProjectManagers_ReturnsListWithTwoProjectManagers() throws SQLException, DataOperationException {
+    void getProjectManagersByEnterprise_EnterpriseHasTwoProjectManagers_ReturnsListWithTwoProjectManagers() throws SQLException {
         Enterprise enterprise = new Enterprise();
         enterprise.setEnterpriseId(5);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
@@ -144,10 +144,10 @@ public class ProjectManagerDAOTest {
         when(resultSet.getInt("id_responsable")).thenReturn(101, 102);
         ProjectManager projectManager1 = mock(ProjectManager.class);
         ProjectManager projectManager2 = mock(ProjectManager.class);
-        ProjectManagerDAO spyProjectManagerDAO = spy(projectManagerDAO);
-        doReturn(projectManager1).when(spyProjectManagerDAO).getProjectManagerById(101);
-        doReturn(projectManager2).when(spyProjectManagerDAO).getProjectManagerById(102);
-        List<ProjectManager> result = spyProjectManagerDAO.getProjectManagersByEnterprise(enterprise);
+        ProjectManagerDAO secondProjectManagerDAO = spy(projectManagerDAO);
+        doReturn(projectManager1).when(secondProjectManagerDAO).getProjectManagerById(101);
+        doReturn(projectManager2).when(secondProjectManagerDAO).getProjectManagerById(102);
+        List<ProjectManager> result = secondProjectManagerDAO.getProjectManagersByEnterprise(enterprise);
         assertEquals(2, result.size());
     }
 

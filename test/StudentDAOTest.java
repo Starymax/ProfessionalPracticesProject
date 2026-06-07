@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -65,18 +64,18 @@ public class StudentDAOTest {
         }
     }
 
-    private void stubStudentRow(ResultSet rs, int idUser, String enrollment, String nombre, int projectId, boolean activo) throws SQLException {
-        when(rs.getInt("id_usuario")).thenReturn(idUser);
-        when(rs.getString("matricula")).thenReturn(enrollment);
-        when(rs.getString("nombre")).thenReturn(nombre);
-        when(rs.getString("apellidos")).thenReturn("Apellido");
-        when(rs.getString("correo")).thenReturn(enrollment + "@test.com");
-        when(rs.getString("contrasena")).thenReturn("pass");
-        when(rs.getBoolean("activo")).thenReturn(activo);
-        when(rs.getString("genero")).thenReturn("M");
-        when(rs.getBoolean("lengua_indigena")).thenReturn(false);
-        when(rs.getInt("proyecto")).thenReturn(projectId);
-        when(rs.getFloat("calificacion")).thenReturn(8.0f);
+    private void stubStudentRow(ResultSet resultSet, int idUser, String enrollment, String name, int projectId, boolean active) throws SQLException {
+        when(resultSet.getInt("id_usuario")).thenReturn(idUser);
+        when(resultSet.getString("matricula")).thenReturn(enrollment);
+        when(resultSet.getString("nombre")).thenReturn(name);
+        when(resultSet.getString("apellidos")).thenReturn("Apellido");
+        when(resultSet.getString("correo")).thenReturn(enrollment + "@test.com");
+        when(resultSet.getString("contrasena")).thenReturn("pass");
+        when(resultSet.getBoolean("activo")).thenReturn(active);
+        when(resultSet.getString("genero")).thenReturn("M");
+        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false);
+        when(resultSet.getInt("proyecto")).thenReturn(projectId);
+        when(resultSet.getFloat("calificacion")).thenReturn(8.0f);
     }
 
     @Test
@@ -135,7 +134,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentById_StudentExistsWithoutProject_ReturnsStudentWithExpectedId() throws SQLException, DataOperationException {
+    void getStudentById_StudentExistsWithoutProject_ReturnsStudentWithExpectedId() throws SQLException {
         int idTest = 10;
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
@@ -158,32 +157,30 @@ public class StudentDAOTest {
     @Test
     void registerStudent_EnrollmentAlreadyExists_ThrowsIllegalStateException() throws DataOperationException {
         Student student = new Student(0, "Nombre", "Apellidos", "correo@test.com", "pass", "M", true, "S21011011", false, null, 0.0f);
-        StudentDAO spyStudentDAO = spy(studentDAO);
-        doReturn(student).when(spyStudentDAO).getStudentByEnrollment("S21011011");
-        assertThrows(IllegalStateException.class, () -> spyStudentDAO.registerStudent(student));
+        StudentDAO secondStudentDAO = spy(studentDAO);
+        doReturn(student).when(secondStudentDAO).getStudentByEnrollment("S21011011");
+        assertThrows(IllegalStateException.class, () -> secondStudentDAO.registerStudent(student));
     }
 
     @Test
     void registerStudent_UserRegistrationFails_ThrowsDataOperationException() throws DataOperationException {
         Student student = new Student(0, "Nombre", "Apellidos", "correo@test.com", "pass", "M", true, "S22012012", false, null, 0.0f);
-        StudentDAO spyStudentDAO = spy(studentDAO);
-        doThrow(new NoSuchElementException()).when(spyStudentDAO).getStudentByEnrollment(anyString());
-        try (MockedConstruction<UserDAO> mockedUserDAO = mockConstruction(UserDAO.class,
-                (mock, context) -> when(mock.registerUser(any())).thenReturn(-1))) {
-            assertThrows(DataOperationException.class, () -> spyStudentDAO.registerStudent(student));
+        StudentDAO secondStudentDAO = spy(studentDAO);
+        doThrow(new NoSuchElementException()).when(secondStudentDAO).getStudentByEnrollment(anyString());
+        try (MockedConstruction<UserDAO> mockedUserDAO = mockConstruction(UserDAO.class, (mock, context) -> when(mock.registerUser(any())).thenReturn(-1))) {
+            assertThrows(DataOperationException.class, () -> secondStudentDAO.registerStudent(student));
         }
     }
 
     @Test
-    void registerStudent_NewStudentInserted_ReturnsTrue() throws SQLException, DataOperationException {
+    void registerStudent_NewStudentInserted_ReturnsTrue() throws SQLException {
         String enrollment = "S23013013";
         Student student = new Student(0, "Ana", "García", "ana@test.com", "123", "F", true, enrollment, true, null, 9.5f);
-        StudentDAO spyStudentDAO = spy(studentDAO);
-        doThrow(new NoSuchElementException()).when(spyStudentDAO).getStudentByEnrollment(enrollment);
+        StudentDAO secondStudentDAO = spy(studentDAO);
+        doThrow(new NoSuchElementException()).when(secondStudentDAO).getStudentByEnrollment(enrollment);
         when(preparedStatement.executeUpdate()).thenReturn(1);
-        try (MockedConstruction<UserDAO> mockedUserDAO = mockConstruction(UserDAO.class,
-                (mock, context) -> when(mock.registerUser(any(Student.class))).thenReturn(100))) {
-            boolean result = spyStudentDAO.registerStudent(student);
+        try (MockedConstruction<UserDAO> mockedUserDAO = mockConstruction(UserDAO.class, (mock, context) -> when(mock.registerUser(any(Student.class))).thenReturn(100))) {
+            boolean result = secondStudentDAO.registerStudent(student);
             assertTrue(result);
         }
     }
@@ -191,12 +188,12 @@ public class StudentDAOTest {
     @Test
     void registerStudent_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Student student = new Student(0, "Luis", "Paz", "luis@test.com", "123", "M", true, "S24014014", false, null, 7.0f);
-        StudentDAO spyStudentDAO = spy(studentDAO);
-        doThrow(new NoSuchElementException()).when(spyStudentDAO).getStudentByEnrollment(anyString());
+        StudentDAO secondStudentDAO = spy(studentDAO);
+        doThrow(new NoSuchElementException()).when(secondStudentDAO).getStudentByEnrollment(anyString());
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error DB"));
         try (MockedConstruction<UserDAO> mockedUserDAO = mockConstruction(UserDAO.class,
                 (mock, context) -> when(mock.registerUser(any())).thenReturn(200))) {
-            assertThrows(DataOperationException.class, () -> spyStudentDAO.registerStudent(student));
+            assertThrows(DataOperationException.class, () -> secondStudentDAO.registerStudent(student));
         }
     }
 
@@ -206,7 +203,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void modifyStudent_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void modifyStudent_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         Student student = new Student(50, "Juan", "Pérez", "juan@test.com", "pass", "M", true, "S21011011", true, null, 9.8f);
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = studentDAO.modifyStudent(student);
@@ -214,7 +211,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void modifyStudent_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void modifyStudent_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         Student student = new Student(999, "Nombre", "Apellidos", "mail@test.com", "123", "M", true, "S000", false, null, 0.0f);
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = studentDAO.modifyStudent(student);
@@ -229,7 +226,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudents_NoStudentsRegistered_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getStudents_NoStudentsRegistered_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Student> result = studentDAO.getStudents();
@@ -237,7 +234,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudents_TwoStudentsRegistered_ReturnsListWithTwoStudents() throws SQLException, DataOperationException {
+    void getStudents_TwoStudentsRegistered_ReturnsListWithTwoStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(1, 2);
@@ -284,7 +281,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentsWithoutProject_NoStudentsWithoutProject_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getStudentsWithoutProject_NoStudentsWithoutProject_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Student> result = studentDAO.getStudentsWithoutProject();
@@ -292,7 +289,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentsWithoutProject_TwoStudentsWithoutProject_ReturnsListWithTwoStudents() throws SQLException, DataOperationException {
+    void getStudentsWithoutProject_TwoStudentsWithoutProject_ReturnsListWithTwoStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(3, 4);
@@ -311,7 +308,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentsWithoutProject_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException, DataOperationException {
+    void getStudentsWithoutProject_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(3, 4);
@@ -339,7 +336,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getActiveStudents_NoActiveStudents_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getActiveStudents_NoActiveStudents_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Student> result = studentDAO.getActiveStudents();
@@ -347,7 +344,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getActiveStudents_TwoActiveStudents_ReturnsListWithTwoStudents() throws SQLException, DataOperationException {
+    void getActiveStudents_TwoActiveStudents_ReturnsListWithTwoStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(5, 6);
@@ -366,7 +363,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getActiveStudents_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException, DataOperationException {
+    void getActiveStudents_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(5, 6);
@@ -416,7 +413,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getSelectedProjects_StudentHasTwoSelections_ReturnsListWithTwoProjects() throws SQLException, DataOperationException {
+    void getSelectedProjects_StudentHasTwoSelections_ReturnsListWithTwoProjects() throws SQLException {
         Student student = new Student(1, "Ana", "Díaz", "ana@test.com", "123", "F", true, "S21011001", false, null, 0.0f);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
@@ -434,7 +431,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getSelectedProjects_StudentHasNoSelections_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getSelectedProjects_StudentHasNoSelections_ReturnsEmptyList() throws SQLException {
         Student student = new Student(1, "Ana", "Díaz", "ana@test.com", "123", "F", true, "S21011001", false, null, 0.0f);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
@@ -450,7 +447,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void assignProject_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void assignProject_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         Student student = new Student(1, "Luis", "Paz", "mail", "123", "M", true, "S21011001", false, null, 0.0f);
         Project project = new Project(5, "Sistema de Gestión", 10);
         when(preparedStatement.executeUpdate()).thenReturn(1);
@@ -462,7 +459,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void assignProject_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void assignProject_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         Student student = new Student(1, "Luis", "Paz", "mail", "123", "M", true, "S000", false, null, 0.0f);
         Project project = new Project(5, "Test", 5);
         when(preparedStatement.executeUpdate()).thenReturn(0);
@@ -479,7 +476,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void assignEducationalExperience_InsertAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void assignEducationalExperience_InsertAffectsOneRow_ReturnsTrue() throws SQLException {
         Student student = new Student(45, "Pedro", "López", "pedro@test.com", "123", "M", true, "S21011001", false, null, 0.0f);
         EducationalExperience educationalExperience = new EducationalExperience("88421", "Prácticas Profesionales", "FEB-JUN 2026");
         Practice practice = new Practice(student, educationalExperience);
@@ -490,7 +487,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void assignEducationalExperience_InsertAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void assignEducationalExperience_InsertAffectsZeroRows_ReturnsFalse() throws SQLException {
         Student student = new Student(1, "A", "B", "mail", "1", "M", true, "S1", false, null, 0.0f);
         EducationalExperience educationalExperience = new EducationalExperience("000", "EE", "PER");
         Practice practice = new Practice(student, educationalExperience);
@@ -521,7 +518,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentsByEducationalExperience_NoStudentsEnrolled_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getStudentsByEducationalExperience_NoStudentsEnrolled_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
@@ -529,7 +526,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentsByEducationalExperience_TwoStudentsEnrolled_ReturnsListWithTwoStudents() throws SQLException, DataOperationException {
+    void getStudentsByEducationalExperience_TwoStudentsEnrolled_ReturnsListWithTwoStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(10, 11);
@@ -548,7 +545,7 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentsByEducationalExperience_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException, DataOperationException {
+    void getStudentsByEducationalExperience_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_usuario")).thenReturn(10, 11);

@@ -64,7 +64,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void userExist_UserExists_ReturnsTrue() throws SQLException, DataOperationException {
+    void userExist_UserExists_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         boolean result = userDAO.userExist(1);
@@ -72,7 +72,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void userExist_UserDoesNotExist_ReturnsFalse() throws SQLException, DataOperationException {
+    void userExist_UserDoesNotExist_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         boolean result = userDAO.userExist(400);
@@ -91,7 +91,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void registerUser_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException, DataOperationException {
+    void registerUser_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException {
         Student student = mock(Student.class);
         when(connection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
@@ -103,7 +103,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void registerUser_InsertGeneratesNoKey_ReturnsMinusOne() throws SQLException, DataOperationException {
+    void registerUser_InsertGeneratesNoKey_ReturnsMinusOne() throws SQLException {
         Professor professor = mock(Professor.class);
         when(connection.prepareStatement(anyString(), eq(Statement.RETURN_GENERATED_KEYS))).thenReturn(preparedStatement);
         when(preparedStatement.getGeneratedKeys()).thenReturn(resultSet);
@@ -121,13 +121,13 @@ public class UserDAOTest {
     }
 
     @Test
-    void updateUser_UserIsNull_ReturnsFalse() throws SQLException, DataOperationException {
+    void updateUser_UserIsNull_ReturnsFalse() throws SQLException {
         boolean result = userDAO.updateUser(null);
         assertFalse(result);
     }
 
     @Test
-    void updateUser_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void updateUser_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         Student student = mock(Student.class);
         when(student.getUserId()).thenReturn(1);
         when(student.getName()).thenReturn("Carlos");
@@ -137,7 +137,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void updateUser_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException, DataOperationException {
+    void updateUser_UpdateAffectsZeroRows_ReturnsFalse() throws SQLException {
         Student student = mock(Student.class);
         when(student.getUserId()).thenReturn(999);
         when(preparedStatement.executeUpdate()).thenReturn(0);
@@ -170,7 +170,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void getUserByEmail_UserIsStudent_ReturnsStudent() throws SQLException, DataOperationException {
+    void getUserByEmail_UserIsStudent_ReturnsStudent() throws SQLException {
         String email = "estudiante@uv.mx";
         int studentId = 10;
         Student student = mock(Student.class);
@@ -178,9 +178,9 @@ public class UserDAOTest {
             when(preparedStatement.executeQuery()).thenReturn(resultSet);
             when(resultSet.next()).thenReturn(true);
             when(resultSet.getInt("id_usuario")).thenReturn(studentId);
-            UserDAO spyUserDAO = spy(userDAO);
-            doReturn(true).when(spyUserDAO).isStudent(studentId);
-            User result = spyUserDAO.getUserByEmail(email);
+            UserDAO userDAO1 = spy(userDAO);
+            doReturn(true).when(userDAO1).isStudent(studentId);
+            User result = userDAO1.getUserByEmail(email);
             assertEquals(student, result);
         }
     }
@@ -192,7 +192,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void isStudent_UserIsStudent_ReturnsTrue() throws SQLException, DataOperationException {
+    void isStudent_UserIsStudent_ReturnsTrue() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(1);
@@ -201,7 +201,7 @@ public class UserDAOTest {
     }
 
     @Test
-    void isStudent_UserIsNotStudent_ReturnsFalse() throws SQLException, DataOperationException {
+    void isStudent_UserIsNotStudent_ReturnsFalse() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt(1)).thenReturn(0);

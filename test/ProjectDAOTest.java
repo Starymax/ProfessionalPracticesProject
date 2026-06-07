@@ -79,23 +79,8 @@ public class ProjectDAOTest {
         when(projectResultSet.getDate("fecha_final")).thenReturn(new Date(System.currentTimeMillis()));
         when(projectResultSet.getBoolean("estado_activo")).thenReturn(true);
         when(projectResultSet.getInt("lugares_disponibles")).thenReturn(5);
-        when(projectResultSet.getObject("id_empresa")).thenReturn(1);
         when(projectResultSet.getInt("id_empresa")).thenReturn(1);
-        when(projectResultSet.getString("nombre_empresa")).thenReturn("Empresa Test");
-        when(projectResultSet.getString("sector")).thenReturn("Tech");
-        when(projectResultSet.getString("tel_empresa")).thenReturn("123");
-        when(projectResultSet.getString("correo_empresa")).thenReturn("e@test.com");
-        when(projectResultSet.getString("ciudad")).thenReturn("Xalapa");
-        when(projectResultSet.getLong("usuarios_directos")).thenReturn(1L);
-        when(projectResultSet.getLong("usuarios_indirectos")).thenReturn(2L);
-        when(projectResultSet.getBoolean("activo_empresa")).thenReturn(true);
-        when(projectResultSet.getString("pais")).thenReturn("Mexico");
-        when(projectResultSet.getObject("id_responsable")).thenReturn(2);
         when(projectResultSet.getInt("id_responsable")).thenReturn(2);
-        when(projectResultSet.getString("nombre_responsable")).thenReturn("Responsable Test");
-        when(projectResultSet.getString("correo_responsable")).thenReturn("r@test.com");
-        when(projectResultSet.getString("telefono_responsable")).thenReturn("456");
-        when(projectResultSet.getString("cargo")).thenReturn("Gerente");
     }
 
     private Project buildMockProject() {
@@ -123,7 +108,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getProjectById_ProjectExists_ReturnsProjectWithExpectedName() throws SQLException, DataOperationException {
+    void getProjectById_ProjectExists_ReturnsProjectWithExpectedName() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
@@ -140,6 +125,7 @@ public class ProjectDAOTest {
 
     @Test
     void getProjectById_EnterpriseColumnsAreNull_ProjectHasNullEnterprise() throws SQLException, DataOperationException {
+    void getProjectById_EnterpriseLookupFails_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
@@ -172,7 +158,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void registerProject_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException, DataOperationException {
+    void registerProject_InsertGeneratesKey_ReturnsGeneratedId() throws SQLException {
         Project project = buildMockProject();
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(true);
@@ -183,7 +169,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void registerProject_InsertGeneratesNoKey_ReturnsMinusOne() throws SQLException, DataOperationException {
+    void registerProject_InsertGeneratesNoKey_ReturnsMinusOne() throws SQLException {
         Project project = buildMockProject();
         ResultSet generatedKeys = mock(ResultSet.class);
         when(generatedKeys.next()).thenReturn(false);
@@ -209,7 +195,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getActiveProjects_NoActiveProjects_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getActiveProjects_NoActiveProjects_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Project> result = projectDAO.getActiveProjects();
@@ -250,38 +236,38 @@ public class ProjectDAOTest {
         Project projectWithPlaces = new Project();
         projectWithPlaces.setProjectId(1);
         projectWithPlaces.setAvailablePlaces(3);
-        ProjectDAO spyProjectDAO = spy(projectDAO);
-        doReturn(List.of(projectWithPlaces)).when(spyProjectDAO).getActiveProjects();
+        ProjectDAO secondProjectDAO = spy(projectDAO);
+        doReturn(List.of(projectWithPlaces)).when(secondProjectDAO).getActiveProjects();
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
                 (mock, context) -> {
                     List<Activity> activities = new ArrayList<>();
                     activities.add(mock(Activity.class));
                     when(mock.getActivitiesByProjectId(1)).thenReturn(activities);
                 })) {
-            List<Project> result = spyProjectDAO.getAvailableProjects();
+            List<Project> result = secondProjectDAO.getAvailableProjects();
             assertEquals(1, result.size());
         }
     }
 
     @Test
     void getAvailableProjects_ProjectHasNoPlaces_ReturnsEmptyList() throws DataOperationException {
-        Project projectFull = mock(Project.class);
-        when(projectFull.getAvailablePlaces()).thenReturn(0);
-        ProjectDAO spyProjectDAO = spy(projectDAO);
-        doReturn(List.of(projectFull)).when(spyProjectDAO).getActiveProjects();
-        List<Project> result = spyProjectDAO.getAvailableProjects();
+        Project project = mock(Project.class);
+        when(project.getAvailablePlaces()).thenReturn(0);
+        ProjectDAO secondProjectDAO = spy(projectDAO);
+        doReturn(List.of(project)).when(secondProjectDAO).getActiveProjects();
+        List<Project> result = secondProjectDAO.getAvailableProjects();
         assertTrue(result.isEmpty());
     }
 
     @Test
     void getAvailableProjects_GetActiveProjectsFails_ThrowsDataOperationException() throws DataOperationException {
-        ProjectDAO spyProjectDAO = spy(projectDAO);
-        doThrow(new DataOperationException("Error al obtener proyectos activos")).when(spyProjectDAO).getActiveProjects();
-        assertThrows(DataOperationException.class, () -> spyProjectDAO.getAvailableProjects());
+        ProjectDAO secondProjectDAO = spy(projectDAO);
+        doThrow(new DataOperationException("Error al obtener proyectos activos")).when(secondProjectDAO).getActiveProjects();
+        assertThrows(DataOperationException.class, () -> secondProjectDAO.getAvailableProjects());
     }
 
     @Test
-    void modifyProject_UpdateAffectsOneRow_ReturnsTrue() throws SQLException, DataOperationException {
+    void modifyProject_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         Project project = buildMockProject();
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = projectDAO.modifyProject(project);

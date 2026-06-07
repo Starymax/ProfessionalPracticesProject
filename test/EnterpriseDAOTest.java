@@ -121,7 +121,7 @@ public class EnterpriseDAOTest {
     }
 
     @Test
-    void getEnterprises_NoEnterprisesRegistered_ReturnsEmptyList() throws DataOperationException, SQLException {
+    void getEnterprises_NoEnterprisesRegistered_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Enterprise> result = enterpriseDAO.getEnterprises();
