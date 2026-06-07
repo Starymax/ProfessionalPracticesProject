@@ -10,6 +10,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import mx.fei.logic.dao.UserDAO;
 
 import java.util.Optional;
 
@@ -62,6 +63,8 @@ public class ControllerAdministratorMenu {
         confirm.setContentText("¿Seguro que desea cerrar sesión?");
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+            UserDAO userDAO = new UserDAO();
+            userDAO.logout();
             GUILogin guiLogin = new GUILogin();
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);

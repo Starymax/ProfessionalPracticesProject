@@ -13,6 +13,7 @@ import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUICoordinatorMenu;
+import mx.fei.logic.dao.UserDAO;
 
 import java.util.Optional;
 
@@ -74,6 +75,8 @@ public class ControllerCoordinatorMenu {
         confirm.setContentText("¿Seguro que desea cerrar sesión?");
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+            UserDAO userDAO = new UserDAO();
+            userDAO.logout();
             guiCoordinatorMenu.closeWindow();
             GUILogin guiLogin = new GUILogin();
             Stage loginStage = new Stage();

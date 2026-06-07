@@ -16,4 +16,6 @@ public interface IDAOUser {
     boolean isStudent(int idUser) throws DataOperationException;
 
     void logInByRole(UserRole role) throws DataOperationException;
+
+    void logout();
 }

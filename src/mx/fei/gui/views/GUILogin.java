@@ -1,5 +1,6 @@
 package mx.fei.gui.views;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -27,11 +28,17 @@ import mx.fei.gui.utils.GUIUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.BindException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 public class GUILogin extends Application {
+    private static final int INSTANCE_LOCK_PORT = 54321;
+    private static ServerSocket instanceLock;
+
     private TextField textFieldMail;
     private PasswordField textFieldPassword;
     private Button buttonLogin;
@@ -52,6 +59,11 @@ public class GUILogin extends Application {
 
     @Override
     public void start(Stage stage) {
+        if (instanceLock == null) {
+            GUIUtils.showError("La aplicación ya está abierta. Cierra la instancia actual antes de abrir una nueva.");
+            Platform.exit();
+            return;
+        }
         stage.setTitle("Inicio de sesión");
         stage.setResizable(false);
 
@@ -110,7 +122,25 @@ public class GUILogin extends Application {
         ((Stage) buttonCancel.getScene().getWindow()).close();
     }
 
+    @Override
+    public void stop() {
+        if (instanceLock != null && !instanceLock.isClosed()) {
+            try {
+                instanceLock.close();
+            } catch (IOException e) {
+                logger.log(Level.SEVERE, "Error al liberar el bloqueo de instancia única", e);
+            }
+        }
+    }
+
     public static void main(String[] args) {
+        try {
+            instanceLock = new ServerSocket(INSTANCE_LOCK_PORT, 1, InetAddress.getByName("localhost"));
+        } catch (BindException e) {
+            logger.log(Level.WARNING, "Se intentó abrir una segunda instancia de la aplicación", e);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error al inicializar el bloqueo de instancia única", e);
+        }
         launch(args);
     }
 

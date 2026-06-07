@@ -38,7 +38,7 @@ public class ProfessorDAO implements IDAOProfessor {
     public Professor getProfessorByPersonalNumber(int personalNumber) throws DataOperationException {
         Professor professor = null;
         String query = "SELECT * FROM vw_profesor WHERE numero_de_personal = ?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, personalNumber);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -57,7 +57,7 @@ public class ProfessorDAO implements IDAOProfessor {
     public Professor getProfessorById(int idProfessor) throws DataOperationException {
         Professor professor = null;
         String query = "SELECT * FROM vw_profesor WHERE id_usuario = ?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idProfessor);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -91,7 +91,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 throw new DataOperationException("No se logro registrar el profesor");
             }
             String query = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) VALUES (?, ?, ?, ?, ?);";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, idUser);
                 preparedStatement.setInt(2, professor.getPersonalNumber());
@@ -111,7 +111,7 @@ public class ProfessorDAO implements IDAOProfessor {
     public List<Professor> getProfessors() throws DataOperationException {
         List<Professor> professors = new ArrayList<>();
         String query = "SELECT * FROM vw_profesor;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
@@ -129,7 +129,7 @@ public class ProfessorDAO implements IDAOProfessor {
         boolean updated = false;
         if (professor != null) {
             String query = "UPDATE profesor SET es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setBoolean(1, professor.isCoordinator());
                 preparedStatement.setBoolean(2, professor.isAdmin());
@@ -148,7 +148,7 @@ public class ProfessorDAO implements IDAOProfessor {
     public boolean existsCoordinator() throws DataOperationException {
         boolean exists = false;
         String query = "SELECT 1 FROM profesor p JOIN usuario u ON p.id_usuario = u.id_usuario WHERE p.es_coordinador = true AND u.estado_activo = true LIMIT 1;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             if (resultSet.next()) {

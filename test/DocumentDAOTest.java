@@ -38,6 +38,7 @@ public class DocumentDAOTest {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
+    private DatabaseConnectionManager mockManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -45,8 +46,10 @@ public class DocumentDAOTest {
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
         resultSet = mock(ResultSet.class);
+        mockManager = mock(DatabaseConnectionManager.class);
         databaseConnectionManager = Mockito.mockStatic(DatabaseConnectionManager.class);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
+        databaseConnectionManager.when(DatabaseConnectionManager::getInstance).thenReturn(mockManager);
+        when(mockManager.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
     }

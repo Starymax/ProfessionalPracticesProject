@@ -26,7 +26,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             throw new IllegalArgumentException("El avance del alumno no puede ser nulo");
         }
         String query = "INSERT INTO avance_alumno (horas_realizadas, id_registro, id_alumno) VALUES (?,?,?) ON DUPLICATE KEY UPDATE horas_realizadas = VALUES(horas_realizadas)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setFloat(1, advance.getRealizedHours());
             preparedStatement.setInt(2, advance.getWeeklyLog().getWeeklyLogId());
@@ -42,7 +42,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
     public StudentAdvance getAdvanceById(int advanceId) throws DataOperationException {
         String query = "SELECT * FROM avance_alumno WHERE id_avance = ?";
         StudentAdvance advance = null;
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, advanceId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -66,19 +66,26 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
 
     @Override
     public List<StudentAdvance> getAdvancesByStudentId(int studentId) throws DataOperationException {
-        String query = "SELECT id_avance FROM avance_alumno WHERE id_alumno = ?";
+        String query = "SELECT id_avance, horas_realizadas, id_registro, id_alumno FROM avance_alumno WHERE id_alumno = ?";
         List<StudentAdvance> advances = new ArrayList<>();
-        List<Integer> advanceIds = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
+            List<int[]> rows = new ArrayList<>();
+            List<Float> hours = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    advanceIds.add(resultSet.getInt("id_avance"));
+                    rows.add(new int[]{resultSet.getInt("id_avance"), resultSet.getInt("id_registro"), resultSet.getInt("id_alumno")});
+                    hours.add(resultSet.getFloat("horas_realizadas"));
                 }
             }
-            for (int id : advanceIds) {
-                advances.add(getAdvanceById(id));
+            ActivityDAO activityDAO = new ActivityDAO();
+            StudentDAO studentDAO = new StudentDAO();
+            for (int i = 0; i < rows.size(); i++) {
+                int[] row = rows.get(i);
+                WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(row[1]);
+                Student student = studentDAO.getStudentById(row[2]);
+                advances.add(new StudentAdvance(row[0], hours.get(i), weeklyLog, student));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los avances del alumno", e);
@@ -89,19 +96,26 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
 
     @Override
     public List<StudentAdvance> getAdvancesByWeeklyLogId(int weeklyLogId) throws DataOperationException {
-        String query = "SELECT id_avance FROM avance_alumno WHERE id_registro = ?";
+        String query = "SELECT id_avance, horas_realizadas, id_registro, id_alumno FROM avance_alumno WHERE id_registro = ?";
         List<StudentAdvance> advances = new ArrayList<>();
-        List<Integer> advanceIds = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, weeklyLogId);
+            List<int[]> rows = new ArrayList<>();
+            List<Float> hours = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    advanceIds.add(resultSet.getInt("id_avance"));
+                    rows.add(new int[]{resultSet.getInt("id_avance"), resultSet.getInt("id_registro"), resultSet.getInt("id_alumno")});
+                    hours.add(resultSet.getFloat("horas_realizadas"));
                 }
             }
-            for (int id : advanceIds) {
-                advances.add(getAdvanceById(id));
+            ActivityDAO activityDAO = new ActivityDAO();
+            StudentDAO studentDAO = new StudentDAO();
+            for (int i = 0; i < rows.size(); i++) {
+                int[] row = rows.get(i);
+                WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(row[1]);
+                Student student = studentDAO.getStudentById(row[2]);
+                advances.add(new StudentAdvance(row[0], hours.get(i), weeklyLog, student));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los avances por registro semanal", e);
@@ -114,7 +128,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
     public boolean updateRealizedHours(int advanceId, float realizedHours) throws DataOperationException {
         boolean updated = false;
         String query = "UPDATE avance_alumno SET horas_realizadas = ? WHERE id_avance = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setFloat(1, realizedHours);
             preparedStatement.setInt(2, advanceId);
@@ -129,14 +143,26 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
     @Override
     public List<StudentAdvance> getAdvancesByStudentAndWeeklyLog(int studentId, int weeklyLogId) throws DataOperationException {
         List<StudentAdvance> advances = new ArrayList<>();
-        String query = "SELECT id_avance from avance_alumno WHERE id_alumno = ? AND id_registro = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        String query = "SELECT id_avance, horas_realizadas FROM avance_alumno WHERE id_alumno = ? AND id_registro = ?";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setInt(2, weeklyLogId);
+            List<Integer> ids = new ArrayList<>();
+            List<Float> hours = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    advances.add(getAdvanceById(resultSet.getInt("id_avance")));
+                    ids.add(resultSet.getInt("id_avance"));
+                    hours.add(resultSet.getFloat("horas_realizadas"));
+                }
+            }
+            if (!ids.isEmpty()) {
+                ActivityDAO activityDAO = new ActivityDAO();
+                StudentDAO studentDAO = new StudentDAO();
+                WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(weeklyLogId);
+                Student student = studentDAO.getStudentById(studentId);
+                for (int i = 0; i < ids.size(); i++) {
+                    advances.add(new StudentAdvance(ids.get(i), hours.get(i), weeklyLog, student));
                 }
             }
         } catch (SQLException e) {
@@ -148,7 +174,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
 
     public float getTotalHoursByIdStudent(int studentId) throws DataOperationException {
         String query = "SELECT SUM(horas_realizadas) FROM avance_alumno WHERE id_alumno = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             ResultSet resultSet = preparedStatement.executeQuery();

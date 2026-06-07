@@ -41,6 +41,7 @@ public class UserDAOTest {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
+    private DatabaseConnectionManager mockManager;
 
     @BeforeEach
     public void setUp() throws SQLException {
@@ -48,8 +49,10 @@ public class UserDAOTest {
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
         resultSet = mock(ResultSet.class);
+        mockManager = mock(DatabaseConnectionManager.class);
         databaseConnectionManager = Mockito.mockStatic(DatabaseConnectionManager.class);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
+        databaseConnectionManager.when(DatabaseConnectionManager::getInstance).thenReturn(mockManager);
+        when(mockManager.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
     }
 
@@ -223,7 +226,7 @@ public class UserDAOTest {
     void logInByRole_PropertiesLoadThrowsIOException_ThrowsDataOperationException() {
         UserRole role = mock(UserRole.class);
         when(role.getPropertiesKey()).thenReturn("root_config");
-        databaseConnectionManager.when(() -> DatabaseConnectionManager.loadProperties("root_config")).thenThrow(new IOException("Archivo no encontrado"));
+        databaseConnectionManager.when(() -> DatabaseConnectionManager.getInstance("root_config")).thenThrow(new IOException("Archivo no encontrado"));
         assertThrows(DataOperationException.class, () -> userDAO.logInByRole(role));
     }
 }

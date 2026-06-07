@@ -13,10 +13,7 @@ import mx.fei.gui.views.GUINotifications;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import mx.fei.logic.dao.NotificationDAO;
-import mx.fei.logic.dao.PracticeDAO;
-import mx.fei.logic.dao.ProjectDAO;
-import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dao.*;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -149,6 +146,8 @@ public class ControllerStudentMenu {
         confirm.setContentText("¿Seguro que desea cerrar sesión?");
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
+            UserDAO userDAO = new UserDAO();
+            userDAO.logout();
             GUILogin guiLogin = new GUILogin();
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);

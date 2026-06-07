@@ -35,7 +35,7 @@ public class DocumentDAO implements IDAODocument {
         }
         boolean result = false;
         String query = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setString(2, period);
@@ -55,7 +55,7 @@ public class DocumentDAO implements IDAODocument {
         }
         String period = null;
         String query = "SELECT periodo FROM vw_expediente_por_matricula WHERE matricula = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enrollment);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -79,7 +79,7 @@ public class DocumentDAO implements IDAODocument {
     public int loadDocument(Practice practice, Document document) throws DataOperationException {
         int generatedID = RegistrationStatus.FAILURE.getValue();
         String query = "INSERT INTO documentos (nombre, ruta, tipoDocumento, id_practica) VALUES ( ?, ?, ?, ?);";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, document.getName());
             preparedStatement.setString(2, document.getDirectory());
@@ -102,7 +102,7 @@ public class DocumentDAO implements IDAODocument {
     public boolean isLoaded(String enrollment, String documentType) throws DataOperationException {
         boolean isLoaded = false;
         String query = "SELECT " + documentType + " FROM vw_expediente_por_matricula WHERE matricula = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1,enrollment);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -146,7 +146,7 @@ public class DocumentDAO implements IDAODocument {
         }
         List<Document> documents = new ArrayList<>();
         String query = "SELECT id_documento, nombre, ruta, tipoDocumento FROM documentos WHERE id_practica = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, practice.getId());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -175,7 +175,7 @@ public class DocumentDAO implements IDAODocument {
         }
         List<Document> reports = new ArrayList<>();
         String query = "SELECT id_documento, nombre, ruta, tipoDocumento, aceptado FROM documentos WHERE id_practica = ? AND tipoDocumento IN ('PARTIAL_REPORT', 'MONTHLY_REPORT', 'FINAL_REPORT')";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, practice.getId());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -202,7 +202,7 @@ public class DocumentDAO implements IDAODocument {
     public boolean acceptReport(int documentId) throws DataOperationException {
         boolean accepted = false;
         String query = "UPDATE documentos SET aceptado = TRUE WHERE id_documento = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, documentId);
             accepted = preparedStatement.executeUpdate() > 0;

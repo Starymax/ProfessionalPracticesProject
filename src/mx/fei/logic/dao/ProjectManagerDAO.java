@@ -26,7 +26,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
             } else {
                 try {
                     String query = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_empresa) VALUES (?, ?, ?, ?, ?);";
-                    try (Connection connection = DatabaseConnectionManager.getConnection();
+                    try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                          PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                         preparedStatement.setString(1, projectManager.getName());
                         preparedStatement.setString(2, projectManager.getEmailProjectManager());
@@ -49,7 +49,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
     public ProjectManager getProjectManagerById(int idProjectManager) throws DataOperationException {
         ProjectManager projectManager =  null;
         String query = "SELECT * FROM responsable_proyecto WHERE id_responsable = ?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, idProjectManager);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -73,13 +73,18 @@ public class ProjectManagerDAO implements IDAOProjectManager {
     public List<ProjectManager> getProjectManagersByEnterprise(Enterprise enterprise) throws DataOperationException {
         List<ProjectManager> projectManagers = new ArrayList<>();
         int enterpriseId = enterprise.getEnterpriseId();
-        String query = "SELECT id_responsable FROM responsable_proyecto WHERE id_empresa = ?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        String query = "SELECT id_responsable, nombre_responsable, correo_responsable, telefono_responsable, cargo, id_empresa FROM responsable_proyecto WHERE id_empresa = ?;";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, enterpriseId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    projectManagers.add(getProjectManagerById(resultSet.getInt("id_responsable")));
+                    int id = resultSet.getInt("id_responsable");
+                    String name = resultSet.getString("nombre_responsable");
+                    String email = resultSet.getString("correo_responsable");
+                    String phoneNumber = resultSet.getString("telefono_responsable");
+                    String rol = resultSet.getString("cargo");
+                    projectManagers.add(new ProjectManager(id, name, email, phoneNumber, rol, enterpriseId));
                 }
             }
         } catch (SQLException e) {

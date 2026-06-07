@@ -32,6 +32,7 @@ public class EnterpriseDAOTest {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
+    private DatabaseConnectionManager mockManager;
 
     @BeforeEach
     public void setUp() throws SQLException {
@@ -39,8 +40,10 @@ public class EnterpriseDAOTest {
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
         resultSet = mock(ResultSet.class);
+        mockManager = mock(DatabaseConnectionManager.class);
         databaseConnectionManager = Mockito.mockStatic(DatabaseConnectionManager.class);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
+        databaseConnectionManager.when(DatabaseConnectionManager::getInstance).thenReturn(mockManager);
+        when(mockManager.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
     }
 
@@ -55,7 +58,16 @@ public class EnterpriseDAOTest {
     void getEnterpriseById_EnterpriseExists_ReturnsEnterpriseWithExpectedName() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt("id_empresa")).thenReturn(1);
         when(resultSet.getString("nombre_empresa")).thenReturn("Empresa Test");
+        when(resultSet.getString("sector")).thenReturn("Tecnología");
+        when(resultSet.getString("telefono")).thenReturn("2281234567");
+        when(resultSet.getString("correo")).thenReturn("empresa@test.com");
+        when(resultSet.getString("ciudad")).thenReturn("Xalapa");
+        when(resultSet.getLong("usuarios_directos")).thenReturn(10L);
+        when(resultSet.getLong("usuarios_indirectos")).thenReturn(50L);
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
+        when(resultSet.getString("pais")).thenReturn("México");
         Enterprise enterprise = enterpriseDAO.getEnterpriseById(1);
         assertEquals("Empresa Test", enterprise.getName());
     }
@@ -120,13 +132,17 @@ public class EnterpriseDAOTest {
     void getEnterprises_TwoEnterprisesRegistered_ReturnsListWithTwoEnterprises() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_empresa")).thenReturn(101, 102);
-        Enterprise enterprise1 = mock(Enterprise.class);
-        Enterprise enterprise2 = mock(Enterprise.class);
-        EnterpriseDAO spyEnterpriseDAO = spy(enterpriseDAO);
-        doReturn(enterprise1).when(spyEnterpriseDAO).getEnterpriseById(101);
-        doReturn(enterprise2).when(spyEnterpriseDAO).getEnterpriseById(102);
-        List<Enterprise> result = spyEnterpriseDAO.getEnterprises();
+        when(resultSet.getInt("id_empresa")).thenReturn(1, 2);
+        when(resultSet.getString("nombre_empresa")).thenReturn("Empresa A", "Empresa B");
+        when(resultSet.getString("sector")).thenReturn("Tech", "Salud");
+        when(resultSet.getString("telefono")).thenReturn("111", "222");
+        when(resultSet.getString("correo")).thenReturn("a@test.com", "b@test.com");
+        when(resultSet.getString("ciudad")).thenReturn("Xalapa", "Veracruz");
+        when(resultSet.getLong("usuarios_directos")).thenReturn(1L, 2L);
+        when(resultSet.getLong("usuarios_indirectos")).thenReturn(3L, 4L);
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true, true);
+        when(resultSet.getString("pais")).thenReturn("México", "México");
+        List<Enterprise> result = enterpriseDAO.getEnterprises();
         assertEquals(2, result.size());
     }
 

@@ -22,7 +22,7 @@ public class UserDAO implements IDAOUser {
     public boolean userExist(int idUser) throws DataOperationException {
         String query = "SELECT id_usuario FROM  usuario where id_usuario=?;";
         boolean exist;
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1,idUser);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -43,7 +43,7 @@ public class UserDAO implements IDAOUser {
         }
         int generatedID = -1;
         String query = "INSERT INTO usuario (nombre,apellidos,correo,contrasena,estado_activo,genero) VALUES (?,?,?,?,?,?);";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query,Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getLastName());
@@ -69,7 +69,7 @@ public class UserDAO implements IDAOUser {
         boolean updated = false;
         if (user != null) {
             String query = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query);) {
                 preparedStatement.setString(1, user.getName());
                 preparedStatement.setString(2, user.getLastName());
@@ -95,7 +95,7 @@ public class UserDAO implements IDAOUser {
         StudentDAO studentDAO = new StudentDAO();
         ProfessorDAO professorDAO = new ProfessorDAO();
         String query = "SELECT id_usuario FROM usuario WHERE correo = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, email);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -119,7 +119,7 @@ public class UserDAO implements IDAOUser {
     @Override
     public boolean isStudent(int idUser) throws DataOperationException {
         String query = "SELECT COUNT(*) FROM alumno WHERE id_usuario = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idUser);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -134,9 +134,14 @@ public class UserDAO implements IDAOUser {
     @Override
     public void logInByRole(UserRole role) throws DataOperationException {
         try {
-            DatabaseConnectionManager.loadProperties(role.getPropertiesKey());
+            DatabaseConnectionManager.getInstance(role.getPropertiesKey());
         } catch (IOException e) {
             throw new DataOperationException("Error al iniciar sesión");
         }
+    }
+
+    @Override
+    public void logout() {
+        DatabaseConnectionManager.getInstance().closeConnection();
     }
 }

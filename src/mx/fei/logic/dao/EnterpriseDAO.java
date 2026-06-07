@@ -22,7 +22,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
     public Enterprise getEnterpriseById(int idEnterprise) throws DataOperationException {
         Enterprise enterprise = null;
         String query = "SELECT * FROM organizacion_vinculada WHERE id_empresa = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, idEnterprise);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -58,7 +58,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
         }
         int generatedId = -1;
         String query = "INSERT INTO organizacion_vinculada (nombre_empresa, sector, telefono, correo, ciudad, usuarios_directos, usuarios_indirectos, estado_activo, pais) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,enterprise.getName());
             preparedStatement.setString(2,enterprise.getSector());
@@ -82,23 +82,32 @@ public class EnterpriseDAO implements IDAOEnterprise {
         return generatedId;
     }
 
+    private Enterprise buildEnterpriseFromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id_empresa");
+        String name = resultSet.getString("nombre_empresa");
+        String sector = resultSet.getString("sector");
+        String phone = resultSet.getString("telefono");
+        String mail = resultSet.getString("correo");
+        String city = resultSet.getString("ciudad");
+        long directUsers = resultSet.getLong("usuarios_directos");
+        long indirectUsers = resultSet.getLong("usuarios_indirectos");
+        boolean activeStatus = resultSet.getBoolean("estado_activo");
+        String country = resultSet.getString("pais");
+        return new Enterprise(id, name, sector, phone, mail, city, directUsers, indirectUsers, activeStatus, country);
+    }
+
     @Override
     public List<Enterprise> getActiveEnterprises() throws DataOperationException {
         List<Enterprise> enterprises = new ArrayList<>();
-        String query = "SELECT id_empresa from organizacion_vinculada WHERE estado_activo = true;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            List<Integer> enterprisesIds = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()){
-                    enterprisesIds.add(resultSet.getInt("id_empresa"));
-                }
-            }
-            for (Integer id : enterprisesIds) {
-                enterprises.add(getEnterpriseById(id));
+        String query = "SELECT * FROM organizacion_vinculada WHERE estado_activo = true;";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                enterprises.add(buildEnterpriseFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas",e);
+            logger.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas", e);
             throw new DataOperationException("Error al obtener todas las organizaciones activas");
         }
         return enterprises;
@@ -106,20 +115,15 @@ public class EnterpriseDAO implements IDAOEnterprise {
 
     public List<Enterprise> getEnterprises() throws DataOperationException {
         List<Enterprise> enterprises = new ArrayList<>();
-        String query = "SELECT id_empresa from organizacion_vinculada;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            List<Integer> enterprisesIds = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    enterprisesIds.add(resultSet.getInt("id_empresa"));
-                }
-            }
-            for (Integer enterpriseId : enterprisesIds) {
-                enterprises.add(getEnterpriseById(enterpriseId));
+        String query = "SELECT * FROM organizacion_vinculada;";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                enterprises.add(buildEnterpriseFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo las organizaciones activas",e);
+            logger.log(Level.SEVERE, "Error obteniendo las organizaciones activas", e);
             throw new DataOperationException("Error obteniendo todas las organizaciones");
         }
         return enterprises;
@@ -133,7 +137,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
         }
         boolean updated = false;
         String query = "UPDATE organizacion_vinculada SET nombre_empresa=?, sector=?, telefono=?, correo=?, ciudad=?, usuarios_directos=?, usuarios_indirectos=?, estado_activo=?, pais=? WHERE id_empresa=?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enterprise.getName());
             preparedStatement.setString(2, enterprise.getSector());

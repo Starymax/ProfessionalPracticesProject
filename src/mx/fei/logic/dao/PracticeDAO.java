@@ -24,7 +24,7 @@
         public Practice getPracticeById(int practiceId) throws DataOperationException {
             Practice practice = null;
             String query = "SELECT * FROM practicas WHERE id_practica=?;";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, practiceId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -68,7 +68,7 @@
             }
             boolean result = false;
             String query = "INSERT INTO practicas (id_alumno, nrc, periodo, calificacion) VALUES (?, ?, ?, ?)";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, practice.getStudent().getUserId());
                 preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
@@ -90,7 +90,7 @@
             }
             String query = "SELECT p.id_practica, p.periodo, p.nrc, p.calificacion FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
             Practice practice = null;
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, enrollment);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {

@@ -50,7 +50,7 @@ public class StudentDAO implements IDAOStudent {
         }
         Student student = null;
         String query = "SELECT * FROM vw_alumnos WHERE matricula=?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enrollment);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -77,7 +77,7 @@ public class StudentDAO implements IDAOStudent {
         }
         Student student = null;
         String query = "SELECT * FROM vw_alumnos WHERE id_usuario=?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idStudent);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -118,7 +118,7 @@ public class StudentDAO implements IDAOStudent {
                 throw new DataOperationException("No se logro registrar el usuario");
             }
             String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, lengua_indigena, calificacion) VALUES (?,?,?,?)";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent)) {
                 preparedStatementStudent.setInt(1, idUser);
                 preparedStatementStudent.setString(2, student.getEnrollment());
@@ -141,7 +141,7 @@ public class StudentDAO implements IDAOStudent {
         }
         boolean updated = false;
         String query = "UPDATE alumno SET lengua_indigena=?, calificacion=? WHERE id_usuario=?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setBoolean(1, student.isIndigenousLanguage());
             preparedStatement.setFloat(2, student.getGrade());
@@ -158,7 +158,7 @@ public class StudentDAO implements IDAOStudent {
     public List<Student> getStudents() throws DataOperationException {
         List<Student> students = new ArrayList<>();
         String query = "SELECT * FROM vw_alumnos";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
@@ -184,7 +184,7 @@ public class StudentDAO implements IDAOStudent {
                 "WHERE a.proyecto_asignado IS NULL " +
                 "GROUP BY a.matricula " +
                 "HAVING COUNT(DISTINCT s.proyecto_seleccionado) = 3)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
@@ -205,7 +205,7 @@ public class StudentDAO implements IDAOStudent {
     public List<Student> getActiveStudents() throws DataOperationException {
         List<Student> students = new ArrayList<>();
         String query = "SELECT * FROM vw_alumnos WHERE activo = true";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
@@ -229,7 +229,7 @@ public class StudentDAO implements IDAOStudent {
         }
         List<Student> students = new ArrayList<>();
         String query = "SELECT v.* FROM vw_alumnos v INNER JOIN practicas p ON v.id_usuario = p.id_alumno WHERE p.nrc = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, nrc);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -251,7 +251,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public void saveSelectedProjects(List<Project> selectedProjects, Student student) throws DataOperationException {
         String query = "INSERT INTO seleccion (matricula, proyecto_seleccionado) VALUES (?,?);";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             for (Project project : selectedProjects) {
                 preparedStatement.setString(1, student.getEnrollment());
@@ -269,7 +269,7 @@ public class StudentDAO implements IDAOStudent {
     public List<Project> getSelectedProjects(Student student) throws DataOperationException {
         ArrayList<Project> selectedProjects = new ArrayList<>();
         String query = "SELECT proyecto_seleccionado FROM seleccion WHERE matricula = ?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, student.getEnrollment());
             List<Integer> projectIds = new ArrayList<>();
@@ -293,7 +293,7 @@ public class StudentDAO implements IDAOStudent {
     public boolean assignProject(Student student, Project project) throws DataOperationException {
         boolean assigned = false;
         String query = "UPDATE alumno SET proyecto_asignado = ? WHERE matricula = ?;";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, project.getProjectId());
             preparedStatement.setString(2, student.getEnrollment());
@@ -314,7 +314,7 @@ public class StudentDAO implements IDAOStudent {
     public boolean assignEducationalExperience(Practice practice) throws DataOperationException {
         boolean assigned = false;
         String query = "INSERT INTO practicas (id_alumno, nrc, periodo) VALUES (?, ?, ?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, practice.getStudent().getUserId());
             preparedStatement.setString(2, practice.getEducationalExperience().getNrc());

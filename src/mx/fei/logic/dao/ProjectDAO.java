@@ -22,48 +22,63 @@ import java.util.logging.Logger;
 
 public class ProjectDAO implements IDAOProject {
     private static final Logger logger = Logger.getLogger(ProjectDAO.class.getName());
+
+    private static final String BASE_JOIN_QUERY =
+            "SELECT p.id_proyecto, p.nombre_proyecto, p.descripcion_proyecto, p.objetivo_general, " +
+            "p.objetivos_inmediatos, p.objetivos_mediatos, p.metodologia, p.responsabilidades, " +
+            "p.recursos, p.fecha_inicio, p.fecha_final, p.estado_activo, p.lugares_disponibles, " +
+            "e.id_empresa, e.nombre_empresa, e.sector, e.telefono AS tel_empresa, " +
+            "e.correo AS correo_empresa, e.ciudad, e.usuarios_directos, e.usuarios_indirectos, " +
+            "e.estado_activo AS activo_empresa, e.pais, " +
+            "r.id_responsable, r.nombre_responsable, r.correo_responsable, r.telefono_responsable, r.cargo " +
+            "FROM proyecto p " +
+            "LEFT JOIN organizacion_vinculada e ON p.id_empresa = e.id_empresa " +
+            "LEFT JOIN responsable_proyecto r ON p.id_responsable = r.id_responsable";
+
+    private Project buildProjectFromResultSet(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id_proyecto");
+        String projectName = rs.getString("nombre_proyecto");
+        String description = rs.getString("descripcion_proyecto");
+        String generalObjective = rs.getString("objetivo_general");
+        String immediateObjectives = rs.getString("objetivos_inmediatos");
+        String mediateObjectives = rs.getString("objetivos_mediatos");
+        String methodology = rs.getString("metodologia");
+        String responsibilities = rs.getString("responsabilidades");
+        String resources = rs.getString("recursos");
+        Date startDate = rs.getDate("fecha_inicio");
+        Date endDate = rs.getDate("fecha_final");
+        boolean activeStatus = rs.getBoolean("estado_activo");
+        int availablePlaces = rs.getInt("lugares_disponibles");
+        Enterprise enterprise = null;
+        if (rs.getObject("id_empresa") != null) {
+            enterprise = new Enterprise(
+                    rs.getInt("id_empresa"), rs.getString("nombre_empresa"), rs.getString("sector"),
+                    rs.getString("tel_empresa"), rs.getString("correo_empresa"), rs.getString("ciudad"),
+                    rs.getLong("usuarios_directos"), rs.getLong("usuarios_indirectos"),
+                    rs.getBoolean("activo_empresa"), rs.getString("pais"));
+        }
+        ProjectManager projectManager = null;
+        if (rs.getObject("id_responsable") != null) {
+            projectManager = new ProjectManager(
+                    rs.getInt("id_responsable"), rs.getString("nombre_responsable"),
+                    rs.getString("correo_responsable"), rs.getString("telefono_responsable"),
+                    rs.getString("cargo"), rs.getInt("id_empresa"));
+        }
+        return new Project(id, projectName, description, generalObjective,
+                immediateObjectives, mediateObjectives, methodology, responsibilities, resources,
+                startDate, endDate, activeStatus, availablePlaces, enterprise, projectManager);
+    }
+
     @Override
     public Project getProjectById(Integer idProject) throws DataOperationException {
         Project project = null;
-        String query = "SELECT * FROM proyecto WHERE id_proyecto = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query);) {
+        String query = BASE_JOIN_QUERY + " WHERE p.id_proyecto = ?";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, idProject);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    String projectName = resultSet.getString("nombre_proyecto");
-                    String description = resultSet.getString("descripcion_proyecto");
-                    String generalObjective = resultSet.getString("objetivo_general");
-                    String immediateObjectives = resultSet.getString("objetivos_inmediatos");
-                    String mediateObjectives = resultSet.getString("objetivos_mediatos");
-                    String methodology = resultSet.getString("metodologia");
-                    String responsibilities = resultSet.getString("responsabilidades");
-                    String resources = resultSet.getString("recursos");
-                    Date startDate = resultSet.getDate("fecha_inicio");
-                    Date endDate = resultSet.getDate("fecha_final");
-                    boolean activeStatus = resultSet.getBoolean("estado_activo");
-                    int availablePlaces = resultSet.getInt("lugares_disponibles");
-                    int idCompany = resultSet.getInt("id_empresa");
-                    int idProjectManager = resultSet.getInt("id_responsable");
-                    Enterprise enterprise = null;
-                    ProjectManager projectManager = null;
-                    try {
-                        EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
-                        enterprise = enterpriseDAO.getEnterpriseById(idCompany);
-                    } catch (DataOperationException doe) {
-                        logger.log(Level.WARNING, "No se pudo obtener la empresa del proyecto idEmpresa=" + idCompany, doe);
-                        throw new DataOperationException("Error al obtener la empresa del proyecto: " + doe.getMessage());
-                    }
-                    try {
-                        ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
-                        projectManager = projectManagerDAO.getProjectManagerById(idProjectManager);
-                    } catch (DataOperationException doe) {
-                        logger.log(Level.WARNING, "No se pudo obtener el responsable del proyecto idResponsable=" + idProjectManager, doe);
-                        throw new DataOperationException("Error al obtener el responsable del proyecto: " + doe.getMessage());
-                    }
-                    project = new Project(idProject, projectName, description, generalObjective,
-                            immediateObjectives, mediateObjectives, methodology, responsibilities, resources,
-                            startDate, endDate, activeStatus, availablePlaces, enterprise, projectManager);
+                    project = buildProjectFromResultSet(resultSet);
                 }
             }
             if (project == null) {
@@ -72,8 +87,8 @@ public class ProjectDAO implements IDAOProject {
             }
             return project;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo el proyecto",e);
-            throw  new DataOperationException("Error al obtener el proyecto");
+            logger.log(Level.SEVERE, "Error obteniendo el proyecto", e);
+            throw new DataOperationException("Error al obtener el proyecto");
         }
     }
 
@@ -81,7 +96,7 @@ public class ProjectDAO implements IDAOProject {
     public int registerProject(Project project) throws DataOperationException {
         int generatedID = -1;
         String query = "INSERT INTO proyecto (nombre_proyecto, descripcion_proyecto, objetivo_general, objetivos_inmediatos, objetivos_mediatos, metodologia, responsabilidades, recursos, fecha_inicio, fecha_final, estado_activo, lugares_disponibles, id_empresa, id_responsable) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
             preparedStatement.setString(1,project.getNameProject());
             preparedStatement.setString(2,project.getDescriptionProject());
@@ -113,20 +128,15 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public List<Project> getActiveProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
-        String query = "SELECT id_proyecto FROM proyecto WHERE estado_activo = true";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            List<Integer> projectIDs = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    projectIDs.add((resultSet.getInt("id_proyecto")));
-                }
-            }
-            for (Integer projectID : projectIDs) {
-                projects.add(getProjectById(projectID));
+        String query = BASE_JOIN_QUERY + " WHERE p.estado_activo = true";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                projects.add(buildProjectFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos activos",e);
+            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos activos", e);
             throw new DataOperationException("Error al obtener los proyectos activos");
         }
         return projects;
@@ -135,20 +145,14 @@ public class ProjectDAO implements IDAOProject {
     @Override
     public List<Project> getAllProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
-        String query = "SELECT id_proyecto FROM proyecto";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            List<Integer> projectIDs = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    projectIDs.add((resultSet.getInt("id_proyecto")));
-                }
-            }
-            for (Integer projectID : projectIDs) {
-                projects.add(getProjectById(projectID));
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(BASE_JOIN_QUERY);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                projects.add(buildProjectFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos",e);
+            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos", e);
             throw new DataOperationException("Error al obtener los proyectos");
         }
         return projects;
@@ -174,7 +178,7 @@ public class ProjectDAO implements IDAOProject {
     public boolean modifyProject(Project project) throws DataOperationException {
         boolean updated = false;
         String query = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ?, id_responsable = ?, responsabilidades = ? WHERE id_proyecto = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, project.getNameProject());
             preparedStatement.setString(2, project.getDescriptionProject());

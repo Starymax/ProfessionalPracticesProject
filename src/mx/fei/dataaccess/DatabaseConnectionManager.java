@@ -11,37 +11,83 @@ import java.util.logging.Logger;
 
 public class DatabaseConnectionManager {
     private static final Logger logger = Logger.getLogger(DatabaseConnectionManager.class.getName());
-    private static DatabaseConnectionManager dbManager;
-    private static Connection connection;
-    private static String url;
-    private static String username;
-    private static String password;
+
+    private static volatile DatabaseConnectionManager instance;
+    private Connection connection;
+    private String url;
+    private String username;
+    private String password;
+    private String currentRole;
 
     private DatabaseConnectionManager() {}
 
-    public static void loadProperties(String role) throws IOException {
+    public static synchronized DatabaseConnectionManager getInstance(String role) throws IOException {
+        if (instance != null && !role.equals(instance.currentRole)) {
+            instance.closeConnection();
+        }
+        if (instance == null) {
+            instance = new DatabaseConnectionManager();
+            instance.loadProperties(role);
+            instance.currentRole = role;
+        }
+        return instance;
+    }
+
+    public static DatabaseConnectionManager getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("La conexión no ha sido inicializado. Intente iniciar sesión nuevamente");
+        }
+        return instance;
+    }
+
+    private void loadProperties(String role) throws IOException {
         String fileName = "db_" + role + ".properties";
         InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName);
         if (input == null) {
-            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades");
-            throw new IOException("Error al iniciar sesión");
+            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades", fileName);
+            throw new IOException("Error al iniciar sesión: archivo de configuracion no encontrado");
         }
         try (input) {
             Properties properties = new Properties();
             properties.load(input);
-            username = properties.getProperty("db.username");
-            password = properties.getProperty("db.password");
+            this.username = properties.getProperty("db.username");
+            this.password = properties.getProperty("db.password");
             String host = properties.getProperty("db.host");
             String port = properties.getProperty("db.port");
             String name = properties.getProperty("db.name");
-            url = "jdbc:mysql://" + host + ":" + port + "/" + name;
+            this.url = "jdbc:mysql://" + host + ":" + port + "/" + name;
         }
     }
 
-    public static Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         if (url == null) {
-            throw new SQLException("Sistema no disponible, intentelo de nuevo");
+            throw new SQLException("Sistema no disponible, inténtelo de nuevo");
         }
-        return DriverManager.getConnection(url, username, password);
+        if (connection == null || connection.isClosed() || !connection.isValid(2)) {
+            logger.log(Level.INFO, "Estableciendo nueva conexión a la base de datos");
+            connection = DriverManager.getConnection(url, username, password);
+        }
+
+        return connection;
+    }
+
+    public void closeConnection() {
+        if (connection != null) {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                    logger.log(Level.INFO, "Conexión cerrada correctamente");
+                }
+            } catch (SQLException e) {
+                logger.log(Level.WARNING, "Error al cerrar la conexión", e);
+            } finally {
+                connection = null;
+                url = null;
+                username = null;
+                password = null;
+                currentRole = null;
+                instance = null;
+            }
+        }
     }
 }

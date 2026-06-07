@@ -41,7 +41,7 @@ public class ReportDAO implements IDAOReport {
             throw new IllegalArgumentException("El reporte no puede ser nulo.");
         }
         String query = "INSERT INTO reporte (tipo_reporte, fecha_reporte, observaciones, resultados_obtenidos, id_alumno, nrc) VALUES (?,?,?,?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, report.getReportType());
             preparedStatement.setDate(2, new Date(report.getReportDate().getTime()));
@@ -71,7 +71,7 @@ public class ReportDAO implements IDAOReport {
         }
         String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
         String queryWeeklyProgress = "INSERT INTO reporte_actividad_semana (semana, horas_plan, horas_real, id_reporte_actividad) VALUES (?,?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
             int reportId = createReport(report);
             if (reportId == 0) {
@@ -119,7 +119,7 @@ public class ReportDAO implements IDAOReport {
         }
         String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
         String queryWeeklyProgress = "INSERT INTO reporte_actividad_semana (semana, horas_plan, horas_real, id_reporte_actividad) VALUES (?,?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
             int reportId = createReport(report);
             if (reportId == 0) {
@@ -166,7 +166,7 @@ public class ReportDAO implements IDAOReport {
             throw new IllegalArgumentException("El reporte no puede ser nulo.");
         }
         String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection()) {
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
             int reportId = createReport(report);
             if (reportId == 0) {
@@ -195,7 +195,7 @@ public class ReportDAO implements IDAOReport {
     public Report getReportById(int reportId) throws DataOperationException {
         Report report = null;
         String query = "SELECT id_reporte, tipo_reporte, fecha_reporte, observaciones, resultados_obtenidos, id_alumno, nrc FROM reporte WHERE id_reporte = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, reportId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -219,7 +219,7 @@ public class ReportDAO implements IDAOReport {
         String query = "SELECT r.id_reporte, r.tipo_reporte, r.fecha_reporte, r.observaciones, r.resultados_obtenidos, r.nrc " +
                 "FROM reporte r JOIN alumno a ON r.id_alumno = a.id_usuario " +
                 "WHERE a.matricula = ? ORDER BY r.fecha_reporte DESC";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enrollment);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -243,7 +243,7 @@ public class ReportDAO implements IDAOReport {
     public int countReportsByTypeAndStudent(String reportType, int studentId) throws DataOperationException {
         int count = 0;
         String query = "SELECT COUNT(*) FROM reporte WHERE tipo_reporte = ? AND id_alumno = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, reportType);
             preparedStatement.setInt(2, studentId);
@@ -263,7 +263,7 @@ public class ReportDAO implements IDAOReport {
     public boolean setObservations(int reportId, String observations) throws DataOperationException {
         boolean success = false;
         String query = "UPDATE reporte SET observaciones = ? WHERE id_reporte = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, observations);
             preparedStatement.setInt(2, reportId);
@@ -278,7 +278,7 @@ public class ReportDAO implements IDAOReport {
     public boolean updateActivityObservations(int reportId, List<ReportActivityProgress> activityProgressList) throws DataOperationException {
         boolean success = false;
         String query = "UPDATE reporte_actividad SET observaciones = ? WHERE id_reporte = ? AND id_actividad = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             for (ReportActivityProgress activityProgress : activityProgressList) {
                 preparedStatement.setString(1, activityProgress.getObservations());

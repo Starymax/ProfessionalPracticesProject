@@ -38,6 +38,7 @@ public class EducationalExperienceDAOTest {
     private Connection connection;
     private PreparedStatement preparedStatement;
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
+    private DatabaseConnectionManager mockManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -45,8 +46,10 @@ public class EducationalExperienceDAOTest {
         spyEducationalExperienceDAO = spy(educationalExperienceDAO);
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
+        mockManager = mock(DatabaseConnectionManager.class);
         databaseConnectionManager = mockStatic(DatabaseConnectionManager.class);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
+        databaseConnectionManager.when(DatabaseConnectionManager::getInstance).thenReturn(mockManager);
+        when(mockManager.getConnection()).thenReturn(connection);
         resultSet = mock(ResultSet.class);
     }
 

@@ -1,8 +1,6 @@
 import mx.fei.dataaccess.DatabaseConnectionManager;
 import mx.fei.logic.dao.ActivityDAO;
-import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dao.ProjectDAO;
-import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
@@ -27,6 +25,7 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
@@ -43,6 +42,7 @@ public class ProjectDAOTest {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
+    private DatabaseConnectionManager mockManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -50,8 +50,10 @@ public class ProjectDAOTest {
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
         resultSet = mock(ResultSet.class);
+        mockManager = mock(DatabaseConnectionManager.class);
         databaseConnectionManager = Mockito.mockStatic(DatabaseConnectionManager.class);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
+        databaseConnectionManager.when(DatabaseConnectionManager::getInstance).thenReturn(mockManager);
+        when(mockManager.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(connection.prepareStatement(anyString(), anyInt())).thenReturn(preparedStatement);
     }
@@ -64,6 +66,7 @@ public class ProjectDAOTest {
     }
 
     private void stubProjectResultSet(ResultSet projectResultSet) throws SQLException {
+        when(projectResultSet.getInt("id_proyecto")).thenReturn(1);
         when(projectResultSet.getString("nombre_proyecto")).thenReturn("Proyecto A");
         when(projectResultSet.getString("descripcion_proyecto")).thenReturn("Descripcion");
         when(projectResultSet.getString("objetivo_general")).thenReturn("Objetivo");
@@ -76,8 +79,23 @@ public class ProjectDAOTest {
         when(projectResultSet.getDate("fecha_final")).thenReturn(new Date(System.currentTimeMillis()));
         when(projectResultSet.getBoolean("estado_activo")).thenReturn(true);
         when(projectResultSet.getInt("lugares_disponibles")).thenReturn(5);
+        when(projectResultSet.getObject("id_empresa")).thenReturn(1);
         when(projectResultSet.getInt("id_empresa")).thenReturn(1);
+        when(projectResultSet.getString("nombre_empresa")).thenReturn("Empresa Test");
+        when(projectResultSet.getString("sector")).thenReturn("Tech");
+        when(projectResultSet.getString("tel_empresa")).thenReturn("123");
+        when(projectResultSet.getString("correo_empresa")).thenReturn("e@test.com");
+        when(projectResultSet.getString("ciudad")).thenReturn("Xalapa");
+        when(projectResultSet.getLong("usuarios_directos")).thenReturn(1L);
+        when(projectResultSet.getLong("usuarios_indirectos")).thenReturn(2L);
+        when(projectResultSet.getBoolean("activo_empresa")).thenReturn(true);
+        when(projectResultSet.getString("pais")).thenReturn("Mexico");
+        when(projectResultSet.getObject("id_responsable")).thenReturn(2);
         when(projectResultSet.getInt("id_responsable")).thenReturn(2);
+        when(projectResultSet.getString("nombre_responsable")).thenReturn("Responsable Test");
+        when(projectResultSet.getString("correo_responsable")).thenReturn("r@test.com");
+        when(projectResultSet.getString("telefono_responsable")).thenReturn("456");
+        when(projectResultSet.getString("cargo")).thenReturn("Gerente");
     }
 
     private Project buildMockProject() {
@@ -109,15 +127,8 @@ public class ProjectDAOTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
-        Enterprise enterprise = mock(Enterprise.class);
-        ProjectManager projectManager = mock(ProjectManager.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(1)).thenReturn(enterprise));
-             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(2)).thenReturn(projectManager))) {
-            Project result = projectDAO.getProjectById(1);
-            assertEquals("Proyecto A", result.getNameProject());
-        }
+        Project result = projectDAO.getProjectById(1);
+        assertEquals("Proyecto A", result.getNameProject());
     }
 
     @Test
@@ -128,28 +139,23 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getProjectById_EnterpriseLookupFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void getProjectById_EnterpriseColumnsAreNull_ProjectHasNullEnterprise() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenThrow(new DataOperationException("Error empresa")))) {
-            assertThrows(DataOperationException.class, () -> projectDAO.getProjectById(1));
-        }
+        when(resultSet.getObject("id_empresa")).thenReturn(null);
+        Project result = projectDAO.getProjectById(1);
+        assertNull(result.getEnterprise());
     }
 
     @Test
-    void getProjectById_ProjectManagerLookupFails_ThrowsDataOperationException() throws SQLException, DataOperationException {
+    void getProjectById_ProjectManagerColumnsAreNull_ProjectHasNullProjectManager() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
-        Enterprise enterprise = mock(Enterprise.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(enterprise));
-             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenThrow(new DataOperationException("Error responsable")))) {
-            assertThrows(DataOperationException.class, () -> projectDAO.getProjectById(1));
-        }
+        when(resultSet.getObject("id_responsable")).thenReturn(null);
+        Project result = projectDAO.getProjectById(1);
+        assertNull(result.getProjectManager());
     }
 
     @Test
@@ -195,27 +201,11 @@ public class ProjectDAOTest {
 
     @Test
     void getActiveProjects_OneActiveProject_ReturnsListWithOneProject() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_proyecto")).thenReturn(1);
-        Connection secondConnection = mock(Connection.class);
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        stubProjectResultSet(detailResultSet);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        Enterprise enterprise = mock(Enterprise.class);
-        ProjectManager projectManager = mock(ProjectManager.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(enterprise));
-             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenReturn(projectManager))) {
-            List<Project> result = projectDAO.getActiveProjects();
-            assertEquals(1, result.size());
-        }
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        stubProjectResultSet(resultSet);
+        List<Project> result = projectDAO.getActiveProjects();
+        assertEquals(1, result.size());
     }
 
     @Test
@@ -234,27 +224,11 @@ public class ProjectDAOTest {
 
     @Test
     void getAllProjects_OneProjectRegistered_ReturnsListWithOneProject() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_proyecto")).thenReturn(2);
-        Connection secondConnection = mock(Connection.class);
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        stubProjectResultSet(detailResultSet);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
-        Enterprise enterprise = mock(Enterprise.class);
-        ProjectManager projectManager = mock(ProjectManager.class);
-        try (MockedConstruction<EnterpriseDAO> mockedEnterpriseDAO = mockConstruction(EnterpriseDAO.class,
-                (mock, context) -> when(mock.getEnterpriseById(anyInt())).thenReturn(enterprise));
-             MockedConstruction<ProjectManagerDAO> mockedProjectManagerDAO = mockConstruction(ProjectManagerDAO.class,
-                     (mock, context) -> when(mock.getProjectManagerById(anyInt())).thenReturn(projectManager))) {
-            List<Project> result = projectDAO.getAllProjects();
-            assertEquals(1, result.size());
-        }
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        stubProjectResultSet(resultSet);
+        List<Project> result = projectDAO.getAllProjects();
+        assertEquals(1, result.size());
     }
 
     @Test

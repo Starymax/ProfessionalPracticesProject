@@ -21,7 +21,7 @@ public class NotificationDAO implements IDAONotification {
     @Override
     public boolean sendNotification(Notification notification) throws DataOperationException {
         String query = "INSERT INTO notificacion (titulo, mensaje, id_alumno) VALUES (?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, notification.getTitle());
             preparedStatement.setString(2, notification.getMessage());
@@ -37,7 +37,7 @@ public class NotificationDAO implements IDAONotification {
     public List<Notification> getNotificationsByStudentId(int studentId) throws DataOperationException {
         String query = "SELECT id_notificacion, titulo, mensaje, fecha_emision, leida FROM notificacion WHERE id_alumno = ? ORDER BY fecha_emision DESC";
         List<Notification> notifications = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -62,7 +62,7 @@ public class NotificationDAO implements IDAONotification {
     @Override
     public boolean markAsRead(int notificationId) throws DataOperationException {
         String query = "UPDATE notificacion SET leida = TRUE WHERE id_notificacion = ?";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, notificationId);
             return preparedStatement.executeUpdate() > 0;
@@ -76,7 +76,7 @@ public class NotificationDAO implements IDAONotification {
     public int countUnreadNotifications(int studentId) throws DataOperationException {
         int count = 0;
         String query = "SELECT COUNT(*) FROM notificacion WHERE id_alumno = ? AND leida = FALSE";
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

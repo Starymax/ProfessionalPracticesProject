@@ -37,6 +37,7 @@ public class StudentAdvanceDAOTest {
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
     private MockedStatic<DatabaseConnectionManager> databaseConnectionManager;
+    private DatabaseConnectionManager mockManager;
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -44,8 +45,10 @@ public class StudentAdvanceDAOTest {
         connection = mock(Connection.class);
         preparedStatement = mock(PreparedStatement.class);
         resultSet = mock(ResultSet.class);
+        mockManager = mock(DatabaseConnectionManager.class);
         databaseConnectionManager = Mockito.mockStatic(DatabaseConnectionManager.class);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection);
+        databaseConnectionManager.when(DatabaseConnectionManager::getInstance).thenReturn(mockManager);
+        when(mockManager.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
     }
 
@@ -123,20 +126,12 @@ public class StudentAdvanceDAOTest {
 
     @Test
     void getAdvancesByStudentId_StudentHasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_avance")).thenReturn(7);
-        Connection secondConnection = mock(Connection.class);
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        when(detailResultSet.getFloat("horas_realizadas")).thenReturn(4f);
-        when(detailResultSet.getInt("id_registro")).thenReturn(2);
-        when(detailResultSet.getInt("id_alumno")).thenReturn(10);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getInt("id_avance")).thenReturn(7);
+        when(resultSet.getFloat("horas_realizadas")).thenReturn(4f);
+        when(resultSet.getInt("id_registro")).thenReturn(2);
+        when(resultSet.getInt("id_alumno")).thenReturn(10);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
@@ -164,20 +159,12 @@ public class StudentAdvanceDAOTest {
 
     @Test
     void getAdvancesByWeeklyLogId_WeeklyLogHasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_avance")).thenReturn(9);
-        Connection secondConnection = mock(Connection.class);
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        when(detailResultSet.getFloat("horas_realizadas")).thenReturn(6f);
-        when(detailResultSet.getInt("id_registro")).thenReturn(3);
-        when(detailResultSet.getInt("id_alumno")).thenReturn(11);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getInt("id_avance")).thenReturn(9);
+        when(resultSet.getFloat("horas_realizadas")).thenReturn(6f);
+        when(resultSet.getInt("id_registro")).thenReturn(3);
+        when(resultSet.getInt("id_alumno")).thenReturn(11);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
@@ -225,20 +212,10 @@ public class StudentAdvanceDAOTest {
 
     @Test
     void getAdvancesByStudentAndWeeklyLog_HasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
-        ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_avance")).thenReturn(15);
-        Connection secondConnection = mock(Connection.class);
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        when(detailResultSet.getFloat("horas_realizadas")).thenReturn(3f);
-        when(detailResultSet.getInt("id_registro")).thenReturn(4);
-        when(detailResultSet.getInt("id_alumno")).thenReturn(12);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(secondConnection.prepareStatement(anyString())).thenReturn(detailStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.getInt("id_avance")).thenReturn(15);
+        when(resultSet.getFloat("horas_realizadas")).thenReturn(3f);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,

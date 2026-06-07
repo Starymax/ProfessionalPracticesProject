@@ -31,7 +31,7 @@ public class ActivityDAO implements IDAOActivity {
         } else {
             boolean success = false;
             String query = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
-            try (Connection connection = DatabaseConnectionManager.getConnection();
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
                 preparedStatement.setString(1, activity.getName());
                 preparedStatement.setString(2, activity.getObservationsActivity());
@@ -74,7 +74,7 @@ public class ActivityDAO implements IDAOActivity {
     public Activity getActivityById(int activityId) throws DataOperationException {
         String query = "SELECT id_actividad, nombre_actividad, observaciones_actividad, id_proyecto FROM actividad WHERE id_actividad = ?";
         Activity activity = null;
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             preparedStatement.setInt(1, activityId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -96,22 +96,25 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public List<Activity> getActivitiesByProjectId(int projectId) throws DataOperationException {
-        String query = "SELECT id_actividad FROM actividad WHERE id_proyecto = ? ORDER BY id_actividad ASC";
+        String query = "SELECT id_actividad, nombre_actividad, observaciones_actividad FROM actividad WHERE id_proyecto = ? ORDER BY id_actividad ASC";
         List<Activity> activities = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, projectId);
-            List<Integer> activitiesIds = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    activitiesIds.add(resultSet.getInt("id_actividad"));
+        try {
+            ProjectDAO projectDAO = new ProjectDAO();
+            Project project = projectDAO.getProjectById(projectId);
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, projectId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        int id = resultSet.getInt("id_actividad");
+                        String name = resultSet.getString("nombre_actividad");
+                        String observations = resultSet.getString("observaciones_actividad");
+                        activities.add(new Activity(id, name, observations, project));
+                    }
                 }
             }
-            for (int idActivity : activitiesIds) {
-                activities.add(getActivityById(idActivity));
-            }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener las actividades",e);
+            logger.log(Level.SEVERE, "Error al obtener las actividades", e);
             throw new DataOperationException("Error al obtener las actividades");
         }
         return activities;
@@ -121,7 +124,7 @@ public class ActivityDAO implements IDAOActivity {
     public WeeklyLog getWeeklyLogById(int weeklyLogId) throws DataOperationException {
         String query = "SELECT semana, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
         WeeklyLog weeklyLog = null;
-        try (Connection connection = DatabaseConnectionManager.getConnection();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, weeklyLogId);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -141,22 +144,24 @@ public class ActivityDAO implements IDAOActivity {
 
     @Override
     public List<WeeklyLog> getWeeklyLogsByActivityId(int activityId) throws DataOperationException {
-        String query = "SELECT id_registro FROM registro_semanal WHERE id_actividad = ?";
+        String query = "SELECT id_registro, semana, horas_planificadas FROM registro_semanal WHERE id_actividad = ?";
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, activityId);
-            List<Integer> weeklyLogIds = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    weeklyLogIds.add(resultSet.getInt("id_registro"));
+        try {
+            Activity activity = getActivityById(activityId);
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, activityId);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        int id = resultSet.getInt("id_registro");
+                        int week = resultSet.getInt("semana");
+                        int plannedHours = resultSet.getInt("horas_planificadas");
+                        weeklyLogs.add(new WeeklyLog(id, week, 0, plannedHours, activity));
+                    }
                 }
             }
-            for (Integer weeklyLogId: weeklyLogIds) {
-                weeklyLogs.add(getWeeklyLogById(weeklyLogId));
-            }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad",e);
+            logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad", e);
             throw new DataOperationException("Error al obtener los horarios de la actividad");
         }
         return weeklyLogs;
