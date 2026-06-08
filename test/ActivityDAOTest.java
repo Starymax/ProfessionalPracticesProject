@@ -279,7 +279,7 @@ public class ActivityDAOTest {
         when(activityResultSet.getInt("id_proyecto")).thenReturn(1);
         when(activityStatement.executeQuery()).thenReturn(activityResultSet);
         when(thirdConnection.prepareStatement(anyString())).thenReturn(activityStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection).thenReturn(thirdConnection);
+        when(mockManager.getConnection()).thenReturn(connection).thenReturn(secondConnection).thenReturn(thirdConnection);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
         Project project = mock(Project.class);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,

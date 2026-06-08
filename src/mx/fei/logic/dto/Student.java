@@ -5,6 +5,7 @@ public class Student extends User{
     private boolean indigenousLanguage;
     private Project assignedProject;
     private float grade;
+    private int pendingProjectId;
 
     public Student(int userId, String name, String lastName, String email, String password, String gender, boolean activeStatus,  String enrollment, boolean indigenousLanguage, Project assignedProject, float grade) {
         super(userId, name, lastName, email, password, gender, activeStatus);
@@ -12,6 +13,15 @@ public class Student extends User{
         this.indigenousLanguage = indigenousLanguage;
         this.assignedProject = assignedProject;
         this.grade = grade;
+    }
+
+    public Student(int userId, String name, String lastName, String email, String password, String gender, boolean activeStatus, String enrollment, boolean indigenousLanguage, Project assignedProject, float grade, int pendingProjectId) {
+        this(userId, name, lastName, email, password, gender, activeStatus, enrollment, indigenousLanguage, assignedProject, grade);
+        this.pendingProjectId = pendingProjectId;
+    }
+
+    public int getPendingProjectId() {
+        return pendingProjectId;
     }
 
     public String getEnrollment() {

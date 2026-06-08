@@ -125,7 +125,6 @@ public class ProjectDAOTest {
 
     @Test
     void getProjectById_EnterpriseColumnsAreNull_ProjectHasNullEnterprise() throws SQLException, DataOperationException {
-    void getProjectById_EnterpriseLookupFails_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
