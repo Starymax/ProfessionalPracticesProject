@@ -28,6 +28,7 @@ public class ControllerStudentMenu {
     private final ProjectDAO projectDAO;
     private final PracticeDAO practiceDAO;
     private final NotificationDAO notificationDAO = new NotificationDAO();
+    private final int minimumProjects = 3;
     private static final Logger logger = Logger.getLogger(ControllerStudentMenu.class.getName());
 
     public ControllerStudentMenu(GUIStudentMenu guiStudentMenu) {
@@ -76,15 +77,20 @@ public class ControllerStudentMenu {
         try {
             if (studentDAO.getSelectedProjects(guiStudentMenu.getStudent()).isEmpty()) {
                 List<Project> projectList = projectDAO.getAvailableProjects();
-                GUISelectProjects guiSelectProjects = new GUISelectProjects();
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                guiSelectProjects.start(stage);
-                guiSelectProjects.setStudent(guiStudentMenu.getStudent());
-                guiSelectProjects.loadProjects(projectList);
-            } else {
+                if (projectList.size() < minimumProjects) {
+                    guiStudentMenu.showError("No hay suficientes proyectos disponibles por el momento. Intente más tarde.");
+                } else {
+                    GUISelectProjects guiSelectProjects = new GUISelectProjects();
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    guiSelectProjects.start(stage);
+                    guiSelectProjects.setStudent(guiStudentMenu.getStudent());
+                    guiSelectProjects.loadProjects(projectList);
+                }
+                } else {
                 guiStudentMenu.showError("Proyectos ya seleccionados.");
             }
+
         } catch (DataOperationException e) {
             guiStudentMenu.showError(e.getMessage());
         }
