@@ -205,31 +205,35 @@ public class GUIUtils {
         LocalDate today = LocalDate.now();
         int month = today.getMonthValue();
         int year = today.getYear();
-        YearMonth startMonth, endMonth;
+        YearMonth currentStartMonth, currentEndMonth;
         if (month >= 2 && month <= 7) {
-            startMonth = YearMonth.of(year, 2);
-            endMonth = YearMonth.of(year, 7);
+            currentStartMonth = YearMonth.of(year, 2);
+            currentEndMonth = YearMonth.of(year, 7);
         } else {
             int augustYear = (month >= 8) ? year : year - 1;
-            startMonth = YearMonth.of(augustYear, 8);
-            endMonth = YearMonth.of(augustYear + 1, 1);
+            currentStartMonth = YearMonth.of(augustYear, 8);
+            currentEndMonth = YearMonth.of(augustYear + 1, 1);
         }
-        LocalDate startMin = startMonth.atDay(1);
-        LocalDate startMax = startMonth.atEndOfMonth();
-        LocalDate endMin = endMonth.atDay(1);
-        LocalDate endMax = endMonth.atEndOfMonth();
+        final YearMonth nextStartMonth = currentEndMonth.plusMonths(1);
+        final YearMonth nextEndMonth = nextStartMonth.plusMonths(5);
+        final YearMonth allowedStart1 = currentStartMonth;
+        final YearMonth allowedStart2 = nextStartMonth;
+        final YearMonth allowedEnd1 = currentEndMonth;
+        final YearMonth allowedEnd2 = nextEndMonth;
         startPicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                setDisable(date.isBefore(startMin) || date.isAfter(startMax));
+                YearMonth dateMonth = YearMonth.from(date);
+                setDisable(!dateMonth.equals(allowedStart1) && !dateMonth.equals(allowedStart2));
             }
         });
         endPicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                setDisable(date.isBefore(endMin) || date.isAfter(endMax));
+                YearMonth dateMonth = YearMonth.from(date);
+                setDisable(!dateMonth.equals(allowedEnd1) && !dateMonth.equals(allowedEnd2));
             }
         });
     }
