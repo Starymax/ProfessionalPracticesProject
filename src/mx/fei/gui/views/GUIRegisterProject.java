@@ -87,6 +87,7 @@ public class GUIRegisterProject extends Application {
 
         datePickerStartDate.setPromptText("dd/mm/aaaa");
         datePickerFinalDate.setPromptText("dd/mm/aaaa");
+        GUIUtils.applyPeriodDateRestrictions(datePickerStartDate, datePickerFinalDate);
 
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxEnterprise.setCellFactory(listView -> new ListCell<>() {

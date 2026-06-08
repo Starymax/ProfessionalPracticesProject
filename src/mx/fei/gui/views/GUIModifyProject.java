@@ -99,6 +99,7 @@ public class GUIModifyProject extends Application {
         datePickerStartDate.getEditor().setDisable(true);
         datePickerFinalDate.setPromptText("dd/mm/aaaa");
         datePickerFinalDate.getEditor().setDisable(true);
+        GUIUtils.applyPeriodDateRestrictions(datePickerStartDate, datePickerFinalDate);
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxProjectManager.setMaxWidth(Double.MAX_VALUE);
 

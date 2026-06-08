@@ -1,7 +1,11 @@
 package mx.fei.gui.utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.DateCell;
+import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -195,6 +199,39 @@ public class GUIUtils {
         if (value.trim().isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         }
+    }
+
+    public static void applyPeriodDateRestrictions(DatePicker startPicker, DatePicker endPicker) {
+        LocalDate today = LocalDate.now();
+        int month = today.getMonthValue();
+        int year = today.getYear();
+        YearMonth startMonth, endMonth;
+        if (month >= 2 && month <= 7) {
+            startMonth = YearMonth.of(year, 2);
+            endMonth = YearMonth.of(year, 7);
+        } else {
+            int augustYear = (month >= 8) ? year : year - 1;
+            startMonth = YearMonth.of(augustYear, 8);
+            endMonth = YearMonth.of(augustYear + 1, 1);
+        }
+        LocalDate startMin = startMonth.atDay(1);
+        LocalDate startMax = startMonth.atEndOfMonth();
+        LocalDate endMin = endMonth.atDay(1);
+        LocalDate endMax = endMonth.atEndOfMonth();
+        startPicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(date.isBefore(startMin) || date.isAfter(startMax));
+            }
+        });
+        endPicker.setDayCellFactory(picker -> new DateCell() {
+            @Override
+            public void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                setDisable(date.isBefore(endMin) || date.isAfter(endMax));
+            }
+        });
     }
 
     public static void showError(String message) {
