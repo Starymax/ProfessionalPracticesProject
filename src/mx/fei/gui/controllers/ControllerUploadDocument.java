@@ -113,9 +113,26 @@ public class ControllerUploadDocument {
     private void processDocuments(Map<DocumentType, Document> selectedDocuments, Practice currentPractice) {
         boolean allUploaded = true;
         StringBuilder errors = new StringBuilder();
+        boolean prerequisitesChecked = false;
+        boolean prerequisitesMet = false;
         for (Document document : new ArrayList<>(selectedDocuments.values())) {
-            boolean succes = uploadSingleDocument(document, currentPractice, errors);
-            if (!succes) {
+            boolean canUpload = true;
+            if (document.getDocumentType().isReport()) {
+                if (!prerequisitesChecked) {
+                    prerequisitesMet = checkReportPrerequisites(currentPractice);
+                    prerequisitesChecked = true;
+                }
+                canUpload = prerequisitesMet;
+                if (!canUpload) {
+                    errors.append("- ").append(document.getName()).append(" Requiere la carta de aceptación y el horario validados por el coordinador\n");
+                }
+            }
+            if (canUpload) {
+                boolean success = uploadSingleDocument(document, currentPractice, errors);
+                if (!success) {
+                    allUploaded = false;
+                }
+            } else {
                 allUploaded = false;
             }
         }
@@ -123,8 +140,18 @@ public class ControllerUploadDocument {
             guiUploadDocument.showSuccess("Todos los documentos se subieron exitosamente.");
             guiUploadDocument.closeWindow();
         } else {
-            guiUploadDocument.showError("Los siguiente documentos no pudieron procesarse:\n" + errors.toString());
+            guiUploadDocument.showError("Los siguiente documentos no pudieron procesarse:\n" + errors);
         }
+    }
+
+    private boolean checkReportPrerequisites(Practice currentPractice) {
+        boolean areDocumentsUploaded = false;
+        try {
+            areDocumentsUploaded = documentDAO.areInitialDocumentsUploaded(currentPractice);
+        } catch (DataOperationException e) {
+            logger.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes.", e);
+        }
+        return areDocumentsUploaded;
     }
 
     private boolean uploadSingleDocument(Document document, Practice currentPractice, StringBuilder errors) {

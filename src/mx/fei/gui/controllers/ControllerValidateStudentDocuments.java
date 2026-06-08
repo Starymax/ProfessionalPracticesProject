@@ -66,8 +66,10 @@ public class ControllerValidateStudentDocuments {
         }
         List<DocumentReviewItem> items = new ArrayList<>();
         for (DocumentType documentType : DocumentType.values()) {
-            Document matchedDocument = findDocument(uploadedDocuments, documentType);
-            items.add(new DocumentReviewItem(documentType, matchedDocument));
+            if (!documentType.isReport()) {
+                Document matchedDocument = findDocument(uploadedDocuments, documentType);
+                items.add(new DocumentReviewItem(documentType, matchedDocument));
+            }
         }
         return items;
     }

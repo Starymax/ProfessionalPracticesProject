@@ -51,7 +51,7 @@ public class GUISendNotificationOfAssign {
 
         if (project != null) {
             textFieldTitle.setText("Asignación de proyecto " + project.getNameProject());
-            textAreaMessage.setText("Se ha asignado el proyecto " + project.getNameProject() + " al estudiante.\nPor favor, revise los detalles y confirme su aceptación.");
+            textAreaMessage.setText("Felicitaciones! Fue asignado al proyecto: " + project.getNameProject() + "\n Ya puede subir sus documentos iniciales (Carta de aceptacion y horario).");
         }
         buttonSend = new Button("Enviar");
         buttonCancel = new Button("Cancelar");

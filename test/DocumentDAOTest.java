@@ -26,7 +26,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static mx.fei.logic.dto.DocumentType.STUDENT_SCHEDULE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -503,5 +502,40 @@ public class DocumentDAOTest {
         when(document.getId()).thenReturn(10);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de escritura"));
         assertThrows(DataOperationException.class, () -> documentDAO.deleteDocument(document));
+    }
+
+    @Test
+    void areInitialDocumentsUploaded_PracticeIsNull_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> documentDAO.areInitialDocumentsUploaded(null));
+    }
+
+    @Test
+    void areInitialDocumentsUploaded_BothPrerequisitesValidated_ReturnsTrue() throws SQLException {
+        Practice practice = mock(Practice.class);
+        when(practice.getId()).thenReturn(1);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt("total")).thenReturn(2);
+        boolean result = documentDAO.areInitialDocumentsUploaded(practice);
+        assertTrue(result);
+    }
+
+    @Test
+    void areInitialDocumentsUploaded_OnlyOnePrerequisiteValidated_ReturnsFalse() throws SQLException {
+        Practice practice = mock(Practice.class);
+        when(practice.getId()).thenReturn(1);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt("total")).thenReturn(1);
+        boolean result = documentDAO.areInitialDocumentsUploaded(practice);
+        assertFalse(result);
+    }
+
+    @Test
+    void areInitialDocumentsUploaded_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        Practice practice = mock(Practice.class);
+        when(practice.getId()).thenReturn(1);
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de lectura"));
+        assertThrows(DataOperationException.class, () -> documentDAO.areInitialDocumentsUploaded(practice));
     }
 }

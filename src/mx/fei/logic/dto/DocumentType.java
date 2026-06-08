@@ -18,4 +18,8 @@ public enum DocumentType {
     public String getDocumentType() {
         return documentType;
     }
+
+    public boolean isReport() {
+        return this == PARTIAL_REPORT || this == MONTHLY_REPORT || this == FINAL_REPORT;
+    }
 }

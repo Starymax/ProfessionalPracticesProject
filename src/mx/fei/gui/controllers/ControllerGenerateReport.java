@@ -4,6 +4,7 @@ import mx.fei.gui.views.GUIGenerateFinalReport;
 import mx.fei.gui.views.GUIGenerateMonthlyReport;
 import mx.fei.gui.views.GUIGeneratePartialReport;
 import mx.fei.gui.views.GUIGenerateReport;
+import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.ReportDAO;
 import mx.fei.logic.dao.StudentAdvanceDAO;
 import mx.fei.logic.dto.ReportType;
@@ -32,11 +33,27 @@ public class ControllerGenerateReport {
     private final GUIGenerateReport guiGenerateReport;
     private final StudentAdvanceDAO studentAdvanceDAO;
     private final ReportDAO reportDAO;
+    private final DocumentDAO documentDAO;
 
     public ControllerGenerateReport(GUIGenerateReport guiGenerateReport) {
         this.guiGenerateReport = guiGenerateReport;
         this.studentAdvanceDAO = new StudentAdvanceDAO();
         this.reportDAO = new ReportDAO();
+        this.documentDAO = new DocumentDAO();
+    }
+
+    private boolean arePrerequisitesMet() {
+        boolean met = false;
+        try {
+            met = documentDAO.areInitialDocumentsUploaded(guiGenerateReport.getPractice());
+            if (!met) {
+                guiGenerateReport.showError("Para generar un reporte primero debes subir la carta de aceptación y el horario, y que el coordinador los valide.");
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
+            guiGenerateReport.showError("Error al verificar los prerrequisitos de los reportes.");
+        }
+        return met;
     }
 
     public void handleMensualPartialFinalBackButtons(ActionEvent event) {
@@ -58,6 +75,9 @@ public class ControllerGenerateReport {
     }
 
     private void openMonthlyReport() {
+        if (!arePrerequisitesMet()) {
+            return;
+        }
         Student student = guiGenerateReport.getPractice().getStudent();
         if (student == null) {
             guiGenerateReport.showError("No hay estudiante seleccionado.");
@@ -103,6 +123,9 @@ public class ControllerGenerateReport {
     }
 
     private void openPartialReport() {
+        if (!arePrerequisitesMet()) {
+            return;
+        }
         Student student = guiGenerateReport.getPractice().getStudent();
         if (student == null) {
             guiGenerateReport.showError("No hay estudiante seleccionado.");
@@ -130,6 +153,9 @@ public class ControllerGenerateReport {
     }
 
     private void openFinalReport() {
+        if (!arePrerequisitesMet()) {
+            return;
+        }
         Student student = guiGenerateReport.getPractice().getStudent();
         if (student == null) {
             guiGenerateReport.showError("No hay estudiante seleccionado.");

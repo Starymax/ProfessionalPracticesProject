@@ -226,6 +226,7 @@ public class DocumentDAO implements IDAODocument {
                 "FROM alumno a " +
                 "INNER JOIN practicas p ON p.id_alumno = a.id_usuario " +
                 "INNER JOIN documentos d ON d.id_practica = p.id_practica " +
+                "AND d.tipoDocumento NOT IN ('PARTIAL_REPORT', 'MONTHLY_REPORT', 'FINAL_REPORT') " +
                 "WHERE a.proyecto_asignado IS NOT NULL " +
                 "GROUP BY a.id_usuario";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
@@ -287,6 +288,30 @@ public class DocumentDAO implements IDAODocument {
 
     public boolean validateDocument(int documentId) throws DataOperationException {
         return updateValidationStatus(documentId, ValidationStatus.VALIDATED);
+    }
+
+    public boolean areInitialDocumentsUploaded(Practice practice) throws DataOperationException {
+        if (practice == null) {
+            logger.log(Level.WARNING, "La practica es nula");
+            throw new IllegalArgumentException("La practica no puede ser nula");
+        }
+        boolean uploaded = false;
+        String query = "SELECT COUNT(DISTINCT tipoDocumento) AS total FROM documentos " +
+                "WHERE id_practica = ? AND tipoDocumento IN ('ACCEPTANCE_LETTER', 'STUDENT_SCHEDULE') " +
+                "AND estado_validacion = 'VALIDADO'";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    uploaded = resultSet.getInt("total") >= 2;
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
+            throw new DataOperationException("Error al verificar los prerrequisitos de los reportes");
+        }
+        return uploaded;
     }
 
     public boolean deleteDocument(Document document) throws DataOperationException {
