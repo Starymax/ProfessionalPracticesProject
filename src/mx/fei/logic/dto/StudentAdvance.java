@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Objects;
+
 public class StudentAdvance {
     private int advanceId;
     private float realizedHours;
@@ -43,5 +45,21 @@ public class StudentAdvance {
 
     public void setStudent(Student student) {
         this.student = student;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        StudentAdvance that = (StudentAdvance) o;
+        return advanceId == that.advanceId
+                && Float.compare(realizedHours, that.realizedHours) == 0
+                && Objects.equals(weeklyLog, that.weeklyLog)
+                && Objects.equals(student, that.student);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(advanceId, realizedHours, weeklyLog, student);
     }
 }

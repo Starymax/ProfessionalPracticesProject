@@ -140,7 +140,7 @@ public class PracticeDAOTest {
     }
 
     @Test
-    void getPracticeByEnrollment_PracticeExists_ReturnsPracticeWithExpectedId() throws SQLException {
+    void getPracticeByEnrollment_PracticeExists_ReturnsExpectedPractice() throws SQLException {
         String enrollment = "S21011001";
         String nrc = "88421";
         int practiceId = 10;

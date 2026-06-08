@@ -91,13 +91,14 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentByEnrollment_StudentExistsWithoutProject_ReturnsStudentWithExpectedEnrollment() throws SQLException, DataOperationException {
+    void getStudentByEnrollment_StudentExistsWithoutProject_ReturnsExpectedStudent() throws SQLException, DataOperationException {
         String enrollment = "S21011011";
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubStudentRow(resultSet, 50, enrollment, "Juan", 0, true);
-        Student student = studentDAO.getStudentByEnrollment(enrollment);
-        assertEquals(enrollment, student.getEnrollment());
+        Student expectedStudent = new Student(50, "Juan", "Apellido", enrollment + "@test.com", "pass", "M", true, enrollment, false, null, 8.0f);
+        Student result = studentDAO.getStudentByEnrollment(enrollment);
+        assertEquals(expectedStudent, result);
     }
 
     @Test
@@ -134,13 +135,15 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentById_StudentExistsWithoutProject_ReturnsStudentWithExpectedId() throws SQLException {
+    void getStudentById_StudentExistsWithoutProject_ReturnsExpectedStudent() throws SQLException {
         int idTest = 10;
+        String enrollment = "S21011000";
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
-        stubStudentRow(resultSet, idTest, "S21011000", "Maria", 0, true);
+        stubStudentRow(resultSet, idTest, enrollment, "Maria", 0, true);
+        Student expectedStudent = new Student(idTest, "Maria", "Apellido", enrollment + "@test.com", "pass", "M", true, enrollment, false, null, 8.0f);
         Student result = studentDAO.getStudentById(idTest);
-        assertEquals(idTest, result.getUserId());
+        assertEquals(expectedStudent, result);
     }
 
     @Test
@@ -248,8 +251,10 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(0, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(8.0f, 9.0f);
+        Student expectedStudent1 = new Student(1, "Juan", "Pérez", "juan@test.com", "pass", "M", true, "S21011001", false, null, 8.0f);
+        Student expectedStudent2 = new Student(2, "Maria", "García", "maria@test.com", "pass", "F", true, "S21011002", false, null, 9.0f);
         List<Student> result = studentDAO.getStudents();
-        assertEquals(2, result.size());
+        assertEquals(List.of(expectedStudent1, expectedStudent2), result);
     }
 
     @Test
@@ -267,10 +272,11 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(5, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(8.0f, 9.0f);
+        Student expectedStudent2 = new Student(2, "Maria", "García", "maria@test.com", "pass", "F", true, "S21011002", false, null, 9.0f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(5)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getStudents();
-            assertEquals(1, result.size());
+            assertEquals(List.of(expectedStudent2), result);
         }
     }
 
@@ -303,8 +309,10 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(0, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(7.0f, 8.5f);
+        Student expectedStudent1 = new Student(3, "Carlos", "Lopez", "c@test.com", "pass", "M", true, "S21011003", false, null, 7.0f);
+        Student expectedStudent2 = new Student(4, "Laura", "Torres", "l@test.com", "pass", "F", true, "S21011004", false, null, 8.5f);
         List<Student> result = studentDAO.getStudentsWithoutProject();
-        assertEquals(2, result.size());
+        assertEquals(List.of(expectedStudent1, expectedStudent2), result);
     }
 
     @Test
@@ -322,10 +330,11 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(3, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(7.0f, 8.5f);
+        Student expectedStudent2 = new Student(4, "Laura", "Torres", "l@test.com", "pass", "F", true, "S21011004", false, null, 8.5f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(3)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getStudentsWithoutProject();
-            assertEquals(1, result.size());
+            assertEquals(List.of(expectedStudent2), result);
         }
     }
 
@@ -358,8 +367,10 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(0, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(9.0f, 7.5f);
+        Student expectedStudent1 = new Student(5, "Pedro", "Rios", "p@test.com", "pass", "M", true, "S21011005", false, null, 9.0f);
+        Student expectedStudent2 = new Student(6, "Sofia", "Vega", "s@test.com", "pass", "F", true, "S21011006", false, null, 7.5f);
         List<Student> result = studentDAO.getActiveStudents();
-        assertEquals(2, result.size());
+        assertEquals(List.of(expectedStudent1, expectedStudent2), result);
     }
 
     @Test
@@ -377,10 +388,11 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(7, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(9.0f, 7.5f);
+        Student expectedStudent2 = new Student(6, "Sofia", "Vega", "s@test.com", "pass", "F", true, "S21011006", false, null, 7.5f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(7)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getActiveStudents();
-            assertEquals(1, result.size());
+            assertEquals(List.of(expectedStudent2), result);
         }
     }
 
@@ -426,7 +438,7 @@ public class StudentDAOTest {
                     when(mock.getProjectById(102)).thenReturn(project2);
                 })) {
             List<Project> result = studentDAO.getSelectedProjects(student);
-            assertEquals(2, result.size());
+            assertEquals(List.of(project1, project2), result);
         }
     }
 
@@ -540,8 +552,10 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(0, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(9.5f, 8.0f);
+        Student expectedStudent1 = new Student(10, "Rosa", "Mora", "r@test.com", "pass", "F", true, "S21011010", false, null, 9.5f);
+        Student expectedStudent2 = new Student(11, "Felix", "Diaz", "f@test.com", "pass", "M", true, "S21011011", false, null, 8.0f);
         List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
-        assertEquals(2, result.size());
+        assertEquals(List.of(expectedStudent1, expectedStudent2), result);
     }
 
     @Test
@@ -559,10 +573,11 @@ public class StudentDAOTest {
         when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
         when(resultSet.getInt("proyecto")).thenReturn(2, 0);
         when(resultSet.getFloat("calificacion")).thenReturn(9.5f, 8.0f);
+        Student expectedStudent2 = new Student(11, "Felix", "Diaz", "f@test.com", "pass", "M", true, "S21011011", false, null, 8.0f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(2)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
-            assertEquals(1, result.size());
+            assertEquals(List.of(expectedStudent2), result);
         }
     }
 

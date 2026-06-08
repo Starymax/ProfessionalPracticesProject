@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -106,8 +107,8 @@ public class ControllerUploadDocument {
     private void processDocuments(Map<DocumentType, Document> selectedDocuments, Practice currentPractice) {
         boolean allUploaded = true;
         StringBuilder errors = new StringBuilder();
-        for (Map.Entry<DocumentType, Document> entry : selectedDocuments.entrySet()) {
-            boolean succes = uploadSingleDocument(entry.getValue(), currentPractice, errors);
+        for (Document document : new ArrayList<>(selectedDocuments.values())) {
+            boolean succes = uploadSingleDocument(document, currentPractice, errors);
             if (!succes) {
                 allUploaded = false;
             }

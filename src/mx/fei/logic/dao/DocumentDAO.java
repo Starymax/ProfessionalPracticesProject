@@ -5,6 +5,9 @@ import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentType;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.RegistrationStatus;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.StudentValidationSummary;
+import mx.fei.logic.dto.ValidationStatus;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAODocument;
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -174,7 +178,7 @@ public class DocumentDAO implements IDAODocument {
             throw new IllegalArgumentException("La practica no puede ser nula");
         }
         List<Document> reports = new ArrayList<>();
-        String query = "SELECT id_documento, nombre, ruta, tipoDocumento, aceptado FROM documentos WHERE id_practica = ? AND tipoDocumento IN ('PARTIAL_REPORT', 'MONTHLY_REPORT', 'FINAL_REPORT')";
+        String query = "SELECT id_documento, nombre, ruta, tipoDocumento, estado_validacion FROM documentos WHERE id_practica = ? AND tipoDocumento IN ('PARTIAL_REPORT', 'MONTHLY_REPORT', 'FINAL_REPORT')";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, practice.getId());
@@ -184,11 +188,12 @@ public class DocumentDAO implements IDAODocument {
                     String name = resultSet.getString("nombre");
                     String path = resultSet.getString("ruta");
                     String type = resultSet.getString("tipoDocumento");
-                    boolean accepted = resultSet.getBoolean("aceptado");
+                    ValidationStatus validationStatus = ValidationStatus.fromValidationValue(resultSet.getString("estado_validacion"));
                     DocumentType documentType = DocumentType.valueOf(type);
                     Document document = new Document(name, path, documentType, practice);
                     document.setId(idDocument);
-                    document.setAccepted(accepted);
+                    document.setValidationStatus(validationStatus);
+                    document.setAccepted(validationStatus == ValidationStatus.VALIDATED);
                     reports.add(document);
                 }
             }
@@ -201,7 +206,7 @@ public class DocumentDAO implements IDAODocument {
 
     public boolean acceptReport(int documentId) throws DataOperationException {
         boolean accepted = false;
-        String query = "UPDATE documentos SET aceptado = TRUE WHERE id_documento = ?";
+        String query = "UPDATE documentos SET estado_validacion = 'VALIDADO' WHERE id_documento = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, documentId);
@@ -211,6 +216,123 @@ public class DocumentDAO implements IDAODocument {
             throw new DataOperationException("Error al aceptar el reporte");
         }
         return accepted;
+    }
+
+    public List<StudentValidationSummary> getStudentsWithUploadedDocuments() throws DataOperationException {
+        List<int[]> rawSummaries = new ArrayList<>();
+        String query = "SELECT a.id_usuario AS id_alumno, " +
+                "COUNT(d.id_documento) AS total_documentos, " +
+                "SUM(CASE WHEN d.estado_validacion = 'PENDIENTE' THEN 1 ELSE 0 END) AS documentos_pendientes " +
+                "FROM alumno a " +
+                "INNER JOIN practicas p ON p.id_alumno = a.id_usuario " +
+                "INNER JOIN documentos d ON d.id_practica = p.id_practica " +
+                "WHERE a.proyecto_asignado IS NOT NULL " +
+                "GROUP BY a.id_usuario";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int studentId = resultSet.getInt("id_alumno");
+                int totalDocuments = resultSet.getInt("total_documentos");
+                int pendingDocuments = resultSet.getInt("documentos_pendientes");
+                rawSummaries.add(new int[]{studentId, pendingDocuments, totalDocuments});
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener los alumnos con documentos subidos", e);
+            throw new DataOperationException("Error al obtener los alumnos con documentos subidos");
+        }
+        List<StudentValidationSummary> summaries = new ArrayList<>();
+        StudentDAO studentDAO = new StudentDAO();
+        for (int[] rawSummary : rawSummaries) {
+            int studentId = rawSummary[0];
+            try {
+                Student student = studentDAO.getStudentById(studentId);
+                summaries.add(new StudentValidationSummary(student, rawSummary[1], rawSummary[2]));
+            } catch (NoSuchElementException e) {
+                logger.log(Level.WARNING, "No se encontró el alumno con id: " + studentId);
+            }
+        }
+        return summaries;
+    }
+
+    public List<Document> getDocumentsForValidation(Practice practice) throws DataOperationException {
+        if (practice == null) {
+            logger.log(Level.WARNING, "La practica es nula");
+            throw new IllegalArgumentException("La practica no puede ser nula");
+        }
+        List<Document> documents = new ArrayList<>();
+        String query = "SELECT id_documento, nombre, ruta, tipoDocumento, estado_validacion FROM documentos WHERE id_practica = ?";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    int idDocument = resultSet.getInt("id_documento");
+                    String name = resultSet.getString("nombre");
+                    String path = resultSet.getString("ruta");
+                    String type = resultSet.getString("tipoDocumento");
+                    DocumentType documentType = DocumentType.valueOf(type);
+                    Document document = new Document(name, path, documentType, practice);
+                    document.setId(idDocument);
+                    document.setValidationStatus(ValidationStatus.fromValidationValue(resultSet.getString("estado_validacion")));
+                    documents.add(document);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al obtener los documentos para validar", e);
+            throw new DataOperationException("Error al obtener los documentos para validar");
+        }
+        return documents;
+    }
+
+    public boolean validateDocument(int documentId) throws DataOperationException {
+        return updateValidationStatus(documentId, ValidationStatus.VALIDATED);
+    }
+
+    public boolean deleteDocument(Document document) throws DataOperationException {
+        if (document == null) {
+            logger.log(Level.WARNING, "El documento es nulo");
+            throw new IllegalArgumentException("El documento no puede ser nulo");
+        }
+        boolean deleted = false;
+        String query = "DELETE FROM documentos WHERE id_documento = ?";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, document.getId());
+            deleted = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al eliminar el documento", e);
+            throw new DataOperationException("Error al eliminar el documento");
+        }
+        if (deleted) {
+            deletePhysicalFile(document.getDirectory());
+        }
+        return deleted;
+    }
+
+    private void deletePhysicalFile(String path) {
+        if (path != null && !path.isBlank()) {
+            try {
+                Files.deleteIfExists(Paths.get(path));
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "No se pudo eliminar el archivo físico del documento: " + path, e);
+            }
+        }
+    }
+
+    private boolean updateValidationStatus(int documentId, ValidationStatus status) throws DataOperationException {
+        boolean updated = false;
+        String query = "UPDATE documentos SET estado_validacion = ? WHERE id_documento = ?";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, status.getValidationValue());
+            preparedStatement.setInt(2, documentId);
+            updated = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al actualizar el estado de validación del documento", e);
+            throw new DataOperationException("Error al actualizar el estado de validación del documento");
+        }
+        return updated;
     }
 
 }

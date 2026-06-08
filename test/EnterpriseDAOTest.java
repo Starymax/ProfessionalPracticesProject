@@ -55,7 +55,7 @@ public class EnterpriseDAOTest {
     }
 
     @Test
-    void getEnterpriseById_EnterpriseExists_ReturnsEnterpriseWithExpectedName() throws SQLException {
+    void getEnterpriseById_EnterpriseExists_ReturnsExpectedEnterprise() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("id_empresa")).thenReturn(1);
@@ -143,8 +143,10 @@ public class EnterpriseDAOTest {
         when(resultSet.getLong("usuarios_indirectos")).thenReturn(3L, 4L);
         when(resultSet.getBoolean("estado_activo")).thenReturn(true, true);
         when(resultSet.getString("pais")).thenReturn("México", "México");
+        Enterprise expectedEnterprise1 = new Enterprise(1, "Empresa A", "Tech", "111", "a@test.com", "Xalapa", 1L, 3L, true, "México");
+        Enterprise expectedEnterprise2 = new Enterprise(2, "Empresa B", "Salud", "222", "b@test.com", "Veracruz", 2L, 4L, true, "México");
         List<Enterprise> result = enterpriseDAO.getEnterprises();
-        assertEquals(2, result.size());
+        assertEquals(List.of(expectedEnterprise1, expectedEnterprise2), result);
     }
 
     @Test

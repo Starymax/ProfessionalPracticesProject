@@ -174,7 +174,7 @@ public class EducationalExperienceDAOTest {
     }
 
     @Test
-    void getEducationalExperienceByNrc_ExperienceExistsWithoutProfessor_ReturnsExperienceWithExpectedNrc() throws SQLException {
+    void getEducationalExperienceByNrc_ExperienceExistsWithoutProfessor_ReturnsExpectedExperience() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
@@ -234,7 +234,7 @@ public class EducationalExperienceDAOTest {
         doReturn(experience1).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc1);
         doReturn(experience2).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc2);
         List<EducationalExperience> result = spyEducationalExperienceDAO.getEducationalExperiences();
-        assertEquals(2, result.size());
+        assertEquals(List.of(experience1, experience2), result);
     }
 
     @Test
@@ -266,7 +266,7 @@ public class EducationalExperienceDAOTest {
         doReturn(experience1).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc1);
         doReturn(experience2).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc2);
         List<EducationalExperience> result = spyEducationalExperienceDAO.getEducationalExperiencesByProfessor(50);
-        assertEquals(2, result.size());
+        assertEquals(List.of(experience1, experience2), result);
     }
 
     @Test
