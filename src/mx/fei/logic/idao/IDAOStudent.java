@@ -13,7 +13,7 @@ import java.util.List;
 public interface IDAOStudent {
     Student getStudentById(Integer studentId) throws DataOperationException;
 
-    Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException, DataOperationException;
+    Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException;
 
     Student getStudentByEnrollment(String enrollment) throws DataOperationException;
 

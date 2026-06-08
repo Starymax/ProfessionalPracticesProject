@@ -22,7 +22,7 @@ public class StudentDAO implements IDAOStudent {
     private static final Logger logger = Logger.getLogger(StudentDAO.class.getName());
 
     @Override
-    public Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException, DataOperationException {
+    public Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException {
         int idUser = resultSet.getInt("id_usuario");
         String name = resultSet.getString("nombre");
         String lastName = resultSet.getString("apellidos");
@@ -34,12 +34,20 @@ public class StudentDAO implements IDAOStudent {
         boolean indigenousLanguage = resultSet.getBoolean("lengua_indigena");
         int studentProjectId = resultSet.getInt("proyecto");
         float grade = resultSet.getFloat("calificacion");
-        Project project = null;
-        if (studentProjectId > 0) {
-            ProjectDAO projectDAO = new ProjectDAO();
-            project = projectDAO.getProjectById(studentProjectId);
+        return new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, null, grade, studentProjectId);
+    }
+
+    private void resolveProjects(List<Student> students) throws DataOperationException {
+        ProjectDAO projectDAO = new ProjectDAO();
+        for (Student student : students) {
+            if (student.getPendingProjectId() > 0) {
+                try {
+                    student.setAssignedProject(projectDAO.getProjectById(student.getPendingProjectId()));
+                } catch (NoSuchElementException e) {
+                    logger.log(Level.WARNING, "No se encontró el proyecto para el alumno " + student.getUserId());
+                }
+            }
         }
-        return new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, project, grade);
     }
 
     @Override
@@ -65,6 +73,9 @@ public class StudentDAO implements IDAOStudent {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al buscar el estudiante por matrícula", e);
             throw new DataOperationException("Error al obtener los datos del estudiante");
+        }
+        if (student != null) {
+            resolveProjects(List.of(student));
         }
         return student;
     }
@@ -92,6 +103,9 @@ public class StudentDAO implements IDAOStudent {
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al buscar el estudiante por ID", e);
             throw new DataOperationException("Error al obtener los datos del estudiante");
+        }
+        if (student != null) {
+            resolveProjects(List.of(student));
         }
         return student;
     }
@@ -162,16 +176,13 @@ public class StudentDAO implements IDAOStudent {
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                try {
-                    students.add(buildStudentFromResultSet(resultSet));
-                } catch (DataOperationException e) {
-                    logger.log(Level.WARNING, "Error al cargar un alumno desde la vista", e);
-                }
+                students.add(buildStudentFromResultSet(resultSet));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener todos los estudiantes", e);
             throw new DataOperationException("Error al obtener los estudiantes");
         }
+        resolveProjects(students);
         return students;
     }
 
@@ -188,16 +199,13 @@ public class StudentDAO implements IDAOStudent {
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                try {
-                    students.add(buildStudentFromResultSet(resultSet));
-                } catch (DataOperationException e) {
-                    logger.log(Level.WARNING, "Error al cargar un alumno sin proyecto", e);
-                }
+                students.add(buildStudentFromResultSet(resultSet));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener todos los estudiantes sin proyecto asignado", e);
             throw new DataOperationException("Error al obtener los estudiantes sin proyecto");
         }
+        resolveProjects(students);
         return students;
     }
 
@@ -209,16 +217,13 @@ public class StudentDAO implements IDAOStudent {
              PreparedStatement preparedStatement = connection.prepareStatement(query);
              ResultSet resultSet = preparedStatement.executeQuery()) {
             while (resultSet.next()) {
-                try {
-                    students.add(buildStudentFromResultSet(resultSet));
-                } catch (DataOperationException e) {
-                    logger.log(Level.WARNING, "Error al cargar un alumno activo", e);
-                }
+                students.add(buildStudentFromResultSet(resultSet));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener todos los estudiantes activos", e);
             throw new DataOperationException("Error al obtener los estudiantes activos");
         }
+        resolveProjects(students);
         return students;
     }
 
@@ -234,17 +239,14 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(1, nrc);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    try {
-                        students.add(buildStudentFromResultSet(resultSet));
-                    } catch (DataOperationException e) {
-                        logger.log(Level.WARNING, "Error al cargar un alumno de la experiencia educativa", e);
-                    }
+                    students.add(buildStudentFromResultSet(resultSet));
                 }
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los estudiantes de la experiencia educativa", e);
             throw new DataOperationException("Error al obtener los estudiantes de la experiencia educativa");
         }
+        resolveProjects(students);
         return students;
     }
 

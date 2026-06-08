@@ -2,20 +2,22 @@ package mx.fei.gui.views;
 
 import mx.fei.gui.controllers.ControllerRegisterAdvance;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.WeeklyLog;
 
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -23,35 +25,32 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class GUIRegisterAdvance {
+
+    private static final String COMPLETED_COLOR = "#f4a9a8";
 
     private final Student student;
     private Stage stage;
 
-    private VBox currentWeekSection;
-    private Label labelCurrentWeek;
-    private int currentWeek;
-    private ComboBox<String> comboBoxActivities;
-    private Label labelPlanned;
-    private Label labelCurrent;
-    private TextField textFieldRealized;
+    private ListView<Activity> listViewActivities;
+    private Set<Integer> completedActivityIds = new HashSet<>();
+
+    private Label labelMes;
+    private Label labelSemana;
+    private Label labelPlannedHours;
+    private Label labelRealizedHours;
+    private Label labelRemainingHours;
+    private TextField textFieldNewHours;
     private Button buttonSave;
 
-    private ComboBox<String> comboBoxPastWeeks;
-    private ComboBox<String> comboBoxPastActivities;
-    private Label labelPastPlanned;
-    private Label labelPastCurrent;
-    private Label labelPastMissing;
-    private TextField textFieldPastRealized;
-
     private final Map<Integer, List<WeeklyLog>> weeklyLogsByWeek = new HashMap<>();
-    private final Map<String, WeeklyLog> logByActivityName = new HashMap<>();
-    private final Map<String, WeeklyLog> pastLogByActivityName = new HashMap<>();
-    private final Map<Integer, String> pendingHoursByLogId = new HashMap<>();
-    private WeeklyLog previouslySelectedLog;
+    private final Map<Integer, String> pendingHoursByActivityId = new HashMap<>();
+    private Activity previouslySelectedActivity;
 
     private ControllerRegisterAdvance controllerRegisterAdvance;
 
@@ -66,101 +65,13 @@ public class GUIRegisterAdvance {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(24));
 
-        Label title = new Label("Avance de actividades:");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 22));
+        HBox content = new HBox(32, buildLeftPanel(), buildRightPanel());
+        content.setPadding(new Insets(8));
+        HBox.setHgrow(content, Priority.ALWAYS);
 
-        Label labelWeek = new Label("Semana:");
-        labelCurrentWeek = new Label();
-        labelCurrentWeek.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        HBox rowWeeks = new HBox(10, labelWeek, labelCurrentWeek);
-        rowWeeks.setAlignment(Pos.CENTER_LEFT);
+        root.setCenter(content);
 
-        Label labelActivity = new Label("Actividad:");
-        comboBoxActivities = new ComboBox<>();
-        comboBoxActivities.setPrefWidth(220);
-        comboBoxActivities.setOnAction(event -> controllerRegisterAdvance.handleActivitySelection());
-        HBox rowActivities = new HBox(10, labelActivity, comboBoxActivities);
-        rowActivities.setAlignment(Pos.CENTER_LEFT);
-
-        labelPlanned = new Label("Horas planeadas: 0");
-        labelPlanned.setFont(Font.font(14));
-        labelCurrent = new Label("Horas realizadas: 0");
-        labelCurrent.setFont(Font.font(14));
-        Label labelNew = new Label("Horas nuevas:");
-        textFieldRealized = new TextField();
-        textFieldRealized.setPrefWidth(80);
-        textFieldRealized.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !newValue.matches("\\d*")) {
-                textFieldRealized.setText(newValue.replaceAll("\\D", ""));
-            }
-        });
-        HBox rowInfo = new HBox(12, labelPlanned, labelCurrent, labelNew, textFieldRealized);
-        rowInfo.setAlignment(Pos.CENTER_LEFT);
-
-        buttonSave = new Button("Guardar");
-        buttonSave.setPrefWidth(120);
-        buttonSave.setOnAction(controllerRegisterAdvance::handleSaveButton);
-
-        currentWeekSection = new VBox(10, rowWeeks, rowActivities, rowInfo, buttonSave);
-
-        Separator separator = new Separator();
-
-        Label titlePending = new Label("Semanas con horas pendientes:");
-        titlePending.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
-
-        Label labelPastWeek = new Label("Semana:");
-        comboBoxPastWeeks = new ComboBox<>();
-        comboBoxPastWeeks.setPrefWidth(160);
-        comboBoxPastWeeks.setOnAction(event -> controllerRegisterAdvance.handlePastWeekSelection());
-        HBox rowPastWeeks = new HBox(10, labelPastWeek, comboBoxPastWeeks);
-        rowPastWeeks.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelPastActivity = new Label("Actividad:");
-        comboBoxPastActivities = new ComboBox<>();
-        comboBoxPastActivities.setPrefWidth(220);
-        comboBoxPastActivities.setOnAction(event -> controllerRegisterAdvance.handlePastActivitySelection());
-        HBox rowPastActivities = new HBox(10, labelPastActivity, comboBoxPastActivities);
-        rowPastActivities.setAlignment(Pos.CENTER_LEFT);
-
-        labelPastPlanned = new Label("Horas planeadas: 0");
-        labelPastPlanned.setFont(Font.font(14));
-        labelPastCurrent = new Label("Horas realizadas: 0");
-        labelPastCurrent.setFont(Font.font(14));
-        labelPastMissing = new Label("Horas faltantes: 0");
-        labelPastMissing.setFont(Font.font(14));
-        labelPastMissing.setStyle("-fx-text-fill: #b71c1c;");
-        HBox rowPastInfo = new HBox(12, labelPastPlanned, labelPastCurrent, labelPastMissing);
-        rowPastInfo.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelPastNew = new Label("Horas nuevas:");
-        textFieldPastRealized = new TextField();
-        textFieldPastRealized.setPrefWidth(80);
-        textFieldPastRealized.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null && !newValue.matches("\\d*")) {
-                textFieldPastRealized.setText(newValue.replaceAll("\\D", ""));
-            }
-        });
-        HBox rowPastNew = new HBox(10, labelPastNew, textFieldPastRealized);
-        rowPastNew.setAlignment(Pos.CENTER_LEFT);
-
-        Button buttonSavePast = new Button("Guardar");
-        buttonSavePast.setPrefWidth(120);
-        buttonSavePast.setOnAction(controllerRegisterAdvance::handleSavePastButton);
-
-        Button buttonBack = new Button("Regresar");
-        buttonBack.setPrefWidth(120);
-        buttonBack.setOnAction(controllerRegisterAdvance::handleBackButton);
-
-        HBox buttons = new HBox(12, buttonBack);
-        buttons.setAlignment(Pos.CENTER_RIGHT);
-
-        VBox pendingSection = new VBox(10, titlePending, rowPastWeeks, rowPastActivities, rowPastInfo, rowPastNew, buttonSavePast);
-
-        VBox center = new VBox(14, title, currentWeekSection, separator, pendingSection, buttons);
-        center.setPadding(new Insets(12));
-        root.setCenter(center);
-
-        Scene scene = new Scene(root, 720, 580);
+        Scene scene = new Scene(root, 820, 560);
         stage.setTitle("Registro de Avances");
         stage.setResizable(false);
         stage.setScene(scene);
@@ -169,159 +80,209 @@ public class GUIRegisterAdvance {
         controllerRegisterAdvance.loadWeeks();
     }
 
+    private VBox buildLeftPanel() {
+        Label title = new Label("Plan de Actividades");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 18));
+
+        listViewActivities = new ListView<>();
+        listViewActivities.setPrefWidth(380);
+        listViewActivities.setPrefHeight(420);
+        listViewActivities.setCellFactory(lv -> new ListCell<Activity>() {
+            @Override
+            protected void updateItem(Activity item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item.getName());
+                    setFont(Font.font(14));
+                    setPadding(new Insets(8, 12, 8, 12));
+                    if (completedActivityIds.contains(item.getActivityId())) {
+                        setStyle("-fx-background-color: " + COMPLETED_COLOR + ";");
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
+        listViewActivities.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            savePendingHoursForPreviousActivity();
+            controllerRegisterAdvance.handleActivitySelection(newVal);
+        });
+
+        VBox left = new VBox(12, title, listViewActivities);
+        left.setAlignment(Pos.TOP_LEFT);
+        return left;
+    }
+
+    private VBox buildRightPanel() {
+        Label labelMesTitle = new Label("Mes: ");
+        labelMesTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelMes = new Label("-");
+        labelMes.setFont(Font.font(14));
+        HBox rowMes = new HBox(4, labelMesTitle, labelMes);
+        rowMes.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelSemanaTitle = new Label("Semana: ");
+        labelSemanaTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelSemana = new Label("-");
+        labelSemana.setFont(Font.font(14));
+        HBox rowSemana = new HBox(4, labelSemanaTitle, labelSemana);
+        rowSemana.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelPlannedTitle = new Label("Horas planeadas: ");
+        labelPlannedTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelPlannedHours = new Label("-");
+        labelPlannedHours.setFont(Font.font(14));
+        HBox rowPlanned = new HBox(4, labelPlannedTitle, labelPlannedHours);
+        rowPlanned.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelRealizedTitle = new Label("Horas realizadas: ");
+        labelRealizedTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelRealizedHours = new Label("-");
+        labelRealizedHours.setFont(Font.font(14));
+        HBox rowRealized = new HBox(4, labelRealizedTitle, labelRealizedHours);
+        rowRealized.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelRemainingTitle = new Label("Horas restantes: ");
+        labelRemainingTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelRemainingHours = new Label("-");
+        labelRemainingHours.setFont(Font.font(14));
+        HBox rowRemaining = new HBox(4, labelRemainingTitle, labelRemainingHours);
+        rowRemaining.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelNewHours = new Label("Horas nuevas: ");
+        labelNewHours.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        textFieldNewHours = new TextField();
+        textFieldNewHours.setPrefWidth(100);
+        textFieldNewHours.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.matches("\\d*")) {
+                textFieldNewHours.setText(newVal.replaceAll("\\D", ""));
+            }
+        });
+        HBox rowNewHours = new HBox(4, labelNewHours, textFieldNewHours);
+        rowNewHours.setAlignment(Pos.CENTER_LEFT);
+
+        buttonSave = new Button("Guardar");
+        buttonSave.setPrefWidth(180);
+        buttonSave.setPrefHeight(44);
+        buttonSave.setFont(Font.font(15));
+        buttonSave.setStyle("-fx-background-color: #222; -fx-text-fill: white; -fx-background-radius: 10;");
+        buttonSave.setOnAction(event -> controllerRegisterAdvance.handleSaveButton());
+
+        Button buttonCancel = new Button("Cancelar");
+        buttonCancel.setPrefWidth(180);
+        buttonCancel.setPrefHeight(44);
+        buttonCancel.setFont(Font.font(15));
+        buttonCancel.setStyle("-fx-background-color: #222; -fx-text-fill: white; -fx-background-radius: 10;");
+        buttonCancel.setOnAction(event -> controllerRegisterAdvance.handleCancelButton());
+
+        VBox right = new VBox(16,
+                rowMes, rowSemana,
+                new Separator(),
+                rowPlanned, rowRealized, rowRemaining,
+                new Separator(),
+                rowNewHours,
+                buttonSave, buttonCancel);
+        right.setAlignment(Pos.TOP_LEFT);
+        right.setPadding(new Insets(48, 12, 12, 12));
+        right.setPrefWidth(340);
+        return right;
+    }
+
     public void addWeeklyLog(int week, WeeklyLog weeklyLog) {
-        weeklyLogsByWeek.computeIfAbsent(week, key -> new ArrayList<>()).add(weeklyLog);
+        weeklyLogsByWeek.computeIfAbsent(week, k -> new ArrayList<>()).add(weeklyLog);
     }
 
     public void clearWeeklyLogs() {
         weeklyLogsByWeek.clear();
     }
 
-    public void disableCurrentWeekSection() {
-        labelCurrentWeek.setText("Proyecto finalizado");
-        comboBoxActivities.setDisable(true);
-        textFieldRealized.setDisable(true);
-        buttonSave.setDisable(true);
-    }
-
-    public void setCurrentWeek(int week) {
-        this.currentWeek = week;
-        labelCurrentWeek.setText("Semana " + week);
-    }
-
     public List<WeeklyLog> getWeeklyLogsForWeek(int week) {
         return weeklyLogsByWeek.getOrDefault(week, new ArrayList<>());
     }
 
-    public void setActivityOptions(List<WeeklyLog> weeklyLogs) {
-        logByActivityName.clear();
-        pendingHoursByLogId.clear();
-        previouslySelectedLog = null;
-        List<String> activityNames = new ArrayList<>();
-        for (WeeklyLog weeklyLog : weeklyLogs) {
-            String activityName = weeklyLog.getActivity().getName();
-            activityNames.add(activityName);
-            logByActivityName.put(activityName, weeklyLog);
+    public void setAllActivities(List<Activity> activities, Set<Integer> completedIds) {
+        this.completedActivityIds = completedIds != null ? completedIds : new HashSet<>();
+        pendingHoursByActivityId.clear();
+        previouslySelectedActivity = null;
+        listViewActivities.getItems().setAll(activities);
+        if (!activities.isEmpty()) {
+            listViewActivities.getSelectionModel().selectFirst();
         }
-        comboBoxActivities.setItems(FXCollections.observableArrayList(activityNames));
-        if (!activityNames.isEmpty()) {
-            comboBoxActivities.getSelectionModel().selectFirst();
-            controllerRegisterAdvance.handleActivitySelection();
-        }
+        listViewActivities.refresh();
     }
 
-    public WeeklyLog getSelectedWeeklyLog() {
-        String selectedActivity = comboBoxActivities.getSelectionModel().getSelectedItem();
-        return (selectedActivity != null && !selectedActivity.isEmpty()) ? logByActivityName.get(selectedActivity) : null;
+    public Activity getSelectedActivity() {
+        return listViewActivities.getSelectionModel().getSelectedItem();
+    }
+
+    public List<Activity> getAllActivities() {
+        return listViewActivities.getItems();
+    }
+
+    public void setCompletedActivityIds(Set<Integer> ids) {
+        this.completedActivityIds = ids != null ? ids : new HashSet<>();
+        listViewActivities.refresh();
+    }
+
+    public void setActivityInfo(int firstWeek, int totalPlanned, int totalRealized) {
+        int month = (firstWeek - 1) / 4 + 1;
+        labelMes.setText(String.valueOf(month));
+        labelSemana.setText("Semana " + firstWeek);
+        labelPlannedHours.setText(String.valueOf(totalPlanned));
+        labelRealizedHours.setText(String.valueOf(totalRealized));
+        labelRemainingHours.setText(String.valueOf(Math.max(totalPlanned - totalRealized, 0)));
+    }
+
+    public void clearActivityInfo() {
+        labelMes.setText("-");
+        labelSemana.setText("-");
+        labelPlannedHours.setText("-");
+        labelRealizedHours.setText("-");
+        labelRemainingHours.setText("-");
+        textFieldNewHours.setText("");
+    }
+
+    public void disableCurrentWeekSection() {
+        buttonSave.setDisable(true);
+        textFieldNewHours.setDisable(true);
     }
 
     public void savePendingHoursForPreviousActivity() {
-        if (previouslySelectedLog != null) {
-            String currentText = textFieldRealized.getText().trim();
-            if (!currentText.isEmpty()) {
-                pendingHoursByLogId.put(previouslySelectedLog.getWeeklyLogId(), currentText);
+        if (previouslySelectedActivity != null) {
+            String text = textFieldNewHours.getText().trim();
+            if (!text.isEmpty()) {
+                pendingHoursByActivityId.put(previouslySelectedActivity.getActivityId(), text);
             } else {
-                pendingHoursByLogId.remove(previouslySelectedLog.getWeeklyLogId());
+                pendingHoursByActivityId.remove(previouslySelectedActivity.getActivityId());
             }
         }
     }
 
-    public void restorePendingHoursForCurrentActivity() {
-        WeeklyLog selected = getSelectedWeeklyLog();
-        previouslySelectedLog = selected;
+    public void restorePendingHoursForCurrentActivity(Activity selected) {
+        previouslySelectedActivity = selected;
         if (selected != null) {
-            String pending = pendingHoursByLogId.getOrDefault(selected.getWeeklyLogId(), "");
-            textFieldRealized.setText(pending);
+            textFieldNewHours.setText(pendingHoursByActivityId.getOrDefault(selected.getActivityId(), ""));
         } else {
-            textFieldRealized.setText("");
+            textFieldNewHours.setText("");
         }
     }
 
-    public Map<Integer, String> getPendingHoursByLogId() {
+    public Map<Integer, String> getPendingHoursByActivityId() {
         savePendingHoursForPreviousActivity();
-        return pendingHoursByLogId;
-    }
-
-    public Map<String, WeeklyLog> getLogByActivityName() {
-        return logByActivityName;
+        return pendingHoursByActivityId;
     }
 
     public void clearPendingHours() {
-        pendingHoursByLogId.clear();
-        previouslySelectedLog = null;
-        textFieldRealized.setText("");
+        pendingHoursByActivityId.clear();
+        previouslySelectedActivity = null;
+        textFieldNewHours.setText("");
     }
 
-    public TextField getTextFieldRealized() {
-        return textFieldRealized;
-    }
-
-    public void setPlannedHours(int hours) {
-        labelPlanned.setText("Horas planeadas: " + hours);
-    }
-
-    public void setCurrentRealized(int hours) {
-        labelCurrent.setText("Horas realizadas: " + hours);
-    }
-
-    public void resetRealizedField() {
-        textFieldRealized.setText("");
-    }
-
-    public void setPastWeekOptions(List<String> weekOptions) {
-        comboBoxPastWeeks.setItems(FXCollections.observableArrayList(weekOptions));
-        if (!weekOptions.isEmpty()) {
-            comboBoxPastWeeks.getSelectionModel().selectFirst();
-            controllerRegisterAdvance.handlePastWeekSelection();
-        }
-    }
-
-    public String getSelectedPastWeek() {
-        return comboBoxPastWeeks.getSelectionModel().getSelectedItem();
-    }
-
-    public void setPastActivityOptions(List<WeeklyLog> weeklyLogs) {
-        pastLogByActivityName.clear();
-        List<String> activityNames = new ArrayList<>();
-        for (WeeklyLog weeklyLog : weeklyLogs) {
-            String activityName = weeklyLog.getActivity().getName();
-            activityNames.add(activityName);
-            pastLogByActivityName.put(activityName, weeklyLog);
-        }
-        comboBoxPastActivities.setItems(FXCollections.observableArrayList(activityNames));
-        if (!activityNames.isEmpty()) {
-            comboBoxPastActivities.getSelectionModel().selectFirst();
-            controllerRegisterAdvance.handlePastActivitySelection();
-        }
-    }
-
-    public WeeklyLog getSelectedPastWeeklyLog() {
-        String selectedActivity = comboBoxPastActivities.getSelectionModel().getSelectedItem();
-        return (selectedActivity != null && !selectedActivity.isEmpty()) ? pastLogByActivityName.get(selectedActivity) : null;
-    }
-
-    public TextField getTextFieldPastRealized() {
-        return textFieldPastRealized;
-    }
-
-    public void setPastPlannedHours(int hours) {
-        labelPastPlanned.setText("Horas planeadas: " + hours);
-    }
-
-    public void setPastCurrentRealized(int hours) {
-        labelPastCurrent.setText("Horas realizadas: " + hours);
-    }
-
-    public void setPastMissingHours(int hours) {
-        labelPastMissing.setText("Horas faltantes: " + hours);
-    }
-
-    public void resetPastRealizedField() {
-        textFieldPastRealized.setText("");
-    }
-
-    public Student getStudent() {
-        return student;
+    public String getNewHoursText() {
+        return textFieldNewHours.getText().trim();
     }
 
     public void showError(String message) {
@@ -334,5 +295,9 @@ public class GUIRegisterAdvance {
 
     public void closeWindow() {
         GUIUtils.closeWindow(stage);
+    }
+
+    public Student getStudent() {
+        return student;
     }
 }
