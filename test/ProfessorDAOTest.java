@@ -57,7 +57,7 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void getProfessorByPersonalNumber_ProfessorExists_ReturnsProfessorWithExpectedName() throws SQLException {
+    void getProfessorByPersonalNumber_ProfessorExists_ReturnsExpectedProfessor() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("id_usuario")).thenReturn(1);
@@ -194,8 +194,9 @@ public class ProfessorDAOTest {
         when(resultSet.getBoolean("es_coordinador")).thenReturn(false);
         when(resultSet.getBoolean("es_administrador")).thenReturn(false);
         when(resultSet.getString("turno")).thenReturn("Matutino");
+        Professor expectedProfessor = new Professor(1, "Luis", "Garcia", "luis@uv.mx", "pass", "M", true, 12345, false, false, "Matutino");
         List<Professor> result = professorDAO.getProfessors();
-        assertEquals(1, result.size());
+        assertEquals(List.of(expectedProfessor), result);
     }
 
     @Test

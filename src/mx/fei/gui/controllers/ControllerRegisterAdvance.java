@@ -151,50 +151,12 @@ public class ControllerRegisterAdvance {
             guiRegisterAdvance.showError("No hay horas nuevas ingresadas para ninguna actividad.");
         } else {
             List<Activity> allActivities = guiRegisterAdvance.getAllActivities();
-            List<String> errors = new ArrayList<>();
-            for (Activity activity : allActivities) {
-                String text = pendingHours.get(activity.getActivityId());
-                if (text == null || text.isEmpty()) continue;
-                GUIUtils.validateInt(text, "Horas nuevas (" + activity.getName() + ")", errors);
-                if (!errors.isEmpty()) break;
-                int entered = Integer.parseInt(text);
-                int remaining = getTotalRemainingHours(activity.getActivityId());
-                if (entered > remaining) {
-                    errors.add("Las horas para \"" + activity.getName() + "\" exceden las horas restantes (" + remaining + ").");
-                }
-            }
+            List<String> errors = validatePendingHours(pendingHours, allActivities);
             if (!errors.isEmpty()) {
                 GUIUtils.showErrors(errors);
             } else {
                 try {
-                    float totalHoursBeforeSave = calculateTotalRealizedHours();
-                    int lastSavedWeek = -1;
-                    for (Activity activity : allActivities) {
-                        String text = pendingHours.get(activity.getActivityId());
-                        if (text != null && !text.isEmpty()) {
-                            int hoursToDistribute = Integer.parseInt(text);
-                            List<WeeklyLog> weeklyLogs = logsByActivity.getOrDefault(activity.getActivityId(), new ArrayList<>());
-                            for (WeeklyLog weeklyLog : weeklyLogs) {
-                                if (hoursToDistribute <= 0) {
-                                    break;
-                                }
-                                int realized = (int) getExistingRealized(weeklyLog);
-                                int logRemaining = weeklyLog.getPlannedHours() - realized;
-                                if (logRemaining > 0) {
-                                    int toSave = Math.min(hoursToDistribute, logRemaining);
-                                    saveOrUpdateAdvance(weeklyLog, toSave, realized);
-                                    hoursToDistribute -= toSave;
-                                    lastSavedWeek = weeklyLog.getWeek();
-                                }
-                            }
-                        }
-                    }
-                    refreshAdvances();
-                    if (lastSavedWeek != -1) {
-                        checkAndNotifyMonthlyReport(lastSavedWeek);
-                    }
-                    checkAndNotifyPartialReport(totalHoursBeforeSave);
-                    checkAndNotifyFinalReport(totalHoursBeforeSave);
+                    savePendingHours(pendingHours, allActivities);
                     guiRegisterAdvance.showSuccess("Avances guardados correctamente.");
                     guiRegisterAdvance.closeWindow();
                 } catch (DataOperationException e) {
@@ -202,6 +164,69 @@ public class ControllerRegisterAdvance {
                 }
             }
         }
+    }
+
+    private List<String> validatePendingHours(Map<Integer, String> pendingHours, List<Activity> activities) {
+        List<String> errors = new ArrayList<>();
+        for (Activity activity : activities) {
+            String text = pendingHours.get(activity.getActivityId());
+            if (text != null && !text.isEmpty()) {
+                GUIUtils.validateInt(text, "Horas nuevas (" + activity.getName() + ")", errors);
+                if (!errors.isEmpty()) {
+                    break;
+                }
+                int entered = Integer.parseInt(text);
+                int remaining = getTotalRemainingHours(activity.getActivityId());
+                if (entered > remaining) {
+                    errors.add("Las horas para \"" + activity.getName() + "\" exceden las horas restantes (" + remaining + ").");
+                }
+            }
+        }
+        return errors;
+    }
+
+    private void savePendingHours(Map<Integer, String> pendingHours, List<Activity> activities) throws DataOperationException {
+        float totalHoursBeforeSave = calculateTotalRealizedHours();
+        int lastSavedWeek = distributeAndSaveHours(pendingHours, activities);
+        refreshAdvances();
+        if (lastSavedWeek != -1) {
+            checkAndNotifyMonthlyReport(lastSavedWeek);
+        }
+        checkAndNotifyPartialReport(totalHoursBeforeSave);
+        checkAndNotifyFinalReport(totalHoursBeforeSave);
+    }
+
+    private int distributeAndSaveHours(Map<Integer, String> pendingHours, List<Activity> activities) throws DataOperationException {
+        int lastSavedWeek = -1;
+        for (Activity activity : activities) {
+            String text = pendingHours.get(activity.getActivityId());
+            if (text != null && !text.isEmpty()) {
+                int lastWeek = distributeHoursForActivity(activity, Integer.parseInt(text));
+                if (lastWeek != -1) {
+                    lastSavedWeek = lastWeek;
+                }
+            }
+        }
+        return lastSavedWeek;
+    }
+
+    private int distributeHoursForActivity(Activity activity, int hoursToDistribute) throws DataOperationException {
+        int lastSavedWeek = -1;
+        List<WeeklyLog> weeklyLogs = logsByActivity.getOrDefault(activity.getActivityId(), new ArrayList<>());
+
+        for (WeeklyLog weeklyLog : weeklyLogs) {
+            if (hoursToDistribute <= 0) break;
+
+            int realized = (int) getExistingRealized(weeklyLog);
+            int logRemaining = weeklyLog.getPlannedHours() - realized;
+            if (logRemaining > 0) {
+                int toSave = Math.min(hoursToDistribute, logRemaining);
+                saveOrUpdateAdvance(weeklyLog, toSave, realized);
+                hoursToDistribute -= toSave;
+                lastSavedWeek = weeklyLog.getWeek();
+            }
+        }
+        return lastSavedWeek;
     }
 
     public void handleCancelButton() {

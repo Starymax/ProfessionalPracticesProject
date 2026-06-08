@@ -15,6 +15,8 @@ public interface IDAOStudent {
 
     Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException;
 
+    List<Student> resolveProjectsOfStudents(List<Student> students);
+
     Student getStudentByEnrollment(String enrollment) throws DataOperationException;
 
     boolean registerStudent(Student student) throws DataOperationException;

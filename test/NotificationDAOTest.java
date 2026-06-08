@@ -85,19 +85,21 @@ public class NotificationDAOTest {
 
     @Test
     void getNotificationsByStudentId_StudentHasOneNotification_ReturnsListWithOneNotification() throws SQLException {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_notificacion")).thenReturn(10);
         when(resultSet.getString("titulo")).thenReturn("Asignacion");
         when(resultSet.getString("mensaje")).thenReturn("Fue asignado");
-        when(resultSet.getTimestamp("fecha_emision")).thenReturn(new Timestamp(System.currentTimeMillis()));
+        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp);
         when(resultSet.getBoolean("leida")).thenReturn(false);
+        Notification expectedNotification = new Notification(10, "Asignacion", "Fue asignado", timestamp, false, null);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(1);
-        assertEquals(1, result.size());
+        assertEquals(List.of(expectedNotification), result);
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsNotificationWithExpectedTitle() throws SQLException {
+    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsExpectedNotification() throws SQLException {
         Timestamp timestamp = new Timestamp(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
@@ -108,7 +110,7 @@ public class NotificationDAOTest {
         when(resultSet.getBoolean("leida")).thenReturn(true);
         Notification expectedNotification = new Notification(7, "Proyecto asignado", "Se le asigno un proyecto", timestamp, true, null);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(2);
-        assertEquals(expectedNotification, result.get(0));
+        assertEquals(List.of(expectedNotification), result);
     }
 
     @Test

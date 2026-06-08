@@ -99,7 +99,7 @@ public class ProjectManagerDAOTest {
     }
 
     @Test
-    void getProjectManagerById_ProjectManagerExists_ReturnsProjectManagerWithExpectedName() throws SQLException {
+    void getProjectManagerById_ProjectManagerExists_ReturnsExpectedProjectManager() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("nombre_responsable")).thenReturn("Carlos Ruiz");
@@ -143,13 +143,14 @@ public class ProjectManagerDAOTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
         when(resultSet.getInt("id_responsable")).thenReturn(101, 102);
-        ProjectManager projectManager1 = mock(ProjectManager.class);
-        ProjectManager projectManager2 = mock(ProjectManager.class);
-        ProjectManagerDAO secondProjectManagerDAO = spy(projectManagerDAO);
-        doReturn(projectManager1).when(secondProjectManagerDAO).getProjectManagerById(101);
-        doReturn(projectManager2).when(secondProjectManagerDAO).getProjectManagerById(102);
-        List<ProjectManager> result = secondProjectManagerDAO.getProjectManagersByEnterprise(enterprise);
-        assertEquals(2, result.size());
+        when(resultSet.getString("nombre_responsable")).thenReturn("Carlos Ruiz", "Ana López");
+        when(resultSet.getString("correo_responsable")).thenReturn("cruiz@empresa.com", "alopez@empresa.com");
+        when(resultSet.getString("telefono_responsable")).thenReturn("2288112233", "2288445566");
+        when(resultSet.getString("cargo")).thenReturn("Gerente de TI", "Líder de Proyecto");
+        ProjectManager expectedManager1 = new ProjectManager(101, "Carlos Ruiz", "cruiz@empresa.com", "2288112233", "Gerente de TI", 5);
+        ProjectManager expectedManager2 = new ProjectManager(102, "Ana López", "alopez@empresa.com", "2288445566", "Líder de Proyecto", 5);
+        List<ProjectManager> result = projectManagerDAO.getProjectManagersByEnterprise(enterprise);
+        assertEquals(List.of(expectedManager1, expectedManager2), result);
     }
 
     @Test

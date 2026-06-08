@@ -253,7 +253,7 @@ public class ReportDAOTest {
     }
 
     @Test
-    void getReportById_ReportExists_ReturnsReportWithExpectedType() throws SQLException {
+    void getReportById_ReportExists_ReturnsExpectedReport() throws SQLException {
         Date date = new java.sql.Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
@@ -289,19 +289,21 @@ public class ReportDAOTest {
 
     @Test
     void getReportsByStudentEnrollment_StudentHasOneReport_ReturnsListWithOneReport() throws SQLException {
+        java.sql.Date reportDate = new java.sql.Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_reporte")).thenReturn(5);
         when(resultSet.getString("tipo_reporte")).thenReturn("Parcial");
-        when(resultSet.getDate("fecha_reporte")).thenReturn(new java.sql.Date(System.currentTimeMillis()));
+        when(resultSet.getDate("fecha_reporte")).thenReturn(reportDate);
         when(resultSet.getString("observaciones")).thenReturn("Obs");
         when(resultSet.getString("resultados_obtenidos")).thenReturn("Res");
         when(resultSet.getString("nrc")).thenReturn("99999");
         Student student = mock(Student.class);
+        Report expectedReport = new Report(5, "Parcial", reportDate, "Obs", "Res", student, "99999");
         try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
                 (mock, context) -> when(mock.getStudentByEnrollment("S123456")).thenReturn(student))) {
             List<Report> result = reportDAO.getReportsByStudentEnrollment("S123456");
-            assertEquals(1, result.size());
+            assertEquals(List.of(expectedReport), result);
         }
     }
 

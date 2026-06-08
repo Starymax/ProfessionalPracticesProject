@@ -37,17 +37,23 @@ public class StudentDAO implements IDAOStudent {
         return new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, null, grade, studentProjectId);
     }
 
-    private void resolveProjects(List<Student> students) throws DataOperationException {
+    @Override
+    public List<Student> resolveProjectsOfStudents(List<Student> students) {
         ProjectDAO projectDAO = new ProjectDAO();
+        List<Student> validStudents = new ArrayList<>();
         for (Student student : students) {
             if (student.getPendingProjectId() > 0) {
                 try {
                     student.setAssignedProject(projectDAO.getProjectById(student.getPendingProjectId()));
-                } catch (NoSuchElementException e) {
+                    validStudents.add(student);
+                } catch (NoSuchElementException | DataOperationException e) {
                     logger.log(Level.WARNING, "No se encontró el proyecto para el alumno " + student.getUserId());
                 }
+            } else {
+                validStudents.add(student);
             }
         }
+        return validStudents;
     }
 
     @Override
@@ -75,7 +81,7 @@ public class StudentDAO implements IDAOStudent {
             throw new DataOperationException("Error al obtener los datos del estudiante");
         }
         if (student != null) {
-            resolveProjects(List.of(student));
+            resolveProjectsOfStudents(List.of(student));
         }
         return student;
     }
@@ -105,7 +111,7 @@ public class StudentDAO implements IDAOStudent {
             throw new DataOperationException("Error al obtener los datos del estudiante");
         }
         if (student != null) {
-            resolveProjects(List.of(student));
+            resolveProjectsOfStudents(List.of(student));
         }
         return student;
     }
@@ -182,8 +188,7 @@ public class StudentDAO implements IDAOStudent {
             logger.log(Level.SEVERE, "Error al obtener todos los estudiantes", e);
             throw new DataOperationException("Error al obtener los estudiantes");
         }
-        resolveProjects(students);
-        return students;
+        return resolveProjectsOfStudents(students);
     }
 
     @Override
@@ -205,8 +210,7 @@ public class StudentDAO implements IDAOStudent {
             logger.log(Level.SEVERE, "Error al obtener todos los estudiantes sin proyecto asignado", e);
             throw new DataOperationException("Error al obtener los estudiantes sin proyecto");
         }
-        resolveProjects(students);
-        return students;
+        return resolveProjectsOfStudents(students);
     }
 
     @Override
@@ -223,8 +227,7 @@ public class StudentDAO implements IDAOStudent {
             logger.log(Level.SEVERE, "Error al obtener todos los estudiantes activos", e);
             throw new DataOperationException("Error al obtener los estudiantes activos");
         }
-        resolveProjects(students);
-        return students;
+        return resolveProjectsOfStudents(students);
     }
 
     public List<Student> getStudentsByEducationalExperience(String nrc) throws DataOperationException {
@@ -246,8 +249,7 @@ public class StudentDAO implements IDAOStudent {
             logger.log(Level.SEVERE, "Error al obtener los estudiantes de la experiencia educativa", e);
             throw new DataOperationException("Error al obtener los estudiantes de la experiencia educativa");
         }
-        resolveProjects(students);
-        return students;
+        return resolveProjectsOfStudents(students);
     }
 
     @Override

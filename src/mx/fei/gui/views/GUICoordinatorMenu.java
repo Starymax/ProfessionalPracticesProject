@@ -31,6 +31,7 @@ public class GUICoordinatorMenu extends Application {
     private Button buttonManageProjects;
     private Button buttonManageOrganizations;
     private Button buttonManageEducationalExperience;
+    private Button buttonValidateDocuments;
     private Button buttonConsultProfessor;
     private Button buttonLogOut;
     private Stage stage;
@@ -63,9 +64,10 @@ public class GUICoordinatorMenu extends Application {
         buttonManageProjects = createMenuButton("Gestionar proyectos");
         buttonManageOrganizations = createMenuButton("Gestionar organizaciones");
         buttonManageEducationalExperience = createMenuButton("Gestionar experiencia educativa");
+        buttonValidateDocuments = createMenuButton("Validar documentos");
         buttonConsultProfessor = createMenuButton("Consultar profesor");
         buttonLogOut = createMenuButton("Cerrar Sesión");
-        VBox buttonsBox = new VBox(12, buttonManageStudents, buttonManageProjects, buttonManageOrganizations, buttonManageEducationalExperience, buttonConsultProfessor, buttonLogOut);
+        VBox buttonsBox = new VBox(12, buttonManageStudents, buttonManageProjects, buttonManageOrganizations, buttonManageEducationalExperience, buttonValidateDocuments, buttonConsultProfessor, buttonLogOut);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelCoordinatorName, labelCoordinatorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
@@ -76,9 +78,10 @@ public class GUICoordinatorMenu extends Application {
         buttonManageProjects.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonManageOrganizations.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonManageEducationalExperience.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonValidateDocuments.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonConsultProfessor.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonLogOut.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        Scene scene = new Scene(mainPanel, 500, 470);
+        Scene scene = new Scene(mainPanel, 500, 520);
         stage.setScene(scene);
         stage.show();
     }
@@ -126,6 +129,10 @@ public class GUICoordinatorMenu extends Application {
 
     public Button getButtonManageEducationalExperience() {
         return buttonManageEducationalExperience;
+    }
+
+    public Button getButtonValidateDocuments() {
+        return buttonValidateDocuments;
     }
 
     public Button getButtonConsultProfessor() {

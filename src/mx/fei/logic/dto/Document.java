@@ -9,6 +9,7 @@ public class Document {
     private DocumentType documentType;
     private Practice practice;
     private boolean accepted;
+    private ValidationStatus validationStatus = ValidationStatus.PENDING;
 
     public Document(String name, String directory, DocumentType documentType, Practice practice) {
         this.name = name;
@@ -70,6 +71,15 @@ public class Document {
     public void setAccepted(boolean accepted) {
         this.accepted = accepted;
     }
+
+    public ValidationStatus getValidationStatus() {
+        return validationStatus;
+    }
+
+    public void setValidationStatus(ValidationStatus validationStatus) {
+        this.validationStatus = validationStatus;
+    }
+
     @Override
     public boolean equals(Object object) {
         boolean isEqual = false;
