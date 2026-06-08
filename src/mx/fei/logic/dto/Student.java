@@ -20,6 +20,15 @@ public class Student extends User{
         this.pendingProjectId = pendingProjectId;
     }
 
+    public Student(int userId, String name, String lastName, String enrollment) {
+        super(userId, name, lastName, "", "", "", true);
+        this.enrollment = enrollment;
+        this.indigenousLanguage = false;
+        this.assignedProject = null;
+        this.grade = 0.0f;
+        this.pendingProjectId = -1;
+    }
+
     public int getPendingProjectId() {
         return pendingProjectId;
     }

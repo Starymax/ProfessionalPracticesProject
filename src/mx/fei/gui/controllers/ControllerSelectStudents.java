@@ -35,7 +35,7 @@ public class ControllerSelectStudents {
 
     private void loadStudents() {
         try {
-            List<Student> students = studentDAO.getActiveStudents();
+            List<Student> students = studentDAO.getStudentsWithoutEducationalExperience();
             List<Student> studentsAlreadySelected = guiSelectStudents.getGuiAddStudents().getStudentsToAdd();
             guiSelectStudents.setStudents(students, studentsAlreadySelected);
         } catch (DataOperationException e) {

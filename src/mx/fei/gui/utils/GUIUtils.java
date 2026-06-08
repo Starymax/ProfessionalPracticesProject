@@ -171,6 +171,8 @@ public class GUIUtils {
             errors.add(fieldName + " debe contener solo números.");
         } else if (value.length() != 5) {
             errors.add(fieldName + " debe tener 5 dígitos");
+        } else if (value.charAt(0) == '0') {
+            errors.add(fieldName + " no puede comenzar con el número 0.");
         }
     }
 

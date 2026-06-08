@@ -25,6 +25,9 @@ import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.PartialActivityRow;
 import mx.fei.logic.dto.Student;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GUIGeneratePartialReport extends Application {
 
     private Stage stage;
@@ -222,6 +225,18 @@ public class GUIGeneratePartialReport extends Application {
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(18, 0, 0, 0));
         return box;
+    }
+
+    public boolean validateFields() {
+        boolean validated = true;
+        List<String> errors = new ArrayList<>();
+        GUIUtils.validateLongText(textAreaObservations.getText(),"Observaciones", errors);
+        GUIUtils.validateLongText(textAreaResults.getText(),"Observaciones", errors);
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+            validated = false;
+        }
+        return validated;
     }
 
     public void setCareer(String career) {

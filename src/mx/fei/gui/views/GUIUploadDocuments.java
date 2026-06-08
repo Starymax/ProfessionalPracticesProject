@@ -29,6 +29,7 @@ import javafx.stage.Stage;
 import mx.fei.gui.controllers.ControllerUploadDocument;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentType;
+import mx.fei.logic.dto.Practice;
 
 import java.io.File;
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 public class GUIUploadDocuments extends Application {
+    private Practice practice;
     private String studentEnrollment;
     private Map<DocumentType, Document> selectedDocuments;
     private Set<DocumentType> uploadedDocuments;
@@ -67,8 +69,9 @@ public class GUIUploadDocuments extends Application {
     );
     private final List<String> reportOptions = Arrays.asList("Parcial", "Mensual", "Final");
 
-    public GUIUploadDocuments(String studentEnrollment) {
-        this.studentEnrollment = studentEnrollment;
+    public GUIUploadDocuments(Practice practice) {
+        this.practice = practice;
+        this.studentEnrollment = practice.getStudent().getEnrollment();
         this.selectedDocuments = new HashMap<>();
         this.uploadedDocuments = new HashSet<>();
     }
@@ -248,5 +251,9 @@ public class GUIUploadDocuments extends Application {
 
     public Button getButtonCancel() {
         return buttonCancel;
+    }
+
+    public Practice getPractice() {
+        return practice;
     }
 }

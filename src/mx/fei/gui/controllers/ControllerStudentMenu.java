@@ -91,15 +91,19 @@ public class ControllerStudentMenu {
     }
 
     private void openReports() {
-        try {
-            PracticeDAO practiceDAO = new PracticeDAO();
-            Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
-            GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiGenerateReport.start(stage);
-        } catch (DataOperationException e) {
-            guiStudentMenu.showError(e.getMessage());
+        if (guiStudentMenu.getStudent().getAssignedProject() == null) {
+            guiStudentMenu.showError("Aún no tiene un proyecto asignado. Intentelo más tarde");
+        } else {
+            try {
+                PracticeDAO practiceDAO = new PracticeDAO();
+                Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
+                GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiGenerateReport.start(stage);
+            } catch (DataOperationException e) {
+                logger.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e);
+            }
         }
     }
 
@@ -133,10 +137,20 @@ public class ControllerStudentMenu {
     }
 
     private void openDocuments(String enrollment) {
-        GUIUploadDocuments guiUploadDocuments = new GUIUploadDocuments(enrollment);
-        Stage stage = new Stage();
-        stage.initModality(Modality.APPLICATION_MODAL);
-        guiUploadDocuments.start(stage);
+        try {
+            Practice practice = practiceDAO.getPracticeByEnrollment(enrollment);
+            if (practice == null) {
+                guiStudentMenu.showError("No se encuentra registrado en una practica por el momento. Debe estar en una experiencia educativa.");
+            } else {
+                GUIUploadDocuments guiUploadDocuments = new GUIUploadDocuments(practice);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiUploadDocuments.start(stage);
+            }
+        } catch (DataOperationException e) {
+            guiStudentMenu.showError("Error al verficar la práctica del estudiante.");
+            logger.log(Level.SEVERE, "Error al obtener práctica por matrícula", e);
+        }
     }
 
     private void logout() {

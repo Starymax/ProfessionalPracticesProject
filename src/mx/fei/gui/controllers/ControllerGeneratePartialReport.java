@@ -168,11 +168,13 @@ public class ControllerGeneratePartialReport {
         } else if (results == null || results.isBlank()) {
             guiGeneratePartialReport.showError("Debe escribir los resultados obtenidos al momento.");
         } else {
-            DirectoryChooser chooser = new DirectoryChooser();
-            chooser.setTitle("Seleccionar carpeta para guardar el PDF");
-            File directory = chooser.showDialog(stage);
-            if (directory != null) {
-                exportAndPersist(directory, results);
+            if (guiGeneratePartialReport.validateFields()) {
+                DirectoryChooser chooser = new DirectoryChooser();
+                chooser.setTitle("Seleccionar carpeta para guardar el PDF");
+                File directory = chooser.showDialog(stage);
+                if (directory != null) {
+                    exportAndPersist(directory, results);
+                }
             }
         }
     }

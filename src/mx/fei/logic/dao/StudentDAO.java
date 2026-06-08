@@ -328,4 +328,30 @@ public class StudentDAO implements IDAOStudent {
         }
         return assigned;
     }
+
+    public List<Student> getStudentsWithoutEducationalExperience() throws DataOperationException {
+        String query = "SELECT u.id_usuario, u.nombre, u.apellidos, a.matricula " +
+                "FROM usuario u " +
+                "INNER JOIN alumno a ON u.id_usuario = a.id_usuario " +
+                "LEFT JOIN practicas p ON a.id_usuario = p.id_alumno " +
+                "WHERE p.id_alumno IS NULL AND u.estado_activo = 1";
+        List<Student> students = new ArrayList<>();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                Student student = null;
+                int id = resultSet.getInt("id_usuario");
+                String names = resultSet.getString("nombre");
+                String lastNames = resultSet.getString("apellidos");
+                String enrollment = resultSet.getString("matricula");
+                student = new Student(id, names, lastNames, enrollment);
+                students.add(student);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error obteniendo los estudiantes sin experiencia educativa ", e);
+            throw new DataOperationException("Error al obtener alumnos sin experiencia: ");
+        }
+        return students;
+    }
 }

@@ -59,25 +59,29 @@ public class ControllerAddStudents {
         List<Student> studentsToAdd = guiAddStudents.getStudentsToAdd();
         if (studentsToAdd.isEmpty()) {
             guiAddStudents.showError("Debe agregar al menos un estudiante antes de confirmar.");
-        } else if (guiAddStudents.showConfirmation("¿Seguro que quiere dar de alta la experiencia educativa?")) {
+        } else {
             try {
                 boolean allAssigned = true;
                 EducationalExperience experience = guiAddStudents.getExperience();
                 String currentPeriod = experience.getPeriod();
-                for (Student student : studentsToAdd) {
-                    Practice practice = new Practice(student, experience, currentPeriod, 0.0f);
-                    PracticeDAO practiceDAO =  new PracticeDAO();
-                    boolean assigned = practiceDAO.createPractice(practice);
-                    if (!assigned) {
-                        allAssigned = false;
-                        logger.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());
+                if (currentPeriod == null || currentPeriod.isBlank()) {
+                    guiAddStudents.showError("La experiencia educativa no tiene definido un período. Por favor, verifique los datos de la experiencia.");
+                } else if (guiAddStudents.showConfirmation("¿Seguro que quiere dar de alta la experiencia educativa?")) {
+                    for (Student student : studentsToAdd) {
+                        Practice practice = new Practice(student, experience, currentPeriod, 0.0f);
+                        PracticeDAO practiceDAO =  new PracticeDAO();
+                        boolean assigned = practiceDAO.createPractice(practice);
+                        if (!assigned) {
+                            allAssigned = false;
+                            logger.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());
+                        }
                     }
-                }
-                if (allAssigned) {
-                    guiAddStudents.showSuccess("Experiencia educativa asignada exitosamente.");
-                    guiAddStudents.closeWindow();
-                } else {
-                    guiAddStudents.showError("Algunos estudiantes no pudieron ser asignados.");
+                    if (allAssigned) {
+                        guiAddStudents.showSuccess("Experiencia educativa asignada exitosamente.");
+                        guiAddStudents.closeWindow();
+                    } else {
+                        guiAddStudents.showError("Algunos estudiantes no pudieron ser asignados.");
+                    }
                 }
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al asignar experiencia educativa", e);

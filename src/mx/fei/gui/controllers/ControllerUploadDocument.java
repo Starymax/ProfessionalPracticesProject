@@ -21,12 +21,18 @@ import java.util.logging.Logger;
 
 public class ControllerUploadDocument {
     private GUIUploadDocuments guiUploadDocument;
+    private Practice practice;
     private DocumentDAO documentDAO;
     private Stage stage;
     private static final Logger logger = Logger.getLogger(ControllerUploadDocument.class.getName());
 
     public ControllerUploadDocument(GUIUploadDocuments guiUploadDocument, Stage stage) {
         this.guiUploadDocument = guiUploadDocument;
+        this.practice = guiUploadDocument.getPractice();
+        if (practice == null) {
+            guiUploadDocument.showError("No se encontró su práctica");
+            guiUploadDocument.closeWindow();
+        }
         this.documentDAO = new DocumentDAO();
         this.stage = stage;
         loadUploadedDocument();
