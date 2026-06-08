@@ -66,6 +66,7 @@ public class ProjectDAOTest {
     }
 
     private void stubProjectResultSet(ResultSet projectResultSet) throws SQLException {
+        Date date = new Date(1000000000L);
         when(projectResultSet.getInt("id_proyecto")).thenReturn(1);
         when(projectResultSet.getString("nombre_proyecto")).thenReturn("Proyecto A");
         when(projectResultSet.getString("descripcion_proyecto")).thenReturn("Descripcion");
@@ -75,12 +76,27 @@ public class ProjectDAOTest {
         when(projectResultSet.getString("metodologia")).thenReturn("Metodologia");
         when(projectResultSet.getString("responsabilidades")).thenReturn("Resp");
         when(projectResultSet.getString("recursos")).thenReturn("Rec");
-        when(projectResultSet.getDate("fecha_inicio")).thenReturn(new Date(System.currentTimeMillis()));
-        when(projectResultSet.getDate("fecha_final")).thenReturn(new Date(System.currentTimeMillis()));
+        when(projectResultSet.getDate("fecha_inicio")).thenReturn(date);
+        when(projectResultSet.getDate("fecha_final")).thenReturn(date);
         when(projectResultSet.getBoolean("estado_activo")).thenReturn(true);
         when(projectResultSet.getInt("lugares_disponibles")).thenReturn(5);
+        when(projectResultSet.getObject("id_empresa")).thenReturn(1);
         when(projectResultSet.getInt("id_empresa")).thenReturn(1);
+        when(projectResultSet.getString("nombre_empresa")).thenReturn("Empresa A");
+        when(projectResultSet.getString("sector")).thenReturn("Tech");
+        when(projectResultSet.getString("tel_empresa")).thenReturn("111");
+        when(projectResultSet.getString("correo_empresa")).thenReturn("a@test.com");
+        when(projectResultSet.getString("ciudad")).thenReturn("Xalapa");
+        when(projectResultSet.getLong("usuarios_directos")).thenReturn(1L);
+        when(projectResultSet.getLong("usuarios_indirectos")).thenReturn(2L);
+        when(projectResultSet.getBoolean("activo_empresa")).thenReturn(true);
+        when(projectResultSet.getString("pais")).thenReturn("México");
+        when(projectResultSet.getObject("id_responsable")).thenReturn(2);
         when(projectResultSet.getInt("id_responsable")).thenReturn(2);
+        when(projectResultSet.getString("nombre_responsable")).thenReturn("Manager A");
+        when(projectResultSet.getString("correo_responsable")).thenReturn("manager@test.com");
+        when(projectResultSet.getString("telefono_responsable")).thenReturn("222");
+        when(projectResultSet.getString("cargo")).thenReturn("Director");
     }
 
     private Project buildMockProject() {
@@ -109,11 +125,16 @@ public class ProjectDAOTest {
 
     @Test
     void getProjectById_ProjectExists_ReturnsProjectWithExpectedName() throws SQLException {
+        Date date = new Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
+        Enterprise expectedEnterprise = new Enterprise(1, "Empresa A", "Tech", "111", "a@test.com", "Xalapa", 1L, 2L, true, "México");
+        ProjectManager expectedManager = new ProjectManager(2, "Manager A", "manager@test.com", "222", "Director", 1);
+        Project expectedProject = new Project(1, "Proyecto A", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec",
+                date, date, true, 5, expectedEnterprise, expectedManager);
         Project result = projectDAO.getProjectById(1);
-        assertEquals("Proyecto A", result.getNameProject());
+        assertEquals(expectedProject, result);
     }
 
     @Test
@@ -124,7 +145,6 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getProjectById_EnterpriseColumnsAreNull_ProjectHasNullEnterprise() throws SQLException, DataOperationException {
     void getProjectById_EnterpriseLookupFails_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
@@ -135,7 +155,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getProjectById_ProjectManagerColumnsAreNull_ProjectHasNullProjectManager() throws SQLException, DataOperationException {
+    void getProjectById_ProjectManagerColumnsAreNull_ProjectHasNullProjectManager() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubProjectResultSet(resultSet);
@@ -186,7 +206,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getActiveProjects_OneActiveProject_ReturnsListWithOneProject() throws SQLException, DataOperationException {
+    void getActiveProjects_OneActiveProject_ReturnsListWithOneProject() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         stubProjectResultSet(resultSet);
@@ -209,7 +229,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getAllProjects_OneProjectRegistered_ReturnsListWithOneProject() throws SQLException, DataOperationException {
+    void getAllProjects_OneProjectRegistered_ReturnsListWithOneProject() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         stubProjectResultSet(resultSet);
@@ -218,7 +238,7 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getAllProjects_NoProjectsRegistered_ReturnsEmptyList() throws SQLException, DataOperationException {
+    void getAllProjects_NoProjectsRegistered_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
         List<Project> result = projectDAO.getAllProjects();

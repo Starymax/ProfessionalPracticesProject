@@ -183,8 +183,9 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("programa_educativo")).thenReturn("ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026");
         when(resultSet.getInt("id_profesor")).thenReturn(0);
+        EducationalExperience expectedExperience = new EducationalExperience("12345", "Pruebas de Software", "ISW", null, "FEB-JUN 2026");
         EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrc("12345");
-        assertEquals("12345", result.getNrc());
+        assertEquals(expectedExperience, result);
     }
 
     @Test

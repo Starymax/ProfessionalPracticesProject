@@ -43,7 +43,6 @@ public class GUIRegisterStudent extends Application {
     private RadioButton radioButtonWoman;
     private RadioButton radioButtonSpeakIndigenousLanguage;
     private RadioButton radioButtonDontSpeakIndigenousLanguage;
-    private ToggleButton toggleButtonState;
     private Button buttonConfirm;
     private Button buttonCancel;
 
@@ -111,14 +110,6 @@ public class GUIRegisterStudent extends Application {
         languageBox.setAlignment(Pos.CENTER_LEFT);
         formGrid.add(languageBox, 1, 8);
 
-        formGrid.add(new Label("Estado:"), 0, 9);
-        toggleButtonState = new ToggleButton("Inactivo");
-        toggleButtonState.setPrefWidth(100);
-        toggleButtonState.setOnAction(e ->
-                toggleButtonState.setText(toggleButtonState.isSelected() ? "Activo" : "Inactivo")
-        );
-        formGrid.add(toggleButtonState, 1, 9);
-
         buttonConfirm = new Button("Confirmar");
         buttonCancel = new Button("Cancelar");
         buttonConfirm.setPrefWidth(110);
@@ -131,7 +122,7 @@ public class GUIRegisterStudent extends Application {
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));
         GridPane.setColumnSpan(buttonsBox, 2);
         GridPane.setHalignment(buttonsBox, HPos.CENTER);
-        formGrid.add(buttonsBox, 0, 11);
+        formGrid.add(buttonsBox, 0, 10);
 
         ControllerRegisterStudent controllerRegisterStudent = new ControllerRegisterStudent(this);
         buttonConfirm.setOnAction(controllerRegisterStudent::handleConfirmCancelButtons);
@@ -220,10 +211,6 @@ public class GUIRegisterStudent extends Application {
 
     public RadioButton getRadioButtonDontSpeakIndigenousLanguage() {
         return radioButtonDontSpeakIndigenousLanguage;
-    }
-
-    public ToggleButton getToggleButtonState() {
-        return toggleButtonState;
     }
 
     public Button getButtonConfirm() {

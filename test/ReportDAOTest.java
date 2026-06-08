@@ -139,7 +139,7 @@ public class ReportDAOTest {
     }
 
     @Test
-    void createMonthlyReport_ActivitiesPersisted_ReturnsTrue() throws SQLException, DataOperationException {
+    void createMonthlyReport_ActivitiesPersisted_ReturnsTrue() throws SQLException {
         Report report = buildMockReport();
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeek()).thenReturn(1);
@@ -185,7 +185,7 @@ public class ReportDAOTest {
     }
 
     @Test
-    void createPartialReport_ActivitiesPersisted_ReturnsTrue() throws SQLException, DataOperationException {
+    void createPartialReport_ActivitiesPersisted_ReturnsTrue() throws SQLException {
         Report report = buildMockReport();
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         when(weeklyLog.getWeek()).thenReturn(2);
@@ -254,18 +254,22 @@ public class ReportDAOTest {
 
     @Test
     void getReportById_ReportExists_ReturnsReportWithExpectedType() throws SQLException {
+        Date date = new java.sql.Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
+        when(resultSet.getInt("id_reporte")).thenReturn(10);
         when(resultSet.getString("tipo_reporte")).thenReturn("Mensual");
-        when(resultSet.getDate("fecha_reporte")).thenReturn(new java.sql.Date(System.currentTimeMillis()));
+        when(resultSet.getDate("fecha_reporte")).thenReturn((java.sql.Date) date);
         when(resultSet.getString("observaciones")).thenReturn("Obs");
         when(resultSet.getString("resultados_obtenidos")).thenReturn("Resultados");
         when(resultSet.getInt("id_alumno")).thenReturn(1);
         when(resultSet.getString("nrc")).thenReturn("12345");
         Student student = mock(Student.class);
-        try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(1)).thenReturn(student))) {
+        Report expectedReport = new Report(10, "Mensual", date, "Obs", "Resultados", student, "12345");
+        try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
+                (mock, context) -> when(mock.getStudentById(1)).thenReturn(student))) {
             Report result = reportDAO.getReportById(10);
-            assertEquals("Mensual", result.getReportType());
+            assertEquals(expectedReport, result);
         }
     }
 
@@ -359,7 +363,7 @@ public class ReportDAOTest {
     }
 
     @Test
-    void updateActivityObservations_ListHasOneActivity_ReturnsTrue() throws SQLException, DataOperationException {
+    void updateActivityObservations_ListHasOneActivity_ReturnsTrue() throws SQLException {
         ReportActivityProgress progress = mock(ReportActivityProgress.class);
         Activity activity = mock(Activity.class);
         when(activity.getActivityId()).thenReturn(10);

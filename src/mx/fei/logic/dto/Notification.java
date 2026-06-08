@@ -1,6 +1,7 @@
 package mx.fei.logic.dto;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Notification {
 
@@ -46,5 +47,26 @@ public class Notification {
 
     public void setRead(boolean read) {
         this.read = read;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            Notification that = (Notification) object;
+            isEqual = notificationId == that.notificationId
+                    && read == that.read
+                    && Objects.equals(title, that.title)
+                    && Objects.equals(message, that.message)
+                    && Objects.equals(emissionDate, that.emissionDate);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(notificationId, title, message, emissionDate, read);
     }
 }

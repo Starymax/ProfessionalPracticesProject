@@ -2,6 +2,7 @@ package mx.fei.logic.dto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Report {
     private int id;
@@ -137,5 +138,24 @@ public class Report {
 
     public void setObservationsReport(String observationsReport) {
         this.observations = observationsReport;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Report that = (Report) o;
+        return id == that.id &&
+                Objects.equals(reportType, that.reportType) &&
+                Objects.equals(reportDate, that.reportDate) &&
+                Objects.equals(observations, that.observations) &&
+                Objects.equals(resultsObtained, that.resultsObtained) &&
+                Objects.equals(student, that.student) &&
+                Objects.equals(nrc, that.nrc);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, reportType, reportDate, observations, resultsObtained, student, nrc);
     }
 }

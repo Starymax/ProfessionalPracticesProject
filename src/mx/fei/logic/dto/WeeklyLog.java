@@ -1,4 +1,5 @@
 package mx.fei.logic.dto;
+import java.util.Objects;
 
 public class WeeklyLog {
     private int id;
@@ -55,5 +56,30 @@ public class WeeklyLog {
 
     public void setActivity(Activity activity) {
         this.activity = activity;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            WeeklyLog weeklyLog = (WeeklyLog) object;
+            isEqual = id == weeklyLog.id
+                    && week == weeklyLog.week
+                    && workedHours == weeklyLog.workedHours
+                    && plannedHours == weeklyLog.plannedHours
+                    && Objects.equals(activity, weeklyLog.activity);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, week, workedHours, plannedHours, activity);
     }
 }

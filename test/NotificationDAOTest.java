@@ -98,28 +98,32 @@ public class NotificationDAOTest {
 
     @Test
     void getNotificationsByStudentId_StudentHasOneNotification_ReturnsNotificationWithExpectedTitle() throws SQLException {
+        Timestamp timestamp = new Timestamp(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_notificacion")).thenReturn(7);
         when(resultSet.getString("titulo")).thenReturn("Proyecto asignado");
         when(resultSet.getString("mensaje")).thenReturn("Se le asigno un proyecto");
-        when(resultSet.getTimestamp("fecha_emision")).thenReturn(new Timestamp(System.currentTimeMillis()));
+        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp);
         when(resultSet.getBoolean("leida")).thenReturn(true);
+        Notification expectedNotification = new Notification(7, "Proyecto asignado", "Se le asigno un proyecto", timestamp, true, null);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(2);
-        assertEquals("Proyecto asignado", result.get(0).getTitle());
+        assertEquals(expectedNotification, result.get(0));
     }
 
     @Test
     void getNotificationsByStudentId_ReadNotification_ReturnsNotificationMarkedAsRead() throws SQLException {
+        Timestamp timestamp = new Timestamp(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, false);
         when(resultSet.getInt("id_notificacion")).thenReturn(3);
         when(resultSet.getString("titulo")).thenReturn("Aviso");
         when(resultSet.getString("mensaje")).thenReturn("Mensaje de prueba");
-        when(resultSet.getTimestamp("fecha_emision")).thenReturn(new Timestamp(System.currentTimeMillis()));
+        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp);
         when(resultSet.getBoolean("leida")).thenReturn(true);
+        Notification expectedNotification = new Notification(3, "Aviso", "Mensaje de prueba", timestamp, true, null);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(1);
-        assertTrue(result.get(0).isRead());
+        assertEquals(expectedNotification, result.get(0));
     }
 
     @Test

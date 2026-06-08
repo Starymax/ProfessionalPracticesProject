@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Objects;
+
 public class Practice {
     private int id;
     private Student student;
@@ -65,5 +67,26 @@ public class Practice {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            Practice that = (Practice) object;
+            isEqual = id == that.id
+                    && Float.compare(grade, that.grade) == 0
+                    && Objects.equals(student, that.student)
+                    && Objects.equals(educationalExperience, that.educationalExperience)
+                    && Objects.equals(period, that.period);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, student, educationalExperience, period, grade);
     }
 }

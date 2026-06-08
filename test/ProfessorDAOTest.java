@@ -61,6 +61,7 @@ public class ProfessorDAOTest {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("id_usuario")).thenReturn(1);
+        when(resultSet.getInt("numero_de_personal")).thenReturn(12345);
         when(resultSet.getString("nombre")).thenReturn("Ana");
         when(resultSet.getString("apellidos")).thenReturn("Lopez");
         when(resultSet.getString("correo")).thenReturn("ana@uv.mx");
@@ -70,8 +71,9 @@ public class ProfessorDAOTest {
         when(resultSet.getBoolean("es_coordinador")).thenReturn(false);
         when(resultSet.getBoolean("es_administrador")).thenReturn(false);
         when(resultSet.getString("turno")).thenReturn("Matutino");
+        Professor expectedProfessor = new Professor(1, "Ana", "Lopez", "ana@uv.mx", "pass123", "F", true, 12345, false, false, "Matutino");
         Professor result = professorDAO.getProfessorByPersonalNumber(12345);
-        assertEquals("Ana", result.getName());
+        assertEquals(expectedProfessor, result);
     }
 
     @Test

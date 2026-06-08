@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Objects;
+
 public class Enterprise {
     private int id;
     private String name;
@@ -110,5 +112,31 @@ public class Enterprise {
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            Enterprise that = (Enterprise) object;
+            isEqual = id == that.id
+                    && directUsers == that.directUsers
+                    && indirectUsers == that.indirectUsers
+                    && activeStatus == that.activeStatus
+                    && Objects.equals(name, that.name)
+                    && Objects.equals(sector, that.sector)
+                    && Objects.equals(phoneNumber, that.phoneNumber)
+                    && Objects.equals(contactEmail, that.contactEmail)
+                    && Objects.equals(city, that.city)
+                    && Objects.equals(country, that.country);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, sector, phoneNumber, contactEmail, city, directUsers, indirectUsers, activeStatus, country);
     }
 }

@@ -59,6 +59,7 @@ public class ActivityDAOTest {
     void tearDown() {
         if (databaseConnectionManager != null) {
             databaseConnectionManager.close();
+            databaseConnectionManager = null;
         }
     }
 
@@ -146,16 +147,22 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void getActivityById_ActivityExists_ReturnsActivityWithExpectedName() throws SQLException {
+    void getActivityById_ActivityExists_ReturnsExpectedActivity() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getString("nombre_actividad")).thenReturn("Actividad A");
         when(resultSet.getString("observaciones_actividad")).thenReturn("Observaciones");
         when(resultSet.getInt("id_proyecto")).thenReturn(2);
         Project project = mock(Project.class);
-        try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class, (mock, context) -> when(mock.getProjectById(2)).thenReturn(project))) {
+        Activity expectedActivity = new Activity();
+        expectedActivity.setActivityId(1);
+        expectedActivity.setName("Actividad A");
+        expectedActivity.setObservationsActivity("Observaciones");
+        expectedActivity.setProject(project);
+        try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
+                (mock, context) -> when(mock.getProjectById(2)).thenReturn(project))) {
             Activity result = activityDAO.getActivityById(1);
-            assertEquals("Actividad A", result.getName());
+            assertEquals(expectedActivity, result);
         }
     }
 
@@ -174,24 +181,31 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void getActivitiesByProjectId_ProjectHasOneActivity_ReturnsListWithOneActivity() throws SQLException {
+    void getWeeklyLogsByActivityId_ActivityHasOneLog_ReturnsListWithExpectedLog() throws SQLException {
+        Connection activityConnection = mock(Connection.class);
+        PreparedStatement activityStatement = mock(PreparedStatement.class);
+        ResultSet activityResultSet = mock(ResultSet.class);
+        when(activityResultSet.next()).thenReturn(true, false);
+        when(activityResultSet.getString("nombre_actividad")).thenReturn("Act");
+        when(activityResultSet.getString("observaciones_actividad")).thenReturn("Obs");
+        when(activityResultSet.getInt("id_proyecto")).thenReturn(1);
+        when(activityStatement.executeQuery()).thenReturn(activityResultSet);
+        when(activityConnection.prepareStatement(anyString())).thenReturn(activityStatement);
         ResultSet listResultSet = mock(ResultSet.class);
         when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_actividad")).thenReturn(10);
-        ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
-        when(detailResultSet.getString("nombre_actividad")).thenReturn("Actividad X");
-        when(detailResultSet.getString("observaciones_actividad")).thenReturn("Obs");
-        when(detailResultSet.getInt("id_proyecto")).thenReturn(1);
-        PreparedStatement detailStatement = mock(PreparedStatement.class);
-        when(detailStatement.executeQuery()).thenReturn(detailResultSet);
-        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement).thenReturn(detailStatement);
+        when(listResultSet.getInt("id_registro")).thenReturn(20);
+        when(listResultSet.getInt("semana")).thenReturn(2);
+        when(listResultSet.getInt("horas_planificadas")).thenReturn(15);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
+        when(mockManager.getConnection()).thenReturn(activityConnection).thenReturn(connection);
         Project project = mock(Project.class);
+        Activity expectedActivity = new Activity(5, "Act", "Obs", project);
+        WeeklyLog expectedLog = new WeeklyLog(20, 2, 0, 15, expectedActivity);
+        List<WeeklyLog> expectedList = List.of(expectedLog);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(anyInt())).thenReturn(project))) {
-            List<Activity> result = activityDAO.getActivitiesByProjectId(1);
-            assertEquals(1, result.size());
+            List<WeeklyLog> result = activityDAO.getWeeklyLogsByActivityId(5);
+            assertEquals(expectedList, result);
         }
     }
 
@@ -218,12 +232,13 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void getWeeklyLogById_WeeklyLogExists_ReturnsWeeklyLogWithExpectedWeek() throws SQLException {
+    void getWeeklyLogById_WeeklyLogExists_ReturnsExpectedWeeklyLog() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         when(resultSet.getInt("semana")).thenReturn(3);
         when(resultSet.getInt("horas_planificadas")).thenReturn(20);
         when(resultSet.getInt("id_actividad")).thenReturn(5);
+        when(resultSet.getInt("horas_trabajadas")).thenReturn(0);
         Connection secondConnection = mock(Connection.class);
         PreparedStatement secondStatement = mock(PreparedStatement.class);
         ResultSet secondResultSet = mock(ResultSet.class);
@@ -235,10 +250,12 @@ public class ActivityDAOTest {
         when(secondConnection.prepareStatement(anyString())).thenReturn(secondStatement);
         when(mockManager.getConnection()).thenReturn(connection).thenReturn(secondConnection);
         Project project = mock(Project.class);
+        Activity expectedActivity = new Activity(5, "Act", "Obs", project);
+        WeeklyLog expectedLog = new WeeklyLog(7, 3, 0, 20, expectedActivity);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(anyInt())).thenReturn(project))) {
             WeeklyLog result = activityDAO.getWeeklyLogById(7);
-            assertEquals(3, result.getWeek());
+            assertEquals(expectedLog, result);
         }
     }
 
@@ -264,7 +281,7 @@ public class ActivityDAOTest {
         Connection secondConnection = mock(Connection.class);
         PreparedStatement detailStatement = mock(PreparedStatement.class);
         ResultSet detailResultSet = mock(ResultSet.class);
-        when(detailResultSet.next()).thenReturn(true);
+        when(detailResultSet.next()).thenReturn(true, false);
         when(detailResultSet.getInt("semana")).thenReturn(2);
         when(detailResultSet.getInt("horas_planificadas")).thenReturn(15);
         when(detailResultSet.getInt("id_actividad")).thenReturn(5);
@@ -279,8 +296,7 @@ public class ActivityDAOTest {
         when(activityResultSet.getInt("id_proyecto")).thenReturn(1);
         when(activityStatement.executeQuery()).thenReturn(activityResultSet);
         when(thirdConnection.prepareStatement(anyString())).thenReturn(activityStatement);
-        databaseConnectionManager.when(DatabaseConnectionManager::getConnection).thenReturn(connection).thenReturn(secondConnection).thenReturn(thirdConnection);
-        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
+        when(mockManager.getConnection()).thenReturn(connection).thenReturn(secondConnection).thenReturn(thirdConnection);        when(preparedStatement.executeQuery()).thenReturn(listResultSet);
         Project project = mock(Project.class);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(anyInt())).thenReturn(project))) {

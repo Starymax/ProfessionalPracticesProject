@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static mx.fei.logic.dto.DocumentType.STUDENT_SCHEDULE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -248,8 +249,10 @@ public class DocumentDAOTest {
         when(resultSet.getString("nombre")).thenReturn("horario.pdf");
         when(resultSet.getString("ruta")).thenReturn("/ruta/horario.pdf");
         when(resultSet.getString("tipoDocumento")).thenReturn("STUDENT_SCHEDULE");
+        Document expectedDocument = new Document("horario.pdf", "/ruta/horario.pdf", DocumentType.STUDENT_SCHEDULE, practice);
+        expectedDocument.setId(5);
         List<Document> result = documentDAO.getDocumentsByPractice(practice);
-        assertEquals("horario.pdf", result.get(0).getName());
+        assertEquals(expectedDocument, result.get(0));
     }
 
     @Test
@@ -311,8 +314,11 @@ public class DocumentDAOTest {
         when(resultSet.getString("ruta")).thenReturn("/ruta/reporte_final.pdf");
         when(resultSet.getString("tipoDocumento")).thenReturn("FINAL_REPORT");
         when(resultSet.getBoolean("aceptado")).thenReturn(true);
+        Document expectedDocument = new Document("reporte_final.pdf", "/ruta/reporte_final.pdf", DocumentType.FINAL_REPORT, practice);
+        expectedDocument.setId(5);
+        expectedDocument.setAccepted(true);
         List<Document> result = documentDAO.getUploadedReportsByPractice(practice);
-        assertTrue(result.get(0).isAccepted());
+        assertEquals(expectedDocument, result.get(0));
     }
 
     @Test

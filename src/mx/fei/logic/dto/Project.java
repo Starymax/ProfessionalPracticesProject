@@ -1,6 +1,7 @@
 package mx.fei.logic.dto;
 
 import java.sql.Date;
+import java.util.Objects;
 
 public class Project {
     private int id;
@@ -169,5 +170,38 @@ public class Project {
 
     public void setProjectManager(ProjectManager projectManager) {
         this.projectManager = projectManager;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            Project that = (Project) object;
+            isEqual = id == that.id
+                    && activeStatus == that.activeStatus
+                    && availablePlaces == that.availablePlaces
+                    && Objects.equals(nameProject, that.nameProject)
+                    && Objects.equals(descriptionProject, that.descriptionProject)
+                    && Objects.equals(generalObjective, that.generalObjective)
+                    && Objects.equals(mediatesObjectives, that.mediatesObjectives)
+                    && Objects.equals(immediateObjectives, that.immediateObjectives)
+                    && Objects.equals(methodology, that.methodology)
+                    && Objects.equals(responsibilities, that.responsibilities)
+                    && Objects.equals(resources, that.resources)
+                    && Objects.equals(startDate, that.startDate)
+                    && Objects.equals(finalDate, that.finalDate)
+                    && Objects.equals(enterprise, that.enterprise)
+                    && Objects.equals(projectManager, that.projectManager);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, nameProject, descriptionProject, generalObjective, mediatesObjectives,
+                immediateObjectives, methodology, responsibilities, resources, startDate, finalDate,
+                activeStatus, availablePlaces, enterprise, projectManager);
     }
 }

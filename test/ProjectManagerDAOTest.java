@@ -107,8 +107,9 @@ public class ProjectManagerDAOTest {
         when(resultSet.getString("telefono_responsable")).thenReturn("2288112233");
         when(resultSet.getString("cargo")).thenReturn("Gerente de TI");
         when(resultSet.getInt("id_empresa")).thenReturn(1);
-        ProjectManager projectManager = projectManagerDAO.getProjectManagerById(5);
-        assertEquals("Carlos Ruiz", projectManager.getName());
+        ProjectManager expectedManager = new ProjectManager(5, "Carlos Ruiz", "cruiz@empresa.com", "2288112233", "Gerente de TI", 1);
+        ProjectManager result = projectManagerDAO.getProjectManagerById(5);
+        assertEquals(expectedManager, result);
     }
 
     @Test

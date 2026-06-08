@@ -35,38 +35,36 @@ public class ProjectDAO implements IDAOProject {
             "LEFT JOIN organizacion_vinculada e ON p.id_empresa = e.id_empresa " +
             "LEFT JOIN responsable_proyecto r ON p.id_responsable = r.id_responsable";
 
-    private Project buildProjectFromResultSet(ResultSet rs) throws SQLException {
-        int id = rs.getInt("id_proyecto");
-        String projectName = rs.getString("nombre_proyecto");
-        String description = rs.getString("descripcion_proyecto");
-        String generalObjective = rs.getString("objetivo_general");
-        String immediateObjectives = rs.getString("objetivos_inmediatos");
-        String mediateObjectives = rs.getString("objetivos_mediatos");
-        String methodology = rs.getString("metodologia");
-        String responsibilities = rs.getString("responsabilidades");
-        String resources = rs.getString("recursos");
-        Date startDate = rs.getDate("fecha_inicio");
-        Date endDate = rs.getDate("fecha_final");
-        boolean activeStatus = rs.getBoolean("estado_activo");
-        int availablePlaces = rs.getInt("lugares_disponibles");
+    private Project buildProjectFromResultSet(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id_proyecto");
+        String projectName = resultSet.getString("nombre_proyecto");
+        String description = resultSet.getString("descripcion_proyecto");
+        String generalObjective = resultSet.getString("objetivo_general");
+        String immediateObjectives = resultSet.getString("objetivos_inmediatos");
+        String mediateObjectives = resultSet.getString("objetivos_mediatos");
+        String methodology = resultSet.getString("metodologia");
+        String responsibilities = resultSet.getString("responsabilidades");
+        String resources = resultSet.getString("recursos");
+        Date startDate = resultSet.getDate("fecha_inicio");
+        Date endDate = resultSet.getDate("fecha_final");
+        boolean activeStatus = resultSet.getBoolean("estado_activo");
+        int availablePlaces = resultSet.getInt("lugares_disponibles");
         Enterprise enterprise = null;
-        if (rs.getObject("id_empresa") != null) {
+        if (resultSet.getObject("id_empresa") != null) {
             enterprise = new Enterprise(
-                    rs.getInt("id_empresa"), rs.getString("nombre_empresa"), rs.getString("sector"),
-                    rs.getString("tel_empresa"), rs.getString("correo_empresa"), rs.getString("ciudad"),
-                    rs.getLong("usuarios_directos"), rs.getLong("usuarios_indirectos"),
-                    rs.getBoolean("activo_empresa"), rs.getString("pais"));
+                    resultSet.getInt("id_empresa"), resultSet.getString("nombre_empresa"), resultSet.getString("sector"),
+                    resultSet.getString("tel_empresa"), resultSet.getString("correo_empresa"), resultSet.getString("ciudad"),
+                    resultSet.getLong("usuarios_directos"), resultSet.getLong("usuarios_indirectos"),
+                    resultSet.getBoolean("activo_empresa"), resultSet.getString("pais"));
         }
         ProjectManager projectManager = null;
-        if (rs.getObject("id_responsable") != null) {
+        if (resultSet.getObject("id_responsable") != null) {
             projectManager = new ProjectManager(
-                    rs.getInt("id_responsable"), rs.getString("nombre_responsable"),
-                    rs.getString("correo_responsable"), rs.getString("telefono_responsable"),
-                    rs.getString("cargo"), rs.getInt("id_empresa"));
+                    resultSet.getInt("id_responsable"), resultSet.getString("nombre_responsable"),
+                    resultSet.getString("correo_responsable"), resultSet.getString("telefono_responsable"),
+                    resultSet.getString("cargo"), resultSet.getInt("id_empresa"));
         }
-        return new Project(id, projectName, description, generalObjective,
-                immediateObjectives, mediateObjectives, methodology, responsibilities, resources,
-                startDate, endDate, activeStatus, availablePlaces, enterprise, projectManager);
+        return new Project(id, projectName, description, generalObjective, immediateObjectives, mediateObjectives, methodology, responsibilities, resources, startDate, endDate, activeStatus, availablePlaces, enterprise, projectManager);
     }
 
     @Override

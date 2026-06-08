@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Objects;
+
 public class EducationalExperience {
     private String nrc;
     private String name;
@@ -66,5 +68,26 @@ public class EducationalExperience {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            EducationalExperience that = (EducationalExperience) object;
+            isEqual = Objects.equals(nrc, that.nrc)
+                    && Objects.equals(name, that.name)
+                    && Objects.equals(educationalProgram, that.educationalProgram)
+                    && Objects.equals(professor, that.professor)
+                    && Objects.equals(period, that.period);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nrc, name, educationalProgram, professor, period);
     }
 }

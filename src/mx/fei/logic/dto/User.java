@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Objects;
+
 public abstract class User {
     private int id;
     private String name;
@@ -73,5 +75,28 @@ public abstract class User {
 
     public void setActiveStatus(boolean activeStatus) {
         this.activeStatus = activeStatus;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object != null && getClass() == object.getClass()) {
+            User that = (User) object;
+            isEqual = id == that.id
+                    && activeStatus == that.activeStatus
+                    && Objects.equals(name, that.name)
+                    && Objects.equals(lastName, that.lastName)
+                    && Objects.equals(email, that.email)
+                    && Objects.equals(password, that.password)
+                    && Objects.equals(gender, that.gender);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, lastName, email, password, gender, activeStatus);
     }
 }

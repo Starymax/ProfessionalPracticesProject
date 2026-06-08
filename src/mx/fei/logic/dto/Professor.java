@@ -1,5 +1,7 @@
 package mx.fei.logic.dto;
 
+import java.util.Objects;
+
 public class Professor extends User{
     private int personalNumber;
     private boolean isCoordinator;
@@ -44,5 +46,23 @@ public class Professor extends User{
 
     public void setShift(String shift) {
         this.shift = shift;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (super.equals(object)) {
+            Professor that = (Professor) object;
+            isEqual = personalNumber == that.personalNumber
+                    && isCoordinator == that.isCoordinator
+                    && isAdmin == that.isAdmin
+                    && Objects.equals(shift, that.shift);
+        }
+        return isEqual;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), personalNumber, isCoordinator, isAdmin, shift);
     }
 }

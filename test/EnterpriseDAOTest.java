@@ -68,8 +68,9 @@ public class EnterpriseDAOTest {
         when(resultSet.getLong("usuarios_indirectos")).thenReturn(50L);
         when(resultSet.getBoolean("estado_activo")).thenReturn(true);
         when(resultSet.getString("pais")).thenReturn("México");
-        Enterprise enterprise = enterpriseDAO.getEnterpriseById(1);
-        assertEquals("Empresa Test", enterprise.getName());
+        Enterprise expectedEnterprise = new Enterprise(1, "Empresa Test", "Tecnología", "2281234567", "empresa@test.com", "Xalapa", 10L, 50L, true, "México");
+        Enterprise result = enterpriseDAO.getEnterpriseById(1);
+        assertEquals(expectedEnterprise, result);
     }
 
     @Test
