@@ -145,7 +145,7 @@ public class Report {
         boolean isEqual = false;
         if (this == object) {
             isEqual = true;
-        } else if (object == null || getClass() != object.getClass()) {
+        } else if (object != null && getClass() == object.getClass()) {
             Report that = (Report) object;
             isEqual = id == that.id &&
                     Objects.equals(reportType, that.reportType) &&

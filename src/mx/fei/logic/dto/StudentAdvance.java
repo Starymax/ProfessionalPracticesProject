@@ -52,7 +52,7 @@ public class StudentAdvance {
         boolean isEqual = false;
         if (this == object) {
             isEqual = true;
-        } else if (object == null || getClass() != object.getClass()) {
+        } else if (object != null && getClass() == object.getClass()) {
             StudentAdvance that = (StudentAdvance) object;
             isEqual = id == that.id
                     && Float.compare(realizedHours, that.realizedHours) == 0
