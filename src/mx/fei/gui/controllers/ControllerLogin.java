@@ -1,8 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUICoordinatorMenu;
@@ -15,7 +12,12 @@ import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.User;
 import mx.fei.logic.dto.UserRole;
 import mx.fei.logic.exceptions.DataOperationException;
+
 import org.mindrot.jbcrypt.BCrypt;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
@@ -33,10 +35,13 @@ public class ControllerLogin {
 
     public void handleLoginCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        if (source.getText().equals("Ingresar")) {
-            handleLogin();
-        } else if (source.getText().equals("Cancelar")) {
-            guiLogin.closeWindow();
+        switch (source.getText()) {
+            case "Ingresar" -> {
+                handleLogin();
+            }
+            case "Cancelar" -> {
+                guiLogin.closeWindow();
+            }
         }
     }
 

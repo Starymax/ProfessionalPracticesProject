@@ -1,6 +1,10 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerGenerateAcceptanceLetter;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Student;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,9 +24,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerGenerateAcceptanceLetter;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Student;
+
 
 public class GUIGenerateAcceptanceLetter extends Application {
 
@@ -45,6 +47,8 @@ public class GUIGenerateAcceptanceLetter extends Application {
     private ObservableList<String> hourOptions;
     private final int hourStart = 8;
     private final int hourEnd = 19;
+    private final int mountOfDays = 5;
+    private final int seconds = 60;
 
     public GUIGenerateAcceptanceLetter(Student student) {
         this.student = student;
@@ -140,7 +144,7 @@ public class GUIGenerateAcceptanceLetter extends Application {
     }
 
     public String[] getScheduleStrings() {
-        String[] horarios = new String[5];
+        String[] horarios = new String[mountOfDays];
         for (int i = 0; i < dias.length; i++) {
             horarios[i] = startHourCombo[i].getValue() + " - " + endHourCombo[i].getValue();
         }
@@ -149,7 +153,7 @@ public class GUIGenerateAcceptanceLetter extends Application {
 
     private int timeToMinutes(String time) {
         String[] parts = time.split(":");
-        return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
+        return Integer.parseInt(parts[0]) * seconds + Integer.parseInt(parts[1]);
     }
 
     private ObservableList<String> getHourOptions() {

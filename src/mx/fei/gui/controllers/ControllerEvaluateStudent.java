@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIEvaluateStudent;
 import mx.fei.gui.views.GUIReportPreview;
 import mx.fei.logic.dao.DocumentDAO;
@@ -14,6 +10,11 @@ import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,8 +98,7 @@ public class ControllerEvaluateStudent {
         Document selectedReport = guiEvaluateStudent.getSelectedReport();
         if (selectedReport == null) {
             guiEvaluateStudent.showError("Seleccione un reporte de la lista.");
-        } else if (selectedReport.getDirectory() == null || selectedReport.getDirectory().isBlank()
-                || !new File(selectedReport.getDirectory()).exists()) {
+        } else if (selectedReport.getDirectory() == null || selectedReport.getDirectory().isBlank() || !new File(selectedReport.getDirectory()).exists()) {
             guiEvaluateStudent.showError("No se encontró el archivo del reporte en el equipo.");
         } else {
             GUIReportPreview guiReportPreview = new GUIReportPreview(selectedReport, guiEvaluateStudent);

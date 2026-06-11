@@ -1,6 +1,10 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerGeneratePartialReport;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.PartialActivityRow;
+import mx.fei.logic.dto.Student;
 
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,10 +26,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerGeneratePartialReport;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.PartialActivityRow;
-import mx.fei.logic.dto.Student;
 
 import java.util.ArrayList;
 import java.util.List;

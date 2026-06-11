@@ -141,17 +141,21 @@ public class Report {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Report that = (Report) o;
-        return id == that.id &&
-                Objects.equals(reportType, that.reportType) &&
-                Objects.equals(reportDate, that.reportDate) &&
-                Objects.equals(observations, that.observations) &&
-                Objects.equals(resultsObtained, that.resultsObtained) &&
-                Objects.equals(student, that.student) &&
-                Objects.equals(nrc, that.nrc);
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object == null || getClass() != object.getClass()) {
+            Report that = (Report) object;
+            isEqual = id == that.id &&
+                    Objects.equals(reportType, that.reportType) &&
+                    Objects.equals(reportDate, that.reportDate) &&
+                    Objects.equals(observations, that.observations) &&
+                    Objects.equals(resultsObtained, that.resultsObtained) &&
+                    Objects.equals(student, that.student) &&
+                    Objects.equals(nrc, that.nrc);
+        }
+       return isEqual;
     }
 
     @Override

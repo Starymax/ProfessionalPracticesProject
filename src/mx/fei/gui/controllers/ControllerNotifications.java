@@ -4,6 +4,7 @@ import mx.fei.gui.views.GUINotifications;
 import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dto.Notification;
 import mx.fei.logic.exceptions.DataOperationException;
+
 import javafx.event.ActionEvent;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class ControllerNotifications {
 
     public void markNotificationAsRead(Notification notification) {
         try {
-            boolean updated = notificationDAO.markAsRead(notification.getNotificationId());
+            boolean updated = notificationDAO.markAsRead(notification.getId());
             if (updated) {
                 notification.setRead(true);
                 guiNotifications.refreshList();

@@ -1,14 +1,15 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseProfessor;
 import mx.fei.gui.views.GUIModifyProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -37,8 +38,12 @@ public class ControllerChooseProfessor {
     public void handleSelectReturnButtons(ActionEvent actionEvent) {
         Button button = (Button) actionEvent.getSource();
         switch (button.getText()) {
-            case "Seleccionar" -> handleSelectProfessor();
-            case "Regresar" -> guiChooseProfessor.closeWindow();
+            case "Seleccionar" -> {
+                handleSelectProfessor();
+            }
+            case "Regresar" -> {
+                guiChooseProfessor.closeWindow();
+            }
         }
     }
 
@@ -51,7 +56,7 @@ public class ControllerChooseProfessor {
             stage.initModality(Modality.APPLICATION_MODAL);
             guiModifyProfessor.start(stage);
             guiChooseProfessor.closeWindow();
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
+        } catch (IllegalStateException e) {
             guiChooseProfessor.showError("Seleccione un profesor.");
         }
     }

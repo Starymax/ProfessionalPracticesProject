@@ -1,13 +1,14 @@
 package mx.fei.gui.controllers;
 
+import mx.fei.logic.dao.EducationalExperienceDAO;
+import mx.fei.logic.dto.EducationalExperience;
+import mx.fei.logic.exceptions.DataOperationException;
+import mx.fei.gui.views.GUIRegisterEducationalExperience;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import mx.fei.gui.views.GUIRegisterEducationalExperience;
-import mx.fei.logic.dao.EducationalExperienceDAO;
-import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.NoSuchElementException;
 
@@ -22,10 +23,13 @@ public class ControllerRegisterEducationalExperience {
 
     public void handleRegisterCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        if (source.getText().equals("Registrar")) {
-            handleRegisterButton();
-        } else if (source.getText().equals("Cancelar")) {
-            guiRegisterEducationalExperience.closeWindow();
+        switch (source.getText()) {
+            case "Registrar" -> {
+                handleRegisterButton();
+            }
+            case "Cancelar" -> {
+                guiRegisterEducationalExperience.closeWindow();
+            }
         }
     }
 

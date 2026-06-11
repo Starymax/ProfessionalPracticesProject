@@ -1,11 +1,11 @@
 package mx.fei.gui.views;
 
-import mx.fei.gui.utils.GUIStyle;
-
-import javafx.scene.Node;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerModifyProfessor;
 import mx.fei.logic.dto.Professor;
+import mx.fei.gui.utils.GUIStyle;
+
+import javafx.scene.Node;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

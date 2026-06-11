@@ -1,7 +1,6 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.List;

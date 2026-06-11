@@ -1,6 +1,9 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerModifyStudent;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Student;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -12,21 +15,10 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.Scene;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.GridPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerModifyStudent;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Student;
 
 import java.util.ArrayList;
 import java.util.List;

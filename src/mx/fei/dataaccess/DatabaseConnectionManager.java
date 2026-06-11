@@ -18,6 +18,7 @@ public class DatabaseConnectionManager {
     private String username;
     private String password;
     private String currentRole;
+    private final int timeOut = 2;
 
     private DatabaseConnectionManager() {}
 
@@ -40,30 +41,11 @@ public class DatabaseConnectionManager {
         return instance;
     }
 
-    private void loadProperties(String role) throws IOException {
-        String fileName = "db_" + role + ".properties";
-        InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName);
-        if (input == null) {
-            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades", fileName);
-            throw new IOException("Error al iniciar sesión: archivo de configuracion no encontrado");
-        }
-        try (input) {
-            Properties properties = new Properties();
-            properties.load(input);
-            this.username = properties.getProperty("db.username");
-            this.password = properties.getProperty("db.password");
-            String host = properties.getProperty("db.host");
-            String port = properties.getProperty("db.port");
-            String name = properties.getProperty("db.name");
-            this.url = "jdbc:mysql://" + host + ":" + port + "/" + name;
-        }
-    }
-
     public Connection getConnection() throws SQLException {
         if (url == null) {
             throw new SQLException("Sistema no disponible, inténtelo de nuevo");
         }
-        if (connection == null || connection.isClosed() || !connection.isValid(2)) {
+        if (connection == null || connection.isClosed() || !connection.isValid(timeOut)) {
             logger.log(Level.INFO, "Estableciendo nueva conexión a la base de datos");
             connection = DriverManager.getConnection(url, username, password);
         }
@@ -88,6 +70,25 @@ public class DatabaseConnectionManager {
                 currentRole = null;
                 instance = null;
             }
+        }
+    }
+
+    private void loadProperties(String role) throws IOException {
+        String fileName = "db_" + role + ".properties";
+        InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName);
+        if (input == null) {
+            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades", fileName);
+            throw new IOException("Error al iniciar sesión: archivo de configuracion no encontrado");
+        }
+        try (input) {
+            Properties properties = new Properties();
+            properties.load(input);
+            this.username = properties.getProperty("db.username");
+            this.password = properties.getProperty("db.password");
+            String host = properties.getProperty("db.host");
+            String port = properties.getProperty("db.port");
+            String name = properties.getProperty("db.name");
+            this.url = "jdbc:mysql://" + host + ":" + port + "/" + name;
         }
     }
 }

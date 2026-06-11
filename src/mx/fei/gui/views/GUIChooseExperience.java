@@ -1,6 +1,9 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerChooseExperience;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.EducationalExperience;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -12,21 +15,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerChooseExperience;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.EducationalExperience;
+
 import java.util.List;
 
 public class GUIChooseExperience extends Application {
@@ -35,6 +28,7 @@ public class GUIChooseExperience extends Application {
     private Button buttonBack;
     private List<EducationalExperience> experiences;
     private boolean toModify = false;
+    private final int noExperienceSelected = 0;
 
     public GUIChooseExperience() {}
 
@@ -75,8 +69,11 @@ public class GUIChooseExperience extends Application {
         stage.show();
     }
 
-    public EducationalExperience getSelectedExperience() {
+    public EducationalExperience getSelectedExperience() throws IllegalStateException {
         int selectedIndex = listViewExperiences.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < noExperienceSelected || selectedIndex >= experiences.size()) {
+            throw new IllegalStateException("No hay experiencia seleccionada.");
+        }
         return experiences.get(selectedIndex);
     }
 
@@ -101,10 +98,28 @@ public class GUIChooseExperience extends Application {
         launch(args);
     }
 
-    public ListView<String> getListViewExperiences() { return listViewExperiences; }
-    public Button getButtonSelect() { return buttonSelect; }
-    public Button getButtonBack() { return buttonBack; }
-    public boolean isToModify() {return toModify; }
-    public void setToModify(boolean toModify) {this.toModify = toModify; }
-    public List<EducationalExperience> getExperiences() { return experiences; }
+    public ListView<String> getListViewExperiences() {
+        return listViewExperiences;
+    }
+
+    public Button getButtonSelect() {
+        return buttonSelect;
+    }
+
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
+
+    public boolean isToModify() {
+        return toModify;
+    }
+
+    public void setToModify(boolean toModify) {
+        this.toModify = toModify;
+    }
+
+    public List<EducationalExperience> getExperiences() {
+        return experiences;
+    }
 }

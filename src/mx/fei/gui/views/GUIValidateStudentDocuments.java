@@ -1,6 +1,13 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerValidateStudentDocuments;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.DocumentReviewItem;
+import mx.fei.logic.dto.Project;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.StudentValidationSummary;
+import mx.fei.logic.dto.ValidationStatus;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -18,13 +25,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerValidateStudentDocuments;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.DocumentReviewItem;
-import mx.fei.logic.dto.Project;
-import mx.fei.logic.dto.Student;
-import mx.fei.logic.dto.StudentValidationSummary;
-import mx.fei.logic.dto.ValidationStatus;
 
 import java.util.List;
 

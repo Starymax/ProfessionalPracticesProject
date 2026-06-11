@@ -6,27 +6,35 @@ import mx.fei.gui.views.GUISendNotificationOfAssign;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Project;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
 
 public class ControllerAssignProject {
 
     private final GUIAssignProject guiAssignProject;
+    private final int noPlaces = 0;
 
     public ControllerAssignProject(GUIAssignProject guiAssignProject) {
         this.guiAssignProject = guiAssignProject;
     }
 
     public void handleAssignCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiAssignProject.getButtonAssign()) {
-            assignProject();
-        } else if (event.getSource() == guiAssignProject.getButtonCancel()) {
-            cancel();
+        Button button = (Button) event.getSource();
+        switch (button.getText()) {
+            case "Asignar" -> {
+                assignProject();
+            }
+            case "Cancelar" -> {
+                cancel();
+            }
         }
     }
 
@@ -35,8 +43,8 @@ public class ControllerAssignProject {
         Student student = guiAssignProject.getStudent();
         if (selected == null) {
             guiAssignProject.showError("Seleccione un proyecto de la lista.");
-        } else if (selected.getAvailablePlaces() > 0) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        } else if (selected.getAvailablePlaces() > noPlaces) {
+            Alert confirm = new Alert(AlertType.CONFIRMATION);
             confirm.setTitle("Confirmar asignación");
             confirm.setHeaderText(null);
             confirm.setContentText("¿Seguro que desea asignar este proyecto al estudiante?");
@@ -75,7 +83,7 @@ public class ControllerAssignProject {
     }
 
     private void cancel() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cancelar?");

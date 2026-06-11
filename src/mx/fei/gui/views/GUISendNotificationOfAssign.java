@@ -1,13 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerSendNotificationOfAssign;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 
-import java.util.List;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,6 +20,8 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 
 public class GUISendNotificationOfAssign {

@@ -17,16 +17,8 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -140,9 +132,13 @@ public class GUIAddStudents extends Application {
         return alert.showAndWait().filter(response -> response == ButtonType.OK).isPresent();
     }
 
-    public void showError(String message) {GUIUtils.showError(message);}
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
 
-    public void showSuccess(String message) {GUIUtils.showSuccess(message);}
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
 
     public void closeWindow() {
         ((Stage) buttonBack.getScene().getWindow()).close();

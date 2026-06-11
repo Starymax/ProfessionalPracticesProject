@@ -9,16 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
@@ -77,7 +69,15 @@ public class GUIManageEnterprise extends Application {
         launch(args);
     }
 
-    public Button getButtonRegisterEnterprise() { return buttonRegisterEnterprise; }
-    public Button getButtonModifyEnterprise() { return buttonModifyEnterprise; }
-    public Button getButtonBack() { return buttonBack; }
+    public Button getButtonRegisterEnterprise() {
+        return buttonRegisterEnterprise;
+    }
+
+    public Button getButtonModifyEnterprise() {
+        return buttonModifyEnterprise;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
 }

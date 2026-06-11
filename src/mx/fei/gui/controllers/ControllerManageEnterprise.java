@@ -1,12 +1,14 @@
 package mx.fei.gui.controllers;
 
+import mx.fei.gui.views.GUIChooseEnterprise;
+import mx.fei.gui.views.GUIManageEnterprise;
+import mx.fei.gui.views.GUIRegisterEnterprise;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import mx.fei.gui.views.GUIChooseEnterprise;
-import mx.fei.gui.views.GUIManageEnterprise;
-import mx.fei.gui.views.GUIRegisterEnterprise;
+
 
 public class ControllerManageEnterprise {
     private GUIManageEnterprise guiManageEnterprise;
@@ -22,9 +24,12 @@ public class ControllerManageEnterprise {
                 guiManageEnterprise.closeWindow();
                 openRegisterEnterprise();
             }
-            case "Modificar organización vinculada" -> openSelectEnterprise();
-
-            case "Regresar" -> guiManageEnterprise.closeWindow();
+            case "Modificar organización vinculada" -> {
+                openSelectEnterprise();
+            }
+            case "Regresar" -> {
+                guiManageEnterprise.closeWindow();
+            }
         }
     }
 

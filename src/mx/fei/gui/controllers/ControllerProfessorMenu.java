@@ -1,16 +1,18 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.Window;
 import mx.fei.gui.views.GUIEvaluateStudentSelection;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.logic.dao.UserDAO;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -25,9 +27,15 @@ public class ControllerProfessorMenu {
     public void handleButtonsMenu(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Evaluar" -> openEvaluateStudent();
-            case "Regresar" -> goBack();
-            case "Cerrar Sesión" -> logout();
+            case "Evaluar" -> {
+                openEvaluateStudent();
+            }
+            case "Regresar" -> {
+                goBack();
+            }
+            case "Cerrar Sesión" -> {
+                logout();
+            }
         }
     }
 
@@ -43,7 +51,7 @@ public class ControllerProfessorMenu {
     }
 
     private void logout() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cerrar sesión?");

@@ -1,6 +1,6 @@
 package mx.fei.gui.controllers;
 
-import javafx.stage.Modality;
+import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIActivityPlan;
 import mx.fei.gui.views.GUIRegisterActivity;
 import mx.fei.logic.dao.ActivityDAO;
@@ -9,8 +9,11 @@ import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.stage.Modality;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 
@@ -23,25 +26,35 @@ public class ControllerActivityPlan {
 
     private final GUIActivityPlan guiActivityPlan;
     private Project project;
+    private final int noHoursLeft = 0;
 
     public ControllerActivityPlan(GUIActivityPlan guiActivityPlan) {
         this.guiActivityPlan = guiActivityPlan;
     }
 
     public void handleAddActivitySavePlanCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiActivityPlan.getButtonAddActivity()) {
-            openAddActivity();
-        } else if (event.getSource() == guiActivityPlan.getButtonSave()) {
-            savePlan();
-        } else if (event.getSource() == guiActivityPlan.getButtonCancel()) {
-            cancel();
+        Button button = (Button) event.getSource();
+        switch(button.getText()) {
+            case "Añadir actividad" -> {
+                openAddActivity();
+            }
+            case "Guardar" -> {
+                savePlan();
+            }
+            case "Cancelar" -> {
+                cancel();
+            }
         }
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     private void openAddActivity() {
         try {
             int remainingHours = guiActivityPlan.getRemainingPlannedHours();
-            if (remainingHours == 0) {
+            if (remainingHours == noHoursLeft) {
                 guiActivityPlan.showError("El plan ya tiene " + GUIActivityPlan.TOTAL_PLAN_HOURS + " horas planeadas. No se pueden agregar más actividades.");
             } else {
                 GUIRegisterActivity guiRegisterActivity = new GUIRegisterActivity();
@@ -101,7 +114,7 @@ public class ControllerActivityPlan {
     }
 
     private void cancel() {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Cancelar");
         confirmation.setHeaderText(null);
         confirmation.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");
@@ -109,9 +122,5 @@ public class ControllerActivityPlan {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             guiActivityPlan.getStage().close();
         }
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
     }
 }

@@ -1,13 +1,13 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Student;
+import mx.fei.gui.controllers.ControllerSelectStudents;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBox;
-import mx.fei.gui.controllers.ControllerSelectStudents;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Student;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,17 +17,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +101,9 @@ public class GUISelectStudents extends Application {
         return checked;
     }
 
-    public void showError(String message) {GUIUtils.showError(message);}
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
 
     public void closeWindow() {
         ((Stage) buttonBack.getScene().getWindow()).close();

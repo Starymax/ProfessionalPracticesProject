@@ -5,15 +5,15 @@ import java.util.Objects;
 
 public class Notification {
 
-    private int notificationId;
+    private int id;
     private String title;
     private String message;
     private Date emissionDate;
     private boolean read;
     private Student student;
 
-    public Notification(int notificationId, String title, String message, Date emissionDate, boolean read, Student student) {
-        this.notificationId = notificationId;
+    public Notification(int id, String title, String message, Date emissionDate, boolean read, Student student) {
+        this.id = id;
         this.title = title;
         this.message = message;
         this.emissionDate = emissionDate;
@@ -21,8 +21,8 @@ public class Notification {
         this.student = student;
     }
 
-    public int getNotificationId() {
-        return notificationId;
+    public int getId() {
+        return id;
     }
 
     public String getTitle() {
@@ -56,7 +56,7 @@ public class Notification {
             isEqual = true;
         } else if (object != null && getClass() == object.getClass()) {
             Notification that = (Notification) object;
-            isEqual = notificationId == that.notificationId
+            isEqual = id == that.id
                     && read == that.read
                     && Objects.equals(title, that.title)
                     && Objects.equals(message, that.message)
@@ -67,6 +67,6 @@ public class Notification {
 
     @Override
     public int hashCode() {
-        return Objects.hash(notificationId, title, message, emissionDate, read);
+        return Objects.hash(id, title, message, emissionDate, read);
     }
 }

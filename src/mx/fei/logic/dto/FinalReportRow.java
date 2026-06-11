@@ -9,16 +9,16 @@ public class FinalReportRow {
     private final StringProperty advance;
     private final StringProperty observation;
     private final StringProperty product;
-    private final StringProperty advancep;
-    private final StringProperty observationp;
+    private final StringProperty advanceProduct;
+    private final StringProperty observationProduct;
 
-    public FinalReportRow(String activity, String advance, String observation, String product, String advancep, String observationp) {
+    public FinalReportRow(String activity, String advance, String observation, String product, String advanceProduct, String observationProduct) {
         this.activity = new SimpleStringProperty(activity);
         this.advance = new SimpleStringProperty(advance);
         this.observation = new SimpleStringProperty(observation);
         this.product = new SimpleStringProperty(product);
-        this.advancep = new SimpleStringProperty(advancep);
-        this.observationp = new SimpleStringProperty(observationp);
+        this.advanceProduct = new SimpleStringProperty(advanceProduct);
+        this.observationProduct = new SimpleStringProperty(observationProduct);
     }
 
     public StringProperty activityProperty() {
@@ -69,27 +69,27 @@ public class FinalReportRow {
         this.product.set(product);
     }
 
-    public StringProperty advancepProperty() {
-        return advancep;
+    public StringProperty advanceProductProperty() {
+        return advanceProduct;
     }
 
-    public String getAdvancep() {
-        return advancep.get();
+    public String getAdvanceProduct() {
+        return advanceProduct.get();
     }
 
-    public void setAdvancep(String advancep) {
-        this.advancep.set(advancep);
+    public void setAdvanceProduct(String advanceProduct) {
+        this.advanceProduct.set(advanceProduct);
     }
 
-    public StringProperty observationpProperty() {
-        return observationp;
+    public StringProperty observationProductProperty() {
+        return observationProduct;
     }
 
-    public String getObservationp() {
-        return observationp.get();
+    public String getObservationProduct() {
+        return observationProduct.get();
     }
 
-    public void setObservationp(String observationp) {
-        this.observationp.set(observationp);
+    public void setObservationProduct(String observationProduct) {
+        this.observationProduct.set(observationProduct);
     }
 }

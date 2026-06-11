@@ -1,5 +1,9 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.controllers.ControllerCustomNotification;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Document;
+import mx.fei.logic.dto.Student;
 import mx.fei.gui.utils.GUIStyle;
 
 import javafx.application.Application;
@@ -15,10 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerCustomNotification;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Document;
-import mx.fei.logic.dto.Student;
+
 
 public class GUICustomNotification extends Application {
 

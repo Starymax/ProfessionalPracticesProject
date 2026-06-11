@@ -1,11 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIManageEnterprise;
 import mx.fei.gui.views.GUIManageStudent;
 import mx.fei.gui.views.GUIManageProjects;
@@ -15,6 +9,14 @@ import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUICoordinatorMenu;
 import mx.fei.logic.dao.UserDAO;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.Optional;
 
@@ -101,7 +103,7 @@ public class ControllerCoordinatorMenu {
     }
 
     private void logout() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cerrar sesión?");

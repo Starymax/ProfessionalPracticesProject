@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIGenerateAcceptanceLetter;
 import mx.fei.gui.views.GUIGenerateDocuments;
 import mx.fei.gui.views.GUIGenerateSelfEvaluation;
@@ -11,8 +7,14 @@ import mx.fei.logic.dao.StudentAdvanceDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 public class ControllerGenerateDocuments {
     private GUIGenerateDocuments guiGenerateDocuments;
+    private final int hoursObjective = 420;
 
     public ControllerGenerateDocuments(GUIGenerateDocuments guiGenerateDocuments) {
         this.guiGenerateDocuments = guiGenerateDocuments;
@@ -21,9 +23,15 @@ public class ControllerGenerateDocuments {
     public void handleButtonsGenerateDocuments(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Generar oficio de aceptación" -> handleAcceptanceLetter();
-            case "Generar autoevaluación" -> handleSelfEvaluation();
-            case "Regresar" -> guiGenerateDocuments.closeWindow();
+            case "Generar oficio de aceptación" -> {
+                handleAcceptanceLetter();
+            }
+            case "Generar autoevaluación" -> {
+                handleSelfEvaluation();
+            }
+            case "Regresar" -> {
+                guiGenerateDocuments.closeWindow();
+            }
         }
     }
 
@@ -43,7 +51,7 @@ public class ControllerGenerateDocuments {
         try {
             StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
             float totalHours = studentAdvanceDAO.getTotalHoursByIdStudent(guiGenerateDocuments.getPractice().getStudent().getUserId());
-            if (totalHours < 420) {
+            if (totalHours < hoursObjective) {
                 guiGenerateDocuments.showError("No puedes generar la autoevaluación porque aún no has completado las 420 horas requeridas. Llevas " + totalHours + " horas.");
             } else {
                 Stage stage = new Stage();

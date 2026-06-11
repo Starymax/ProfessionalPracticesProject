@@ -1,10 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerModifyEnterprise;
 import mx.fei.gui.utils.CountryCityLoader;
 import mx.fei.logic.dto.Enterprise;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -15,22 +16,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.utils.GUIUtils;
 
 import java.util.ArrayList;
 import java.util.List;

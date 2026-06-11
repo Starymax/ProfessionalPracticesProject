@@ -1,6 +1,10 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerModifyExperience;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.EducationalExperience;
+import mx.fei.logic.dto.Professor;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -13,25 +17,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerModifyExperience;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dto.Professor;
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,9 +133,13 @@ public class GUIModifyExperience extends Application {
         return valid;
     }
 
-    public void showError(String message) { GUIUtils.showError(message); }
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
 
-    public void showSuccess(String message) { GUIUtils.showSuccess(message); }
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
 
     public void closeWindow() {
         ((Stage) buttonBack.getScene().getWindow()).close();

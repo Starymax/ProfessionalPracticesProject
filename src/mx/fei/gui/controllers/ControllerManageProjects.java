@@ -1,15 +1,16 @@
 package mx.fei.gui.controllers;
 
-import javafx.stage.Modality;
 import mx.fei.gui.views.GUIManageProjects;
 import mx.fei.gui.views.GUIRegisterProject;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUISelectProjects;
 import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.stage.Stage;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
 
 public class ControllerManageProjects {
 
@@ -20,12 +21,17 @@ public class ControllerManageProjects {
     }
 
     public void handleRegisterModifyReturnButtons(ActionEvent event) {
-        if (event.getSource() == guiManageProjects.getButtonRegisterProject()) {
-            openRegisterProject();
-        } else if (event.getSource() == guiManageProjects.getButtonManageProject()) {
-            openModifyProject();
-        } else if (event.getSource() == guiManageProjects.getButtonGoBack()) {
-            goBack();
+        Button button = (Button) event.getSource();
+        switch (button.getText()) {
+            case "Registrar proyecto" -> {
+                openRegisterProject();
+            }
+            case "Gestionar proyecto" -> {
+                openModifyProject();
+            }
+            case "Regresar" -> {
+                goBack();
+            }
         }
     }
 

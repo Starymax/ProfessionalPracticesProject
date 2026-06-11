@@ -3,24 +3,24 @@ package mx.fei.logic.dto;
 import java.util.Objects;
 
 public class StudentAdvance {
-    private int advanceId;
+    private int id;
     private float realizedHours;
     private WeeklyLog weeklyLog;
     private Student student;
 
-    public StudentAdvance(int advanceId, float realizedHours, WeeklyLog weeklyLog, Student student) {
-        this.advanceId = advanceId;
+    public StudentAdvance(int id, float realizedHours, WeeklyLog weeklyLog, Student student) {
+        this.id = id;
         this.realizedHours = realizedHours;
         this.weeklyLog = weeklyLog;
         this.student = student;
     }
 
-    public int getAdvanceId() {
-        return advanceId;
+    public int getId() {
+        return id;
     }
 
-    public void setAdvanceId(int advanceId) {
-        this.advanceId = advanceId;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public float getRealizedHours() {
@@ -48,18 +48,22 @@ public class StudentAdvance {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        StudentAdvance that = (StudentAdvance) o;
-        return advanceId == that.advanceId
-                && Float.compare(realizedHours, that.realizedHours) == 0
-                && Objects.equals(weeklyLog, that.weeklyLog)
-                && Objects.equals(student, that.student);
+    public boolean equals(Object object) {
+        boolean isEqual = false;
+        if (this == object) {
+            isEqual = true;
+        } else if (object == null || getClass() != object.getClass()) {
+            StudentAdvance that = (StudentAdvance) object;
+            isEqual = id == that.id
+                    && Float.compare(realizedHours, that.realizedHours) == 0
+                    && Objects.equals(weeklyLog, that.weeklyLog)
+                    && Objects.equals(student, that.student);
+        }
+        return isEqual;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(advanceId, realizedHours, weeklyLog, student);
+        return Objects.hash(id, realizedHours, weeklyLog, student);
     }
 }

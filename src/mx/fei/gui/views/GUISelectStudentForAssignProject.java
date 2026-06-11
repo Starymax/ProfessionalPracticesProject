@@ -1,14 +1,14 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.gui.controllers.ControllerSelectStudentForAssignProject;
+import mx.fei.logic.dto.Student;
+
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.BorderPane;
-import mx.fei.gui.controllers.ControllerSelectStudentForAssignProject;
-import mx.fei.logic.dto.Student;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

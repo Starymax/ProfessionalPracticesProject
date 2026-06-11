@@ -1,6 +1,5 @@
 package mx.fei.logic.idao;
 
-import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;

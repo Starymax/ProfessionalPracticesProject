@@ -1,6 +1,9 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerChooseStudent;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Student;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -9,24 +12,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerChooseStudent;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Student;
+
 import java.util.List;
 
 public class GUIChooseStudent extends Application {

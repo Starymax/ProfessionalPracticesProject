@@ -1,8 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIModifyExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
@@ -10,8 +7,12 @@ import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class ControllerModifyExperience {
     private GUIModifyExperience guiModifyExperience;

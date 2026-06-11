@@ -1,15 +1,17 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
-import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIModifyExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
+import mx.fei.gui.views.GUIAddStudents;
+
 import java.util.List;
 
 public class ControllerChooseExperience {
@@ -34,13 +36,11 @@ public class ControllerChooseExperience {
     public void handleSelectReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Seleccionar" -> handleSelectExperience();
+            case "Seleccionar" -> {
+                handleSelectExperience();
+            }
             case "Regresar" -> {
-                GUIManageExperience guiManageExperience = new GUIManageExperience();
-                Stage stage = new Stage();
-                stage.setTitle("Seleccionar experiencia");
-                guiManageExperience.start(stage);
-                guiChooseExperience.closeWindow();
+                openMenuExperience();
             }
         }
     }
@@ -60,8 +60,16 @@ public class ControllerChooseExperience {
                 guiAddStudents.start(stage);
                 guiChooseExperience.closeWindow();
             }
-        } catch (NullPointerException | IndexOutOfBoundsException e) {
+        } catch (IllegalStateException e) {
             guiChooseExperience.showError("Seleccione un experiencia.");
         }
+    }
+
+    private void openMenuExperience() {
+        GUIManageExperience guiManageExperience = new GUIManageExperience();
+        Stage stage = new Stage();
+        stage.setTitle("Seleccionar experiencia");
+        guiManageExperience.start(stage);
+        guiChooseExperience.closeWindow();
     }
 }

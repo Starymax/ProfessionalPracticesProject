@@ -1,4 +1,5 @@
 package mx.fei.logic.dto;
+
 import java.util.Objects;
 
 public class WeeklyLog {

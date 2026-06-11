@@ -1,10 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import mx.fei.gui.utils.FinalReportGenerator;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUIGenerateFinalReport;
@@ -21,6 +16,12 @@ import mx.fei.logic.dto.ReportType;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -45,6 +46,7 @@ public class ControllerGenerateFinalReport {
     private final Practice practice;
     private Report currentReport;
     private FinalReport finalReportData;
+    private final int mountRows = 9;
 
     public ControllerGenerateFinalReport(GUIGenerateFinalReport finalReportView, Stage stage, Student student, Practice practice) {
         this.finalReportView = finalReportView;
@@ -82,10 +84,13 @@ public class ControllerGenerateFinalReport {
 
     public void handleFinalReportButtons(ActionEvent event) {
         Button sourceButton = (Button) event.getSource();
-        String buttonId = sourceButton.getId();
-        switch (buttonId) {
-            case "buttonExportPdf" -> handleExportPDF();
-            case "buttonCancel" -> handleCancel();
+        switch (sourceButton.getText()) {
+            case "Exportar PDF" -> {
+                handleExportPDF();
+            }
+            case "Cancelar" -> {
+                handleCancel();
+            }
         }
     }
 
@@ -134,7 +139,7 @@ public class ControllerGenerateFinalReport {
                         totalWorked += workedHoursByLog.getOrDefault(weeklyLog.getWeeklyLogId(), 0f);
                     }
                     String advanceText = totalPlanned > 0 ? String.format("%.1f%%", (totalWorked / totalPlanned) * 100f) : "";
-                    String observationText = ""; // El alumno debe introducir sus propias observaciones de actividad
+                    String observationText = "";
                     rows.add(new FinalReportRow(activity.getName(), advanceText, observationText, "", "", ""));
                 }
             } catch (DataOperationException e) {
@@ -261,15 +266,15 @@ public class ControllerGenerateFinalReport {
     }
 
     private void fillReportRows(Map<String, Object> parameters, List<FinalReportRow> rows) {
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < mountRows; i++) {
             String index = String.valueOf(i + 1);
             FinalReportRow row = i < rows.size() ? rows.get(i) : new FinalReportRow("", "", "", "", "", "");
             parameters.put("Activity" + index, row.getActivity() != null ? row.getActivity() : "");
             parameters.put("Advance" + index, row.getAdvance() != null ? row.getAdvance() : "");
             parameters.put("Observation" + index, row.getObservation() != null ? row.getObservation() : "");
             parameters.put("Product" + index, row.getProduct() != null ? row.getProduct() : "");
-            parameters.put("Advancep" + index, row.getAdvancep() != null ? row.getAdvancep() : "");
-            parameters.put("Observationp" + index, row.getObservationp() != null ? row.getObservationp() : "");
+            parameters.put("Advancep" + index, row.getAdvanceProduct() != null ? row.getAdvanceProduct() : "");
+            parameters.put("Observationp" + index, row.getObservationProduct() != null ? row.getObservationProduct() : "");
         }
     }
 
@@ -301,14 +306,14 @@ public class ControllerGenerateFinalReport {
         int completeProducts = 0;
         int rowIndex = 1;
         for (FinalReportRow row : finalReportData.getFinalReportRows()) {
-            boolean anyFieldFilled = isNotBlank(row.getProduct()) || isNotBlank(row.getAdvancep()) || isNotBlank(row.getObservationp());
-            boolean allFieldsFilled = isNotBlank(row.getProduct()) && isNotBlank(row.getAdvancep()) && isNotBlank(row.getObservationp());
+            boolean anyFieldFilled = isNotBlank(row.getProduct()) || isNotBlank(row.getAdvanceProduct()) || isNotBlank(row.getObservationProduct());
+            boolean allFieldsFilled = isNotBlank(row.getProduct()) && isNotBlank(row.getAdvanceProduct()) && isNotBlank(row.getObservationProduct());
             if (anyFieldFilled && !allFieldsFilled) {
                 errors.add("El producto de la fila " + rowIndex + " está incompleto. Debes llenar producto, avance y observación.");
             } else if (allFieldsFilled) {
                 GUIUtils.validateShortText(row.getProduct(), "Producto de la fila " + rowIndex, errors);
-                GUIUtils.validateShortText(row.getAdvancep(), "Avance del producto de la fila " + rowIndex, errors);
-                GUIUtils.validateLongText(row.getObservationp(), "Observación del producto de la fila " + rowIndex, errors);
+                GUIUtils.validateShortText(row.getAdvanceProduct(), "Avance del producto de la fila " + rowIndex, errors);
+                GUIUtils.validateLongText(row.getObservationProduct(), "Observación del producto de la fila " + rowIndex, errors);
                 completeProducts++;
             }
             rowIndex++;

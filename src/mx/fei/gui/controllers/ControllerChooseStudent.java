@@ -1,14 +1,16 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +19,7 @@ public class ControllerChooseStudent {
     private GUIChooseStudent guiChooseStudent;
     private StudentDAO studentDAO;
     private static final Logger logger = Logger.getLogger(ControllerChooseStudent.class.getName());
+    private final int noStudentSelected = 0;
 
     public ControllerChooseStudent(GUIChooseStudent guiChooseStudent) {
         this.guiChooseStudent = guiChooseStudent;
@@ -37,7 +40,9 @@ public class ControllerChooseStudent {
     public void handleSelectAndReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Seleccionar" -> handleSelectStudent();
+            case "Seleccionar" -> {
+                handleSelectStudent();
+            }
             case "Regresar" -> {
                 guiChooseStudent.closeWindow();
             }
@@ -49,7 +54,7 @@ public class ControllerChooseStudent {
             guiChooseStudent.showError("No hay estudiantes disponibles para modificar.");
         } else {
             int selectedIndex = guiChooseStudent.getListViewStudents().getSelectionModel().getSelectedIndex();
-            if (selectedIndex < 0) {
+            if (selectedIndex < noStudentSelected) {
                 guiChooseStudent.showError("Seleccione un estudiante.");
             } else {
                 Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);

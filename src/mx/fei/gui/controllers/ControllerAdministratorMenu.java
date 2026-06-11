@@ -1,13 +1,16 @@
 package mx.fei.gui.controllers;
 
-import javafx.stage.Modality;
+import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.gui.views.GUIChooseProfessor;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUIRegisterProfessor;
+
+import javafx.stage.Modality;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import mx.fei.logic.dao.UserDAO;
@@ -23,14 +26,20 @@ public class ControllerAdministratorMenu {
     }
 
     public void handleRegisterModifyProfessorViewCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiAdministratorMenu.getButtonRegisterProfessor()) {
-            openRegisterProfessor();
-        } else if (event.getSource() == guiAdministratorMenu.getButtonModifyProfessor()) {
-            openModifyProfessor();
-        } else if (event.getSource() == guiAdministratorMenu.getButtonProfessorView()) {
-            openProfessorView();
-        } else if (event.getSource() == guiAdministratorMenu.getButtonLogout()) {
-            logout();
+        Button button = (Button) event.getSource();
+        switch(button.getText()) {
+            case "Registrar Profesor" -> {
+                openRegisterProfessor();
+            }
+            case "Modificar Profesor" -> {
+                openModifyProfessor();
+            }
+            case "Vista de Profesor" -> {
+                openProfessorView();
+            }
+            case "Cerrar Sesión" -> {
+                logout();
+            }
         }
     }
 
@@ -57,7 +66,7 @@ public class ControllerAdministratorMenu {
     }
 
     private void logout() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cerrar sesión?");

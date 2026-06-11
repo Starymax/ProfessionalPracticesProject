@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUISelectStudents;
@@ -13,6 +9,12 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +34,15 @@ public class ControllerAddStudents {
     public void handleAddConfirmReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Agregar" -> handleAdd();
-            case "Confirmar" -> handleConfirm();
-            case "Regresar" -> handleBack();
+            case "Agregar" -> {
+                handleAdd();
+            }
+            case "Confirmar" -> {
+                handleConfirm();
+            }
+            case "Regresar" -> {
+                handleBack();
+            }
         }
     }
 

@@ -1,15 +1,16 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
+import mx.fei.gui.controllers.ControllerSelectProjects;
+import mx.fei.logic.dto.Project;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Student;
+
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Priority;
-import mx.fei.gui.controllers.ControllerSelectProjects;
-import mx.fei.logic.dto.Project;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -21,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.logic.dto.Student;
 
 import java.util.ArrayList;
 import java.util.List;

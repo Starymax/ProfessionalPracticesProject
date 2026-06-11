@@ -1,9 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerStudentMenu;
+import mx.fei.logic.dto.Student;
+import mx.fei.logic.dto.Project;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,8 +21,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.logic.dto.Student;
-import mx.fei.logic.dto.Project;
 
 public class GUIStudentMenu extends Application {
 

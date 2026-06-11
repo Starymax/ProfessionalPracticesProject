@@ -11,9 +11,6 @@ public enum DocumentType {
     MONTHLY_REPORT ("reporteMensual"),
     FINAL_REPORT ("reporteFinal");
     private final String documentType;
-    private DocumentType(String documentName) {
-        this.documentType = documentName;
-    }
 
     public String getDocumentType() {
         return documentType;
@@ -21,5 +18,9 @@ public enum DocumentType {
 
     public boolean isReport() {
         return this == PARTIAL_REPORT || this == MONTHLY_REPORT || this == FINAL_REPORT;
+    }
+
+    private DocumentType(String documentName) {
+        this.documentType = documentName;
     }
 }

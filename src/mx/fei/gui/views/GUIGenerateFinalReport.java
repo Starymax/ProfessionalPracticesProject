@@ -1,6 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerGenerateFinalReport;
+import mx.fei.logic.dto.FinalReportRow;
+import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.Student;
+import mx.fei.gui.utils.GUIUtils;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -24,11 +29,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.scene.control.ScrollPane;
-import mx.fei.gui.controllers.ControllerGenerateFinalReport;
-import mx.fei.logic.dto.FinalReportRow;
-import mx.fei.logic.dto.Practice;
-import mx.fei.logic.dto.Student;
-import mx.fei.gui.utils.GUIUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -232,13 +233,13 @@ public class GUIGenerateFinalReport extends Application {
         productColumn.setPrefWidth(180);
 
         TableColumn<FinalReportRow, String> advancepColumn = new TableColumn<>("Avance p.");
-        advancepColumn.setCellValueFactory(parameter -> parameter.getValue().advancepProperty());
-        configureEditableColumn(advancepColumn, (row, value) -> row.setAdvancep(value));
+        advancepColumn.setCellValueFactory(parameter -> parameter.getValue().advanceProductProperty());
+        configureEditableColumn(advancepColumn, (row, value) -> row.setAdvanceProduct(value));
         advancepColumn.setPrefWidth(140);
 
         TableColumn<FinalReportRow, String> observationpColumn = new TableColumn<>("Observación p.");
-        observationpColumn.setCellValueFactory(parameter -> parameter.getValue().observationpProperty());
-        configureEditableColumn(observationpColumn, (row, value) -> row.setObservationp(value));
+        observationpColumn.setCellValueFactory(parameter -> parameter.getValue().observationProductProperty());
+        configureEditableColumn(observationpColumn, (row, value) -> row.setObservationProduct(value));
         observationpColumn.setPrefWidth(200);
 
         tableActivities.getColumns().addAll(activityColumn, advanceColumn, observationColumn, productColumn, advancepColumn, observationpColumn);

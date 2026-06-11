@@ -1,6 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerDocumentPreview;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.gui.utils.PDFPreviewUtil;
+import mx.fei.logic.dto.Document;
+import mx.fei.logic.dto.ValidationStatus;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -16,11 +21,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerDocumentPreview;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.gui.utils.PDFPreviewUtil;
-import mx.fei.logic.dto.Document;
-import mx.fei.logic.dto.ValidationStatus;
 
 import java.io.IOException;
 import java.util.List;

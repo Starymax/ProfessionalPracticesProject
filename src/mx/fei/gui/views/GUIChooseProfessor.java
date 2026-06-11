@@ -1,30 +1,22 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
-import javafx.collections.ObservableList;
 import mx.fei.gui.controllers.ControllerChooseProfessor;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Professor;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Border;
-import javafx.scene.layout.BorderStroke;
-import javafx.scene.layout.BorderStrokeStyle;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -35,6 +27,7 @@ public class GUIChooseProfessor extends Application {
     private Button buttonSelect;
     private Button buttonBack;
     private List<Professor> professors;
+    private final int noProfessorSelected = 0;
 
     public GUIChooseProfessor() {}
 
@@ -86,6 +79,9 @@ public class GUIChooseProfessor extends Application {
 
     public Professor getSelectedProfessor() {
         int selectedIndex = listViewProfessors.getSelectionModel().getSelectedIndex();
+        if (selectedIndex < noProfessorSelected || selectedIndex >= professors.size()) {
+            throw new IllegalStateException("No hay professor seleccionado.");
+        }
         return professors.get(selectedIndex);
     }
 
@@ -101,8 +97,19 @@ public class GUIChooseProfessor extends Application {
         launch(args);
     }
 
-    public ListView<String> getListViewProfessors() { return listViewProfessors; }
-    public Button getButtonSelect() { return buttonSelect; }
-    public Button getButtonBack() { return buttonBack; }
-    public List<Professor> getProfessors() { return professors; }
+    public ListView<String> getListViewProfessors() {
+        return listViewProfessors;
+    }
+
+    public Button getButtonSelect() {
+        return buttonSelect;
+    }
+
+    public Button getButtonBack() {
+        return buttonBack;
+    }
+
+    public List<Professor> getProfessors() {
+        return professors;
+    }
 }

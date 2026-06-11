@@ -1,12 +1,14 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIModifyProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,8 +27,12 @@ public class ControllerModifyProfessor {
     public void handleUpdateCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Actualizar" -> handleUpdate();
-            case "Cancelar" -> guiModifyProfessor.closeWindow();
+            case "Actualizar" -> {
+                handleUpdate();
+            }
+            case "Cancelar" -> {
+                guiModifyProfessor.closeWindow();
+            }
         }
     }
 

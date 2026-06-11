@@ -1,6 +1,10 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerGenerateMonthlyReport;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.ActivityRow;
+import mx.fei.logic.dto.Student;
 
 import javafx.application.Application;
 import javafx.collections.ObservableList;
@@ -19,10 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerGenerateMonthlyReport;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.ActivityRow;
-import mx.fei.logic.dto.Student;
 import javafx.scene.control.ScrollPane;
 
 public class GUIGenerateMonthlyReport extends Application {

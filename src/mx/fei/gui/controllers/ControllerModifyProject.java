@@ -1,8 +1,6 @@
 package mx.fei.gui.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.stage.Modality;
-import mx.fei.gui.views.GUIActivityPlan;
+import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIModifyProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
 import mx.fei.logic.dao.ActivityDAO;
@@ -11,11 +9,16 @@ import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
+import mx.fei.logic.exceptions.DataOperationException;
+import mx.fei.gui.views.GUIActivityPlan;
+
+import javafx.collections.FXCollections;
+import javafx.stage.Modality;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.ArrayList;
 import java.sql.Date;
@@ -31,6 +34,7 @@ public class ControllerModifyProject {
     }
 
     public void handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox(ActionEvent event) {
+        Button button = (Button) event.getSource();
         if (event.getSource() == guiModifyProject.getComboBoxEnterprise()) {
             updateProjectManagers();
         } else if (event.getSource() == guiModifyProject.getButtonAddProjectManager()) {
@@ -101,7 +105,7 @@ public class ControllerModifyProject {
 
     private void saveChanges() {
         if (guiModifyProject.validateFields()) {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Confirmar cambios");
         confirmation.setHeaderText(null);
         confirmation.setContentText("¿Seguro que desea guardar los cambios del proyecto?");
@@ -136,7 +140,7 @@ public class ControllerModifyProject {
     }
 
     private void cancel() {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Cancelar");
         confirmation.setHeaderText(null);
         confirmation.setContentText("¿Seguro que desea cancelar? Se perderán los cambios realizados.");

@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIEvaluateStudent;
 import mx.fei.gui.views.GUIEvaluateStudentSelection;
 import mx.fei.logic.dao.EducationalExperienceDAO;
@@ -12,6 +8,11 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -59,10 +60,13 @@ public class ControllerEvaluateStudentSelection {
 
     public void handleEvaluateCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        if (source == guiEvaluateStudentSelection.getButtonEvaluate()) {
-            evaluateStudent();
-        } else if (source == guiEvaluateStudentSelection.getButtonCancel()) {
-            guiEvaluateStudentSelection.getStage().close();
+        switch (source.getText()) {
+            case "Evaluar" -> {
+                evaluateStudent();
+            }
+            case "Cancelar" -> {
+                guiEvaluateStudentSelection.getStage().close();
+            }
         }
     }
 

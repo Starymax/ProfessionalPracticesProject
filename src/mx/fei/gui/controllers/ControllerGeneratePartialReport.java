@@ -1,11 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIGeneratePartialReport;
 import mx.fei.gui.utils.PartialReportGenerator;
 import mx.fei.logic.dao.PracticeDAO;
@@ -23,6 +17,14 @@ import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;

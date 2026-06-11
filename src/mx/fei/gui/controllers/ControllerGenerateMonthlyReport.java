@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIGenerateMonthlyReport;
 import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dao.PracticeDAO;
@@ -22,10 +18,15 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.exceptions.DataOperationException;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import mx.fei.gui.utils.MonthlyReportGenerator;
 import mx.fei.gui.utils.GUIUtils;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 
 import java.io.File;
 import java.net.URL;
@@ -55,6 +56,7 @@ public class ControllerGenerateMonthlyReport {
     private Report currentReport;
     private int currentBlockStartWeek;
     private int currentBlockEndWeek;
+    private final int daysOfWeeks = 7;
 
     public ControllerGenerateMonthlyReport(GUIGenerateMonthlyReport monthlyReportView, Stage stage, Student student) {
         this.monthlyReportView = monthlyReportView;
@@ -87,10 +89,13 @@ public class ControllerGenerateMonthlyReport {
 
     public void handleMonthlyReportButtons(ActionEvent event) {
         Button sourceButton = (Button) event.getSource();
-        String buttonId = sourceButton.getId();
-        switch (buttonId) {
-            case "buttonExportPdf" -> handleExportPDF();
-            case "buttonCancel" -> handleCancel();
+        switch (sourceButton.getText()) {
+            case "Exportar PDF" -> {
+                handleExportPDF();
+            }
+            case "Cancelar" -> {
+                handleCancel();
+            }
         }
     }
 
@@ -394,7 +399,7 @@ public class ControllerGenerateMonthlyReport {
                 }
             }
         }
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < daysOfWeeks; i++) {
             String index = String.valueOf(i + 1);
             if (i < weeklyLogs.size()) {
                 WeeklyLog weeklyLog = weeklyLogs.get(i);

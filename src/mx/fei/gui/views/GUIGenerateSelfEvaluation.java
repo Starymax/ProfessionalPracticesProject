@@ -1,6 +1,10 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerGenerateSelfEvaluation;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Student;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -17,9 +21,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerGenerateSelfEvaluation;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Student;
+
 import java.util.ArrayList;
 import java.util.List;
 

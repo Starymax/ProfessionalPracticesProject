@@ -1,8 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUICustomNotification;
 import mx.fei.gui.views.GUIDocumentPreview;
 import mx.fei.logic.dao.DocumentDAO;
@@ -11,6 +8,12 @@ import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.Notification;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 
 public class ControllerDocumentPreview {
 
@@ -21,12 +24,17 @@ public class ControllerDocumentPreview {
     }
 
     public void handleValidateRejectCloseButtons(ActionEvent event) {
-        if (event.getSource() == guiDocumentPreview.getButtonValidate()) {
-            validateDocument();
-        } else if (event.getSource() == guiDocumentPreview.getButtonReject()) {
-            rejectDocument();
-        } else if (event.getSource() == guiDocumentPreview.getButtonClose()) {
-            guiDocumentPreview.closeWindow();
+        Button button = (Button) event.getSource();
+        switch (button.getText()) {
+            case "Validar" -> {
+                validateDocument();
+            }
+            case "Rechazar" -> {
+                rejectDocument();
+            }
+            case "Cerrar" -> {
+                guiDocumentPreview.closeWindow();
+            }
         }
     }
 

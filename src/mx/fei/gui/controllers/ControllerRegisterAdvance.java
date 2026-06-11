@@ -279,7 +279,7 @@ public class ControllerRegisterAdvance {
         if (existing == null) {
             advanceDAO.createAdvance(new StudentAdvance(0, currentRealized + newHours, weeklyLog, guiRegisterAdvance.getStudent()));
         } else {
-            advanceDAO.updateRealizedHours(existing.getAdvanceId(), currentRealized + newHours);
+            advanceDAO.updateRealizedHours(existing.getId(), currentRealized + newHours);
         }
     }
 

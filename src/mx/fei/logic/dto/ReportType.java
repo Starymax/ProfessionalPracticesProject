@@ -6,11 +6,11 @@ public enum ReportType {
     FINAL_REPORT ("FINAL");
     private final String reportType;
 
-    private ReportType(String reportType) {
-        this.reportType = reportType;
-    }
-
     public String getReportType() {
         return reportType;
+    }
+
+    private ReportType(String reportType) {
+        this.reportType = reportType;
     }
 }

@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIGenerateAcceptanceLetter;
 import mx.fei.gui.utils.AcceptanceLetterGenerator;
 import mx.fei.logic.dao.PracticeDAO;
@@ -12,6 +8,11 @@ import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Stage;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -82,8 +83,12 @@ public class ControllerGenerateAcceptanceLetter {
     public void handleAcceptanceLetterButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Imprimir" -> printPDF();
-            case "Regresar" -> guiGenerateAcceptanceLetter.closeWindow();
+            case "Imprimir" -> {
+                printPDF();
+            }
+            case "Regresar" -> {
+                guiGenerateAcceptanceLetter.closeWindow();
+            }
         }
     }
 

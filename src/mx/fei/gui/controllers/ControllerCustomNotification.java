@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
 import mx.fei.gui.views.GUICustomNotification;
 import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.NotificationDAO;
@@ -8,6 +7,8 @@ import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.Notification;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
 
 public class ControllerCustomNotification {
 

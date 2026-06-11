@@ -4,7 +4,6 @@ import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javax.print.Doc;
 import java.io.IOException;
 import java.util.List;
 

@@ -1,10 +1,10 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerReportPreview;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Document;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

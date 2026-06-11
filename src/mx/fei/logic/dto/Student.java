@@ -67,13 +67,13 @@ public class Student extends User{
 
     @Override
     public boolean equals(Object object) {
-        boolean result = false;
+        boolean isEqual = false;
         if (this == object) {
-            result = true;
+            isEqual = true;
         } else if (object instanceof Student) {
             Student otherStudent = (Student) object;
-            result = this.enrollment.equals(otherStudent.enrollment);
+            isEqual = this.enrollment.equals(otherStudent.enrollment);
         }
-        return result;
+        return isEqual;
     }
 }
