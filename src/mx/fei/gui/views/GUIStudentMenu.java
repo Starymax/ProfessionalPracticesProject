@@ -62,7 +62,7 @@ public class GUIStudentMenu extends Application {
         buttonNotifications = new Button("🔔 Notificaciones");
         buttonNotifications.setPrefHeight(40);
         buttonNotifications.setFont(Font.font("SansSerif", 13));
-        buttonNotifications.setStyle("-fx-background-color: transparent; -fx-text-fill: #1e1e23; -fx-cursor: hand; -fx-border-color: #1e1e23; -fx-border-radius: 8; -fx-background-radius: 8;");
+        buttonNotifications.getStyleClass().add("button-outline");
 
         labelUnreadCount = new Label("0");
         labelUnreadCount.setFont(Font.font("SansSerif", FontWeight.BOLD, 10));
@@ -142,7 +142,6 @@ public class GUIStudentMenu extends Application {
         button.setPrefWidth(380);
         button.setPrefHeight(52);
         button.setFont(Font.font("SansSerif", 15));
-        button.setStyle("-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;");
         return button;
     }
 

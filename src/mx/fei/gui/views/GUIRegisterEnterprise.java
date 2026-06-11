@@ -86,16 +86,7 @@ public class GUIRegisterEnterprise extends Application {
         comboBoxCity.setPrefWidth(180);
         comboBoxCity.setDisable(true);
         loadCountries();
-        comboBoxCountry.setOnAction(e -> {
-            String selectedCountry = comboBoxCountry.getValue();
-            if (selectedCountry != null) {
-                List<String> cities = CountryCityLoader.getCitiesByCountry(selectedCountry);
-                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
-                comboBoxCity.setDisable(false);
-                comboBoxCity.setValue(null);
-                comboBoxCity.setPromptText("Ciudades");
-            }
-        });
+        configureLocationCombos();
         HBox locationBox = new HBox(20, comboBoxCountry, comboBoxCity);
         locationBox.setAlignment(Pos.CENTER_LEFT);
         buttonRegister = new Button("Registrar");
@@ -122,6 +113,19 @@ public class GUIRegisterEnterprise extends Application {
     private void loadCountries() {
         List<String> countries = CountryCityLoader.getCountries();
         comboBoxCountry.setItems(FXCollections.observableArrayList(countries));
+    }
+
+    private void configureLocationCombos() {
+        comboBoxCountry.setOnAction(e -> {
+            String selectedCountry = comboBoxCountry.getValue();
+            if (selectedCountry != null) {
+                List<String> cities = CountryCityLoader.getCitiesByCountry(selectedCountry);
+                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
+                comboBoxCity.setDisable(false);
+                comboBoxCity.setValue(null);
+                comboBoxCity.setPromptText("Ciudades");
+            }
+        });
     }
 
     public  boolean validatedFields() {

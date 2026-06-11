@@ -81,7 +81,6 @@ public class GUIAdministratorMenu extends Application {
         button.setPrefWidth(350);
         button.setPrefHeight(52);
         button.setFont(Font.font("SansSerif", 15));
-        button.setStyle("-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;");
         return button;
     }
 

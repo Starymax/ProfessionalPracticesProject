@@ -64,6 +64,75 @@
     -fx-opacity: 1;
 }
 
+.label-underline { -fx-underline: true; }
+.label-bold      { -fx-font-weight: bold; }
+.label-warning   { -fx-text-fill: #b71c1c; -fx-font-size: 12px; }
+.label-link      { -fx-text-fill: #1565c0; }
+
+.list-view-large { -fx-font-size: 14px; }
+
+.checkbox-item { -fx-padding: 5; }
+
+.list-item-label { -fx-background-color: #E8E8E8; }
+
+.bg-white { -fx-background-color: white; }
+
+.card-panel  { -fx-background-color: #E0E0E0; -fx-border-color: #BBBBBB; -fx-border-width: 1; }
+.card-scroll { -fx-background-color: white;   -fx-border-color: #CCCCCC; -fx-border-width: 1; }
+
+.report-section {
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-padding: 12;
+}
+
+.report-section-flat {
+    -fx-border-color: #DDDDDD;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+
+.report-border {
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+.report-group {
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1;
+    -fx-padding: 10;
+}
+
+.report-content-field {
+    -fx-border-color: #CCCCCC;
+    -fx-border-width: 1;
+    -fx-background-color: #F9F9F9;
+    -fx-padding: 10;
+}
+
+.report-header    { -fx-border-color: black; -fx-border-width: 1; -fx-padding: 5; }
+.report-header-lg { -fx-border-color: black; -fx-border-width: 1; -fx-padding: 8; }
+
+.report-row { -fx-border-color: lightgray; -fx-border-width: 1; -fx-padding: 3; }
+.button-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1E1E1E;
+    -fx-border-color: #1E1E1E;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.button-outline:hover {
+    -fx-background-color: #E0E0E0;
+}
+
+.button-outline:pressed {
+    -fx-background-color: #D0D0D0;
+}
+
 .radio-button,
 .check-box {
     -fx-text-fill: #1E1E1E;
@@ -84,7 +153,6 @@
     -fx-background-radius: 4;
 }
 
-/* Texto del valor mostrado en el ComboBox/ChoiceBox */
 .combo-box .list-cell,
 .choice-box > .label {
     -fx-background-color: transparent;
@@ -92,7 +160,6 @@
     -fx-padding: 3 8 3 8;
 }
 
-/* Flecha desplegable */
 .combo-box .arrow-button,
 .choice-box .open-button,
 .date-picker .arrow-button {
@@ -106,7 +173,6 @@
     -fx-background-color: #555555;
 }
 
-/* Lista desplegable */
 .combo-box-popup .list-view {
     -fx-background-color: white;
     -fx-border-color: #B0B0B0;

@@ -34,17 +34,24 @@ public class ControllerModifyProject {
     }
 
     public void handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        if (event.getSource() == guiModifyProject.getComboBoxEnterprise()) {
+        if (!(event.getSource() instanceof Button)) {
             updateProjectManagers();
-        } else if (event.getSource() == guiModifyProject.getButtonAddProjectManager()) {
-            addProjectManager();
-        } else if (event.getSource() == guiModifyProject.getButtonContinue()) {
-            saveChanges();
-        } else if (event.getSource() == guiModifyProject.getButtonCancel()) {
-            cancel();
-        } else if (event.getSource() == guiModifyProject.getButtonActivityPlan()) {
-            openActivityPlan();
+        } else {
+            Button source = (Button) event.getSource();
+            switch (source.getText()) {
+                case "Añadir Responsable" -> {
+                    addProjectManager();
+                }
+                case "Plan de Actividades" -> {
+                    openActivityPlan();
+                }
+                case "Continuar" -> {
+                    saveChanges();
+                }
+                case "Cancelar" -> {
+                    cancel();
+                }
+            }
         }
     }
 
@@ -104,39 +111,44 @@ public class ControllerModifyProject {
     }
 
     private void saveChanges() {
-        if (guiModifyProject.validateFields()) {
-        Alert confirmation = new Alert(AlertType.CONFIRMATION);
-        confirmation.setTitle("Confirmar cambios");
-        confirmation.setHeaderText(null);
-        confirmation.setContentText("¿Seguro que desea guardar los cambios del proyecto?");
-        Optional<ButtonType> result = confirmation.showAndWait();
-        ProjectDAO projectDAO = new ProjectDAO();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        if (guiModifyProject.validateFields() && confirmChanges()) {
             try {
-                int projectId = guiModifyProject.getProject().getProjectId();
-                String name = guiModifyProject.getTextFieldName().getText();
-                String description = guiModifyProject.getTextAreaDescription().getText();
-                String generalObjective = guiModifyProject.getTextFieldGeneralObjective().getText();
-                String immediateObjectives = guiModifyProject.getTextAreaImmediateObjectives().getText();
-                String mediateObjectives = guiModifyProject.getTextAreaMediateObjectives().getText();
-                String methodology = guiModifyProject.getTextFieldMethodology().getText();
-                String resources = guiModifyProject.getTextAreaResources().getText();
-                Date startDate = Date.valueOf(guiModifyProject.getDatePickerStartDate().getValue());
-                Date finalDate = Date.valueOf(guiModifyProject.getDatePickerFinalDate().getValue());
-                String responsibilities = guiModifyProject.getTextAreaResponsibilities().getText();
-                int availableSpots = Integer.parseInt(guiModifyProject.getTextFieldAvailablePlaces().getText().trim());
-                boolean isActive = guiModifyProject.isActiveSelected();
-                Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
-                ProjectManager projectManager = guiModifyProject.getComboBoxProjectManager().getValue();
-                Project project = new Project(projectId, name, description, generalObjective, mediateObjectives, immediateObjectives, methodology, responsibilities, resources, startDate, finalDate, isActive, availableSpots, enterprise, projectManager);
-                projectDAO.modifyProject(project);
+                ProjectDAO projectDAO = new ProjectDAO();
+                projectDAO.modifyProject(buildProject());
                 guiModifyProject.showSuccess("Proyecto actualizado exitosamente.");
                 guiModifyProject.getStage().close();
             } catch (DataOperationException e) {
                 guiModifyProject.showError("Error al guardar los cambios: " + e.getMessage());
             }
         }
-        }
+    }
+
+    private boolean confirmChanges() {
+        Alert confirmation = new Alert(AlertType.CONFIRMATION);
+        confirmation.setTitle("Confirmar cambios");
+        confirmation.setHeaderText(null);
+        confirmation.setContentText("¿Seguro que desea guardar los cambios del proyecto?");
+        Optional<ButtonType> result = confirmation.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.OK;
+    }
+
+    private Project buildProject() {
+        int projectId = guiModifyProject.getProject().getProjectId();
+        String name = guiModifyProject.getTextFieldName().getText();
+        String description = guiModifyProject.getTextAreaDescription().getText();
+        String generalObjective = guiModifyProject.getTextFieldGeneralObjective().getText();
+        String immediateObjectives = guiModifyProject.getTextAreaImmediateObjectives().getText();
+        String mediateObjectives = guiModifyProject.getTextAreaMediateObjectives().getText();
+        String methodology = guiModifyProject.getTextFieldMethodology().getText();
+        String resources = guiModifyProject.getTextAreaResources().getText();
+        Date startDate = Date.valueOf(guiModifyProject.getDatePickerStartDate().getValue());
+        Date finalDate = Date.valueOf(guiModifyProject.getDatePickerFinalDate().getValue());
+        String responsibilities = guiModifyProject.getTextAreaResponsibilities().getText();
+        int availableSpots = Integer.parseInt(guiModifyProject.getTextFieldAvailablePlaces().getText().trim());
+        boolean isActive = guiModifyProject.isActiveSelected();
+        Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
+        ProjectManager projectManager = guiModifyProject.getComboBoxProjectManager().getValue();
+        return new Project(projectId, name, description, generalObjective, mediateObjectives, immediateObjectives, methodology, responsibilities, resources, startDate, finalDate, isActive, availableSpots, enterprise, projectManager);
     }
 
     private void cancel() {

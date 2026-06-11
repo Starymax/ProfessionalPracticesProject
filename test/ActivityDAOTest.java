@@ -181,7 +181,7 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void getWeeklyLogsByActivityId_ActivityHasOneLog_ReturnsListWithExpectedLog() throws SQLException {
+    void getWeeklyLogsByActivityId_ActivityHasTwoLogs_ReturnsListWithExpectedLogs() throws SQLException {
         Connection activityConnection = mock(Connection.class);
         PreparedStatement activityStatement = mock(PreparedStatement.class);
         ResultSet activityResultSet = mock(ResultSet.class);
@@ -192,16 +192,17 @@ public class ActivityDAOTest {
         when(activityStatement.executeQuery()).thenReturn(activityResultSet);
         when(activityConnection.prepareStatement(anyString())).thenReturn(activityStatement);
         ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_registro")).thenReturn(20);
-        when(listResultSet.getInt("semana")).thenReturn(2);
-        when(listResultSet.getInt("horas_planificadas")).thenReturn(15);
+        when(listResultSet.next()).thenReturn(true, true, false);
+        when(listResultSet.getInt("id_registro")).thenReturn(20, 21);
+        when(listResultSet.getInt("semana")).thenReturn(2, 3);
+        when(listResultSet.getInt("horas_planificadas")).thenReturn(15, 10);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
         when(mockManager.getConnection()).thenReturn(activityConnection).thenReturn(connection);
         Project project = mock(Project.class);
         Activity expectedActivity = new Activity(5, "Act", "Obs", project);
-        WeeklyLog expectedLog = new WeeklyLog(20, 2, 0, 15, expectedActivity);
-        List<WeeklyLog> expectedList = List.of(expectedLog);
+        WeeklyLog expectedLog1 = new WeeklyLog(20, 2, 0, 15, expectedActivity);
+        WeeklyLog expectedLog2 = new WeeklyLog(21, 3, 0, 10, expectedActivity);
+        List<WeeklyLog> expectedList = List.of(expectedLog1, expectedLog2);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(anyInt())).thenReturn(project))) {
             List<WeeklyLog> result = activityDAO.getWeeklyLogsByActivityId(5);
@@ -274,7 +275,7 @@ public class ActivityDAOTest {
     }
 
     @Test
-    void getWeeklyLogsByActivityId_ActivityHasOneLog_ReturnsListWithOneLog() throws SQLException {
+    void getWeeklyLogsByActivityId_ActivityHasTwoLogs_ReturnsListWithTwoLogs() throws SQLException {
         Connection activityConnection = mock(Connection.class);
         PreparedStatement activityStatement = mock(PreparedStatement.class);
         ResultSet activityResultSet = mock(ResultSet.class);
@@ -285,16 +286,17 @@ public class ActivityDAOTest {
         when(activityStatement.executeQuery()).thenReturn(activityResultSet);
         when(activityConnection.prepareStatement(anyString())).thenReturn(activityStatement);
         ResultSet listResultSet = mock(ResultSet.class);
-        when(listResultSet.next()).thenReturn(true, false);
-        when(listResultSet.getInt("id_registro")).thenReturn(30);
-        when(listResultSet.getInt("semana")).thenReturn(4);
-        when(listResultSet.getInt("horas_planificadas")).thenReturn(20);
+        when(listResultSet.next()).thenReturn(true, true, false);
+        when(listResultSet.getInt("id_registro")).thenReturn(30, 31);
+        when(listResultSet.getInt("semana")).thenReturn(4, 5);
+        when(listResultSet.getInt("horas_planificadas")).thenReturn(20, 25);
         when(preparedStatement.executeQuery()).thenReturn(listResultSet);
         when(mockManager.getConnection()).thenReturn(activityConnection).thenReturn(connection);
         Project project = mock(Project.class);
         Activity expectedActivity = new Activity(5, "Act", "Obs", project);
-        WeeklyLog expectedLog = new WeeklyLog(30, 4, 0, 20, expectedActivity);
-        List<WeeklyLog> expectedList = List.of(expectedLog);
+        WeeklyLog expectedLog1 = new WeeklyLog(30, 4, 0, 20, expectedActivity);
+        WeeklyLog expectedLog2 = new WeeklyLog(31, 5, 0, 25, expectedActivity);
+        List<WeeklyLog> expectedList = List.of(expectedLog1, expectedLog2);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(anyInt())).thenReturn(project))) {
             List<WeeklyLog> result = activityDAO.getWeeklyLogsByActivityId(5);

@@ -75,7 +75,6 @@ public class GUINotifications extends Application {
         VBox.setVgrow(detailPanel, Priority.ALWAYS);
 
         buttonClose = new Button("Cerrar");
-        buttonClose.setStyle("-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;");
         buttonClose.setPrefWidth(100);
 
         HBox bottomRow = new HBox(buttonClose);

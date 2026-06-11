@@ -41,24 +41,7 @@ public class ControllerModifyStudent {
     private void handleUpdate() {
         if (guiModifyStudent.validateFields()) {
             try {
-                Student original = guiModifyStudent.getStudent();
-                String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
-                boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
-                boolean active = guiModifyStudent.getToggleState().isSelected();
-                float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
-                Student updated = new Student(
-                        original.getUserId(),
-                        guiModifyStudent.getTextFieldNames().getText().trim(),
-                        guiModifyStudent.getTextFieldLastName().getText().trim(),
-                        guiModifyStudent.getTextFieldMail().getText().trim(),
-                        original.getPassword(),
-                        gender,
-                        active,
-                        original.getEnrollment(),
-                        indigenousLanguage,
-                        original.getAssignedProject(),
-                        grade
-                );
+                Student updated = buildStudent(guiModifyStudent.getStudent());
                 userDAO.updateUser(updated);
                 boolean result = studentDAO.modifyStudent(updated);
                 if (result) {
@@ -72,5 +55,25 @@ public class ControllerModifyStudent {
                 guiModifyStudent.showError("Error al actualizar. Intente más tarde.");
             }
         }
+    }
+
+    private Student buildStudent(Student original) {
+        String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
+        boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
+        boolean active = guiModifyStudent.getToggleState().isSelected();
+        float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
+        return new Student(
+                original.getUserId(),
+                guiModifyStudent.getTextFieldNames().getText().trim(),
+                guiModifyStudent.getTextFieldLastName().getText().trim(),
+                guiModifyStudent.getTextFieldMail().getText().trim(),
+                original.getPassword(),
+                gender,
+                active,
+                original.getEnrollment(),
+                indigenousLanguage,
+                original.getAssignedProject(),
+                grade
+        );
     }
 }

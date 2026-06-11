@@ -42,9 +42,15 @@ public class ControllerUploadDocument {
     public void handleSelectUploadCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Seleccionar" -> handleSelect();
-            case "Subir" -> handleUpload();
-            case "Cancelar" -> guiUploadDocument.closeWindow();
+            case "Seleccionar" -> {
+                handleSelect();
+            }
+            case "Subir" -> {
+                handleUpload();
+            }
+            case "Cancelar" -> {
+                guiUploadDocument.closeWindow();
+            }
         }
     }
 

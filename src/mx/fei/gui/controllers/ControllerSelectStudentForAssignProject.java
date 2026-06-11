@@ -8,6 +8,7 @@ import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import mx.fei.logic.exceptions.DataOperationException;
 
 public class ControllerSelectStudentForAssignProject {
@@ -19,10 +20,14 @@ public class ControllerSelectStudentForAssignProject {
     }
 
     public void handleSelectCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiSelectStudentForAssignProject.getButtonSelect()) {
-            selectStudent();
-        } else if (event.getSource() == guiSelectStudentForAssignProject.getButtonCancelar()) {
-            cancel();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Seleccionar" -> {
+                selectStudent();
+            }
+            case "Cancelar" -> {
+                cancel();
+            }
         }
     }
 

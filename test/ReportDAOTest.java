@@ -288,22 +288,23 @@ public class ReportDAOTest {
     }
 
     @Test
-    void getReportsByStudentEnrollment_StudentHasOneReport_ReturnsListWithOneReport() throws SQLException {
+    void getReportsByStudentEnrollment_StudentHasTwoReports_ReturnsListWithTwoReports() throws SQLException {
         java.sql.Date reportDate = new java.sql.Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_reporte")).thenReturn(5);
-        when(resultSet.getString("tipo_reporte")).thenReturn("Parcial");
-        when(resultSet.getDate("fecha_reporte")).thenReturn(reportDate);
-        when(resultSet.getString("observaciones")).thenReturn("Obs");
-        when(resultSet.getString("resultados_obtenidos")).thenReturn("Res");
-        when(resultSet.getString("nrc")).thenReturn("99999");
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_reporte")).thenReturn(5, 6);
+        when(resultSet.getString("tipo_reporte")).thenReturn("Parcial", "Final");
+        when(resultSet.getDate("fecha_reporte")).thenReturn(reportDate, reportDate);
+        when(resultSet.getString("observaciones")).thenReturn("Obs", "Obs2");
+        when(resultSet.getString("resultados_obtenidos")).thenReturn("Res", "Res2");
+        when(resultSet.getString("nrc")).thenReturn("99999", "99999");
         Student student = mock(Student.class);
-        Report expectedReport = new Report(5, "Parcial", reportDate, "Obs", "Res", student, "99999");
+        Report expectedReport1 = new Report(5, "Parcial", reportDate, "Obs", "Res", student, "99999");
+        Report expectedReport2 = new Report(6, "Final", reportDate, "Obs2", "Res2", student, "99999");
         try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
                 (mock, context) -> when(mock.getStudentByEnrollment("S123456")).thenReturn(student))) {
             List<Report> result = reportDAO.getReportsByStudentEnrollment("S123456");
-            assertEquals(List.of(expectedReport), result);
+            assertEquals(List.of(expectedReport1, expectedReport2), result);
         }
     }
 

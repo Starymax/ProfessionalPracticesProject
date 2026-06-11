@@ -19,12 +19,13 @@ public class ControllerRegisterStudent {
 
     public void handleConfirmCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        if (source.getText().equals("Confirmar")) {
-            if (guiRegisterStudent.validateFields()) {
-                registerStudent();
+        switch (source.getText()) {
+            case "Confirmar" -> {
+                if (guiRegisterStudent.validateFields()) {
+                    registerStudent();
+                }
             }
-        }  else if (source.getText().equals("Cancelar")) {
-            cancel();
+            case "Cancelar" -> cancel();
         }
     }
 

@@ -87,10 +87,13 @@ public class ControllerEvaluateStudent {
 
     public void handlePreviewCloseButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        if (source == guiEvaluateStudent.getButtonPreview()) {
-            previewReport();
-        } else if (source == guiEvaluateStudent.getButtonClose()) {
-            guiEvaluateStudent.getStage().close();
+        switch (source.getText()) {
+            case "Vista previa" -> {
+                previewReport();
+            }
+            case "Cerrar" -> {
+                guiEvaluateStudent.getStage().close();
+            }
         }
     }
 

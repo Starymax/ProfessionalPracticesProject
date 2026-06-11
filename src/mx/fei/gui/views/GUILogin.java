@@ -54,7 +54,7 @@ public class GUILogin extends Application {
 
     @Override
     public void start(Stage stage) {
-        if (instanceLock == null) {
+        if (isAnotherInstanceRunning()) {
             GUIUtils.showError("La aplicación ya está abierta. Cierra la instancia actual antes de abrir una nueva.");
             Platform.exit();
             return;
@@ -104,6 +104,10 @@ public class GUILogin extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private boolean isAnotherInstanceRunning() {
+        return instanceLock == null;
     }
 
     public void showError(String message) {

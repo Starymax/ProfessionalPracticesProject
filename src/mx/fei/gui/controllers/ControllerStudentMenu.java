@@ -12,6 +12,7 @@ import mx.fei.gui.views.GUIGenerateDocuments;
 import mx.fei.gui.views.GUINotifications;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import mx.fei.logic.dao.*;
 import mx.fei.logic.dto.Practice;
@@ -55,20 +56,29 @@ public class ControllerStudentMenu {
     }
 
     public void handleButtonsMenu(ActionEvent event) {
-        if (event.getSource() == guiStudentMenu.getButtonSelectProjects()) {
-            openSelectProjects();
-        } else if (event.getSource() == guiStudentMenu.getButtonReports()) {
-            openReports();
-        } else if (event.getSource() == guiStudentMenu.getButtonRegisterAdvance()) {
-            openRegisterAdvance();
-        } else if (event.getSource() == guiStudentMenu.getButtonDocuments()) {
-            openDocuments(guiStudentMenu.getStudent().getEnrollment());
-        } else if (event.getSource() == guiStudentMenu.getButtonLogout()) {
-            logout();
-        } else if (event.getSource() == guiStudentMenu.getButtonGenerateDocuments()) {
-            openGenerateDocuments();
-        } else if (event.getSource() == guiStudentMenu.getButtonNotifications()) {
-            openNotifications();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Seleccionar Proyectos" -> {
+                openSelectProjects();
+            }
+            case "Generar Documentos" -> {
+                openGenerateDocuments();
+            }
+            case "Generar Reportes" -> {
+                openReports();
+            }
+            case "Registro de Avances" -> {
+                openRegisterAdvance();
+            }
+            case "Subir Documentos" -> {
+                openDocuments(guiStudentMenu.getStudent().getEnrollment());
+            }
+            case "🔔 Notificaciones" -> {
+                openNotifications();
+            }
+            case "Cerrar Sesión" -> {
+                logout();
+            }
         }
     }
 

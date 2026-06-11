@@ -28,8 +28,12 @@ public class ControllerSelectStudents {
     public void handleSelectGoBackButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Seleccionar" -> handleSelect();
-            case "Regresar" -> guiSelectStudents.closeWindow();
+            case "Seleccionar" -> {
+                handleSelect();
+            }
+            case "Regresar" -> {
+                guiSelectStudents.closeWindow();
+            }
         }
     }
 

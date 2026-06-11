@@ -75,9 +75,9 @@ public class GUIAddStudents extends Application {
         labelNrcValue.setFont(Font.font("SansSerif", FontWeight.NORMAL, 13));
         labelNameValue.setFont(Font.font("SansSerif", FontWeight.NORMAL, 13));
         labelCareerValue.setFont(Font.font("SansSerif", FontWeight.NORMAL, 13));
-        labelNrcValue.setStyle("-fx-underline: true;");
-        labelNameValue.setStyle("-fx-underline: true;");
-        labelCareerValue.setStyle("-fx-underline: true;");
+        labelNrcValue.getStyleClass().add("label-underline");
+        labelNameValue.getStyleClass().add("label-underline");
+        labelCareerValue.getStyleClass().add("label-underline");
         if (experience != null) {
             labelNrcValue.setText(experience.getNrc());
             labelNameValue.setText(experience.getName());

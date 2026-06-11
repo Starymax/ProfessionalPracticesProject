@@ -40,7 +40,6 @@ public class GUIManageProjects extends Application {
         VBox mainPanel = new VBox(20, labelTitle, buttonRegisterProject, buttonManageProject, buttonGoBack);
         mainPanel.setAlignment(Pos.CENTER);
         mainPanel.setPadding(new Insets(32));
-        mainPanel.setStyle("-fx-background-color: #d8d8d8;");
 
         Scene scene = new Scene(mainPanel, 560, 420);
         GUIStyle.apply(scene);
@@ -55,7 +54,6 @@ public class GUIManageProjects extends Application {
         button.setPrefWidth(320);
         button.setPrefHeight(60);
         button.setFont(Font.font("SansSerif", 15));
-        button.setStyle("-fx-background-color: #2e2e2e; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 16;");
         return button;
     }
 

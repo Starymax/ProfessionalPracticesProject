@@ -21,10 +21,13 @@ public class ControllerReportPreview {
 
     public void handleAcceptCloseButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
-        if (source == guiReportPreview.getButtonAccept()) {
-            acceptReport();
-        } else if (source == guiReportPreview.getButtonClose()) {
-            guiReportPreview.getStage().close();
+        switch (source.getText()) {
+            case "Aceptar reporte" -> {
+                acceptReport();
+            }
+            case "Cerrar" -> {
+                guiReportPreview.getStage().close();
+            }
         }
     }
 

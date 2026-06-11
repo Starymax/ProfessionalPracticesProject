@@ -77,7 +77,7 @@ public class GUIGenerateMonthlyReport extends Application {
 
     private VBox createStudentInfoSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Información del Estudiante");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane gridPane = new GridPane();
@@ -98,7 +98,7 @@ public class GUIGenerateMonthlyReport extends Application {
 
     private VBox createProjectInfoSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Información del Proyecto y Práctica");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane gridPane = new GridPane();
@@ -119,7 +119,7 @@ public class GUIGenerateMonthlyReport extends Application {
 
     private VBox createActivitiesSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Actividades Realizadas");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         tableActivities = new TableView<>();

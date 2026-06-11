@@ -47,7 +47,7 @@ public class GUISelectStudentForAssignProject extends Application {
             }
         });
         listViewStudent.setPrefHeight(400);
-        listViewStudent.setStyle("-fx-font-size: 14px;");
+        listViewStudent.getStyleClass().add("list-view-large");
 
         buttonSelect = new Button("Seleccionar");
         buttonCancel = new Button("Cancelar");

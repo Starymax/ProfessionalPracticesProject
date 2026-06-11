@@ -3,6 +3,7 @@ package mx.fei.gui.controllers;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -32,16 +33,24 @@ import java.util.Optional;
         }
 
         public void handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox(ActionEvent event) {
-            if (event.getSource() == guiRegisterProject.getComboBoxEnterprise()) {
+            if (!(event.getSource() instanceof Button)) {
                 updateProjectManagers();
-            } else if (event.getSource() == guiRegisterProject.getButtonAddProjectManager()) {
-                addProjectManager();
-            } else if (event.getSource() == guiRegisterProject.getButtonSave()) {
-                saveProject();
-            } else if (event.getSource() == guiRegisterProject.getButtonActivityPlan()) {
-                openActivityPlan();
-            } else if (event.getSource() == guiRegisterProject.getButtonCancel()) {
-                cancel();
+                return;
+            }
+            Button source = (Button) event.getSource();
+            switch (source.getText()) {
+                case "Añadir Responsable" -> {
+                    addProjectManager();
+                }
+                case "Guardar" -> {
+                    saveProject();
+                }
+                case "Plan de Actividades" -> {
+                    openActivityPlan();
+                }
+                case "Cancelar" -> {
+                    cancel();
+                }
             }
         }
 

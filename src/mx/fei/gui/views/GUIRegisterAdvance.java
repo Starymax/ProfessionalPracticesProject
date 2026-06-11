@@ -171,15 +171,13 @@ public class GUIRegisterAdvance {
         buttonSave.setPrefWidth(180);
         buttonSave.setPrefHeight(44);
         buttonSave.setFont(Font.font(15));
-        buttonSave.setStyle("-fx-background-color: #222; -fx-text-fill: white; -fx-background-radius: 10;");
-        buttonSave.setOnAction(event -> controllerRegisterAdvance.handleSaveButton());
+        buttonSave.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
 
         Button buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(180);
         buttonCancel.setPrefHeight(44);
         buttonCancel.setFont(Font.font(15));
-        buttonCancel.setStyle("-fx-background-color: #222; -fx-text-fill: white; -fx-background-radius: 10;");
-        buttonCancel.setOnAction(event -> controllerRegisterAdvance.handleCancelButton());
+        buttonCancel.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
 
         VBox right = new VBox(16,
                 rowMes, rowSemana,

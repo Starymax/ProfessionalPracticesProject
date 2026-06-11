@@ -1,7 +1,6 @@
 package mx.fei.gui.utils;
 
 import javafx.scene.Scene;
-import javafx.scene.layout.Region;
 
 import java.net.URL;
 import java.util.logging.Level;
@@ -21,14 +20,6 @@ public final class GUIStyle {
             String stylesheet = resolveStylesheet();
             if (stylesheet != null && !scene.getStylesheets().contains(stylesheet)) {
                 scene.getStylesheets().add(stylesheet);
-            }
-        }
-    }
-
-    public static void addStyleClass(Region node, String styleClass) {
-        if (node != null && styleClass != null && !styleClass.isBlank()) {
-            if (!node.getStyleClass().contains(styleClass)) {
-                node.getStyleClass().add(styleClass);
             }
         }
     }

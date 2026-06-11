@@ -82,7 +82,8 @@ public class GUISelectStudents extends Application {
         this.availableStudents = students;
         ObservableList<CheckBox> items = FXCollections.observableArrayList();
         for (Student student : students) {
-            CheckBox checkBox = new CheckBox(student.getEnrollment() + " - " + student.getName() + " " + student.getLastName());checkBox.setStyle("-fx-padding: 5;");
+            CheckBox checkBox = new CheckBox(student.getEnrollment() + " - " + student.getName() + " " + student.getLastName());
+            checkBox.getStyleClass().add("checkbox-item");
             if (studentsAlreadySelected != null && studentsAlreadySelected.contains(student)) {
                 checkBox.setSelected(true);
             }

@@ -4,6 +4,7 @@ import mx.fei.gui.views.GUIRegisterActivity;
 import mx.fei.logic.dto.Activity;
 import mx.fei.logic.dto.WeeklyLog;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 
@@ -16,10 +17,14 @@ public class ControllerRegisterActivity {
     }
 
     public void handleSaveCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiRegisterActivity.getButtonSave()) {
-            save();
-        } else if (event.getSource() == guiRegisterActivity.getButtonCancel()) {
-            cancel();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Guardar" -> {
+                save();
+            }
+            case "Cancelar" -> {
+                cancel();
+            }
         }
     }
 

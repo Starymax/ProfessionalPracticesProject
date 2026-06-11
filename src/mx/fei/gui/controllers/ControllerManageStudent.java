@@ -31,7 +31,7 @@ public class ControllerManageStudent {
             case "Modificar estudiante" -> {
                 modifyStudent();
             }
-            case "Asignar proyecto"     -> {
+            case "Asignar proyecto" -> {
                 assignProject();
             }
             case "Regresar" -> {

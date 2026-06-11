@@ -1,5 +1,7 @@
 package mx.fei.gui.controllers;
 
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUIRegisterAdvance;
 import mx.fei.logic.dao.ActivityDAO;
@@ -40,9 +42,7 @@ public class ControllerRegisterAdvance {
     private List<StudentAdvance> studentAdvances = new ArrayList<>();
     private int currentWeek;
 
-    /** activityId → all relevant WeeklyLogs for that activity (current + past incomplete) */
     private final Map<Integer, List<WeeklyLog>> logsByActivity = new LinkedHashMap<>();
-    /** activityId → Activity, preserving display order */
     private final Map<Integer, Activity> activitiesById = new LinkedHashMap<>();
 
     public ControllerRegisterAdvance(GUIRegisterAdvance guiRegisterAdvance) {
@@ -145,7 +145,19 @@ public class ControllerRegisterAdvance {
         }
     }
 
-    public void handleSaveButton() {
+    public void handleSaveCancelButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Guardar" -> {
+                save();
+            }
+            case "Cancelar" -> {
+                guiRegisterAdvance.closeWindow();
+            }
+        }
+    }
+
+    private void save() {
         Map<Integer, String> pendingHours = guiRegisterAdvance.getPendingHoursByActivityId();
         if (pendingHours.isEmpty()) {
             guiRegisterAdvance.showError("No hay horas nuevas ingresadas para ninguna actividad.");
@@ -229,9 +241,6 @@ public class ControllerRegisterAdvance {
         return lastSavedWeek;
     }
 
-    public void handleCancelButton() {
-        guiRegisterAdvance.closeWindow();
-    }
 
     private int getTotalRemainingHours(int activityId) {
         int remaining = 0;

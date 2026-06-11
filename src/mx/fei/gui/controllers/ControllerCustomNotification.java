@@ -9,6 +9,7 @@ import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 
 public class ControllerCustomNotification {
 
@@ -20,10 +21,15 @@ public class ControllerCustomNotification {
     }
 
     public void handleSendCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiCustomNotification.getButtonSend()) {
-            sendNotificationAndDeleteDocument();
-        } else if (event.getSource() == guiCustomNotification.getButtonCancel()) {
-            guiCustomNotification.closeWindow();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Enviar y eliminar" -> {
+                    sendNotificationAndDeleteDocument();
+            }
+            case "Cancelar" -> {
+                guiCustomNotification.closeWindow();
+            }
+
         }
     }
 

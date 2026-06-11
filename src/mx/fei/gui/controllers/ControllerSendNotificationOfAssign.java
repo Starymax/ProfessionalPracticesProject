@@ -4,6 +4,7 @@ import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUISendNotificationOfAssign;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dto.Notification;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -24,7 +25,19 @@ public class ControllerSendNotificationOfAssign {
         this.notificationDAO = new NotificationDAO();
     }
 
-    public void handleSend(ActionEvent actionEvent) {
+    public void handleSendCancelButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Enviar" -> {
+                send();
+            }
+            case "Cancelar" -> {
+                guiSendNotificationOfAssign.close();
+            }
+        }
+    }
+
+    private void send() {
         String title = guiSendNotificationOfAssign.getTitleText() == null ? "" : guiSendNotificationOfAssign.getTitleText().trim();
         String message = guiSendNotificationOfAssign.getMessageText() == null ? "" : guiSendNotificationOfAssign.getMessageText().trim();
         ArrayList<String> errors = new ArrayList<>();
@@ -48,9 +61,5 @@ public class ControllerSendNotificationOfAssign {
                 guiSendNotificationOfAssign.showError(e.getMessage());
             }
         }
-    }
-
-    public void handleCancel(ActionEvent actionEvent) {
-        guiSendNotificationOfAssign.close();
     }
 }

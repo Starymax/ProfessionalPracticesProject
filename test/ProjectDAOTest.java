@@ -206,16 +206,19 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getActiveProjects_OneActiveProject_ReturnsListWithOneProject() throws SQLException {
+    void getActiveProjects_TwoActiveProjects_ReturnsListWithTwoProjects() throws SQLException {
         Date date = new Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.next()).thenReturn(true, true, false);
         stubProjectResultSet(resultSet);
+        when(resultSet.getInt("id_proyecto")).thenReturn(1, 2);
+        when(resultSet.getString("nombre_proyecto")).thenReturn("Proyecto A", "Proyecto B");
         Enterprise expectedEnterprise = new Enterprise(1, "Empresa A", "Tech", "111", "a@test.com", "Xalapa", 1L, 2L, true, "México");
         ProjectManager expectedManager = new ProjectManager(2, "Manager A", "manager@test.com", "222", "Director", 1);
-        Project expectedProject = new Project(1, "Proyecto A", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
+        Project expectedProject1 = new Project(1, "Proyecto A", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
+        Project expectedProject2 = new Project(2, "Proyecto B", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
         List<Project> result = projectDAO.getActiveProjects();
-        assertEquals(List.of(expectedProject), result);
+        assertEquals(List.of(expectedProject1, expectedProject2), result);
     }
 
     @Test
@@ -233,16 +236,19 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getAllProjects_OneProjectRegistered_ReturnsListWithOneProject() throws SQLException {
+    void getAllProjects_TwoProjectsRegistered_ReturnsListWithTwoProjects() throws SQLException {
         Date date = new Date(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
+        when(resultSet.next()).thenReturn(true, true, false);
         stubProjectResultSet(resultSet);
+        when(resultSet.getInt("id_proyecto")).thenReturn(1, 2);
+        when(resultSet.getString("nombre_proyecto")).thenReturn("Proyecto A", "Proyecto B");
         Enterprise expectedEnterprise = new Enterprise(1, "Empresa A", "Tech", "111", "a@test.com", "Xalapa", 1L, 2L, true, "México");
         ProjectManager expectedManager = new ProjectManager(2, "Manager A", "manager@test.com", "222", "Director", 1);
-        Project expectedProject = new Project(1, "Proyecto A", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
+        Project expectedProject1 = new Project(1, "Proyecto A", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
+        Project expectedProject2 = new Project(2, "Proyecto B", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
         List<Project> result = projectDAO.getAllProjects();
-        assertEquals(List.of(expectedProject), result);
+        assertEquals(List.of(expectedProject1, expectedProject2), result);
     }
 
     @Test
@@ -260,20 +266,24 @@ public class ProjectDAOTest {
     }
 
     @Test
-    void getAvailableProjects_ProjectHasPlacesAndActivities_ReturnsListWithOneProject() throws DataOperationException {
-        Project projectWithPlaces = new Project();
-        projectWithPlaces.setProjectId(1);
-        projectWithPlaces.setAvailablePlaces(3);
+    void getAvailableProjects_TwoProjectsHavePlacesAndActivities_ReturnsListWithTwoProjects() throws DataOperationException {
+        Project firstProjectWithPlaces = new Project();
+        firstProjectWithPlaces.setProjectId(1);
+        firstProjectWithPlaces.setAvailablePlaces(3);
+        Project secondProjectWithPlaces = new Project();
+        secondProjectWithPlaces.setProjectId(2);
+        secondProjectWithPlaces.setAvailablePlaces(2);
         ProjectDAO secondProjectDAO = spy(projectDAO);
-        doReturn(List.of(projectWithPlaces)).when(secondProjectDAO).getActiveProjects();
+        doReturn(List.of(firstProjectWithPlaces, secondProjectWithPlaces)).when(secondProjectDAO).getActiveProjects();
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
                 (mock, context) -> {
                     List<Activity> activities = new ArrayList<>();
                     activities.add(mock(Activity.class));
                     when(mock.getActivitiesByProjectId(1)).thenReturn(activities);
+                    when(mock.getActivitiesByProjectId(2)).thenReturn(activities);
                 })) {
             List<Project> result = secondProjectDAO.getAvailableProjects();
-            assertEquals(List.of(projectWithPlaces), result);
+            assertEquals(List.of(firstProjectWithPlaces, secondProjectWithPlaces), result);
         }
     }
 

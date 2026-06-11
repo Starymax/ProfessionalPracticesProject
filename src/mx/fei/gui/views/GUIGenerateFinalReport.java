@@ -107,7 +107,7 @@ public class GUIGenerateFinalReport extends Application {
 
     private VBox createStudentInfoSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Información del Estudiante");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane gridPane = new GridPane();
@@ -134,7 +134,7 @@ public class GUIGenerateFinalReport extends Application {
 
     private VBox createProjectInfoSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Información del Proyecto y Práctica");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane gridPane = new GridPane();
@@ -158,14 +158,14 @@ public class GUIGenerateFinalReport extends Application {
 
     private VBox createObjectivesSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Objetivos y Metodología");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         Label labelGeneralObjectives = new Label("Objetivos generales:");
         labelGeneralObjectives.setFont(Font.font("SansSerif", FontWeight.BOLD, 12));
         labelGeneralObjectivesContent = new Label();
         labelGeneralObjectivesContent.setWrapText(true);
-        labelGeneralObjectivesContent.setStyle("-fx-border-color: #ccc; -fx-background-color: #f9f9f9; -fx-padding: 10;");
+        labelGeneralObjectivesContent.getStyleClass().add("report-content-field");
         labelGeneralObjectivesContent.setMinHeight(120);
         labelGeneralObjectivesContent.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(labelGeneralObjectivesContent, Priority.ALWAYS);
@@ -174,7 +174,7 @@ public class GUIGenerateFinalReport extends Application {
         labelMethodology.setFont(Font.font("SansSerif", FontWeight.BOLD, 12));
         labelMethodologyContent = new Label();
         labelMethodologyContent.setWrapText(true);
-        labelMethodologyContent.setStyle("-fx-border-color: #ccc; -fx-background-color: #f9f9f9; -fx-padding: 10;");
+        labelMethodologyContent.getStyleClass().add("report-content-field");
         labelMethodologyContent.setMinHeight(120);
         labelMethodologyContent.setMaxWidth(Double.MAX_VALUE);
         GridPane.setHgrow(labelMethodologyContent, Priority.ALWAYS);
@@ -204,7 +204,7 @@ public class GUIGenerateFinalReport extends Application {
 
     private VBox createActivitiesSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-border-radius: 5; -fx-padding: 12;");
+        section.getStyleClass().add("report-section");
         Label title = new Label("Actividades del Reporte Final");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
 

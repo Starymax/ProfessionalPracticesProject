@@ -8,6 +8,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
@@ -21,12 +22,14 @@ public class ControllerRegisterProfessor {
     }
 
     public void handleRegisterCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiRegisterProfessor.getButtonRegister()) {
-            if (guiRegisterProfessor.validateFields()) {
-                register();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Registrar" -> {
+                if (guiRegisterProfessor.validateFields()) {
+                    register();
+                }
             }
-        } else if (event.getSource() == guiRegisterProfessor.getButtonCancel()) {
-            cancel();
+            case "Cancelar" -> cancel();
         }
     }
 

@@ -6,6 +6,7 @@ import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
@@ -19,10 +20,14 @@ public class ControllerRegisterProjectManager{
     }
 
     public void handleRegisterCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiRegisterProjectManager.getButtonRegister()) {
-            register();
-        } else if (event.getSource() == guiRegisterProjectManager.getButtonCancel()) {
-            cancel();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Registrar" -> {
+                register();
+            }
+            case "Cancelar" ->{
+                cancel();
+            }
         }
     }
 

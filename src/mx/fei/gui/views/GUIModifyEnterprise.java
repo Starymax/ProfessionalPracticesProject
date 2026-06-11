@@ -97,33 +97,8 @@ public class GUIModifyEnterprise extends Application {
         comboBoxCity.setPrefWidth(180);
         comboBoxCity.setDisable(true);
         loadCountries();
-        comboBoxCountry.setOnAction(e -> {
-            String selectedCountry = comboBoxCountry.getValue();
-            if (selectedCountry != null) {
-                List<String> cities = CountryCityLoader.getCitiesByCountry(selectedCountry);
-                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
-                comboBoxCity.setDisable(false);
-                comboBoxCity.setValue(null);
-                comboBoxCity.setPromptText("Ciudades");
-            }
-        });
-        if (enterprise != null) {
-            textFieldName.setText(enterprise.getName());
-            textFieldPhone.setText(enterprise.getPhoneNumber());
-            textFieldMail.setText(enterprise.getContactEmail());
-            comboBoxSector.setValue(enterprise.getSector());
-            textFieldDirectUsers.setText(String.valueOf(enterprise.getDirectUsers()));
-            textFieldIndirectUsers.setText(String.valueOf(enterprise.getIndirectUsers()));
-            toggleState.setSelected(enterprise.isActiveStatus());
-            toggleState.setText(enterprise.isActiveStatus() ? "Activo" : "Inactivo");
-            if (enterprise.getCountry() != null) {
-                comboBoxCountry.setValue(enterprise.getCountry());
-                List<String> cities = CountryCityLoader.getCitiesByCountry(enterprise.getCountry());
-                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
-                comboBoxCity.setDisable(false);
-                comboBoxCity.setValue(enterprise.getCity());
-            }
-        }
+        configureLocationCombos();
+        populateFields();
         HBox locationBox = new HBox(20, comboBoxCountry, comboBoxCity);
         locationBox.setAlignment(Pos.CENTER_LEFT);
         buttonUpdate = new Button("Aceptar");
@@ -150,6 +125,39 @@ public class GUIModifyEnterprise extends Application {
     private void loadCountries() {
         comboBoxCountry.setItems(FXCollections.observableArrayList(
                 CountryCityLoader.getCountries()));
+    }
+
+    private void configureLocationCombos() {
+        comboBoxCountry.setOnAction(e -> {
+            String selectedCountry = comboBoxCountry.getValue();
+            if (selectedCountry != null) {
+                List<String> cities = CountryCityLoader.getCitiesByCountry(selectedCountry);
+                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
+                comboBoxCity.setDisable(false);
+                comboBoxCity.setValue(null);
+                comboBoxCity.setPromptText("Ciudades");
+            }
+        });
+    }
+
+    private void populateFields() {
+        if (enterprise != null) {
+            textFieldName.setText(enterprise.getName());
+            textFieldPhone.setText(enterprise.getPhoneNumber());
+            textFieldMail.setText(enterprise.getContactEmail());
+            comboBoxSector.setValue(enterprise.getSector());
+            textFieldDirectUsers.setText(String.valueOf(enterprise.getDirectUsers()));
+            textFieldIndirectUsers.setText(String.valueOf(enterprise.getIndirectUsers()));
+            toggleState.setSelected(enterprise.isActiveStatus());
+            toggleState.setText(enterprise.isActiveStatus() ? "Activo" : "Inactivo");
+            if (enterprise.getCountry() != null) {
+                comboBoxCountry.setValue(enterprise.getCountry());
+                List<String> cities = CountryCityLoader.getCitiesByCountry(enterprise.getCountry());
+                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
+                comboBoxCity.setDisable(false);
+                comboBoxCity.setValue(enterprise.getCity());
+            }
+        }
     }
 
     public boolean validateFields() {

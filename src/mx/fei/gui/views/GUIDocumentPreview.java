@@ -120,7 +120,6 @@ public class GUIDocumentPreview extends Application {
     private Button createButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(140);
-        button.setStyle("-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 10;");
         return button;
     }
 

@@ -232,35 +232,39 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsListWithOneDocument() throws SQLException {
+    void getDocumentsByPractice_PracticeHasTwoDocuments_ReturnsListWithTwoDocuments() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_documento")).thenReturn(10);
-        when(resultSet.getString("nombre")).thenReturn("plan_trabajo.pdf");
-        when(resultSet.getString("ruta")).thenReturn("/ruta/plan_trabajo.pdf");
-        when(resultSet.getString("tipoDocumento")).thenReturn("WORK_PLAN");
-        Document expectedDocument = new Document("plan_trabajo.pdf", "/ruta/plan_trabajo.pdf", DocumentType.WORK_PLAN, practice);
-        expectedDocument.setId(10);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_documento")).thenReturn(10, 11);
+        when(resultSet.getString("nombre")).thenReturn("plan_trabajo.pdf", "horario.pdf");
+        when(resultSet.getString("ruta")).thenReturn("/ruta/plan_trabajo.pdf", "/ruta/horario.pdf");
+        when(resultSet.getString("tipoDocumento")).thenReturn("WORK_PLAN", "STUDENT_SCHEDULE");
+        Document expectedDocument1 = new Document("plan_trabajo.pdf", "/ruta/plan_trabajo.pdf", DocumentType.WORK_PLAN, practice);
+        expectedDocument1.setId(10);
+        Document expectedDocument2 = new Document("horario.pdf", "/ruta/horario.pdf", DocumentType.STUDENT_SCHEDULE, practice);
+        expectedDocument2.setId(11);
         List<Document> result = documentDAO.getDocumentsByPractice(practice);
-        assertEquals(List.of(expectedDocument), result);
+        assertEquals(List.of(expectedDocument1, expectedDocument2), result);
     }
 
     @Test
-    void getDocumentsByPractice_PracticeHasOneDocument_ReturnsExpectedDocument() throws SQLException {
+    void getDocumentsByPractice_PracticeHasTwoDocuments_ReturnsExpectedDocuments() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_documento")).thenReturn(5);
-        when(resultSet.getString("nombre")).thenReturn("horario.pdf");
-        when(resultSet.getString("ruta")).thenReturn("/ruta/horario.pdf");
-        when(resultSet.getString("tipoDocumento")).thenReturn("STUDENT_SCHEDULE");
-        Document expectedDocument = new Document("horario.pdf", "/ruta/horario.pdf", DocumentType.STUDENT_SCHEDULE, practice);
-        expectedDocument.setId(5);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_documento")).thenReturn(5, 6);
+        when(resultSet.getString("nombre")).thenReturn("horario.pdf", "plan_trabajo.pdf");
+        when(resultSet.getString("ruta")).thenReturn("/ruta/horario.pdf", "/ruta/plan_trabajo.pdf");
+        when(resultSet.getString("tipoDocumento")).thenReturn("STUDENT_SCHEDULE", "WORK_PLAN");
+        Document expectedDocument1 = new Document("horario.pdf", "/ruta/horario.pdf", DocumentType.STUDENT_SCHEDULE, practice);
+        expectedDocument1.setId(5);
+        Document expectedDocument2 = new Document("plan_trabajo.pdf", "/ruta/plan_trabajo.pdf", DocumentType.WORK_PLAN, practice);
+        expectedDocument2.setId(6);
         List<Document> result = documentDAO.getDocumentsByPractice(practice);
-        assertEquals(List.of(expectedDocument), result);
+        assertEquals(List.of(expectedDocument1, expectedDocument2), result);
     }
 
     @Test
@@ -297,20 +301,22 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getUploadedReportsByPractice_PracticeHasOneReport_ReturnsListWithOneReport() throws SQLException {
+    void getUploadedReportsByPractice_PracticeHasTwoReports_ReturnsListWithTwoReports() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_documento")).thenReturn(10);
-        when(resultSet.getString("nombre")).thenReturn("reporte_parcial.pdf");
-        when(resultSet.getString("ruta")).thenReturn("/ruta/reporte_parcial.pdf");
-        when(resultSet.getString("tipoDocumento")).thenReturn("PARTIAL_REPORT");
-        when(resultSet.getString("estado_validacion")).thenReturn("PENDIENTE");
-        Document expectedDocument = new Document("reporte_parcial.pdf", "/ruta/reporte_parcial.pdf", DocumentType.PARTIAL_REPORT, practice);
-        expectedDocument.setId(10);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_documento")).thenReturn(10, 11);
+        when(resultSet.getString("nombre")).thenReturn("reporte_parcial.pdf", "reporte_final.pdf");
+        when(resultSet.getString("ruta")).thenReturn("/ruta/reporte_parcial.pdf", "/ruta/reporte_final.pdf");
+        when(resultSet.getString("tipoDocumento")).thenReturn("PARTIAL_REPORT", "FINAL_REPORT");
+        when(resultSet.getString("estado_validacion")).thenReturn("PENDIENTE", "PENDIENTE");
+        Document expectedDocument1 = new Document("reporte_parcial.pdf", "/ruta/reporte_parcial.pdf", DocumentType.PARTIAL_REPORT, practice);
+        expectedDocument1.setId(10);
+        Document expectedDocument2 = new Document("reporte_final.pdf", "/ruta/reporte_final.pdf", DocumentType.FINAL_REPORT, practice);
+        expectedDocument2.setId(11);
         List<Document> result = documentDAO.getUploadedReportsByPractice(practice);
-        assertEquals(List.of(expectedDocument), result);
+        assertEquals(List.of(expectedDocument1, expectedDocument2), result);
     }
 
     @Test
@@ -378,18 +384,23 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getStudentsWithUploadedDocuments_OneStudentWithUploadedDocuments_ReturnsListWithExpectedSummary() throws SQLException {
+    void getStudentsWithUploadedDocuments_TwoStudentsWithUploadedDocuments_ReturnsListWithExpectedSummaries() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_alumno")).thenReturn(5);
-        when(resultSet.getInt("total_documentos")).thenReturn(4);
-        when(resultSet.getInt("documentos_pendientes")).thenReturn(2);
-        Student student = mock(Student.class);
-        StudentValidationSummary expectedSummary = new StudentValidationSummary(student, 2, 4);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_alumno")).thenReturn(5, 6);
+        when(resultSet.getInt("total_documentos")).thenReturn(4, 3);
+        when(resultSet.getInt("documentos_pendientes")).thenReturn(2, 1);
+        Student student1 = mock(Student.class);
+        Student student2 = mock(Student.class);
+        StudentValidationSummary expectedSummary1 = new StudentValidationSummary(student1, 2, 4);
+        StudentValidationSummary expectedSummary2 = new StudentValidationSummary(student2, 1, 3);
         try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
-                (mock, context) -> when(mock.getStudentById(5)).thenReturn(student))) {
+                (mock, context) -> {
+                    when(mock.getStudentById(5)).thenReturn(student1);
+                    when(mock.getStudentById(6)).thenReturn(student2);
+                })) {
             List<StudentValidationSummary> result = documentDAO.getStudentsWithUploadedDocuments();
-            assertEquals(List.of(expectedSummary), result);
+            assertEquals(List.of(expectedSummary1, expectedSummary2), result);
         }
     }
 
@@ -417,21 +428,24 @@ public class DocumentDAOTest {
     }
 
     @Test
-    void getDocumentsForValidation_PracticeHasOneDocument_ReturnsListWithExpectedDocument() throws SQLException {
+    void getDocumentsForValidation_PracticeHasTwoDocuments_ReturnsListWithExpectedDocuments() throws SQLException {
         Practice practice = mock(Practice.class);
         when(practice.getId()).thenReturn(1);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_documento")).thenReturn(7);
-        when(resultSet.getString("nombre")).thenReturn("plan_trabajo.pdf");
-        when(resultSet.getString("ruta")).thenReturn("/ruta/plan_trabajo.pdf");
-        when(resultSet.getString("tipoDocumento")).thenReturn("WORK_PLAN");
-        when(resultSet.getString("estado_validacion")).thenReturn("VALIDADO");
-        Document expectedDocument = new Document("plan_trabajo.pdf", "/ruta/plan_trabajo.pdf", DocumentType.WORK_PLAN, practice);
-        expectedDocument.setId(7);
-        expectedDocument.setValidationStatus(ValidationStatus.VALIDATED);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_documento")).thenReturn(7, 8);
+        when(resultSet.getString("nombre")).thenReturn("plan_trabajo.pdf", "horario.pdf");
+        when(resultSet.getString("ruta")).thenReturn("/ruta/plan_trabajo.pdf", "/ruta/horario.pdf");
+        when(resultSet.getString("tipoDocumento")).thenReturn("WORK_PLAN", "STUDENT_SCHEDULE");
+        when(resultSet.getString("estado_validacion")).thenReturn("VALIDADO", "PENDIENTE");
+        Document expectedDocument1 = new Document("plan_trabajo.pdf", "/ruta/plan_trabajo.pdf", DocumentType.WORK_PLAN, practice);
+        expectedDocument1.setId(7);
+        expectedDocument1.setValidationStatus(ValidationStatus.VALIDATED);
+        Document expectedDocument2 = new Document("horario.pdf", "/ruta/horario.pdf", DocumentType.STUDENT_SCHEDULE, practice);
+        expectedDocument2.setId(8);
+        expectedDocument2.setValidationStatus(ValidationStatus.PENDING);
         List<Document> result = documentDAO.getDocumentsForValidation(practice);
-        assertEquals(List.of(expectedDocument), result);
+        assertEquals(List.of(expectedDocument1, expectedDocument2), result);
     }
 
     @Test

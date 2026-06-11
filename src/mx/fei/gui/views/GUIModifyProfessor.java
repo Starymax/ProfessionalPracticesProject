@@ -91,17 +91,7 @@ public class GUIModifyProfessor extends Application {
         toggleState = new ToggleButton("Inactivo");
         toggleState.setPrefWidth(110);
         toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
-        if (professor != null) {
-            textFieldName.setText(professor.getName());
-            textFieldLastName.setText(professor.getLastName());
-            textFieldEmail.setText(professor.getEmail());
-            comboBoxGender.setValue(professor.getGender());
-            comboBoxShift.setValue(professor.getShift());
-            checkBoxIsCoordinator.setSelected(professor.isCoordinator());
-            checkBoxIsAdministrator.setSelected(professor.isAdmin());
-            toggleState.setSelected(professor.isActive());
-            toggleState.setText(professor.isActive() ? "Activo" : "Inactivo");
-        }
+        populateFields();
 
         buttonUpdate = new Button("Actualizar");
         buttonCancel = new Button("Cancelar");
@@ -123,6 +113,20 @@ public class GUIModifyProfessor extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void populateFields() {
+        if (professor != null) {
+            textFieldName.setText(professor.getName());
+            textFieldLastName.setText(professor.getLastName());
+            textFieldEmail.setText(professor.getEmail());
+            comboBoxGender.setValue(professor.getGender());
+            comboBoxShift.setValue(professor.getShift());
+            checkBoxIsCoordinator.setSelected(professor.isCoordinator());
+            checkBoxIsAdministrator.setSelected(professor.isAdmin());
+            toggleState.setSelected(professor.isActive());
+            toggleState.setText(professor.isActive() ? "Activo" : "Inactivo");
+        }
     }
 
     public boolean validateFields() {

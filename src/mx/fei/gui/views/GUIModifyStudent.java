@@ -95,24 +95,7 @@ public class GUIModifyStudent extends Application {
         toggleState.setPrefWidth(110);
         toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
         formGrid.add(toggleState, 1, 6);
-        if (student != null) {
-            textFieldNames.setText(student.getName());
-            textFieldLastName.setText(student.getLastName());
-            textFieldMail.setText(student.getEmail());
-            if (student.getGender() != null && student.getGender().equals("Hombre")) {
-                radioButtonMan.setSelected(true);
-            } else {
-                radioButtonWoman.setSelected(true);
-            }
-            if (student.isIndigenousLanguage()) {
-                radioButtonSpeakIndigenousLanguage.setSelected(true);
-            } else {
-                radioButtonDontSpeakIndigenousLanguage.setSelected(true);
-            }
-            textFieldGrade.setText(String.valueOf(student.getGrade()));
-            toggleState.setSelected(student.isActive());
-            toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
-        }
+        populateFields();
         buttonUpdate = new Button("Actualizar");
         buttonCancel = new Button("Cancelar");
         buttonUpdate.setPrefWidth(120);
@@ -133,6 +116,27 @@ public class GUIModifyStudent extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void populateFields() {
+        if (student != null) {
+            textFieldNames.setText(student.getName());
+            textFieldLastName.setText(student.getLastName());
+            textFieldMail.setText(student.getEmail());
+            if (student.getGender() != null && student.getGender().equals("Hombre")) {
+                radioButtonMan.setSelected(true);
+            } else {
+                radioButtonWoman.setSelected(true);
+            }
+            if (student.isIndigenousLanguage()) {
+                radioButtonSpeakIndigenousLanguage.setSelected(true);
+            } else {
+                radioButtonDontSpeakIndigenousLanguage.setSelected(true);
+            }
+            textFieldGrade.setText(String.valueOf(student.getGrade()));
+            toggleState.setSelected(student.isActive());
+            toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
+        }
     }
 
     public boolean validateFields() {

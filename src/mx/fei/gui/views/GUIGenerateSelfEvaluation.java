@@ -79,7 +79,7 @@ public class GUIGenerateSelfEvaluation extends Application {
 
     private VBox createDataTable() {
         VBox vbox = new VBox(8);
-        vbox.setStyle("-fx-border-color: #ccc; -fx-padding: 10;");
+        vbox.getStyleClass().add("report-group");
         GridPane gridPane = new GridPane();
         gridPane.setHgap(15);
         gridPane.setVgap(8);
@@ -104,7 +104,7 @@ public class GUIGenerateSelfEvaluation extends Application {
 
     private VBox createInstructionsSection() {
         VBox vbox = new VBox(5);
-        vbox.setStyle("-fx-border-color: #ccc; -fx-padding: 10;");
+        vbox.getStyleClass().add("report-group");
         Label labelInstructionsTitle = new Label("INSTRUCCIONES:");
         labelInstructionsTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 12));
         Label labelInstructions = new Label("Responde a cada una de las afirmaciones presentadas, seleccionando el número del 1 al 5 según el siguiente criterio:");
@@ -116,7 +116,7 @@ public class GUIGenerateSelfEvaluation extends Application {
 
     private VBox createQuestionsTable() {
         VBox vbox = new VBox(5);
-        vbox.setStyle("-fx-border-color: #ccc; -fx-padding: 10;");
+        vbox.getStyleClass().add("report-group");
         Label labelTitleAfirmations = new Label("AFIRMACIONES");
         labelTitleAfirmations.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane header = new GridPane();
@@ -126,7 +126,7 @@ public class GUIGenerateSelfEvaluation extends Application {
         for (int i = 1; i <= columns; i++) {
             header.add(new Label(String.valueOf(i)), i+1, 0);
         }
-        header.setStyle("-fx-border-color: black; -fx-padding: 5;");
+        header.getStyleClass().add("report-header");
         String[] questions = {
                 "Mi participación en la Organización Vinculada fue productiva.",
                 "Logré la aplicación de los conocimientos teórico-prácticos adquiridos en la Licenciatura en Ingeniería de Software.",
@@ -154,7 +154,7 @@ public class GUIGenerateSelfEvaluation extends Application {
             combo.setPrefWidth(60);
             answerCombos.add(combo);
             rowGrid.add(combo, 2, 0);
-            rowGrid.setStyle("-fx-border-color: lightgray; -fx-padding: 3;");
+            rowGrid.getStyleClass().add("report-row");
             gridContainer.getChildren().add(rowGrid);
         }
         for (ComboBox<Integer> answer : answerCombos) {
@@ -177,7 +177,7 @@ public class GUIGenerateSelfEvaluation extends Application {
 
     private VBox createFinalSection() {
         VBox vbox = new VBox(10);
-        vbox.setStyle("-fx-border-color: #ccc; -fx-padding: 10;");
+        vbox.getStyleClass().add("report-group");
         labelTotalScore = new Label("PUNTUACIÓN FINAL: 0 / 50");
         labelTotalScore.setFont(Font.font("SansSerif", FontWeight.BOLD, 12));
         vbox.getChildren().addAll(labelTotalScore);

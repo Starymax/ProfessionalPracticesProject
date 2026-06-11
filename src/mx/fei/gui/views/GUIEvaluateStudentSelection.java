@@ -65,7 +65,7 @@ public class GUIEvaluateStudentSelection extends Application {
             }
         });
         listViewStudent.setPrefHeight(360);
-        listViewStudent.setStyle("-fx-font-size: 14px;");
+        listViewStudent.getStyleClass().add("list-view-large");
 
         buttonEvaluate = new Button("Evaluar");
         buttonCancel = new Button("Cancelar");

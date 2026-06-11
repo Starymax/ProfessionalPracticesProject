@@ -40,21 +40,7 @@ public class ControllerModifyEnterprise {
     private void handleUpdate() {
         if (guiModifyEnterprise.validateFields()) {
             try {
-                long directUsers = Long.parseLong(guiModifyEnterprise.getTextFieldDirectUsers().getText().trim());
-                long indirectUsers = Long.parseLong(guiModifyEnterprise.getTextFieldIndirectUsers().getText().trim());
-                boolean active = guiModifyEnterprise.getToggleState().isSelected();
-                Enterprise updated = new Enterprise(
-                        guiModifyEnterprise.getEnterprise().getEnterpriseId(),
-                        guiModifyEnterprise.getTextFieldName().getText().trim(),
-                        guiModifyEnterprise.getComboBoxSector().getValue(),
-                        guiModifyEnterprise.getTextFieldPhone().getText().trim(),
-                        guiModifyEnterprise.getTextFieldMail().getText().trim(),
-                        guiModifyEnterprise.getComboBoxCity().getValue(),
-                        directUsers,
-                        indirectUsers,
-                        active,
-                        guiModifyEnterprise.getComboBoxCountry().getValue()
-                );
+                Enterprise updated = buildEnterprise();
                 boolean result = enterpriseDAO.modifyEnterprise(updated);
                 if (result) {
                     guiModifyEnterprise.showSuccess("Organización actualizada exitosamente.");
@@ -68,6 +54,24 @@ public class ControllerModifyEnterprise {
                 guiModifyEnterprise.showError("Error al actualizar. Intente más tarde.");
             }
         }
+    }
+
+    private Enterprise buildEnterprise() {
+        long directUsers = Long.parseLong(guiModifyEnterprise.getTextFieldDirectUsers().getText().trim());
+        long indirectUsers = Long.parseLong(guiModifyEnterprise.getTextFieldIndirectUsers().getText().trim());
+        boolean active = guiModifyEnterprise.getToggleState().isSelected();
+        return new Enterprise(
+                guiModifyEnterprise.getEnterprise().getEnterpriseId(),
+                guiModifyEnterprise.getTextFieldName().getText().trim(),
+                guiModifyEnterprise.getComboBoxSector().getValue(),
+                guiModifyEnterprise.getTextFieldPhone().getText().trim(),
+                guiModifyEnterprise.getTextFieldMail().getText().trim(),
+                guiModifyEnterprise.getComboBoxCity().getValue(),
+                directUsers,
+                indirectUsers,
+                active,
+                guiModifyEnterprise.getComboBoxCountry().getValue()
+        );
     }
 
     private void openSelectEnterprise() {

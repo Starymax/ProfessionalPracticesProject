@@ -84,33 +84,35 @@ public class NotificationDAOTest {
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsListWithOneNotification() throws SQLException {
+    void getNotificationsByStudentId_StudentHasTwoNotifications_ReturnsListWithTwoNotifications() throws SQLException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_notificacion")).thenReturn(10);
-        when(resultSet.getString("titulo")).thenReturn("Asignacion");
-        when(resultSet.getString("mensaje")).thenReturn("Fue asignado");
-        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp);
-        when(resultSet.getBoolean("leida")).thenReturn(false);
-        Notification expectedNotification = new Notification(10, "Asignacion", "Fue asignado", timestamp, false, null);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_notificacion")).thenReturn(10, 11);
+        when(resultSet.getString("titulo")).thenReturn("Asignacion", "Recordatorio");
+        when(resultSet.getString("mensaje")).thenReturn("Fue asignado", "Entrega pendiente");
+        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp, timestamp);
+        when(resultSet.getBoolean("leida")).thenReturn(false, true);
+        Notification expectedNotification1 = new Notification(10, "Asignacion", "Fue asignado", timestamp, false, null);
+        Notification expectedNotification2 = new Notification(11, "Recordatorio", "Entrega pendiente", timestamp, true, null);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(1);
-        assertEquals(List.of(expectedNotification), result);
+        assertEquals(List.of(expectedNotification1, expectedNotification2), result);
     }
 
     @Test
-    void getNotificationsByStudentId_StudentHasOneNotification_ReturnsExpectedNotification() throws SQLException {
+    void getNotificationsByStudentId_StudentHasTwoNotifications_ReturnsExpectedNotifications() throws SQLException {
         Timestamp timestamp = new Timestamp(1000000000L);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_notificacion")).thenReturn(7);
-        when(resultSet.getString("titulo")).thenReturn("Proyecto asignado");
-        when(resultSet.getString("mensaje")).thenReturn("Se le asigno un proyecto");
-        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp);
-        when(resultSet.getBoolean("leida")).thenReturn(true);
-        Notification expectedNotification = new Notification(7, "Proyecto asignado", "Se le asigno un proyecto", timestamp, true, null);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_notificacion")).thenReturn(7, 8);
+        when(resultSet.getString("titulo")).thenReturn("Proyecto asignado", "Documento validado");
+        when(resultSet.getString("mensaje")).thenReturn("Se le asigno un proyecto", "Su documento fue validado");
+        when(resultSet.getTimestamp("fecha_emision")).thenReturn(timestamp, timestamp);
+        when(resultSet.getBoolean("leida")).thenReturn(true, false);
+        Notification expectedNotification1 = new Notification(7, "Proyecto asignado", "Se le asigno un proyecto", timestamp, true, null);
+        Notification expectedNotification2 = new Notification(8, "Documento validado", "Su documento fue validado", timestamp, false, null);
         List<Notification> result = notificationDAO.getNotificationsByStudentId(2);
-        assertEquals(List.of(expectedNotification), result);
+        assertEquals(List.of(expectedNotification1, expectedNotification2), result);
     }
 
     @Test

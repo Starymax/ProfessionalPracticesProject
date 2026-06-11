@@ -177,7 +177,7 @@ public class GUIUploadDocuments extends Application {
         selectedFilesBox.getChildren().add(title);
         for (Map.Entry<DocumentType, Document> entry : selectedDocuments.entrySet()) {
             Label label = new Label("- " + entry.getKey().getDocumentType() + ": " + entry.getValue().getName());
-            label.setStyle("-fx-text-fill: #1565c0;");
+            label.getStyleClass().add("label-link");
             selectedFilesBox.getChildren().add(label);
         }
     }

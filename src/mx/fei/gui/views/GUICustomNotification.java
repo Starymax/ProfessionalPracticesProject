@@ -61,7 +61,7 @@ public class GUICustomNotification extends Application {
         textAreaMessage.setPrefRowCount(5);
 
         Label labelWarning = new Label("Al enviar, el documento se eliminará y el alumno deberá subirlo nuevamente.");
-        labelWarning.setStyle("-fx-text-fill: #b71c1c; -fx-font-size: 12px;");
+        labelWarning.getStyleClass().add("label-warning");
         labelWarning.setWrapText(true);
 
         buttonSend = createButton("Enviar y eliminar");
@@ -89,7 +89,6 @@ public class GUICustomNotification extends Application {
     private Button createButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(160);
-        button.setStyle("-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 10;");
         return button;
     }
 

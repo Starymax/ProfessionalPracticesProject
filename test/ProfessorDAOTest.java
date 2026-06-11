@@ -180,23 +180,24 @@ public class ProfessorDAOTest {
     }
 
     @Test
-    void getProfessors_OneProfessorRegistered_ReturnsListWithOneProfessor() throws SQLException {
+    void getProfessors_TwoProfessorsRegistered_ReturnsListWithTwoProfessors() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_usuario")).thenReturn(1);
-        when(resultSet.getInt("numero_de_personal")).thenReturn(12345);
-        when(resultSet.getString("nombre")).thenReturn("Luis");
-        when(resultSet.getString("apellidos")).thenReturn("Garcia");
-        when(resultSet.getString("correo")).thenReturn("luis@uv.mx");
-        when(resultSet.getString("contrasena")).thenReturn("pass");
-        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
-        when(resultSet.getString("genero")).thenReturn("M");
-        when(resultSet.getBoolean("es_coordinador")).thenReturn(false);
-        when(resultSet.getBoolean("es_administrador")).thenReturn(false);
-        when(resultSet.getString("turno")).thenReturn("Matutino");
-        Professor expectedProfessor = new Professor(1, "Luis", "Garcia", "luis@uv.mx", "pass", "M", true, 12345, false, false, "Matutino");
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(1, 2);
+        when(resultSet.getInt("numero_de_personal")).thenReturn(12345, 67890);
+        when(resultSet.getString("nombre")).thenReturn("Luis", "Ana");
+        when(resultSet.getString("apellidos")).thenReturn("Garcia", "Lopez");
+        when(resultSet.getString("correo")).thenReturn("luis@uv.mx", "ana@uv.mx");
+        when(resultSet.getString("contrasena")).thenReturn("pass", "pass2");
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true, true);
+        when(resultSet.getString("genero")).thenReturn("M", "F");
+        when(resultSet.getBoolean("es_coordinador")).thenReturn(false, false);
+        when(resultSet.getBoolean("es_administrador")).thenReturn(false, false);
+        when(resultSet.getString("turno")).thenReturn("Matutino", "Vespertino");
+        Professor expectedProfessor1 = new Professor(1, "Luis", "Garcia", "luis@uv.mx", "pass", "M", true, 12345, false, false, "Matutino");
+        Professor expectedProfessor2 = new Professor(2, "Ana", "Lopez", "ana@uv.mx", "pass2", "F", true, 67890, false, false, "Vespertino");
         List<Professor> result = professorDAO.getProfessors();
-        assertEquals(List.of(expectedProfessor), result);
+        assertEquals(List.of(expectedProfessor1, expectedProfessor2), result);
     }
 
     @Test

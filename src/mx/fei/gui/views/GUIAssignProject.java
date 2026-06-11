@@ -84,7 +84,7 @@ public class GUIAssignProject extends Application {
             return cell;
         });
         projectListView.setPrefHeight(200);
-        projectListView.setStyle("-fx-font-size: 14px;");
+        projectListView.getStyleClass().add("list-view-large");
 
         buttonAssign = new Button("Asignar");
         buttonCancel = new Button("Cancelar");

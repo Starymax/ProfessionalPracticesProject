@@ -83,7 +83,7 @@ public class GUIGeneratePartialReport extends Application {
 
     private VBox createGeneralSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-padding: 12;");
+        section.getStyleClass().add("report-section-flat");
         Label title = new Label("Datos Generales de la EE");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane grid = new GridPane();
@@ -107,7 +107,7 @@ public class GUIGeneratePartialReport extends Application {
 
     private VBox createProjectSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-padding: 12;");
+        section.getStyleClass().add("report-section-flat");
         Label title = new Label("Datos del Proyecto");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane grid = new GridPane();
@@ -131,7 +131,7 @@ public class GUIGeneratePartialReport extends Application {
 
     private VBox createObjectiveMethodologySection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-padding: 12;");
+        section.getStyleClass().add("report-section-flat");
         Label titleObj = new Label("Objetivo(s) general del proyecto");
         titleObj.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         labelObjective = new Label();
@@ -146,7 +146,7 @@ public class GUIGeneratePartialReport extends Application {
 
     private VBox createActivitiesSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-padding: 12;");
+        section.getStyleClass().add("report-section-flat");
         Label title = new Label("Avance de actividades realizadas (Semanas 1 a 8)");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         tableActivities = new TableView<>();
@@ -200,7 +200,7 @@ public class GUIGeneratePartialReport extends Application {
 
     private VBox createResultsSection() {
         VBox section = new VBox(8);
-        section.setStyle("-fx-border-color: #ddd; -fx-padding: 12;");
+        section.getStyleClass().add("report-section-flat");
         Label title = new Label("Resultados obtenidos al momento");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         textAreaResults = new TextArea();

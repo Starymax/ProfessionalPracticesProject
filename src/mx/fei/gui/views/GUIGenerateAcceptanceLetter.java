@@ -201,9 +201,9 @@ public class GUIGenerateAcceptanceLetter extends Application {
     private VBox createLetterBody() {
         VBox body = new VBox(12);
         body.setPadding(new Insets(20));
-        body.setStyle("-fx-border-color: #ccc; -fx-border-radius: 5;");
+        body.getStyleClass().add("report-border");
         Label labelDate = new Label("Xalapa-Enríquez, Ver., a _____");
-        labelDate.setStyle("-fx-font-weight: bold;");
+        labelDate.getStyleClass().add("label-bold");
         body.getChildren().add(labelDate);
         this.labelDate = new Label();
         body.getChildren().add(this.labelDate);
@@ -232,7 +232,7 @@ public class GUIGenerateAcceptanceLetter extends Application {
         GridPane scheduleGrid = new GridPane();
         scheduleGrid.setHgap(15);
         scheduleGrid.setVgap(8);
-        scheduleGrid.setStyle("-fx-border-color: black; -fx-padding: 8;");
+        scheduleGrid.getStyleClass().add("report-header-lg");
         for (int i = 0; i < dias.length; i++) {
             scheduleGrid.add(new Label(dias[i]), i, 0);
         }

@@ -70,13 +70,7 @@ public class GUIModifyExperience extends Application {
         textFieldCurrentProfessor.setDisable(true);
         textFieldCurrentProfessor.setStyle("-fx-opacity: 1;");
         formGrid.add(textFieldCurrentProfessor, 1, 5);
-        if (experience != null) {
-            textFieldName.setText(experience.getName());
-            textFieldCareer.setText(experience.getEducationalProgram());
-            if (experience.getProfessor() != null) {
-                textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
-            }
-        }
+        populateFields();
         comboBoxProfessors = new ComboBox<>();
         comboBoxProfessors.setPrefWidth(180);
         comboBoxProfessors.setPromptText("Cambiar profesor");
@@ -100,6 +94,16 @@ public class GUIModifyExperience extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private void populateFields() {
+        if (experience != null) {
+            textFieldName.setText(experience.getName());
+            textFieldCareer.setText(experience.getEducationalProgram());
+            if (experience.getProfessor() != null) {
+                textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
+            }
+        }
     }
 
     public void setProfessors(List<Professor> professors) {

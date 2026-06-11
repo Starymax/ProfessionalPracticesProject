@@ -74,7 +74,6 @@ public class GUIEvaluateStudent extends Application {
             }
         });
         listViewReports.setPrefHeight(220);
-        listViewReports.setStyle("-fx-font-size: 13px;");
 
         buttonPreview = new Button("Vista previa");
         buttonClose = new Button("Cerrar");

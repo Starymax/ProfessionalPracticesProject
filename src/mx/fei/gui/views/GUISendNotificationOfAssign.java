@@ -62,8 +62,8 @@ public class GUISendNotificationOfAssign {
         buttonCancel.setPrefWidth(100);
 
         ControllerSendNotificationOfAssign controllerSendNotificationOfAssign = new ControllerSendNotificationOfAssign(this);
-        buttonSend.setOnAction(controllerSendNotificationOfAssign::handleSend);
-        buttonCancel.setOnAction(controllerSendNotificationOfAssign::handleCancel);
+        buttonSend.setOnAction(controllerSendNotificationOfAssign::handleSendCancelButtons);
+        buttonCancel.setOnAction(controllerSendNotificationOfAssign::handleSendCancelButtons);
         HBox buttonRow = new HBox(12, buttonCancel, buttonSend);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
 

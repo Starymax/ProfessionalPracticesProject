@@ -1,6 +1,7 @@
 package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import mx.fei.gui.views.GUIDocumentPreview;
@@ -86,10 +87,14 @@ public class ControllerValidateStudentDocuments {
     }
 
     public void handleReviewCloseButtons(ActionEvent event) {
-        if (event.getSource() == guiValidateStudentDocuments.getButtonReview()) {
-            openDocumentPreview();
-        } else if (event.getSource() == guiValidateStudentDocuments.getButtonClose()) {
-            guiValidateStudentDocuments.closeWindow();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Ver / Revisar documento" -> {
+                openDocumentPreview();
+            }
+            case "Cerrar" -> {
+                guiValidateStudentDocuments.closeWindow();
+            }
         }
     }
 

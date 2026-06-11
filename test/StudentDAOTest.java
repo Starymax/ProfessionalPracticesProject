@@ -260,23 +260,24 @@ public class StudentDAOTest {
     @Test
     void getStudents_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_usuario")).thenReturn(1, 2);
-        when(resultSet.getString("matricula")).thenReturn("S21011001", "S21011002");
-        when(resultSet.getString("nombre")).thenReturn("Juan", "Maria");
-        when(resultSet.getString("apellidos")).thenReturn("Pérez", "García");
-        when(resultSet.getString("correo")).thenReturn("juan@test.com", "maria@test.com");
-        when(resultSet.getString("contrasena")).thenReturn("pass", "pass");
-        when(resultSet.getBoolean("activo")).thenReturn(true, true);
-        when(resultSet.getString("genero")).thenReturn("M", "F");
-        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
-        when(resultSet.getInt("proyecto")).thenReturn(5, 0);
-        when(resultSet.getFloat("calificacion")).thenReturn(8.0f, 9.0f);
+        when(resultSet.next()).thenReturn(true, true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(1, 2, 3);
+        when(resultSet.getString("matricula")).thenReturn("S21011001", "S21011002", "S21011003");
+        when(resultSet.getString("nombre")).thenReturn("Juan", "Maria", "Carlos");
+        when(resultSet.getString("apellidos")).thenReturn("Pérez", "García", "Lopez");
+        when(resultSet.getString("correo")).thenReturn("juan@test.com", "maria@test.com", "carlos@test.com");
+        when(resultSet.getString("contrasena")).thenReturn("pass", "pass", "pass");
+        when(resultSet.getBoolean("activo")).thenReturn(true, true, true);
+        when(resultSet.getString("genero")).thenReturn("M", "F", "M");
+        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false, false);
+        when(resultSet.getInt("proyecto")).thenReturn(5, 0, 0);
+        when(resultSet.getFloat("calificacion")).thenReturn(8.0f, 9.0f, 7.5f);
         Student expectedStudent2 = new Student(2, "Maria", "García", "maria@test.com", "pass", "F", true, "S21011002", false, null, 9.0f);
+        Student expectedStudent3 = new Student(3, "Carlos", "Lopez", "carlos@test.com", "pass", "M", true, "S21011003", false, null, 7.5f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(5)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getStudents();
-            assertEquals(List.of(expectedStudent2), result);
+            assertEquals(List.of(expectedStudent2, expectedStudent3), result);
         }
     }
 
@@ -318,23 +319,24 @@ public class StudentDAOTest {
     @Test
     void getStudentsWithoutProject_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_usuario")).thenReturn(3, 4);
-        when(resultSet.getString("matricula")).thenReturn("S21011003", "S21011004");
-        when(resultSet.getString("nombre")).thenReturn("Carlos", "Laura");
-        when(resultSet.getString("apellidos")).thenReturn("Lopez", "Torres");
-        when(resultSet.getString("correo")).thenReturn("c@test.com", "l@test.com");
-        when(resultSet.getString("contrasena")).thenReturn("pass", "pass");
-        when(resultSet.getBoolean("activo")).thenReturn(true, true);
-        when(resultSet.getString("genero")).thenReturn("M", "F");
-        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
-        when(resultSet.getInt("proyecto")).thenReturn(3, 0);
-        when(resultSet.getFloat("calificacion")).thenReturn(7.0f, 8.5f);
+        when(resultSet.next()).thenReturn(true, true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(3, 4, 5);
+        when(resultSet.getString("matricula")).thenReturn("S21011003", "S21011004", "S21011005");
+        when(resultSet.getString("nombre")).thenReturn("Carlos", "Laura", "Pedro");
+        when(resultSet.getString("apellidos")).thenReturn("Lopez", "Torres", "Rios");
+        when(resultSet.getString("correo")).thenReturn("c@test.com", "l@test.com", "p@test.com");
+        when(resultSet.getString("contrasena")).thenReturn("pass", "pass", "pass");
+        when(resultSet.getBoolean("activo")).thenReturn(true, true, true);
+        when(resultSet.getString("genero")).thenReturn("M", "F", "M");
+        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false, false);
+        when(resultSet.getInt("proyecto")).thenReturn(3, 0, 0);
+        when(resultSet.getFloat("calificacion")).thenReturn(7.0f, 8.5f, 9.0f);
         Student expectedStudent2 = new Student(4, "Laura", "Torres", "l@test.com", "pass", "F", true, "S21011004", false, null, 8.5f);
+        Student expectedStudent3 = new Student(5, "Pedro", "Rios", "p@test.com", "pass", "M", true, "S21011005", false, null, 9.0f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(3)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getStudentsWithoutProject();
-            assertEquals(List.of(expectedStudent2), result);
+            assertEquals(List.of(expectedStudent2, expectedStudent3), result);
         }
     }
 
@@ -376,23 +378,24 @@ public class StudentDAOTest {
     @Test
     void getActiveStudents_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_usuario")).thenReturn(5, 6);
-        when(resultSet.getString("matricula")).thenReturn("S21011005", "S21011006");
-        when(resultSet.getString("nombre")).thenReturn("Pedro", "Sofia");
-        when(resultSet.getString("apellidos")).thenReturn("Rios", "Vega");
-        when(resultSet.getString("correo")).thenReturn("p@test.com", "s@test.com");
-        when(resultSet.getString("contrasena")).thenReturn("pass", "pass");
-        when(resultSet.getBoolean("activo")).thenReturn(true, true);
-        when(resultSet.getString("genero")).thenReturn("M", "F");
-        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
-        when(resultSet.getInt("proyecto")).thenReturn(7, 0);
-        when(resultSet.getFloat("calificacion")).thenReturn(9.0f, 7.5f);
+        when(resultSet.next()).thenReturn(true, true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(5, 6, 7);
+        when(resultSet.getString("matricula")).thenReturn("S21011005", "S21011006", "S21011007");
+        when(resultSet.getString("nombre")).thenReturn("Pedro", "Sofia", "Diego");
+        when(resultSet.getString("apellidos")).thenReturn("Rios", "Vega", "Mendez");
+        when(resultSet.getString("correo")).thenReturn("p@test.com", "s@test.com", "d@test.com");
+        when(resultSet.getString("contrasena")).thenReturn("pass", "pass", "pass");
+        when(resultSet.getBoolean("activo")).thenReturn(true, true, true);
+        when(resultSet.getString("genero")).thenReturn("M", "F", "M");
+        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false, false);
+        when(resultSet.getInt("proyecto")).thenReturn(7, 0, 0);
+        when(resultSet.getFloat("calificacion")).thenReturn(9.0f, 7.5f, 8.0f);
         Student expectedStudent2 = new Student(6, "Sofia", "Vega", "s@test.com", "pass", "F", true, "S21011006", false, null, 7.5f);
+        Student expectedStudent3 = new Student(7, "Diego", "Mendez", "d@test.com", "pass", "M", true, "S21011007", false, null, 8.0f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(7)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getActiveStudents();
-            assertEquals(List.of(expectedStudent2), result);
+            assertEquals(List.of(expectedStudent2, expectedStudent3), result);
         }
     }
 
@@ -561,23 +564,24 @@ public class StudentDAOTest {
     @Test
     void getStudentsByEducationalExperience_OneStudentProjectCannotBeLoaded_ReturnsOnlySuccessfullyLoadedStudents() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getInt("id_usuario")).thenReturn(10, 11);
-        when(resultSet.getString("matricula")).thenReturn("S21011010", "S21011011");
-        when(resultSet.getString("nombre")).thenReturn("Rosa", "Felix");
-        when(resultSet.getString("apellidos")).thenReturn("Mora", "Diaz");
-        when(resultSet.getString("correo")).thenReturn("r@test.com", "f@test.com");
-        when(resultSet.getString("contrasena")).thenReturn("pass", "pass");
-        when(resultSet.getBoolean("activo")).thenReturn(true, true);
-        when(resultSet.getString("genero")).thenReturn("F", "M");
-        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false);
-        when(resultSet.getInt("proyecto")).thenReturn(2, 0);
-        when(resultSet.getFloat("calificacion")).thenReturn(9.5f, 8.0f);
+        when(resultSet.next()).thenReturn(true, true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(10, 11, 12);
+        when(resultSet.getString("matricula")).thenReturn("S21011010", "S21011011", "S21011012");
+        when(resultSet.getString("nombre")).thenReturn("Rosa", "Felix", "Irene");
+        when(resultSet.getString("apellidos")).thenReturn("Mora", "Diaz", "Salas");
+        when(resultSet.getString("correo")).thenReturn("r@test.com", "f@test.com", "i@test.com");
+        when(resultSet.getString("contrasena")).thenReturn("pass", "pass", "pass");
+        when(resultSet.getBoolean("activo")).thenReturn(true, true, true);
+        when(resultSet.getString("genero")).thenReturn("F", "M", "F");
+        when(resultSet.getBoolean("lengua_indigena")).thenReturn(false, false, false);
+        when(resultSet.getInt("proyecto")).thenReturn(2, 0, 0);
+        when(resultSet.getFloat("calificacion")).thenReturn(9.5f, 8.0f, 8.7f);
         Student expectedStudent2 = new Student(11, "Felix", "Diaz", "f@test.com", "pass", "M", true, "S21011011", false, null, 8.0f);
+        Student expectedStudent3 = new Student(12, "Irene", "Salas", "i@test.com", "pass", "F", true, "S21011012", false, null, 8.7f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(2)).thenThrow(new DataOperationException("Error proyecto")))) {
             List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
-            assertEquals(List.of(expectedStudent2), result);
+            assertEquals(List.of(expectedStudent2, expectedStudent3), result);
         }
     }
 

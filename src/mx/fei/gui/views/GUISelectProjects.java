@@ -45,18 +45,18 @@ public class GUISelectProjects extends Application {
 
         vBoxProjectList = new VBox(6);
         vBoxProjectList.setPadding(new Insets(10));
-        vBoxProjectList.setStyle("-fx-background-color: white;");
+        vBoxProjectList.getStyleClass().add("bg-white");
 
         isModify = false;
 
         ScrollPane scrollPane = new ScrollPane(vBoxProjectList);
         scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: white; -fx-border-color: #cccccc;");
+        scrollPane.getStyleClass().add("card-scroll");
         scrollPane.setPrefHeight(280);
 
         VBox listPanel = new VBox(10, title, scrollPane);
         listPanel.setPadding(new Insets(16));
-        listPanel.setStyle("-fx-background-color: #e0e0e0; -fx-border-color: #bbbbbb;");
+        listPanel.getStyleClass().add("card-panel");
 
         buttonSelect = new Button("Seleccionar");
         buttonCancel = new Button("Cancelar");
@@ -73,7 +73,6 @@ public class GUISelectProjects extends Application {
 
         VBox mainPanel = new VBox(20, listPanel, buttonRow);
         mainPanel.setPadding(new Insets(24));
-        mainPanel.setStyle("-fx-background-color: #d0d0d0;");
 
         Scene scene = new Scene(mainPanel, 680, 460);
         GUIStyle.apply(scene);
@@ -88,7 +87,7 @@ public class GUISelectProjects extends Application {
         label.setFont(Font.font("SansSerif", 13));
         label.setMaxWidth(Double.MAX_VALUE);
         label.setPadding(new Insets(8, 12, 8, 12));
-        label.setStyle("-fx-background-color: #e8e8e8;");
+        label.getStyleClass().add("list-item-label");
         HBox.setHgrow(label, Priority.ALWAYS);
 
         CheckBox checkBox = new CheckBox();

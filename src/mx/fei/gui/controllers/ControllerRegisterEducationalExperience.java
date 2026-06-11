@@ -38,13 +38,8 @@ public class ControllerRegisterEducationalExperience {
             if (nrcExists()) {
                 guiRegisterEducationalExperience.showError("NRC ya registrado");
             } else {
-                String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
-                String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
-                String career = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
-                String period = guiRegisterEducationalExperience.getSelectedPeriod();
-                EducationalExperience educationalExperience = new EducationalExperience(nrc, name, career, null, period);
                 try {
-                    boolean registered = educationalExperienceDAO.registerEducationalExperience(educationalExperience);
+                    boolean registered = educationalExperienceDAO.registerEducationalExperience(buildEducationalExperience());
                     if (registered) {
                         guiRegisterEducationalExperience.showSuccess("Experiencia educativa registrada exitosamente.");
                         guiRegisterEducationalExperience.closeWindow();
@@ -56,6 +51,14 @@ public class ControllerRegisterEducationalExperience {
                 }
             }
         }
+    }
+
+    private EducationalExperience buildEducationalExperience() {
+        String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
+        String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
+        String career = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
+        String period = guiRegisterEducationalExperience.getSelectedPeriod();
+        return new EducationalExperience(nrc, name, career, null, period);
     }
 
     private boolean nrcExists() {

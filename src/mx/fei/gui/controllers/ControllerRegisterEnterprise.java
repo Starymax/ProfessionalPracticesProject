@@ -24,7 +24,9 @@ public class ControllerRegisterEnterprise {
     public void handleRegisterCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
-            case "Registrar" -> handleRegister();
+            case "Registrar" -> {
+                handleRegister();
+            }
             case "Cancelar" -> {
                 openManageEnterprise();
                 guiRegisterEnterprise.closeWindow();

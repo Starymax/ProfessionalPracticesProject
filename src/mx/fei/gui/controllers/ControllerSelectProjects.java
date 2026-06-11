@@ -2,6 +2,7 @@ package mx.fei.gui.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
@@ -33,14 +34,18 @@ public class ControllerSelectProjects {
     }
 
     public void handleSelectCancelButtons(ActionEvent event) {
-        if (event.getSource() == guiSelectProjects.getButtonSelect()) {
-            if (guiSelectProjects.isModify()){
-                chooseProjectToModify();
-            } else {
-                selectProjectsToAssign();
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Seleccionar" -> {
+                if (guiSelectProjects.isModify()) {
+                    chooseProjectToModify();
+                } else {
+                    selectProjectsToAssign();
+                }
             }
-        } else if (event.getSource() == guiSelectProjects.getButtonCancel()) {
-            cancel();
+            case "Cancelar" -> {
+                cancel();
+            }
         }
     }
 
@@ -51,29 +56,40 @@ public class ControllerSelectProjects {
         } else if (selectedCount > MAX_PROJECTS_TO_MODIFY) {
             guiSelectProjects.showError("Solo puedes modificar un proyecto a la vez");
         } else {
-            GUIModifyProject guiModifyProject = new GUIModifyProject();
+            openModifyProject(guiSelectProjects.getSelectedProjects().get(0));
+        }
+    }
+
+    private void openModifyProject(Project project) {
+        GUIModifyProject guiModifyProject = new GUIModifyProject();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        guiModifyProject.start(stage);
+        guiModifyProject.loadProject(project);
+        guiModifyProject.loadEnterprises(getActiveEnterprises());
+        guiModifyProject.getComboBoxEnterprise().setValue(project.getEnterprise());
+        loadProjectManagers(guiModifyProject, project);
+        guiModifyProject.getComboBoxProjectManager().setValue(project.getProjectManager());
+        stage.setOnHidden(event -> reloadProjects(guiModifyProject));
+    }
+
+    private List<Enterprise> getActiveEnterprises() {
+        List<Enterprise> enterprises = new ArrayList<>();
+        try {
             EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
-            List<Enterprise> enterprises = new ArrayList<>();
-            try {
-                enterprises = enterpriseDAO.getActiveEnterprises();
-            } catch (DataOperationException e) {
-                guiSelectProjects.showError(e.getMessage());
-            }
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiModifyProject.start(stage);
-            Project project = guiSelectProjects.getSelectedProjects().get(0);
-            guiModifyProject.loadProject(project);
-            guiModifyProject.loadEnterprises(enterprises);
-            guiModifyProject.getComboBoxEnterprise().setValue(project.getEnterprise());
+            enterprises = enterpriseDAO.getActiveEnterprises();
+        } catch (DataOperationException e) {
+            guiSelectProjects.showError(e.getMessage());
+        }
+        return enterprises;
+    }
+
+    private void loadProjectManagers(GUIModifyProject guiModifyProject, Project project) {
+        try {
             ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
-            try {
-                guiModifyProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(project.getEnterprise()));
-            } catch (DataOperationException e) {
-                guiModifyProject.showError(e.getMessage());
-            }
-            guiModifyProject.getComboBoxProjectManager().setValue(project.getProjectManager());
-            stage.setOnHidden(event -> reloadProjects(guiModifyProject));
+            guiModifyProject.loadProjectManagers(projectManagerDAO.getProjectManagersByEnterprise(project.getEnterprise()));
+        } catch (DataOperationException e) {
+            guiModifyProject.showError(e.getMessage());
         }
     }
 

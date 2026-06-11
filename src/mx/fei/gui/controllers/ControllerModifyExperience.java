@@ -55,12 +55,7 @@ public class ControllerModifyExperience {
             if (professorToAssign == null) {
                 guiModifyExperience.showError("Debe seleccionar un profesor, la experiencia no tiene ninguno asignado.");
             } else  {
-                EducationalExperience updated = new EducationalExperience(
-                        guiModifyExperience.getExperience().getNrc(),
-                        guiModifyExperience.getTextFieldName().getText().trim(),
-                        guiModifyExperience.getTextFieldCareer().getText().trim(),
-                        professorToAssign
-                );
+                EducationalExperience updated = buildExperience(professorToAssign);
                 try {
                     boolean result = educationalExperienceDAO.modifyEducationalExperience(updated);
                     if (result) {
@@ -75,6 +70,15 @@ public class ControllerModifyExperience {
                 }
             }
         }
+    }
+
+    private EducationalExperience buildExperience(Professor professorToAssign) {
+        return new EducationalExperience(
+                guiModifyExperience.getExperience().getNrc(),
+                guiModifyExperience.getTextFieldName().getText().trim(),
+                guiModifyExperience.getTextFieldCareer().getText().trim(),
+                professorToAssign
+        );
     }
 
     private void openChooseExperience() {

@@ -124,22 +124,23 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getAdvancesByStudentId_StudentHasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
+    void getAdvancesByStudentId_StudentHasTwoAdvances_ReturnsListWithTwoAdvances() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_avance")).thenReturn(7);
-        when(resultSet.getFloat("horas_realizadas")).thenReturn(4f);
-        when(resultSet.getInt("id_registro")).thenReturn(2);
-        when(resultSet.getInt("id_alumno")).thenReturn(10);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_avance")).thenReturn(7, 8);
+        when(resultSet.getFloat("horas_realizadas")).thenReturn(4f, 5f);
+        when(resultSet.getInt("id_registro")).thenReturn(2, 3);
+        when(resultSet.getInt("id_alumno")).thenReturn(10, 10);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
-        StudentAdvance expectedAdvance = new StudentAdvance(7, 4f, weeklyLog, student);
+        StudentAdvance expectedAdvance1 = new StudentAdvance(7, 4f, weeklyLog, student);
+        StudentAdvance expectedAdvance2 = new StudentAdvance(8, 5f, weeklyLog, student);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class,
                 (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
                      (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentId(10);
-            assertEquals(List.of(expectedAdvance), result);
+            assertEquals(List.of(expectedAdvance1, expectedAdvance2), result);
         }
     }
 
@@ -158,20 +159,21 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getAdvancesByWeeklyLogId_WeeklyLogHasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
+    void getAdvancesByWeeklyLogId_WeeklyLogHasTwoAdvances_ReturnsListWithTwoAdvances() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_avance")).thenReturn(9);
-        when(resultSet.getFloat("horas_realizadas")).thenReturn(6f);
-        when(resultSet.getInt("id_registro")).thenReturn(3);
-        when(resultSet.getInt("id_alumno")).thenReturn(11);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_avance")).thenReturn(9, 10);
+        when(resultSet.getFloat("horas_realizadas")).thenReturn(6f, 7f);
+        when(resultSet.getInt("id_registro")).thenReturn(3, 3);
+        when(resultSet.getInt("id_alumno")).thenReturn(11, 12);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
-        StudentAdvance expectedAdvance = new StudentAdvance(9, 6f, weeklyLog, student);
+        StudentAdvance expectedAdvance1 = new StudentAdvance(9, 6f, weeklyLog, student);
+        StudentAdvance expectedAdvance2 = new StudentAdvance(10, 7f, weeklyLog, student);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class, (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByWeeklyLogId(3);
-            assertEquals(List.of(expectedAdvance), result);
+            assertEquals(List.of(expectedAdvance1, expectedAdvance2), result);
         }
     }
 
@@ -210,18 +212,19 @@ public class StudentAdvanceDAOTest {
     }
 
     @Test
-    void getAdvancesByStudentAndWeeklyLog_HasOneAdvance_ReturnsListWithOneAdvance() throws SQLException, DataOperationException {
+    void getAdvancesByStudentAndWeeklyLog_HasTwoAdvances_ReturnsListWithTwoAdvances() throws SQLException, DataOperationException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
-        when(resultSet.next()).thenReturn(true, false);
-        when(resultSet.getInt("id_avance")).thenReturn(15);
-        when(resultSet.getFloat("horas_realizadas")).thenReturn(3f);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_avance")).thenReturn(15, 16);
+        when(resultSet.getFloat("horas_realizadas")).thenReturn(3f, 2f);
         WeeklyLog weeklyLog = mock(WeeklyLog.class);
         Student student = mock(Student.class);
-        StudentAdvance expectedAdvance = new StudentAdvance(15, 3f, weeklyLog, student);
+        StudentAdvance expectedAdvance1 = new StudentAdvance(15, 3f, weeklyLog, student);
+        StudentAdvance expectedAdvance2 = new StudentAdvance(16, 2f, weeklyLog, student);
         try (MockedConstruction<ActivityDAO> mockedActivityDAO = mockConstruction(ActivityDAO.class, (mock, context) -> when(mock.getWeeklyLogById(anyInt())).thenReturn(weeklyLog));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(anyInt())).thenReturn(student))) {
             List<StudentAdvance> result = studentAdvanceDAO.getAdvancesByStudentAndWeeklyLog(12, 4);
-            assertEquals(List.of(expectedAdvance), result);
+            assertEquals(List.of(expectedAdvance1, expectedAdvance2), result);
         }
     }
 
