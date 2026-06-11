@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -88,8 +90,7 @@ public class GUIUploadDocuments extends Application {
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(20, 30, 20, 30));
         formPanel.setAlignment(Pos.TOP_CENTER);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Subir Documentos y Reportes");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 15));
         Label labelStatus = new Label("Estado de documentos:");
@@ -124,12 +125,12 @@ public class GUIUploadDocuments extends Application {
         formPanel.getChildren().addAll(labelTitle, labelStatus, statusBox, combosBox, selectedFilesBox, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerUploadDocument controllerUploadDocument = new ControllerUploadDocument(this, stage);
         buttonSelect.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
         buttonUpload.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
         buttonCancel.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
         Scene scene = new Scene(mainPanel, 560, 560);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -159,7 +160,6 @@ public class GUIUploadDocuments extends Application {
         Button button = new Button(text);
         button.setPrefWidth(130);
         button.setPrefHeight(45);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 13px;");
         return button;
     }
 

@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerActivityPlan;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Activity;
@@ -85,10 +87,6 @@ public class GUIActivityPlan extends Application {
         buttonSave = new Button("Guardar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;";
-        buttonAddActivity.setStyle(buttonStyle);
-        buttonSave.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonAddActivity.setPrefWidth(200);
         buttonSave.setPrefWidth(140);
         buttonCancel.setPrefWidth(140);
@@ -110,6 +108,7 @@ public class GUIActivityPlan extends Application {
         mainPanel.setPadding(new Insets(32, 40, 32, 40));
 
         Scene scene = new Scene(mainPanel, 780, 460);
+        GUIStyle.apply(scene);
         stage.setTitle("Plan de Actividades");
         stage.setResizable(false);
         stage.setScene(scene);

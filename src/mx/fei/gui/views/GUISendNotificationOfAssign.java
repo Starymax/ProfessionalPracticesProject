@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerSendNotificationOfAssign;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Project;
@@ -56,9 +58,6 @@ public class GUISendNotificationOfAssign {
         buttonSend = new Button("Enviar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 8;";
-        buttonSend.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonSend.setPrefWidth(100);
         buttonCancel.setPrefWidth(100);
 
@@ -78,6 +77,7 @@ public class GUISendNotificationOfAssign {
         mainPanel.setPadding(new Insets(12));
 
         Scene scene = new Scene(mainPanel, 520, 300);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.setTitle("Enviar notificación");
         stage.setResizable(false);

@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerModifyEnterprise;
 import mx.fei.gui.utils.CountryCityLoader;
 import mx.fei.logic.dto.Enterprise;
@@ -61,8 +63,7 @@ public class GUIModifyEnterprise extends Application {
         VBox formPanel = new VBox(12);
         formPanel.setPadding(new Insets(20, 30, 20, 30));
         formPanel.setAlignment(Pos.TOP_LEFT);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Datos de la Organización Vinculada:");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane formGrid = new GridPane();
@@ -139,19 +140,17 @@ public class GUIModifyEnterprise extends Application {
         buttonCancel.setPrefWidth(120);
         buttonUpdate.setPrefHeight(35);
         buttonCancel.setPrefHeight(35);
-        buttonUpdate.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
-        buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
         HBox buttonsBox = new HBox(20, buttonUpdate, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.setPadding(new Insets(10, 0, 0, 0));
         formPanel.getChildren().addAll(labelTitle, formGrid, toggleState, locationBox, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerModifyEnterprise controllerModifyEnterprise = new ControllerModifyEnterprise(this);
         buttonUpdate.setOnAction(controllerModifyEnterprise::handleAceptCancel);
         buttonCancel.setOnAction(controllerModifyEnterprise::handleAceptCancel);
         Scene scene = new Scene(mainPanel, 520, 540);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }

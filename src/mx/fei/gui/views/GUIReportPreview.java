@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerReportPreview;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Document;
@@ -61,9 +63,6 @@ public class GUIReportPreview extends Application {
 
         buttonAccept = new Button("Aceptar reporte");
         buttonClose = new Button("Cerrar");
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand; -fx-background-radius: 10;";
-        buttonAccept.setStyle(buttonStyle);
-        buttonClose.setStyle(buttonStyle);
         buttonAccept.setPrefWidth(150);
         buttonClose.setPrefWidth(120);
         buttonAccept.setDisable(report.isAccepted());
@@ -95,6 +94,7 @@ public class GUIReportPreview extends Application {
         mainPanel.setCenter(scrollPane);
 
         Scene scene = new Scene(mainPanel, 800, 720);
+        GUIStyle.apply(scene);
         stage.setTitle("Vista previa del reporte");
         stage.setScene(scene);
         stage.show();

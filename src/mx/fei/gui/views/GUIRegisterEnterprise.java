@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.collections.FXCollections;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
@@ -52,8 +54,7 @@ public class GUIRegisterEnterprise extends Application {
         VBox formPanel = new VBox(12);
         formPanel.setPadding(new Insets(20, 30, 20, 30));
         formPanel.setAlignment(Pos.TOP_LEFT);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Datos de la Organización Vinculada:");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
         GridPane formGrid = new GridPane();
@@ -111,19 +112,17 @@ public class GUIRegisterEnterprise extends Application {
         buttonCancel.setPrefWidth(120);
         buttonRegister.setPrefHeight(35);
         buttonCancel.setPrefHeight(35);
-        buttonRegister.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
-        buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
         HBox buttonsBox = new HBox(20, buttonRegister, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.setPadding(new Insets(10, 0, 0, 0));
         formPanel.getChildren().addAll(labelTitle, formGrid, locationBox, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerRegisterEnterprise controllerRegisterEnterprise = new ControllerRegisterEnterprise(this);
         buttonRegister.setOnAction(controllerRegisterEnterprise::handleRegisterCancelButtons);
         buttonCancel.setOnAction(controllerRegisterEnterprise::handleRegisterCancelButtons);
         Scene scene = new Scene(mainPanel, 560, 460);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }

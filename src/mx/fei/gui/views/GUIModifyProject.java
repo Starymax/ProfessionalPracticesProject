@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerModifyProject;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dao.ActivityDAO;
@@ -182,11 +184,6 @@ public class GUIModifyProject extends Application {
         buttonContinue = new Button("Continuar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand;";
-        buttonAddProjectManager.setStyle(buttonStyle);
-        buttonActivityPlan.setStyle(buttonStyle);
-        buttonContinue.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
 
         ControllerModifyProject controllerModifyProject = new ControllerModifyProject(this);
         buttonAddProjectManager.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
@@ -211,6 +208,7 @@ public class GUIModifyProject extends Application {
         scrollPane.setFitToWidth(true);
 
         Scene scene = new Scene(scrollPane, 620, 740);
+        GUIStyle.apply(scene);
         stage.setTitle("Modificar Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);

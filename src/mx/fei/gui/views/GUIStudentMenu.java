@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerStudentMenu;
 import javafx.application.Application;
@@ -100,6 +102,7 @@ public class GUIStudentMenu extends Application {
         BorderPane.setMargin(centerButtons, new Insets(20, 0, 20, 0));
 
         Scene scene = new Scene(mainPanel, 680, 520);
+        GUIStyle.apply(scene);
         stage.setTitle("Estudiante");
         stage.setResizable(false);
         stage.setScene(scene);

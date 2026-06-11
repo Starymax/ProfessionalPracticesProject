@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerRegisterProfessor;
 import javafx.application.Application;
@@ -96,9 +98,6 @@ public class GUIRegisterProfessor extends Application {
         buttonRegister = new Button("Registrar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
-        buttonRegister.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
 
         ControllerRegisterProfessor controllerRegisterProfessor = new ControllerRegisterProfessor(this);
         buttonRegister.setOnAction(controllerRegisterProfessor::handleRegisterCancelButtons);
@@ -115,6 +114,7 @@ public class GUIRegisterProfessor extends Application {
         mainPanel.setPadding(new Insets(24, 32, 24, 32));
 
         Scene scene = new Scene(mainPanel, 570, 440);
+        GUIStyle.apply(scene);
         stage.setTitle("Registrar Profesor");
         stage.setResizable(false);
         stage.setScene(scene);

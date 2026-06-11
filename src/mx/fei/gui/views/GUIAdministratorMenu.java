@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerAdministratorMenu;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -67,6 +69,7 @@ public class GUIAdministratorMenu extends Application {
         BorderPane.setMargin(centerButtons, new Insets(20, 0, 20, 0));
 
         Scene scene = new Scene(mainPanel, 680, 520);
+        GUIStyle.apply(scene);
         stage.setTitle("Administrador");
         stage.setResizable(false);
         stage.setScene(scene);

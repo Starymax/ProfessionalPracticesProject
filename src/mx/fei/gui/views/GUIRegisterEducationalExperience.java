@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerRegisterEducationalExperience;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -48,8 +50,7 @@ public class GUIRegisterEducationalExperience extends Application {
         formGrid.setHgap(10);
         formGrid.setVgap(15);
         formGrid.setPadding(new Insets(20, 30, 20, 30));
-        formGrid.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formGrid.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formGrid.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Registrar experiencia educativa");
         labelTitle.setFont(new Font("SansSerif", 14));
         GridPane.setColumnSpan(labelTitle, 2);
@@ -81,8 +82,6 @@ public class GUIRegisterEducationalExperience extends Application {
         buttonCancel = new Button("Cancelar");
         buttonRegister.setPrefWidth(110);
         buttonCancel.setPrefWidth(110);
-        buttonRegister.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
-        buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white;");
         buttonRegister.setOnAction(controller::handleRegisterCancelButtons);
         buttonCancel.setOnAction(controller::handleRegisterCancelButtons);
         HBox buttonsBox = new HBox(30, buttonRegister, buttonCancel);
@@ -93,8 +92,8 @@ public class GUIRegisterEducationalExperience extends Application {
         formGrid.add(buttonsBox, 0, 6);
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         Scene scene = new Scene(mainPanel);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }

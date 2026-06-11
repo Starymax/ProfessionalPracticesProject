@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.scene.Node;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.controllers.ControllerModifyProfessor;
@@ -103,9 +105,6 @@ public class GUIModifyProfessor extends Application {
 
         buttonUpdate = new Button("Actualizar");
         buttonCancel = new Button("Cancelar");
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
-        buttonUpdate.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         ControllerModifyProfessor controllerModifyProfessor = new ControllerModifyProfessor(this);
         buttonUpdate.setOnAction(controllerModifyProfessor::handleUpdateCancelButtons);
         buttonCancel.setOnAction(controllerModifyProfessor::handleUpdateCancelButtons);
@@ -119,6 +118,7 @@ public class GUIModifyProfessor extends Application {
         VBox mainPanel = new VBox(20, title, formGrid, bottomRow);
         mainPanel.setPadding(new Insets(24, 32, 24, 32));
         Scene scene = new Scene(mainPanel, 570, 320);
+        GUIStyle.apply(scene);
         stage.setTitle("Modificar Profesor");
         stage.setResizable(false);
         stage.setScene(scene);

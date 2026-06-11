@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,8 +39,7 @@ public class GUIManageEnterprise extends Application {
         VBox formPanel = new VBox(25);
         formPanel.setPadding(new Insets(40, 40, 40, 40));
         formPanel.setAlignment(Pos.TOP_CENTER);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Gestionar organizaciones vinculadas");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 24));
         Region spacer = new Region();
@@ -51,12 +52,12 @@ public class GUIManageEnterprise extends Application {
         formPanel.getChildren().addAll(labelTitle, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerManageEnterprise controllerManageEnterprise = new ControllerManageEnterprise(this);
         buttonRegisterEnterprise.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
         buttonModifyEnterprise.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
         buttonBack.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
         Scene scene = new Scene(mainPanel, 600, 480);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -65,7 +66,6 @@ public class GUIManageEnterprise extends Application {
         Button button = new Button(text);
         button.setPrefWidth(340);
         button.setPrefHeight(60);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; " + "-fx-background-radius: 20; -fx-font-size: 14px;");
         return button;
     }
 

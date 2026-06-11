@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -38,8 +40,7 @@ public class GUIManageStudent extends Application {
         VBox formPanel = new VBox(20);
         formPanel.setPadding(new Insets(40, 40, 40, 40));
         formPanel.setAlignment(Pos.TOP_CENTER);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Gestionar estudiantes");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 26));
         Region spacer = new Region();
@@ -53,13 +54,13 @@ public class GUIManageStudent extends Application {
         formPanel.getChildren().addAll(labelTitle, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerManageStudent controllerManageStudent = new ControllerManageStudent(this);
         buttonRegisterStudent.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         buttonModifyStudent.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         buttonAssignProject.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         buttonBack.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         Scene scene = new Scene(mainPanel, 550, 500);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -68,7 +69,6 @@ public class GUIManageStudent extends Application {
         Button button = new Button(text);
         button.setPrefWidth(260);
         button.setPrefHeight(55);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14px;");
         return button;
     }
 

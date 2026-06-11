@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -71,6 +73,7 @@ public class GUIGeneratePartialReport extends Application {
         mainPane.setTop(header);
         mainPane.setCenter(new ScrollPane(content));
         Scene scene = new Scene(mainPane, 1100, 750);
+        GUIStyle.apply(scene);
         stage.setTitle("Reporte Parcial de Prácticas");
         stage.setResizable(false);
         stage.setScene(scene);

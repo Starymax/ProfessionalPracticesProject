@@ -1,4 +1,6 @@
 package mx.fei.gui.views;
+
+import mx.fei.gui.utils.GUIStyle;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -69,6 +71,7 @@ public class GUIGenerateAcceptanceLetter extends Application {
         mainPane.setBottom(buttonRow);
         BorderPane.setAlignment(buttonRow, Pos.CENTER_RIGHT);
         Scene scene = new Scene(mainPane, 700, 800);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         controllerGenerateAcceptanceLetter.loadData();
         stage.show();

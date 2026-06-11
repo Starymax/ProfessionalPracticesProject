@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerManageProjects;
 import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;
@@ -41,6 +43,7 @@ public class GUIManageProjects extends Application {
         mainPanel.setStyle("-fx-background-color: #d8d8d8;");
 
         Scene scene = new Scene(mainPanel, 560, 420);
+        GUIStyle.apply(scene);
         stage.setTitle("Gestión proyectos");
         stage.setResizable(false);
         stage.setScene(scene);

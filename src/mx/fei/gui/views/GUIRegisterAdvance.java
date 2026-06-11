@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerRegisterAdvance;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Activity;
@@ -72,6 +74,7 @@ public class GUIRegisterAdvance {
         root.setCenter(content);
 
         Scene scene = new Scene(root, 820, 560);
+        GUIStyle.apply(scene);
         stage.setTitle("Registro de Avances");
         stage.setResizable(false);
         stage.setScene(scene);

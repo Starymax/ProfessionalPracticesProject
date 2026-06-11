@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -150,11 +152,6 @@ public class GUIRegisterProject extends Application {
         buttonActivityPlan = new Button("Plan de Actividades");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 13px; -fx-cursor: hand;";
-        buttonAddProjectManager.setStyle(buttonStyle);
-        buttonSave.setStyle(buttonStyle);
-        buttonActivityPlan.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
 
         ControllerRegisterProject controllerRegisterProject = new ControllerRegisterProject(this);
         buttonAddProjectManager.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
@@ -175,6 +172,7 @@ public class GUIRegisterProject extends Application {
         scrollPane.setFitToWidth(true);
 
         Scene scene = new Scene(scrollPane, 680, 710);
+        GUIStyle.apply(scene);
         stage.setTitle("Registrar Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);

@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerEvaluateStudent;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Document;
@@ -76,9 +78,6 @@ public class GUIEvaluateStudent extends Application {
 
         buttonPreview = new Button("Vista previa");
         buttonClose = new Button("Cerrar");
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;";
-        buttonPreview.setStyle(buttonStyle);
-        buttonClose.setStyle(buttonStyle);
         buttonPreview.setPrefWidth(160);
         buttonClose.setPrefWidth(160);
         HBox buttonsBox = new HBox(15, buttonPreview, buttonClose);
@@ -100,6 +99,7 @@ public class GUIEvaluateStudent extends Application {
         BorderPane.setMargin(buttonsBox, new Insets(20, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 640, 620);
+        GUIStyle.apply(scene);
         stage.setTitle("Evaluar alumno");
         stage.setResizable(false);
         stage.setScene(scene);

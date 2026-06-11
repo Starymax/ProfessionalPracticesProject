@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerAssignProject;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Project;
@@ -87,9 +89,6 @@ public class GUIAssignProject extends Application {
         buttonAssign = new Button("Asignar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;";
-        buttonAssign.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonAssign.setPrefWidth(160);
         buttonCancel.setPrefWidth(160);
 
@@ -109,6 +108,7 @@ public class GUIAssignProject extends Application {
         BorderPane.setMargin(buttonPanel, new Insets(20, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 720, 560);
+        GUIStyle.apply(scene);
         stage.setTitle("Asignar Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);

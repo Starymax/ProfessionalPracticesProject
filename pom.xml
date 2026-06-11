@@ -82,6 +82,7 @@
                     <include>countries_cities.json</include>
                     <include>templates/*.jasper</include>
                     <include>images/**</include>
+                    <include>styles/*.css</include>
                 </includes>
             </resource>
         </resources>

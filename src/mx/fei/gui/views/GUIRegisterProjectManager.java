@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerRegisterProjectManager;
 import mx.fei.gui.utils.GUIUtils;
 import javafx.application.Application;
@@ -73,9 +75,6 @@ public class GUIRegisterProjectManager extends Application {
         buttonRegister = new Button("Registrar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
-        buttonRegister.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonRegister.setPrefWidth(120);
         buttonCancel.setPrefWidth(120);
 
@@ -95,6 +94,7 @@ public class GUIRegisterProjectManager extends Application {
         BorderPane.setMargin(buttonPanel, new Insets(24, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 580, 380);
+        GUIStyle.apply(scene);
         stage.setTitle("Registrar Responsable de Proyecto");
         stage.setResizable(false);
         stage.setScene(scene);

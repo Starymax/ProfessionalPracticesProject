@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.utils.GUIUtils;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
@@ -59,9 +61,6 @@ public class GUISelectProjects extends Application {
         buttonSelect = new Button("Seleccionar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand;";
-        buttonSelect.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonSelect.setPrefWidth(140);
         buttonCancel.setPrefWidth(140);
 
@@ -77,6 +76,7 @@ public class GUISelectProjects extends Application {
         mainPanel.setStyle("-fx-background-color: #d0d0d0;");
 
         Scene scene = new Scene(mainPanel, 680, 460);
+        GUIStyle.apply(scene);
         stage.setTitle("SeleccionarProyectos");
         stage.setResizable(false);
         stage.setScene(scene);

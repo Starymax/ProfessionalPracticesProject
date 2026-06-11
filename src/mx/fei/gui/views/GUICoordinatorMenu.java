@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerCoordinatorMenu;
 import mx.fei.logic.dto.Professor;
 import javafx.application.Application;
@@ -54,8 +56,7 @@ public class GUICoordinatorMenu extends Application {
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(30, 40, 30, 40));
         formPanel.setAlignment(Pos.TOP_LEFT);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
 
         Region spacer = new Region();
         spacer.setPrefHeight(10);
@@ -72,7 +73,6 @@ public class GUICoordinatorMenu extends Application {
         formPanel.getChildren().addAll(labelCoordinatorName, labelCoordinatorShift, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerCoordinatorMenu controllerCoordinatorMenu = new ControllerCoordinatorMenu(this);
         buttonManageStudents.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonManageProjects.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
@@ -82,6 +82,7 @@ public class GUICoordinatorMenu extends Application {
         buttonConsultProfessor.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         buttonLogOut.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
         Scene scene = new Scene(mainPanel, 500, 520);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -89,7 +90,6 @@ public class GUICoordinatorMenu extends Application {
     private Button createMenuButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(250);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; " + "-fx-background-radius: 20; -fx-font-size: 13px;");
         return button;
     }
 

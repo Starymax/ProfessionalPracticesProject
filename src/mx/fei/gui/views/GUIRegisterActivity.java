@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
@@ -120,9 +122,6 @@ public class GUIRegisterActivity extends Application {
         weekRow.setAlignment(Pos.CENTER_LEFT);
         buttonSave = new Button("Guardar");
         buttonCancel = new Button("Cancelar");
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;";
-        buttonSave.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonSave.setPrefWidth(130);
         buttonCancel.setPrefWidth(130);
         ControllerRegisterActivity controllerRegisterActivity = new ControllerRegisterActivity(this);
@@ -133,6 +132,7 @@ public class GUIRegisterActivity extends Application {
         VBox mainPanel = new VBox(24, labelTitle, formGrid, weekRow, buttonPanel);
         mainPanel.setPadding(new Insets(32, 40, 32, 40));
         Scene scene = new Scene(mainPanel, 580, 320);
+        GUIStyle.apply(scene);
         stage.setTitle("Registrar Actividad");
         stage.setResizable(false);
         stage.setScene(scene);

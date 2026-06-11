@@ -1,4 +1,6 @@
 package mx.fei.gui.views;
+
+import mx.fei.gui.utils.GUIStyle;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -66,6 +68,7 @@ public class GUIGenerateSelfEvaluation extends Application {
         scroll.setFitToWidth(true);
         mainPane.setCenter(scroll);
         Scene scene = new Scene(mainPane, 900, 750);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
         controller.loadData();

@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -88,6 +90,7 @@ public class GUIValidateStudentDocuments extends Application {
         BorderPane.setMargin(labelTitle, new Insets(0, 0, 16, 0));
 
         Scene scene = new Scene(mainPanel, 860, 640);
+        GUIStyle.apply(scene);
         stage.setTitle("Validar documentos de alumnos");
         stage.setResizable(false);
         stage.setScene(scene);

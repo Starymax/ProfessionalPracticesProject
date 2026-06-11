@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -66,6 +68,7 @@ public class GUIGenerateMonthlyReport extends Application {
         mainPane.setTop(header);
         mainPane.setCenter(scrollPane);
         Scene scene = new Scene(mainPane, 825, 550);
+        GUIStyle.apply(scene);
         stage.setTitle("Generación Reporte Mensual");
         stage.setResizable(false);
         stage.setScene(scene);

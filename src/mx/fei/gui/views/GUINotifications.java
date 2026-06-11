@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerNotifications;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Notification;
@@ -93,6 +95,7 @@ public class GUINotifications extends Application {
         BorderPane.setMargin(labelHeader, new Insets(0, 0, 16, 0));
 
         Scene scene = new Scene(mainPanel, 700, 460);
+        GUIStyle.apply(scene);
         stage.setTitle("Notificaciones");
         stage.setResizable(false);
         stage.setScene(scene);

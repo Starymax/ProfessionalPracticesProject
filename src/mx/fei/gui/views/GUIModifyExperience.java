@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -56,8 +58,7 @@ public class GUIModifyExperience extends Application {
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(25, 40, 25, 40));
         formPanel.setAlignment(Pos.TOP_CENTER);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Modificar experiencia educativa");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 18));
         GridPane formGrid = new GridPane();
@@ -94,19 +95,17 @@ public class GUIModifyExperience extends Application {
         buttonBack.setPrefWidth(120);
         buttonUpdate.setPrefHeight(35);
         buttonBack.setPrefHeight(35);
-        buttonUpdate.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
-        buttonBack.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
         HBox bottomBox = new HBox(30, comboBoxProfessors, buttonUpdate, buttonBack);
         bottomBox.setAlignment(Pos.CENTER_LEFT);
         bottomBox.setPadding(new Insets(10, 0, 0, 0));
         formPanel.getChildren().addAll(labelTitle, formGrid, bottomBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerModifyExperience controller = new ControllerModifyExperience(this);
         buttonUpdate.setOnAction(controller::handleUpdateReturnButtons);
         buttonBack.setOnAction(controller::handleUpdateReturnButtons);
         Scene scene = new Scene(mainPanel, 580, 460);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }

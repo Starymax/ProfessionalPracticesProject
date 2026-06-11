@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.collections.ObservableList;
 import mx.fei.gui.controllers.ControllerChooseProfessor;
 import mx.fei.gui.utils.GUIUtils;
@@ -43,14 +45,12 @@ public class GUIChooseProfessor extends Application {
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(25, 25, 25, 25));
         formPanel.setAlignment(Pos.TOP_LEFT);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Seleccione un profesor:");
         labelTitle.setFont(new Font("SansSerif", 14));
         listViewProfessors = new ListView<>();
         listViewProfessors.setPrefWidth(430);
         listViewProfessors.setPrefHeight(300);
-        listViewProfessors.setBackground(new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
         listViewProfessors.setItems(FXCollections.observableArrayList());
         buttonSelect = new Button("Seleccionar");
         buttonBack = new Button("Regresar");
@@ -58,8 +58,6 @@ public class GUIChooseProfessor extends Application {
         buttonBack.setPrefWidth(130);
         buttonSelect.setPrefHeight(35);
         buttonBack.setPrefHeight(35);
-        buttonSelect.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
-        buttonBack.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
         VBox buttonsBox = new VBox(20, buttonSelect, buttonBack);
         buttonsBox.setAlignment(Pos.TOP_CENTER);
         buttonsBox.setPadding(new Insets(10, 0, 0, 0));
@@ -68,11 +66,11 @@ public class GUIChooseProfessor extends Application {
         formPanel.getChildren().addAll(labelTitle, contentBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerChooseProfessor controllerChooseProfessor = new ControllerChooseProfessor(this);
         buttonSelect.setOnAction(controllerChooseProfessor::handleSelectReturnButtons);
         buttonBack.setOnAction(controllerChooseProfessor::handleSelectReturnButtons);
         Scene scene = new Scene(mainPanel, 660, 430);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }

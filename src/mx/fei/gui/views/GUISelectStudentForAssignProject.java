@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.utils.GUIUtils;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ListCell;
@@ -50,9 +52,6 @@ public class GUISelectStudentForAssignProject extends Application {
         buttonSelect = new Button("Seleccionar");
         buttonCancel = new Button("Cancelar");
 
-        String buttonStyle = "-fx-background-color: #1e1e23; -fx-text-fill: white; -fx-font-size: 14px; -fx-cursor: hand; -fx-background-radius: 10;";
-        buttonSelect.setStyle(buttonStyle);
-        buttonCancel.setStyle(buttonStyle);
         buttonSelect.setPrefWidth(160);
         buttonCancel.setPrefWidth(160);
 
@@ -72,6 +71,7 @@ public class GUISelectStudentForAssignProject extends Application {
         BorderPane.setMargin(buttonPanel, new Insets(20, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 720, 560);
+        GUIStyle.apply(scene);
         stage.setTitle("Asignar proyecto");
         stage.setResizable(false);
         stage.setScene(scene);

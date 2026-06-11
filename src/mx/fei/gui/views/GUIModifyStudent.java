@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -57,8 +59,7 @@ public class GUIModifyStudent extends Application {
         formGrid.setHgap(10);
         formGrid.setVgap(12);
         formGrid.setPadding(new Insets(25, 30, 25, 30));
-        formGrid.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formGrid.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formGrid.getStyleClass().add("form-panel");
         formGrid.add(new Label("Nombres:"), 0, 0);
         textFieldNames = new TextField();
         textFieldNames.setPrefWidth(370);
@@ -126,8 +127,6 @@ public class GUIModifyStudent extends Application {
         buttonCancel.setPrefWidth(120);
         buttonUpdate.setPrefHeight(35);
         buttonCancel.setPrefHeight(35);
-        buttonUpdate.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
-        buttonCancel.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 8;");
         HBox buttonsBox = new HBox(20, buttonUpdate, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER_LEFT);
         buttonsBox.setPadding(new Insets(10,0,0,0));
@@ -138,8 +137,8 @@ public class GUIModifyStudent extends Application {
         buttonCancel.setOnAction(controllerModifyStudent::handleUpdateCancelButtons);
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         Scene scene = new Scene(mainPanel, 430, 380);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }

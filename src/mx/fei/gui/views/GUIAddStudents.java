@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.gui.controllers.ControllerAddStudents;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.EducationalExperience;
@@ -57,8 +59,7 @@ public class GUIAddStudents extends Application {
         VBox formPanel = new VBox(15);
         formPanel.setPadding(new Insets(25, 30, 25, 30));
         formPanel.setAlignment(Pos.TOP_LEFT);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Dar de alta experiencia educativa");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 14));
         labelTitle.setAlignment(Pos.CENTER);
@@ -109,12 +110,12 @@ public class GUIAddStudents extends Application {
         formPanel.getChildren().addAll(titleBox, labelSubtitle, dataGrid, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerAddStudents controllerAddStudents = new ControllerAddStudents(this, stage);
         buttonAdd.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
         buttonConfirm.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
         buttonBack.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
         Scene scene = new Scene(mainPanel, 560, 360);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -123,7 +124,6 @@ public class GUIAddStudents extends Application {
         Button button = new Button(text);
         button.setPrefWidth(120);
         button.setPrefHeight(40);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; " + "-fx-background-radius: 8; -fx-font-size: 13px;");
         return button;
     }
 

@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,8 +39,7 @@ public class GUIManageExperience extends Application {
         VBox formPanel = new VBox(20);
         formPanel.setPadding(new Insets(40, 40, 40, 40));
         formPanel.setAlignment(Pos.TOP_CENTER);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Gestionar experiencias educativas");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 24));
         Region spacer = new Region();
@@ -52,13 +53,13 @@ public class GUIManageExperience extends Application {
         formPanel.getChildren().addAll(labelTitle, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerManageExperience controllerManageExperience = new ControllerManageExperience(this);
         buttonRegisterExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
         buttonModifyExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
         buttonActivateExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
         buttonBack.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
         Scene scene = new Scene(mainPanel, 600, 500);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -67,7 +68,6 @@ public class GUIManageExperience extends Application {
         Button button = new Button(text);
         button.setPrefWidth(340);
         button.setPrefHeight(60);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 20; -fx-font-size: 14px;");
         return button;
     }
 

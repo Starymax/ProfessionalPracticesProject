@@ -1,5 +1,7 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.utils.GUIStyle;
+
 import mx.fei.logic.dto.Practice;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -52,8 +54,7 @@ public class GUIGenerateReport extends Application {
         VBox formPanel = new VBox(20);
         formPanel.setPadding(new Insets(30, 40, 30, 40));
         formPanel.setAlignment(Pos.TOP_LEFT);
-        formPanel.setBackground(new Background(new BackgroundFill(Color.rgb(220, 220, 220), CornerRadii.EMPTY, Insets.EMPTY)));
-        formPanel.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Generar reporte");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.NORMAL, 22));
         labelTitle.setMaxWidth(Double.MAX_VALUE);
@@ -83,13 +84,13 @@ public class GUIGenerateReport extends Application {
         formPanel.getChildren().addAll(labelTitle, labelName, labelEducationalExperience, labelProject, labelReportType, bottomBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
-        mainPanel.setBackground(new Background(new BackgroundFill(Color.rgb(200, 200, 200), CornerRadii.EMPTY, Insets.EMPTY)));
         ControllerGenerateReport controllerGenerateReport = new ControllerGenerateReport(this);
         buttonPartial.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
         buttonMonthly.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
         buttonFinal.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
         buttonBack.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
         Scene scene = new Scene(mainPanel, 700, 380);
+        GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
     }
@@ -98,7 +99,6 @@ public class GUIGenerateReport extends Application {
         Button button = new Button(text);
         button.setPrefWidth(110);
         button.setPrefHeight(40);
-        button.setStyle("-fx-background-color: #323232; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 13px;");
         return button;
     }
 
