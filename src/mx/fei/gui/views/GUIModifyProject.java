@@ -3,6 +3,7 @@ package mx.fei.gui.views;
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.controllers.ControllerModifyProject;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.gui.utils.SchoolPeriod;
 import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
@@ -34,7 +35,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 public class GUIModifyProject extends Application {
@@ -46,6 +49,7 @@ public class GUIModifyProject extends Application {
     private TextArea textAreaMediateObjectives;
     private TextField textFieldMethodology;
     private TextArea textAreaResources;
+    private ComboBox<SchoolPeriod> comboBoxPeriod;
     private DatePicker datePickerStartDate;
     private DatePicker datePickerFinalDate;
     private TextArea textAreaResponsibilities;
@@ -77,6 +81,8 @@ public class GUIModifyProject extends Application {
         textAreaMediateObjectives = new TextArea();
         textFieldMethodology = new TextField();
         textAreaResources = new TextArea();
+        comboBoxPeriod = new ComboBox<>();
+        comboBoxPeriod.setPromptText("Seleccione periodo");
         datePickerStartDate = new DatePicker();
         datePickerStartDate.getEditor().setDisable(true);
         datePickerFinalDate = new DatePicker();
@@ -101,7 +107,7 @@ public class GUIModifyProject extends Application {
         datePickerStartDate.getEditor().setDisable(true);
         datePickerFinalDate.setPromptText("dd/mm/aaaa");
         datePickerFinalDate.getEditor().setDisable(true);
-        GUIUtils.applyPeriodDateRestrictions(datePickerStartDate, datePickerFinalDate);
+        GUIUtils.bindDatePickersToPeriodSelection(comboBoxPeriod, datePickerStartDate, datePickerFinalDate);
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxProjectManager.setMaxWidth(Double.MAX_VALUE);
 
@@ -152,6 +158,12 @@ public class GUIModifyProject extends Application {
         addMediateObjectivesRow(row++);
         addMethodologyRow(row++);
         addResourcesRow(row++);
+
+        Label labelPeriod = new Label("Periodo:");
+        labelPeriod.setFont(Font.font("SansSerif", 13));
+        HBox periodRow = new HBox(16, labelPeriod, comboBoxPeriod);
+        periodRow.setAlignment(Pos.CENTER_LEFT);
+        formGrid.add(periodRow, 0, row++, 2, 1);
 
         Label labelStartDate = new Label("Fecha Inicio:");
         labelStartDate.setFont(Font.font("SansSerif", 13));
@@ -207,7 +219,7 @@ public class GUIModifyProject extends Application {
         ScrollPane scrollPane = new ScrollPane(mainPanel);
         scrollPane.setFitToWidth(true);
 
-        Scene scene = new Scene(scrollPane, 620, 740);
+        Scene scene = new Scene(scrollPane, 720, 790);
         GUIStyle.apply(scene);
         stage.setTitle("Modificar Proyecto");
         stage.setResizable(false);
@@ -277,8 +289,7 @@ public class GUIModifyProject extends Application {
         textAreaImmediateObjectives.setText(project.getImmediateObjectives());
         textAreaMediateObjectives.setText(project.getMediatesObjectives());
         textFieldMethodology.setText(project.getMethodology());
-        datePickerStartDate.setValue(project.getStartDate().toLocalDate());
-        datePickerFinalDate.setValue(project.getFinalDate().toLocalDate());
+        loadPeriodAndDates(project);
         textAreaResponsibilities.setText(project.getResponsibilities());
         textAreaResources.setText(project.getResources());
         textFieldAvailablePlaces.setText(String.valueOf(project.getAvailablePlaces()));
@@ -288,6 +299,21 @@ public class GUIModifyProject extends Application {
             radioButtonInactive.setSelected(true);
         }
         verifyActivityPlan();
+    }
+
+    private void loadPeriodAndDates(Project project) {
+        LocalDate startDate = project.getStartDate().toLocalDate();
+        LocalDate finalDate = project.getFinalDate().toLocalDate();
+        SchoolPeriod projectSchoolPeriod = SchoolPeriod.getPeriodByDate(startDate);
+        SchoolPeriod currentSchoolPeriod = SchoolPeriod.currentPeriod(LocalDate.now());
+        LinkedHashSet<SchoolPeriod> schoolPeriods = new LinkedHashSet<>();
+        schoolPeriods.add(projectSchoolPeriod);
+        schoolPeriods.add(currentSchoolPeriod);
+        schoolPeriods.add(currentSchoolPeriod.getNextPeriod());
+        comboBoxPeriod.getItems().setAll(schoolPeriods);
+        comboBoxPeriod.setValue(projectSchoolPeriod);
+        datePickerStartDate.setValue(startDate);
+        datePickerFinalDate.setValue(finalDate);
     }
 
     private void verifyActivityPlan() {
@@ -332,13 +358,14 @@ public class GUIModifyProject extends Application {
         if (comboBoxProjectManager.getValue() == null) {
             errors.add("El campo Responsable es obligatorio");
         }
+        if (comboBoxPeriod.getValue() == null) {
+            errors.add("Debe seleccionar el periodo.");
+        }
         if (datePickerStartDate.getValue() == null) {
             errors.add("El campo Fecha Inicial es obligatorio.");
-        }
-        if (datePickerFinalDate.getValue() == null) {
+        } else if (datePickerFinalDate.getValue() == null) {
             errors.add("El campo Fecha Final es obligatorio.");
-        }
-        if (datePickerStartDate.getValue().isAfter(datePickerFinalDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerFinalDate.getValue())) {
+        } else if (datePickerStartDate.getValue().isAfter(datePickerFinalDate.getValue()) || datePickerStartDate.getValue().isEqual(datePickerFinalDate.getValue())) {
             errors.add("La fecha final no puede ser anterior a la inicial");
         }
         if (!errors.isEmpty()) {

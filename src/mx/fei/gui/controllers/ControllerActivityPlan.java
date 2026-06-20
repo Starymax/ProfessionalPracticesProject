@@ -35,7 +35,7 @@ public class ControllerActivityPlan {
     public void handleAddActivitySavePlanCancelButtons(ActionEvent event) {
         Button button = (Button) event.getSource();
         switch(button.getText()) {
-            case "Añadir actividad" -> {
+            case "Añadir Actividad" -> {
                 openAddActivity();
             }
             case "Guardar" -> {

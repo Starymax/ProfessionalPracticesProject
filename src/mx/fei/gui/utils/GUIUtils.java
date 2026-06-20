@@ -1,9 +1,11 @@
 package mx.fei.gui.utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
@@ -203,41 +205,58 @@ public class GUIUtils {
         }
     }
 
-    public static void applyPeriodDateRestrictions(DatePicker startPicker, DatePicker endPicker) {
-        LocalDate today = LocalDate.now();
-        int month = today.getMonthValue();
-        int year = today.getYear();
-        YearMonth currentStartMonth, currentEndMonth;
-        if (month >= 2 && month <= 7) {
-            currentStartMonth = YearMonth.of(year, 2);
-            currentEndMonth = YearMonth.of(year, 7);
-        } else {
-            int augustYear = (month >= 8) ? year : year - 1;
-            currentStartMonth = YearMonth.of(augustYear, 8);
-            currentEndMonth = YearMonth.of(augustYear + 1, 1);
-        }
-        final YearMonth nextStartMonth = currentEndMonth.plusMonths(1);
-        final YearMonth nextEndMonth = nextStartMonth.plusMonths(5);
-        final YearMonth allowedStart1 = currentStartMonth;
-        final YearMonth allowedStart2 = nextStartMonth;
-        final YearMonth allowedEnd1 = currentEndMonth;
-        final YearMonth allowedEnd2 = nextEndMonth;
-        startPicker.setDayCellFactory(picker -> new DateCell() {
+    public static void bindDatePickersToPeriodSelection(ComboBox<SchoolPeriod> periodComboBox, DatePicker startPicker, DatePicker endPicker) {
+        startPicker.setDisable(true);
+        endPicker.setDisable(true);
+        bindStartDateToPeriod(periodComboBox, startPicker);
+        bindEndDateToStartDate(periodComboBox, startPicker, endPicker);
+    }
+
+    private static void bindStartDateToPeriod(ComboBox<SchoolPeriod> periodComboBox, DatePicker startPicker) {
+        periodComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                startPicker.setDayCellFactory(null);
+                startPicker.setValue(null);
+                startPicker.setDisable(true);
+            } else {
+                YearMonth firstMonth = newValue.firstMonth();
+                startPicker.setDayCellFactory(singleMonthCellFactory(firstMonth));
+                startPicker.setDisable(false);
+                startPicker.setValue(null);
+                startPicker.setValue(firstMonth.atDay(1));
+            }
+        });
+    }
+
+    private static void bindEndDateToStartDate(ComboBox<SchoolPeriod> periodComboBox, DatePicker startPicker, DatePicker endPicker) {
+        startPicker.valueProperty().addListener((observable, oldValue, newValue) -> {
+            SchoolPeriod schoolPeriod = periodComboBox.getValue();
+            if (newValue == null || schoolPeriod == null) {
+                endPicker.setValue(null);
+                endPicker.setDisable(true);
+            } else {
+                YearMonth lastMonth = schoolPeriod.lastMonth();
+                endPicker.setDayCellFactory(singleMonthCellFactory(lastMonth));
+                endPicker.setDisable(false);
+                if (endPicker.getValue() == null) {
+                    endPicker.setValue(lastMonth.atDay(1));
+                }
+            }
+        });
+    }
+
+    private static Callback<DatePicker, DateCell> singleMonthCellFactory(YearMonth allowedMonth) {
+        return datePicker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
-                YearMonth dateMonth = YearMonth.from(date);
-                setDisable(!dateMonth.equals(allowedStart1) && !dateMonth.equals(allowedStart2));
+                if (empty || date == null) {
+                    setDisable(true);
+                    return;
+                }
+                setDisable(!YearMonth.from(date).equals(allowedMonth));
             }
-        });
-        endPicker.setDayCellFactory(picker -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                YearMonth dateMonth = YearMonth.from(date);
-                setDisable(!dateMonth.equals(allowedEnd1) && !dateMonth.equals(allowedEnd2));
-            }
-        });
+        };
     }
 
     public static void showError(String message) {

@@ -1,6 +1,7 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.gui.utils.SchoolPeriod;
 import mx.fei.gui.controllers.ControllerRegisterProject;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.gui.utils.GUIStyle;
@@ -16,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ScrollPane;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -28,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +43,7 @@ public class GUIRegisterProject extends Application {
     private TextArea textAreaMediateObjectives;
     private TextField textFieldMethodology;
     private TextArea textAreaResources;
+    private ComboBox<SchoolPeriod> comboBoxPeriod;
     private DatePicker datePickerStartDate;
     private DatePicker datePickerFinalDate;
     private TextArea textAreaResponsibilities;
@@ -67,6 +71,9 @@ public class GUIRegisterProject extends Application {
         textAreaMediateObjectives = new TextArea();
         textFieldMethodology = new TextField();
         textAreaResources = new TextArea();
+        SchoolPeriod currentSchoolPeriod = SchoolPeriod.currentPeriod(LocalDate.now());
+        comboBoxPeriod = new ComboBox<>(FXCollections.observableArrayList(currentSchoolPeriod, currentSchoolPeriod.getNextPeriod()));
+        comboBoxPeriod.setPromptText("Seleccione periodo");
         datePickerStartDate = new DatePicker();
         datePickerStartDate.getEditor().setDisable(true);
         datePickerFinalDate = new DatePicker();
@@ -89,7 +96,7 @@ public class GUIRegisterProject extends Application {
 
         datePickerStartDate.setPromptText("dd/mm/aaaa");
         datePickerFinalDate.setPromptText("dd/mm/aaaa");
-        GUIUtils.applyPeriodDateRestrictions(datePickerStartDate, datePickerFinalDate);
+        GUIUtils.bindDatePickersToPeriodSelection(comboBoxPeriod, datePickerStartDate, datePickerFinalDate);
 
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxEnterprise.setCellFactory(listView -> new ListCell<>() {
@@ -136,6 +143,11 @@ public class GUIRegisterProject extends Application {
         addMediateObjectivesRow(row++);
         addMethodologyRow(row++);
         addResourcesRow(row++);
+
+        HBox periodRow = new HBox(16);
+        periodRow.setAlignment(Pos.CENTER_LEFT);
+        periodRow.getChildren().addAll(new Label("Periodo:"), comboBoxPeriod);
+        form.add(periodRow, 0, row++, 2, 1);
 
         HBox dateRow = new HBox(16);
         dateRow.setAlignment(Pos.CENTER_LEFT);
@@ -263,6 +275,9 @@ public class GUIRegisterProject extends Application {
         }
         if (comboBoxProjectManager.getValue() == null) {
             errors.add("El campo Responsable es obligatorio");
+        }
+        if (comboBoxPeriod.getValue() == null) {
+            errors.add("Debe seleccionar el periodo.");
         }
         if (datePickerStartDate.getValue() == null) {
             errors.add("Los campos de Fecha son obligatorios.");
