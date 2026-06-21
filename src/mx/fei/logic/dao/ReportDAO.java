@@ -58,6 +58,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el reporte", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al crear el reporte.");
         }
         return idGenerated;
@@ -106,6 +109,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el reporte mensual", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al crear el reporte mensual.");
         }
         return success;
@@ -154,6 +160,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el reporte parcial", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al crear el reporte parcial.");
         }
         return success;
@@ -186,6 +195,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el reporte final", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al crear el reporte final.");
         }
         return success;
@@ -208,6 +220,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener el reporte por id", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el reporte.");
         }
         return report;
@@ -234,6 +249,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener los reportes del alumno", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los reportes del alumno.");
         }
         return reports;
@@ -254,6 +272,9 @@ public class ReportDAO implements IDAOReport {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al contar reportes por tipo", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al contar reportes por tipo.");
         }
         return count;
@@ -270,6 +291,9 @@ public class ReportDAO implements IDAOReport {
             success = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar observaciones del reporte", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al actualizar observaciones del reporte.");
         }
         return success;
@@ -290,6 +314,9 @@ public class ReportDAO implements IDAOReport {
             success = true;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar observaciones de actividades del reporte", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al actualizar observaciones de actividades del reporte.");
         }
         return success;

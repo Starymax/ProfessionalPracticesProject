@@ -59,7 +59,7 @@ public class ControllerGenerateDocuments {
                 guiGenerateSelfEvaluation.start(stage);
             }
         } catch (DataOperationException e) {
-            guiGenerateDocuments.showError("Error al verificar las horas");
+            guiGenerateDocuments.showError(e.getMessage());
         }
     }
 }

@@ -29,7 +29,7 @@ public class ControllerChooseExperience {
             List<EducationalExperience> experiences = educationalExperienceDAO.getEducationalExperiences();
             guiChooseExperience.setExperiences(experiences);
         } catch (DataOperationException e) {
-            guiChooseExperience.showError("Error al cargar las experiencias educativas.");
+            guiChooseExperience.showError(e.getMessage());
         }
     }
 

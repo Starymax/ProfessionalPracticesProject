@@ -39,7 +39,7 @@ public class ControllerEvaluateStudentSelection {
                 guiEvaluateStudentSelection.loadExperiences(experiences);
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al cargar las experiencias educativas del profesor", e);
-                guiEvaluateStudentSelection.showError("Error al cargar las experiencias educativas.");
+                guiEvaluateStudentSelection.showError(e.getMessage());
             }
         }
     }
@@ -53,7 +53,7 @@ public class ControllerEvaluateStudentSelection {
                 guiEvaluateStudentSelection.loadStudents(students);
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al cargar los estudiantes de la experiencia educativa", e);
-                guiEvaluateStudentSelection.showError("Error al cargar los estudiantes de la experiencia educativa.");
+                guiEvaluateStudentSelection.showError(e.getMessage());
             }
         }
     }

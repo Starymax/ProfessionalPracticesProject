@@ -164,7 +164,7 @@ public class ControllerStudentMenu {
                 guiUploadDocuments.start(stage);
             }
         } catch (DataOperationException e) {
-            guiStudentMenu.showError("Error al verficar la práctica del estudiante.");
+            guiStudentMenu.showError(e.getMessage());
             logger.log(Level.SEVERE, "Error al obtener práctica por matrícula", e);
         }
     }
@@ -197,7 +197,7 @@ public class ControllerStudentMenu {
                 guiGenerateDocuments.start(stage);
             }
         } catch (DataOperationException e) {
-            guiStudentMenu.showError("Error al obtener la practica del estudia.");
+            guiStudentMenu.showError(e.getMessage());
         }
     }
 }

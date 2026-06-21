@@ -52,7 +52,7 @@ public class ControllerRegisterStudent {
         } catch (IllegalStateException e) {
             guiRegisterStudent.showError(e.getMessage());
         } catch (DataOperationException e) {
-            guiRegisterStudent.showError("Error interno al registrar el alumno. Intente mas tarde.");
+            guiRegisterStudent.showError(e.getMessage());
         }
     }
 

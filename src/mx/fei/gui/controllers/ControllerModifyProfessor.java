@@ -56,7 +56,7 @@ public class ControllerModifyProfessor {
                 guiModifyProfessor.showError(e.getMessage());
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al modificar profesor", e);
-                guiModifyProfessor.showError("Error al actualizar. Intente más tarde.");
+                guiModifyProfessor.showError(e.getMessage());
             }
         }
     }

@@ -232,7 +232,7 @@ public class ControllerGenerateFinalReport {
                 finalReportView.closeWindow();
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al guardar el reporte final en la base de datos", e);
-                finalReportView.showError("El PDF se generó pero no se pudo guardar el registro del reporte final.");
+                finalReportView.showError(e.getMessage());
             }
         }
     }

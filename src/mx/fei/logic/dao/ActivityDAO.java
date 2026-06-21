@@ -45,6 +45,9 @@ public class ActivityDAO implements IDAOActivity {
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al insertar actividad", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error al insertar actividad");
             }
             return success;
@@ -65,6 +68,9 @@ public class ActivityDAO implements IDAOActivity {
             success = true;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al insertar el horario a la actividad",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al insertar el horario a la actividad");
         }
         return success;
@@ -89,6 +95,9 @@ public class ActivityDAO implements IDAOActivity {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener la actividad",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener la actividad");
         }
         return activity;
@@ -115,6 +124,9 @@ public class ActivityDAO implements IDAOActivity {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener las actividades", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener las actividades");
         }
         return activities;
@@ -137,6 +149,9 @@ public class ActivityDAO implements IDAOActivity {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el horario de la actividad",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el horario de la actividad");
         }
         return weeklyLog;
@@ -162,6 +177,9 @@ public class ActivityDAO implements IDAOActivity {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los horarios de la actividad", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los horarios de la actividad");
         }
         return weeklyLogs;

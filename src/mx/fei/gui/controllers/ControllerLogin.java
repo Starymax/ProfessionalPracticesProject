@@ -69,7 +69,7 @@ public class ControllerLogin {
             } catch (NoSuchElementException e) {
                 guiLogin.showError("Correo o contraseña incorrectos.");
             } catch (DataOperationException e) {
-                guiLogin.showError("Error interno. Intente más tarde.");
+                guiLogin.showError(e.getMessage());
             }
         }
     }
@@ -90,7 +90,7 @@ public class ControllerLogin {
         try {
             userDAO.logInByRole(UserRole.DEFAULT);
         }  catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 
@@ -105,7 +105,7 @@ public class ControllerLogin {
             userDAO.logInByRole(UserRole.STUDENT);
             guiLogin.closeWindow();
         } catch (DataOperationException | NoSuchElementException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
             guiLogin.closeWindow();
         }
     }
@@ -118,7 +118,7 @@ public class ControllerLogin {
         try {
             userDAO.logInByRole(UserRole.ADMINISTRATOR);
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
         guiLogin.closeWindow();
     }
@@ -131,7 +131,7 @@ public class ControllerLogin {
         try {
             userDAO.logInByRole(UserRole.COORDINATOR);
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
         guiLogin.closeWindow();
     }
@@ -145,7 +145,7 @@ public class ControllerLogin {
         try {
             userDAO.logInByRole(UserRole.PROFESSOR);
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 }

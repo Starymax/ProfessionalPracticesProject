@@ -33,7 +33,7 @@ public class ControllerChooseStudent {
             guiChooseStudent.setStudents(students);
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE,"Error al cargar a los estudiantes", e);
-            guiChooseStudent.showError("Error al cargar la lista de estudiantes.");
+            guiChooseStudent.showError(e.getMessage());
         }
     }
 

@@ -86,6 +86,9 @@ public class ProjectDAO implements IDAOProject {
             return project;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo el proyecto", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el proyecto");
         }
     }
@@ -118,6 +121,9 @@ public class ProjectDAO implements IDAOProject {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error registrando el proyecto",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al registrar el proyecto");
         }
         return generatedID;
@@ -135,6 +141,9 @@ public class ProjectDAO implements IDAOProject {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo todos los proyectos activos", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los proyectos activos");
         }
         return projects;
@@ -151,6 +160,9 @@ public class ProjectDAO implements IDAOProject {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo todos los proyectos", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los proyectos");
         }
         return projects;
@@ -196,6 +208,9 @@ public class ProjectDAO implements IDAOProject {
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error modificando el proyecto",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al modificar los datos del proyecto");
         }
         return updated;

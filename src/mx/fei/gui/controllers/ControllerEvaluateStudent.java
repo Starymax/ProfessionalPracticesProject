@@ -56,7 +56,7 @@ public class ControllerEvaluateStudent {
             guiEvaluateStudent.setHours(realizedHours, remainingHours);
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al obtener las horas del alumno", e);
-            guiEvaluateStudent.showError("Error al obtener las horas realizadas del alumno.");
+            guiEvaluateStudent.showError(e.getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class ControllerEvaluateStudent {
             practice = practiceDAO.getPracticeByEnrollment(student.getEnrollment());
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al obtener la práctica del alumno", e);
-            guiEvaluateStudent.showError("Error al obtener la práctica del alumno.");
+            guiEvaluateStudent.showError(e.getMessage());
         }
     }
 
@@ -80,7 +80,7 @@ public class ControllerEvaluateStudent {
                 guiEvaluateStudent.setReports(reports);
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al obtener los reportes subidos del alumno", e);
-                guiEvaluateStudent.showError("Error al obtener los reportes subidos del alumno.");
+                guiEvaluateStudent.showError(e.getMessage());
             }
         }
     }

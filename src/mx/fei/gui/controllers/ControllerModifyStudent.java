@@ -52,7 +52,7 @@ public class ControllerModifyStudent {
                 guiModifyStudent.showError(e.getMessage());
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al modificar estudiante", e);
-                guiModifyStudent.showError("Error al actualizar. Intente más tarde.");
+                guiModifyStudent.showError(e.getMessage());
             }
         }
     }

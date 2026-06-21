@@ -30,6 +30,9 @@ public class UserDAO implements IDAOUser {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al verificar si existe un usuario",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al verificar si existe un usuario ");
         }
         return exist;
@@ -59,6 +62,9 @@ public class UserDAO implements IDAOUser {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al registrar el usuario",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al registrar el usuario");
         }
         return generatedID;
@@ -81,6 +87,9 @@ public class UserDAO implements IDAOUser {
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE,"Error al actualizar el usuario",e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error al actualizar el usuario");
             }
         }
@@ -111,7 +120,10 @@ public class UserDAO implements IDAOUser {
             logger.log(Level.WARNING, "Error al obtener el usuario");
             throw new NoSuchElementException("Error al obtener el usuario");
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el usuario");
+            logger.log(Level.SEVERE, "Error al obtener el usuario", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al buscar el usuario");
         }
     }
@@ -127,6 +139,9 @@ public class UserDAO implements IDAOUser {
                 return resultSet.getInt(1) > 0;
             }
         } catch (SQLException e) {
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los datos del usuario");
         }
     }

@@ -52,7 +52,7 @@ public class ControllerRegisterEnterprise {
                 guiRegisterEnterprise.showError(e.getMessage());
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al registrar la organización", e);
-                guiRegisterEnterprise.showError("Error al registrar la organización. Intente más tarde.");
+                guiRegisterEnterprise.showError(e.getMessage());
             }
         }
     }

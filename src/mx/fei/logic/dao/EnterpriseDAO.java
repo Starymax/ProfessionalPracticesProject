@@ -46,6 +46,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             return enterprise;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo la organizacion vinculada",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener la organizacion vinculada");
         }
     }
@@ -77,6 +80,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error registrando la organizacion vinculada",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al registrar la organizacion vinculada");
         }
         return generatedId;
@@ -108,6 +114,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener todas las organizaciones activas");
         }
         return enterprises;
@@ -124,6 +133,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo las organizaciones activas", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error obteniendo todas las organizaciones");
         }
         return enterprises;
@@ -152,6 +164,9 @@ public class EnterpriseDAO implements IDAOEnterprise {
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al modificar la organizacion vinculada", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al modificar la organizacion vinculada");
         }
         return updated;

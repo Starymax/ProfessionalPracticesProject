@@ -36,7 +36,7 @@ public class ControllerChooseEnterprise {
             }
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar organizaciones", e);
-            guiChooseEnterprise.showError("Error al cargar la lista de organizaciones.");
+            guiChooseEnterprise.showError(e.getMessage());
         }
     }
 

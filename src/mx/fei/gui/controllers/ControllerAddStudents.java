@@ -59,7 +59,7 @@ public class ControllerAddStudents {
             }
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar estudiantes", e);
-            guiAddStudents.showError("Error al cargar la lista de estudiantes.");
+            guiAddStudents.showError(e.getMessage());
         }
     }
 
@@ -96,7 +96,7 @@ public class ControllerAddStudents {
             }
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al asignar experiencia educativa", e);
-            guiAddStudents.showError("Error al asignar la experiencia. Intente más tarde.");
+            guiAddStudents.showError(e.getMessage());
         }
     }
 

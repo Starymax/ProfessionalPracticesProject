@@ -51,7 +51,7 @@ public class ControllerGenerateReport {
             }
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
-            guiGenerateReport.showError("Error al verificar los prerrequisitos de los reportes.");
+            guiGenerateReport.showError(e.getMessage());
         }
         return met;
     }
@@ -97,7 +97,7 @@ public class ControllerGenerateReport {
                 }
             } catch (DataOperationException e) {
                 LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte mensual", e);
-                guiGenerateReport.showError("Error al verificar el estado del reporte mensual.");
+                guiGenerateReport.showError(e.getMessage());
             }
         }
     }
@@ -147,7 +147,7 @@ public class ControllerGenerateReport {
             }
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte parcial", e);
-            guiGenerateReport.showError("Error al verificar el estado del reporte parcial.");
+            guiGenerateReport.showError(e.getMessage());
         }
         }
     }
@@ -177,7 +177,7 @@ public class ControllerGenerateReport {
                 }
             } catch (DataOperationException e) {
                 LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte final", e);
-                guiGenerateReport.showError("Error al verificar el estado del reporte final.");
+                guiGenerateReport.showError(e.getMessage());
             }
         }
     }

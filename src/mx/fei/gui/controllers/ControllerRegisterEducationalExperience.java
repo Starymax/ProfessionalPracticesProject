@@ -47,7 +47,7 @@ public class ControllerRegisterEducationalExperience {
                 } catch (IllegalArgumentException e) {
                     guiRegisterEducationalExperience.showError("Datos invalidos");
                 } catch (DataOperationException e) {
-                    guiRegisterEducationalExperience.showError("Error al registrar el experiencia");
+                    guiRegisterEducationalExperience.showError(e.getMessage());
                 }
             }
         }
@@ -70,7 +70,7 @@ public class ControllerRegisterEducationalExperience {
         } catch (NoSuchElementException e) {
             nrcExists = false;
         } catch (DataOperationException e) {
-            guiRegisterEducationalExperience.showError("Error al verificar el NRC. Intente más tarde.");
+            guiRegisterEducationalExperience.showError(e.getMessage());
         }
         return nrcExists;
     }

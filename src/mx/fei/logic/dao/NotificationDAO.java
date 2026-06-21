@@ -29,6 +29,9 @@ public class NotificationDAO implements IDAONotification {
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al enviar notificación", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al enviar la notificación.");
         }
     }
@@ -54,6 +57,9 @@ public class NotificationDAO implements IDAONotification {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener notificaciones del alumno", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener las notificaciones.");
         }
         return notifications;
@@ -68,6 +74,9 @@ public class NotificationDAO implements IDAONotification {
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al marcar notificación como leída", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al marcar la notificación como leída.");
         }
     }
@@ -86,6 +95,9 @@ public class NotificationDAO implements IDAONotification {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al contar notificaciones no leídas", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al contar las notificaciones no leídas.");
         }
         return count;

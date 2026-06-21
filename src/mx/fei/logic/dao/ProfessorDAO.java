@@ -48,6 +48,9 @@ public class ProfessorDAO implements IDAOProfessor {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el profesor", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el profesor");
         }
         return professor;
@@ -67,6 +70,9 @@ public class ProfessorDAO implements IDAOProfessor {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el profesor", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el profesor");
         }
         return professor;
@@ -102,6 +108,9 @@ public class ProfessorDAO implements IDAOProfessor {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error registrando el profesor", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al registrar el profesor");
         }
         return registered;
@@ -119,6 +128,9 @@ public class ProfessorDAO implements IDAOProfessor {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error obteniendo todos los profesores", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener a los profesores");
         }
         return professors;
@@ -138,6 +150,9 @@ public class ProfessorDAO implements IDAOProfessor {
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error modificando los datos del profesor", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error al modificar los datos del profesor");
             }
         }
@@ -156,6 +171,9 @@ public class ProfessorDAO implements IDAOProfessor {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al verificar si existe un coordinador", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al verificar si existe un coordinador");
         }
         return exists;

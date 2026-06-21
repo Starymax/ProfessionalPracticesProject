@@ -46,7 +46,7 @@ public class ControllerReportPreview {
             }
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al aceptar el reporte", e);
-            guiReportPreview.showError("Error al aceptar el reporte.");
+            guiReportPreview.showError(e.getMessage());
         }
     }
 }

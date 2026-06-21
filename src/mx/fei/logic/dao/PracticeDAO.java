@@ -46,6 +46,9 @@
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al buscar la práctica por id", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error al obtener los datos de la práctica");
             }
             return practice;
@@ -77,6 +80,9 @@
                 result = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al crear la practica", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error al crear la practica");
             }
             return result;
@@ -110,6 +116,9 @@
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al obtener la practica por matricula", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error al obtener la practica");
             }
             return practice;

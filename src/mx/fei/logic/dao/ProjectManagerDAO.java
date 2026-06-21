@@ -38,6 +38,9 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                     }
                 } catch (SQLException e) {
                     logger.log(Level.SEVERE, "Error al registrar el responsable",e);
+                    if (DAOUtils.isConnectionError(e)) {
+                        throw new DataOperationException("Error de conexión. Intente más tarde.");
+                    }
                     throw new DataOperationException("Error al registrar el responsable");
                 }
             }
@@ -64,6 +67,9 @@ public class ProjectManagerDAO implements IDAOProjectManager {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el Responsable",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el Responsable");
         }
         return projectManager;
@@ -89,6 +95,9 @@ public class ProjectManagerDAO implements IDAOProjectManager {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los responsables",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los responsables");
         }
         return projectManagers;

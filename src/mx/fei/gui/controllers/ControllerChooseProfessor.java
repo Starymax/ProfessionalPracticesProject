@@ -31,7 +31,7 @@ public class ControllerChooseProfessor {
             guiChooseProfessor.setProfessors(professors);
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar a los profesores", e);
-            guiChooseProfessor.showError("Error al cargar la lista de profesores.");
+            guiChooseProfessor.showError(e.getMessage());
         }
     }
 

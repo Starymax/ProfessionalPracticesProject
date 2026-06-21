@@ -47,6 +47,9 @@ public class DocumentDAO implements IDAODocument {
             result = true;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al crear el expediente", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al crear el expediente");
         }
         return result;
@@ -69,6 +72,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el periodo del expediente", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener el periodo del expediente");
         }
         return period;
@@ -97,6 +103,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al cargar los documentos", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al cargar los documentos");
         }
         return generatedID;
@@ -115,7 +124,10 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al comprobar los documentos");
+            logger.log(Level.SEVERE, "Error al comprobar los documentos", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al corroborar si esta cargado el documento");
         }
         return isLoaded;
@@ -167,6 +179,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los documentos de la practica", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los documentos");
         }
         return documents;
@@ -199,6 +214,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los reportes subidos de la practica", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los reportes subidos");
         }
         return reports;
@@ -213,6 +231,9 @@ public class DocumentDAO implements IDAODocument {
             accepted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al aceptar el reporte", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al aceptar el reporte");
         }
         return accepted;
@@ -240,6 +261,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los alumnos con documentos subidos", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los alumnos con documentos subidos");
         }
         List<StudentValidationSummary> summaries = new ArrayList<>();
@@ -281,6 +305,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los documentos para validar", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los documentos para validar");
         }
         return documents;
@@ -309,6 +336,9 @@ public class DocumentDAO implements IDAODocument {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al verificar los prerrequisitos de los reportes");
         }
         return uploaded;
@@ -327,6 +357,9 @@ public class DocumentDAO implements IDAODocument {
             deleted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al eliminar el documento", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al eliminar el documento");
         }
         if (deleted) {
@@ -355,6 +388,9 @@ public class DocumentDAO implements IDAODocument {
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al actualizar el estado de validación del documento", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al actualizar el estado de validación del documento");
         }
         return updated;

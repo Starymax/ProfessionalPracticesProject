@@ -52,6 +52,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al registrar una experiencia educativa",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al registrar la experiencia educativa");
         }
     }
@@ -74,6 +77,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al modificar una experiencia",e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
                 throw new DataOperationException("Error modificando los datos de una experiencia");
             }
         } else {
@@ -118,6 +124,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE,"Error al obtener la experiencia educativa por NRC",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener los datos de la experiencia");
         }
         return experience;
@@ -140,6 +149,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los datos de las experiencias",e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw  new DataOperationException("Error al obtener las experiencias educativas");
         }
         return educationalExperiences;
@@ -162,6 +174,9 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener las experiencias del profesor", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al obtener las experiencias educativas del profesor");
         }
         return educationalExperiences;

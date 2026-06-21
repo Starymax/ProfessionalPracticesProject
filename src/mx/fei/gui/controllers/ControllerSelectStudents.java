@@ -44,7 +44,7 @@ public class ControllerSelectStudents {
             guiSelectStudents.setStudents(students, studentsAlreadySelected);
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al cargar estudiantes", e);
-            guiSelectStudents.showError("Error al cargar la lista de estudiantes.");
+            guiSelectStudents.showError(e.getMessage());
         }
     }
 

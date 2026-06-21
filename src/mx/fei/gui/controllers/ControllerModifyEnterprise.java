@@ -24,7 +24,7 @@ public class ControllerModifyEnterprise {
         this.enterpriseDAO = new EnterpriseDAO();
     }
 
-    public void handleAceptCancel(ActionEvent event) {
+    public void handleAcceptCancel(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Aceptar" -> {
@@ -51,7 +51,7 @@ public class ControllerModifyEnterprise {
                 guiModifyEnterprise.showError(e.getMessage());
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al modificar la organización", e);
-                guiModifyEnterprise.showError("Error al actualizar. Intente más tarde.");
+                guiModifyEnterprise.showError(e.getMessage());
             }
         }
     }

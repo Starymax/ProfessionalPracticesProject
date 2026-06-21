@@ -125,7 +125,7 @@ public class ControllerGenerateMonthlyReport {
             }
         } catch (DataOperationException e) {
             logger.log(Level.SEVERE, "Error al procesar y cargar las actividades con progreso del estudiante", e);
-            monthlyReportView.showError("Error al cargar las actividades con progreso");
+            monthlyReportView.showError(e.getMessage());
         }
     }
 
@@ -313,7 +313,7 @@ public class ControllerGenerateMonthlyReport {
                 monthlyReportView.closeWindow();
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error al guardar el reporte mensual en la base de datos", e);
-                monthlyReportView.showError("El PDF se generó pero no se pudo guardar el registro del reporte.");
+                monthlyReportView.showError(e.getMessage());
             }
         }
     }
@@ -346,7 +346,7 @@ public class ControllerGenerateMonthlyReport {
                 period = educationalExperience.getPeriod();
             }
         } catch (DataOperationException e) {
-            monthlyReportView.showError("Error al obtener los datos del periodo");
+            monthlyReportView.showError(e.getMessage());
         }
         return period;
     }
@@ -360,7 +360,7 @@ public class ControllerGenerateMonthlyReport {
                 professorName = educationalExperience.getProfessor().getName();
             }
         } catch (DataOperationException e) {
-            monthlyReportView.showError("Error al obtener los datos del profesor");
+            monthlyReportView.showError(e.getMessage());
         }
         return professorName;
     }

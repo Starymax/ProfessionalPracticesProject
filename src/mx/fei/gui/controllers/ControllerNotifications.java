@@ -28,7 +28,7 @@ public class ControllerNotifications {
             guiNotifications.loadNotifications(notifications);
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al cargar notificaciones", e);
-            guiNotifications.showError("Error al cargar las notificaciones.");
+            guiNotifications.showError(e.getMessage());
         }
     }
 

@@ -31,7 +31,7 @@ public class ControllerModifyExperience {
             List<Professor> professors = professorDAO.getProfessors();
             guiModifyExperience.setProfessors(professors);
         } catch (DataOperationException e) {
-            guiModifyExperience.showError("Error al cargar la lista de profesores.");
+            guiModifyExperience.showError(e.getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class ControllerModifyExperience {
                 } catch (IllegalArgumentException e) {
                     guiModifyExperience.showError(e.getMessage());
                 } catch (DataOperationException e) {
-                    guiModifyExperience.showError("Error al actualizar. Intente más tarde.");
+                    guiModifyExperience.showError(e.getMessage());
                 }
             }
         }
