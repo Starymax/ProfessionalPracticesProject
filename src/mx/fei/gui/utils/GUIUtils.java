@@ -1,9 +1,11 @@
 package mx.fei.gui.utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import java.time.LocalDate;
@@ -260,7 +262,7 @@ public class GUIUtils {
     }
 
     public static void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+        Alert alert = new Alert(AlertType.WARNING);
         alert.setTitle("Aviso");
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -268,7 +270,7 @@ public class GUIUtils {
     }
 
     public static void showSuccess(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Éxito");
         alert.setHeaderText(null);
         alert.setContentText(message);
@@ -277,8 +279,15 @@ public class GUIUtils {
 
     public static void showErrors(List<String> errors) {
         if (!errors.isEmpty()) {
-            String combinedMessage = String.join("\n- ", errors);
-            showError("- " + combinedMessage);
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Aviso");
+            alert.setHeaderText("Corrija los siguientes errores:");
+            TextArea textArea = new TextArea(String.join("\n", errors));
+            textArea.setEditable(false);
+            textArea.setWrapText(true);
+            textArea.setPrefSize(420, 160);
+            alert.getDialogPane().setContent(textArea);
+            alert.showAndWait();
         }
     }
 

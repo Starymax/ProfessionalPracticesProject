@@ -1,8 +1,7 @@
 package mx.fei.gui.controllers;
 
-import javafx.scene.control.Button;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUIActivityPlan;
-import mx.fei.gui.views.GUIRegisterActivity;
 import mx.fei.logic.dao.ActivityDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dto.Activity;
@@ -10,14 +9,13 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.stage.Modality;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,19 +24,25 @@ public class ControllerActivityPlan {
 
     private final GUIActivityPlan guiActivityPlan;
     private Project project;
-    private final int noHoursLeft = 0;
 
     public ControllerActivityPlan(GUIActivityPlan guiActivityPlan) {
         this.guiActivityPlan = guiActivityPlan;
     }
 
-    public void handleAddActivitySavePlanCancelButtons(ActionEvent event) {
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public void handleAddActivityDeleteSaveCancelButtons(ActionEvent event) {
         Button button = (Button) event.getSource();
-        switch(button.getText()) {
-            case "Añadir Actividad" -> {
-                openAddActivity();
+        switch (button.getText()) {
+            case "+ Nueva actividad" -> {
+                addNewActivity();
             }
-            case "Guardar" -> {
+            case "Eliminar" -> {
+                deleteSelectedActivity();
+            }
+            case "Guardar plan" -> {
                 savePlan();
             }
             case "Cancelar" -> {
@@ -47,46 +51,112 @@ public class ControllerActivityPlan {
         }
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void addNewActivity() {
+        Activity activity = new Activity(0, "", "", project);
+        guiActivityPlan.addActivity(activity);
     }
 
-    private void openAddActivity() {
-        try {
-            int remainingHours = guiActivityPlan.getRemainingPlannedHours();
-            if (remainingHours == noHoursLeft) {
-                guiActivityPlan.showError("El plan ya tiene " + GUIActivityPlan.TOTAL_PLAN_HOURS + " horas planeadas. No se pueden agregar más actividades.");
-            } else {
-                GUIRegisterActivity guiRegisterActivity = new GUIRegisterActivity();
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                guiRegisterActivity.start(stage);
-                guiRegisterActivity.setProject(project);
-                guiRegisterActivity.setGuiActivityPlan(guiActivityPlan);
-                guiRegisterActivity.setRemainingAllowedHours(remainingHours);
-            }
-        } catch (RuntimeException exception) {
-            guiActivityPlan.showError(exception.getMessage());
+    public void deleteSelectedActivity() {
+        boolean userConfirmed = showDeleteConfirmation();
+        if (userConfirmed) {
+            guiActivityPlan.removeSelectedActivity();
         }
     }
 
-    private void savePlan() {
+    public void savePlan() {
+        List<String> errors = validate();
+        if (!errors.isEmpty()) {
+            GUIUtils.showErrors(errors);
+        } else {
+            boolean userConfirmed = showSaveConfirmation();
+            if (userConfirmed) {
+                saveProject(project);
+                saveActivities(guiActivityPlan.getActivities());
+            }
+        }
+    }
+
+    public void cancel() {
+        boolean userConfirmed = showCancelConfirmation();
+        if (userConfirmed) {
+            guiActivityPlan.getStage().close();
+        }
+    }
+
+    private boolean showDeleteConfirmation() {
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationDialog.setTitle("Eliminar actividad");
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setContentText("¿Seguro que desea eliminar esta actividad?");
+        Optional<ButtonType> confirmationResult = confirmationDialog.showAndWait();
+        return confirmationResult.isPresent() && confirmationResult.get() == ButtonType.OK;
+    }
+
+    private boolean showSaveConfirmation() {
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationDialog.setTitle("Confirmar");
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setContentText("¿Seguro que desea guardar el proyecto con este plan?");
+        Optional<ButtonType> confirmationResult = confirmationDialog.showAndWait();
+        return confirmationResult.isPresent() && confirmationResult.get() == ButtonType.OK;
+    }
+
+    private boolean showCancelConfirmation() {
+        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmationDialog.setTitle("Cancelar");
+        confirmationDialog.setHeaderText(null);
+        confirmationDialog.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");
+        Optional<ButtonType> confirmationResult = confirmationDialog.showAndWait();
+        return confirmationResult.isPresent() && confirmationResult.get() == ButtonType.OK;
+    }
+
+    private List<String> validate() {
+        List<String> errors = new ArrayList<>();
         List<Activity> activities = guiActivityPlan.getActivities();
         if (activities.isEmpty()) {
-            guiActivityPlan.showError("Debe añadir al menos una actividad para guardar.");
-        } else if (guiActivityPlan.getTotalPlannedHours() != GUIActivityPlan.TOTAL_PLAN_HOURS) {
-            guiActivityPlan.showError("La suma total de horas planeadas debe ser exactamente " + GUIActivityPlan.TOTAL_PLAN_HOURS + " horas para guardar el plan.");
+            errors.add("Debe añadir al menos una actividad.");
         } else {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmation.setTitle("Confirmar");
-            confirmation.setHeaderText(null);
-            confirmation.setContentText("¿Seguro que desea guardar el proyecto con este plan");
-            Optional<ButtonType> result = confirmation.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                saveProject(project);
-                saveActivities(activities);
-                guiActivityPlan.showSuccess("Proyecto Registrado correctamente");
-            }
+            validateEachActivity(activities, errors);
+            validatePlanTotal(errors);
+        }
+        return errors;
+    }
+
+    private void validateEachActivity(List<Activity> activities, List<String> errors) {
+        for (int activityIndex = 0; activityIndex < activities.size(); activityIndex++) {
+            Activity activity = activities.get(activityIndex);
+            String activityLabel = "Actividad " + (activityIndex + 1);
+            validateActivityFields(activity, activityLabel, errors);
+        }
+    }
+
+    private void validateActivityFields(Activity activity, String activityLabel, List<String> errors) {
+        GUIUtils.validateShortText(activity.getName(), "Nombre (" + activityLabel + ")", errors);
+        String activityDescription = activity.getObservationsActivity() != null ? activity.getObservationsActivity() : "";
+        GUIUtils.validateLongText(activityDescription, "Descripción (" + activityLabel + ")", errors);
+        validateActivityHours(activity, activityLabel, errors);
+    }
+
+    private void validateActivityHours(Activity activity, String activityLabel, List<String> errors) {
+        Map<Integer, Integer> activityWeekHours = guiActivityPlan.getActivityWeekHours().getOrDefault(activity, Collections.emptyMap());
+        int activityTotalHours = activityWeekHours.values().stream().mapToInt(Integer::intValue).sum();
+        if (activityTotalHours == 0) {
+            errors.add(activityLabel + " no tiene horas asignadas.");
+        }
+    }
+
+    private void validatePlanTotal(List<String> errors) {
+        if (guiActivityPlan.getTotalPlannedHours() != GUIActivityPlan.TOTAL_PLAN_HOURS) {
+            errors.add("La suma total debe ser exactamente " + GUIActivityPlan.TOTAL_PLAN_HOURS + " h (actual: " + guiActivityPlan.getTotalPlannedHours() + " h).");
+        }
+    }
+
+    private void saveProject(Project project) {
+        try {
+            ProjectDAO projectDAO = new ProjectDAO();
+            project.setProjectId(projectDAO.registerProject(project));
+        } catch (DataOperationException dataOperationException) {
+            guiActivityPlan.showError(dataOperationException.getMessage());
         }
     }
 
@@ -95,32 +165,16 @@ public class ControllerActivityPlan {
             ActivityDAO activityDAO = new ActivityDAO();
             Map<Activity, ArrayList<WeeklyLog>> weeklyLogsMap = guiActivityPlan.getWeeklyLogsMap();
             for (Activity activity : activities) {
-                ArrayList<WeeklyLog> weeklyLogs = weeklyLogsMap.get(activity);
-                activityDAO.insertActivity(activity, project, weeklyLogs);
+                activityDAO.insertActivity(activity, project, weeklyLogsMap.get(activity));
             }
-            guiActivityPlan.getStage().close();
-        } catch (DataOperationException exception) {
-            guiActivityPlan.showError("Error al guardar el plan de actividades: " + exception.getMessage());
+            closeStageWithSuccess();
+        } catch (DataOperationException dataOperationException) {
+            guiActivityPlan.showError("Error al guardar: " + dataOperationException.getMessage());
         }
     }
 
-    private void saveProject(Project project) {
-        try {
-            ProjectDAO projectDAO = new ProjectDAO();
-            project.setProjectId(projectDAO.registerProject(project));
-        } catch (DataOperationException e) {
-            guiActivityPlan.showError(e.getMessage());
-        }
-    }
-
-    private void cancel() {
-        Alert confirmation = new Alert(AlertType.CONFIRMATION);
-        confirmation.setTitle("Cancelar");
-        confirmation.setHeaderText(null);
-        confirmation.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");
-        Optional<ButtonType> result = confirmation.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            guiActivityPlan.getStage().close();
-        }
+    private void closeStageWithSuccess() {
+        guiActivityPlan.showSuccess("Proyecto registrado correctamente.");
+        guiActivityPlan.getStage().close();
     }
 }

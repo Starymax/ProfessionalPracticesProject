@@ -224,3 +224,74 @@
 .scroll-pane > .viewport {
     -fx-background-color: transparent;
 }
+
+.label-secondary {
+    -fx-text-fill: #555555;
+}
+
+.label-hint {
+    -fx-font-size: 11px;
+    -fx-text-fill: #555555;
+}
+
+.button-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: #b71c1c;
+    -fx-border-color: #e57373;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.button-danger:hover {
+    -fx-background-color: #fdecea;
+}
+
+.activity-card {
+    -fx-background-color: #E0E0E0;
+    -fx-border-color: #BBBBBB;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+}
+
+.activity-card-selected {
+    -fx-background-color: white;
+    -fx-border-color: #323232;
+    -fx-border-width: 2;
+    -fx-border-radius: 4;
+}
+
+.activity-card-warning {
+    -fx-background-color: #fdecea;
+    -fx-border-color: #e57373;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+}
+
+.week-cell {
+    -fx-border-color: #B0B0B0;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+}
+
+.week-cell-active {
+    -fx-border-color: #2e7d32;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 4;
+}
+
+.week-cell-full {
+    -fx-opacity: 0.55;
+}
+
+.week-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555555;
+}
+
+.week-label-active {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1b5e20;
+}
