@@ -53,7 +53,12 @@ public class DatabaseConnectionManager {
         }
         if (connection == null || connection.isClosed() || !connection.isValid(timeOut)) {
             logger.log(Level.INFO, "Estableciendo nueva conexión a la base de datos");
-            connection = DriverManager.getConnection(url, username, password);
+            try {
+                connection = DriverManager.getConnection(url, username, password);
+            } catch (SQLException e) {
+                logger.log(Level.SEVERE, "No se pudo conectar a la base de datos: " + url, e);
+                throw e;
+            }
         }
 
         return connection;

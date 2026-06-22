@@ -36,15 +36,16 @@ public class ControllerManageProjects {
     }
 
     private void openRegisterProject() {
+        GUIRegisterProject guiRegisterProject = new GUIRegisterProject();
+        Stage newStage = new Stage();
+        newStage.initModality(Modality.APPLICATION_MODAL);
+        guiRegisterProject.start(newStage);
         try {
-            GUIRegisterProject guiRegisterProject = new GUIRegisterProject();
-            Stage newStage = new Stage();
-            newStage.initModality(Modality.APPLICATION_MODAL);
-            guiRegisterProject.start(newStage);
             EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
             guiRegisterProject.loadEnterprises(enterpriseDAO.getActiveEnterprises());
             guiManageProjects.getStage().close();
         } catch (DataOperationException e) {
+            newStage.close();
             guiManageProjects.showError(e.getMessage());
         }
     }
@@ -59,6 +60,7 @@ public class ControllerManageProjects {
         try {
             guiSelectProjects.loadProjects(projectDAO.getAllProjects());
         } catch (DataOperationException e) {
+            stage.close();
             guiManageProjects.showError(e.getMessage());
         }
     }

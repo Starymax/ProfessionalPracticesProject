@@ -34,18 +34,18 @@ public class ControllerSelectStudentForAssignProject {
     private void selectStudent() {
         Student studentSelected = guiSelectStudentForAssignProject.getSelectedStudent();
         if (studentSelected != null) {
-            GUIAssignProject guiAssignProject = new GUIAssignProject();
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            guiAssignProject.start(stage);
-            guiAssignProject.setStudent(studentSelected);
-            guiSelectStudentForAssignProject.getStage().close();
             try {
                 StudentDAO studentDAO = new StudentDAO();
                 ProjectDAO projectDAO = new ProjectDAO();
+                GUIAssignProject guiAssignProject = new GUIAssignProject();
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiAssignProject.start(stage);
+                guiAssignProject.setStudent(studentSelected);
                 guiAssignProject.loadProjects(projectDAO.getActiveProjects(), studentDAO.getSelectedProjects(studentSelected));
+                guiSelectStudentForAssignProject.getStage().close();
             } catch (DataOperationException e) {
-                guiAssignProject.showError(e.getMessage());
+                guiSelectStudentForAssignProject.showError(e.getMessage());
             }
         } else {
             guiSelectStudentForAssignProject.showError("Seleccione un alumno de la lista.");

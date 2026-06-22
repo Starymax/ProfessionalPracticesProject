@@ -126,6 +126,7 @@ public class ControllerStudentMenu {
                 guiGenerateReport.start(stage);
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e);
+                guiStudentMenu.showError(e.getMessage());
             }
         }
     }
