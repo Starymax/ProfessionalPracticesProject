@@ -1,7 +1,6 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerRegisterAdvance;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Activity;
@@ -35,13 +34,10 @@ import java.util.Set;
 public class GUIRegisterAdvance {
 
     private static final String COMPLETED_COLOR = "#f4a9a8";
-
     private final Student student;
     private Stage stage;
-
     private ListView<Activity> listViewActivities;
     private Set<Integer> completedActivityIds = new HashSet<>();
-
     private Label labelMes;
     private Label labelSemana;
     private Label labelPlannedHours;

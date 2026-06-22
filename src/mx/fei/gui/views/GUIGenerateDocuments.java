@@ -1,7 +1,6 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.logic.dto.Practice;
 import mx.fei.gui.controllers.ControllerGenerateDocuments;
 import mx.fei.gui.utils.GUIUtils;
@@ -18,7 +17,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-
 
 public class GUIGenerateDocuments extends Application {
 

@@ -90,7 +90,7 @@ public class StudentDAO implements IDAOStudent {
     }
 
     @Override
-    public Student getStudentById(Integer idStudent) throws DataOperationException, NoSuchElementException {
+    public Student getStudentById(Integer idStudent) throws DataOperationException {
         if (idStudent == null || idStudent == 0) {
             logger.log(Level.WARNING, "El id esta vacio");
             throw new IllegalArgumentException("El Id no puede estar vacio");
@@ -107,7 +107,7 @@ public class StudentDAO implements IDAOStudent {
             }
             if (student == null) {
                 logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
-                throw new NoSuchElementException("No se encontro el estudiante");
+                throw new DataOperationException("No se encontro el estudiante");
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al buscar el estudiante por ID", e);

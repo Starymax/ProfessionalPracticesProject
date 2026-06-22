@@ -1,7 +1,6 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerRegisterEducationalExperience;
 import mx.fei.gui.utils.GUIUtils;
 

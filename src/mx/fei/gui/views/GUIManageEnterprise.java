@@ -1,6 +1,8 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.controllers.ControllerManageEnterprise;
+import mx.fei.gui.utils.GUIUtils;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -14,8 +16,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerManageEnterprise;
-import mx.fei.gui.utils.GUIUtils;
+
 
 public class GUIManageEnterprise extends Application {
     private Button buttonRegisterEnterprise;

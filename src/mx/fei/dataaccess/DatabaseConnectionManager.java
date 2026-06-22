@@ -27,9 +27,15 @@ public class DatabaseConnectionManager {
             instance.closeConnection();
         }
         if (instance == null) {
-            instance = new DatabaseConnectionManager();
-            instance.loadProperties(role);
-            instance.currentRole = role;
+            DatabaseConnectionManager newInstance = new DatabaseConnectionManager();
+            try {
+                newInstance.loadProperties(role);
+            } catch (IOException e) {
+                instance = null;
+                throw e;
+            }
+            newInstance.currentRole = role;
+            instance = newInstance;
         }
         return instance;
     }
@@ -54,22 +60,20 @@ public class DatabaseConnectionManager {
     }
 
     public void closeConnection() {
-        if (connection != null) {
-            try {
-                if (!connection.isClosed()) {
-                    connection.close();
-                    logger.log(Level.INFO, "Conexión cerrada correctamente");
-                }
-            } catch (SQLException e) {
-                logger.log(Level.WARNING, "Error al cerrar la conexión", e);
-            } finally {
-                connection = null;
-                url = null;
-                username = null;
-                password = null;
-                currentRole = null;
-                instance = null;
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                logger.log(Level.INFO, "Conexión cerrada correctamente");
             }
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Error al cerrar la conexión: " + e.getMessage());
+        } finally {
+            connection = null;
+            url = null;
+            username = null;
+            password = null;
+            currentRole = null;
+            instance = null;
         }
     }
 
@@ -77,7 +81,7 @@ public class DatabaseConnectionManager {
         String fileName = "db_" + role + ".properties";
         InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName);
         if (input == null) {
-            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades", fileName);
+            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades: " + fileName);
             throw new IOException("Error al iniciar sesión: archivo de configuracion no encontrado");
         }
         try (input) {
@@ -88,7 +92,16 @@ public class DatabaseConnectionManager {
             String host = properties.getProperty("db.host");
             String port = properties.getProperty("db.port");
             String name = properties.getProperty("db.name");
+            if (isBlank(username) || isBlank(password) || isBlank(host) || isBlank(port) || isBlank(name)) {
+                logger.log(Level.SEVERE, "Archivo de propiedades incompleto o mal formado: " + fileName);
+                throw new IOException("Error al iniciar sesión: configuración de conexión inválida");
+            }
+
             this.url = "jdbc:mysql://" + host + ":" + port + "/" + name;
         }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

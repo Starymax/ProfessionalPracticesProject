@@ -186,15 +186,33 @@ public class GUIGeneratePartialReport extends Application {
 
     private StringProperty getRealProperty(PartialActivityRow row, int week) {
         switch (week) {
-            case 1: return row.week1RealProperty();
-            case 2: return row.week2RealProperty();
-            case 3: return row.week3RealProperty();
-            case 4: return row.week4RealProperty();
-            case 5: return row.week5RealProperty();
-            case 6: return row.week6RealProperty();
-            case 7: return row.week7RealProperty();
-            case 8: return row.week8RealProperty();
-            default: return new SimpleStringProperty("");
+            case 1 -> {
+                return row.week1RealProperty();
+            }
+            case 2 -> {
+                return row.week2RealProperty();
+            }
+            case 3 -> {
+                return row.week3RealProperty();
+            }
+            case 4 -> {
+                return row.week4RealProperty();
+            }
+            case 5 -> {
+                return row.week5RealProperty();
+            }
+            case 6 -> {
+                return row.week6RealProperty();
+            }
+            case 7 -> {
+                return row.week7RealProperty();
+            }
+            case 8 -> {
+                return row.week8RealProperty();
+            }
+            default -> {
+                return new SimpleStringProperty("");
+            }
         }
     }
 
@@ -287,12 +305,12 @@ public class GUIGeneratePartialReport extends Application {
         return textAreaResults.getText();
     }
 
-    public void showError(String msg) {
-        GUIUtils.showError(msg);
+    public void showError(String message) {
+        GUIUtils.showError(message);
     }
 
-    public void showSuccess(String msg) {
-        GUIUtils.showSuccess(msg);
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
     }
 
     public void closeWindow() {

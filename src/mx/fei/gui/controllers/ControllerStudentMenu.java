@@ -1,7 +1,13 @@
 package mx.fei.gui.controllers;
 
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import mx.fei.logic.dao.NotificationDAO;
+import mx.fei.logic.dao.PracticeDAO;
+import mx.fei.logic.dao.ProjectDAO;
+import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dao.UserDAO;
+import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.Project;
+import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.gui.views.GUIStudentMenu;
 import mx.fei.gui.views.GUISelectProjects;
 import mx.fei.gui.views.GUIGenerateReport;
@@ -10,14 +16,15 @@ import mx.fei.gui.views.GUIUploadDocuments;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIGenerateDocuments;
 import mx.fei.gui.views.GUINotifications;
+
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import mx.fei.logic.dao.*;
-import mx.fei.logic.dto.Practice;
-import mx.fei.logic.dto.Project;
-import mx.fei.logic.exceptions.DataOperationException;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -170,7 +177,7 @@ public class ControllerStudentMenu {
     }
 
     private void logout() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cerrar sesión?");

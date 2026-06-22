@@ -39,6 +39,7 @@ public class GUIGenerateMonthlyReport extends Application {
     private TableView<ActivityRow> tableActivities;
     private Button buttonExportPDF;
     private Button buttonCancel;
+    private final int invalidRow = -1;
 
     public GUIGenerateMonthlyReport() {
     }
@@ -173,9 +174,9 @@ public class GUIGenerateMonthlyReport extends Application {
         return buttonRow;
     }
 
-    public void setStudentInfo(String name, String matricule, String email) {
+    public void setStudentInfo(String name, String enrollment, String email) {
         labelStudentName.setText(name != null ? name : "-");
-        labelStudentEnrollment.setText(matricule != null ? matricule : "-");
+        labelStudentEnrollment.setText(enrollment != null ? enrollment : "-");
         labelStudentEmail.setText(email != null ? email : "-");
     }
 
@@ -195,7 +196,7 @@ public class GUIGenerateMonthlyReport extends Application {
 
     public void commitTableEdits() {
         if (tableActivities.getEditingCell() != null) {
-            tableActivities.edit(-1, null);
+            tableActivities.edit(invalidRow, null);
         }
     }
 

@@ -1,7 +1,6 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.logic.dto.Practice;
 import mx.fei.gui.controllers.ControllerGenerateReport;
 import mx.fei.gui.utils.GUIUtils;

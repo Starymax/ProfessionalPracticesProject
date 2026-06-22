@@ -1,12 +1,12 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerEvaluateStudentSelection;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.Student;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

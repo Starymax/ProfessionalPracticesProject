@@ -14,7 +14,6 @@ import mx.fei.logic.dto.UserRole;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import org.mindrot.jbcrypt.BCrypt;
-
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
@@ -49,6 +48,7 @@ public class ControllerLogin {
         if (validateFields()) {
             String mail = guiLogin.getTextFieldMail().getText().trim();
             String rawPassword = guiLogin.getTextFieldPassword().getText();
+            defaultSession();
             try {
                 User user = userDAO.getUserByEmail(mail);
                 if (user.isActive() && BCrypt.checkpw(rawPassword, user.getPassword())) {
@@ -69,7 +69,7 @@ public class ControllerLogin {
             } catch (NoSuchElementException e) {
                 guiLogin.showError("Correo o contraseña incorrectos.");
             } catch (DataOperationException e) {
-                guiLogin.showError(e.getMessage());
+                guiLogin.showError("Error interno. Intente más tarde.");
             }
         }
     }
@@ -90,62 +90,61 @@ public class ControllerLogin {
         try {
             userDAO.logInByRole(UserRole.DEFAULT);
         }  catch (DataOperationException e) {
-            guiLogin.showError(e.getMessage());
+            guiLogin.showError("Error interno. Intente más tarde.");
         }
     }
 
     private void studentLogin(User user) {
         StudentDAO studentDAO = new StudentDAO();
         try {
+            userDAO.logInByRole(UserRole.STUDENT);
             Student student = studentDAO.getStudentById(user.getUserId());
             GUIStudentMenu guiStudentMenu = new GUIStudentMenu();
             Stage studentMenuStage = new Stage();
             guiStudentMenu.start(studentMenuStage);
             guiStudentMenu.setStudentInfo(student);
-            userDAO.logInByRole(UserRole.STUDENT);
             guiLogin.closeWindow();
-        } catch (DataOperationException | NoSuchElementException e) {
-            guiLogin.showError(e.getMessage());
-            guiLogin.closeWindow();
+        } catch (DataOperationException e) {
+            guiLogin.showError("Error interno. Intente más tarde.");
         }
     }
 
     private void adminLogin(Professor professor) {
-        GUIAdministratorMenu guiAdministratorMenu = new GUIAdministratorMenu();
-        Stage administratorMenuStage = new Stage();
-        guiAdministratorMenu.start(administratorMenuStage);
-        guiAdministratorMenu.setAdministratorInfo(professor);
         try {
             userDAO.logInByRole(UserRole.ADMINISTRATOR);
+            GUIAdministratorMenu guiAdministratorMenu = new GUIAdministratorMenu();
+            Stage administratorMenuStage = new Stage();
+            guiAdministratorMenu.start(administratorMenuStage);
+            guiAdministratorMenu.setAdministratorInfo(professor);
+            guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError(e.getMessage());
+            guiLogin.showError("Error interno. Intente más tarde.");
         }
-        guiLogin.closeWindow();
     }
 
     private void coordinatorLogin(Professor coordinator) {
-        GUICoordinatorMenu guiCoordinatorMenu = new GUICoordinatorMenu();
-        Stage stage = new Stage();
-        guiCoordinatorMenu.start(stage);
-        guiCoordinatorMenu.setCoordinatorInfo(coordinator);
         try {
             userDAO.logInByRole(UserRole.COORDINATOR);
+            GUICoordinatorMenu guiCoordinatorMenu = new GUICoordinatorMenu();
+            Stage stage = new Stage();
+            guiCoordinatorMenu.start(stage);
+            guiCoordinatorMenu.setCoordinatorInfo(coordinator);
+            guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError(e.getMessage());
+            guiLogin.showError("Error interno. Intente más tarde.");
         }
-        guiLogin.closeWindow();
     }
 
     private void professorLogin(Professor professor) {
-        GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
-        Stage stage = new Stage();
-        guiProfessorMenu.start(stage);
-        guiProfessorMenu.setProfessorInfo(professor);
-        guiLogin.closeWindow();
         try {
             userDAO.logInByRole(UserRole.PROFESSOR);
+            GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
+            Stage stage = new Stage();
+            guiProfessorMenu.start(stage);
+            guiProfessorMenu.setProfessorInfo(professor);
+            guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError(e.getMessage());
+            guiLogin.showError("Error interno. Intente más tarde.");
         }
     }
 }

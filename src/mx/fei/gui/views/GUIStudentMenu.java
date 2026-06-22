@@ -38,6 +38,8 @@ public class GUIStudentMenu extends Application {
     private Student student;
     private StackPane badgePane;
     private ControllerStudentMenu controllerStudentMenu;
+    private final int maxNotifications = 99;
+    private final int noNotifications = 0;
 
     @Override
     public void start(Stage stage) {
@@ -115,8 +117,8 @@ public class GUIStudentMenu extends Application {
     }
 
     public void updateUnreadCount(int count) {
-        if (count > 0) {
-            labelUnreadCount.setText(count > 99 ? "99+" : String.valueOf(count));
+        if (count > noNotifications) {
+            labelUnreadCount.setText(count > maxNotifications ? "99+" : String.valueOf(count));
             if (badgePane != null) {
                 badgePane.setVisible(true);
             }
