@@ -14,19 +14,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIChooseProfessor extends Application {
     private ListView<String> listViewProfessors;
+    private TextField searchField;
     private Button buttonSelect;
     private Button buttonBack;
     private List<Professor> professors;
+    private List<Professor> allProfessors;
     private final int noProfessorSelected = 0;
 
     public GUIChooseProfessor() {}
@@ -41,6 +45,12 @@ public class GUIChooseProfessor extends Application {
         formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Seleccione un profesor:");
         labelTitle.setFont(new Font("SansSerif", 14));
+        searchField = new TextField();
+        searchField.setPromptText("Buscar por número de personal o nombre...");
+        searchField.setPrefWidth(430);
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterProfessors(newValue);
+        });
         listViewProfessors = new ListView<>();
         listViewProfessors.setPrefWidth(430);
         listViewProfessors.setPrefHeight(300);
@@ -56,7 +66,7 @@ public class GUIChooseProfessor extends Application {
         buttonsBox.setPadding(new Insets(10, 0, 0, 0));
         HBox contentBox = new HBox(20, listViewProfessors, buttonsBox);
         contentBox.setAlignment(Pos.TOP_LEFT);
-        formPanel.getChildren().addAll(labelTitle, contentBox);
+        formPanel.getChildren().addAll(labelTitle, searchField, contentBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerChooseProfessor controllerChooseProfessor = new ControllerChooseProfessor(this);
@@ -69,12 +79,32 @@ public class GUIChooseProfessor extends Application {
     }
 
     public void setProfessors(List<Professor> professors) {
-        this.professors = professors;
+        this.allProfessors = professors;
+        showProfessors(professors);
+    }
+
+    private void showProfessors(List<Professor> professorsToShow) {
+        this.professors = professorsToShow;
         ObservableList<String> items = FXCollections.observableArrayList();
-        for (Professor professor : professors) {
-            items.add(professor.getPersonalNumber() + " - " + professor.getName() + " " + professor.getLastName());
+        for (Professor professor : professorsToShow) {
+            items.add(buildProfessorLabel(professor));
         }
         listViewProfessors.setItems(items);
+    }
+
+    private void filterProfessors(String query) {
+        String search = GUIUtils.sanitizeSearch(query);
+        List<Professor> filteredProfessors = new ArrayList<>();
+        for (Professor professor : allProfessors) {
+            if (GUIUtils.matchesSearch(buildProfessorLabel(professor), search)) {
+                filteredProfessors.add(professor);
+            }
+        }
+        showProfessors(filteredProfessors);
+    }
+
+    private String buildProfessorLabel(Professor professor) {
+        return professor.getPersonalNumber() + " - " + professor.getName() + " " + professor.getLastName();
     }
 
     public Professor getSelectedProfessor() {
@@ -99,6 +129,10 @@ public class GUIChooseProfessor extends Application {
 
     public ListView<String> getListViewProfessors() {
         return listViewProfessors;
+    }
+
+    public TextField getSearchField() {
+        return searchField;
     }
 
     public Button getButtonSelect() {

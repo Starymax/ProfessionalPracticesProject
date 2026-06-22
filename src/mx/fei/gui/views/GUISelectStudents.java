@@ -15,6 +15,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.StackPane;
@@ -28,17 +29,21 @@ public class GUISelectStudents extends Application {
 
     private GUIAddStudents guiAddStudents;
     private List<Student> availableStudents;
+    private List<CheckBox> studentCheckBoxes;
     private ListView<CheckBox> listViewStudents;
+    private TextField searchField;
     private Button buttonSelect;
     private Button buttonBack;
 
     public GUISelectStudents(GUIAddStudents guiAddStudents) {
         this.guiAddStudents = guiAddStudents;
         this.availableStudents = new ArrayList<>();
+        this.studentCheckBoxes = new ArrayList<>();
     }
 
     public GUISelectStudents() {
         this.availableStudents = new ArrayList<>();
+        this.studentCheckBoxes = new ArrayList<>();
     }
 
     @Override
@@ -51,6 +56,10 @@ public class GUISelectStudents extends Application {
         formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Seleccione un alumno:");
         labelTitle.setFont(new Font("SansSerif", 14));
+        searchField = new TextField();
+        searchField.setPromptText("Buscar por matrícula o nombre...");
+        searchField.setPrefWidth(390);
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> filterStudents(newValue));
         listViewStudents = new ListView<>();
         listViewStudents.setPrefWidth(390);
         listViewStudents.setPrefHeight(260);
@@ -66,7 +75,7 @@ public class GUISelectStudents extends Application {
         buttonsBox.setPadding(new Insets(10, 0, 0, 0));
         HBox contentBox = new HBox(20, listViewStudents, buttonsBox);
         contentBox.setAlignment(Pos.TOP_LEFT);
-        formPanel.getChildren().addAll(labelTitle, contentBox);
+        formPanel.getChildren().addAll(labelTitle, searchField, contentBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerSelectStudents controllerSelectStudents = new ControllerSelectStudents(this, stage);
@@ -80,22 +89,42 @@ public class GUISelectStudents extends Application {
 
     public void setStudents(List<Student> students, List<Student> studentsAlreadySelected) {
         this.availableStudents = students;
-        ObservableList<CheckBox> items = FXCollections.observableArrayList();
+        this.studentCheckBoxes = new ArrayList<>();
         for (Student student : students) {
-            CheckBox checkBox = new CheckBox(student.getEnrollment() + " - " + student.getName() + " " + student.getLastName());
+            CheckBox checkBox = new CheckBox(buildStudentLabel(student));
             checkBox.getStyleClass().add("checkbox-item");
             if (studentsAlreadySelected != null && studentsAlreadySelected.contains(student)) {
                 checkBox.setSelected(true);
             }
-            items.add(checkBox);
+            studentCheckBoxes.add(checkBox);
         }
+        showCheckBoxes(studentCheckBoxes);
+    }
+
+    private void showCheckBoxes(List<CheckBox> checkBoxesToShow) {
+        ObservableList<CheckBox> items = FXCollections.observableArrayList(checkBoxesToShow);
         listViewStudents.setItems(items);
+    }
+
+    private void filterStudents(String query) {
+        String search = GUIUtils.sanitizeSearch(query);
+        List<CheckBox> filteredCheckBoxes = new ArrayList<>();
+        for (CheckBox checkBox : studentCheckBoxes) {
+            if (GUIUtils.matchesSearch(checkBox.getText(), search)) {
+                filteredCheckBoxes.add(checkBox);
+            }
+        }
+        showCheckBoxes(filteredCheckBoxes);
+    }
+
+    private String buildStudentLabel(Student student) {
+        return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
     }
 
     public List<Student> getCheckedStudents() {
         List<Student> checked = new ArrayList<>();
-        for (int i = 0; i < listViewStudents.getItems().size(); i++) {
-            if (listViewStudents.getItems().get(i).isSelected()) {
+        for (int i = 0; i < studentCheckBoxes.size(); i++) {
+            if (studentCheckBoxes.get(i).isSelected()) {
                 checked.add(availableStudents.get(i));
             }
         }
@@ -122,8 +151,12 @@ public class GUISelectStudents extends Application {
         return availableStudents; 
     }
 
-    public ListView<CheckBox> getListViewStudents() { 
-        return listViewStudents; 
+    public ListView<CheckBox> getListViewStudents() {
+        return listViewStudents;
+    }
+
+    public TextField getSearchField() {
+        return searchField;
     }
 
     public Button getButtonSelect() { 

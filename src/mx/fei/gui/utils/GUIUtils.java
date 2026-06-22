@@ -24,6 +24,7 @@ public class GUIUtils {
     public static final Pattern PERIOD_PATTERN = Pattern.compile("^(19|20)\\d{2}-(0[1-9]|1[0-2])$");
     public static final Pattern NUMERIC_PATTERN = Pattern.compile("^\\d+$");
     public static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^\\d{6,}$");
+    public static final Pattern SEARCH_FORBIDDEN_PATTERN = Pattern.compile("[^\\p{L}\\d\\s-]");
 
     public static void validateNames(String value, String fieldName, List<String> errors) {
         if (value == null || value.isEmpty()) {
@@ -289,6 +290,22 @@ public class GUIUtils {
             alert.getDialogPane().setContent(textArea);
             alert.showAndWait();
         }
+    }
+
+    public static String sanitizeSearch(String value) {
+        String sanitized = "";
+        if (value != null) {
+            sanitized = SEARCH_FORBIDDEN_PATTERN.matcher(value).replaceAll("").trim().toLowerCase();
+        }
+        return sanitized;
+    }
+
+    public static boolean matchesSearch(String itemText, String sanitizedQuery) {
+        boolean matches = false;
+        if (itemText != null) {
+            matches = itemText.toLowerCase().contains(sanitizedQuery);
+        }
+        return matches;
     }
 
     public static void closeWindow(Stage stage) {

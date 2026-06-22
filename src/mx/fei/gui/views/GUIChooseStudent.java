@@ -15,18 +15,22 @@ import javafx.scene.control.Label;
 import javafx.scene.text.Font;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GUIChooseStudent extends Application {
     private ListView<String> listViewStudents;
+    private TextField searchField;
     private Button buttonSelect;
     private Button buttonBack;
     private List<Student> students;
+    private List<Student> allStudents;
 
     public GUIChooseStudent() {}
 
@@ -40,6 +44,12 @@ public class GUIChooseStudent extends Application {
         formPanel.getStyleClass().add("form-panel");
         Label labelTitle = new Label("Seleccione un alumno:");
         labelTitle.setFont(new Font("SansSerif", 14));
+        searchField = new TextField();
+        searchField.setPromptText("Buscar por matrícula o nombre...");
+        searchField.setPrefWidth(390);
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterStudents(newValue);
+        });
         listViewStudents = new ListView<>();
         listViewStudents.setPrefWidth(390);
         listViewStudents.setPrefHeight(260);
@@ -55,7 +65,7 @@ public class GUIChooseStudent extends Application {
         buttonsBox.setPadding(new Insets(10, 0, 0, 0));
         HBox contentBox = new HBox(20, listViewStudents, buttonsBox);
         contentBox.setAlignment(Pos.TOP_LEFT);
-        formPanel.getChildren().addAll(labelTitle, contentBox);
+        formPanel.getChildren().addAll(labelTitle, searchField, contentBox);
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerChooseStudent controllerChooseStudent = new ControllerChooseStudent(this);
@@ -68,12 +78,32 @@ public class GUIChooseStudent extends Application {
     }
 
     public void setStudents(List<Student> students) {
-        this.students = students;
+        this.allStudents = students;
+        showStudents(students);
+    }
+
+    private void showStudents(List<Student> studentsToShow) {
+        this.students = studentsToShow;
         ObservableList<String> items = FXCollections.observableArrayList();
-        for (Student student : students) {
-            items.add(student.getEnrollment() + " - " + student.getName() + " " + student.getLastName());
+        for (Student student : studentsToShow) {
+            items.add(buildStudentLabel(student));
         }
         listViewStudents.setItems(items);
+    }
+
+    private void filterStudents(String query) {
+        String search = GUIUtils.sanitizeSearch(query);
+        List<Student> filteredStudents = new ArrayList<>();
+        for (Student student : allStudents) {
+            if (GUIUtils.matchesSearch(buildStudentLabel(student), search)) {
+                filteredStudents.add(student);
+            }
+        }
+        showStudents(filteredStudents);
+    }
+
+    private String buildStudentLabel(Student student) {
+        return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
     }
 
     public Student getSelectedStudent() {
@@ -95,6 +125,10 @@ public class GUIChooseStudent extends Application {
 
     public ListView<String> getListViewStudents() {
         return listViewStudents;
+    }
+
+    public TextField getSearchField() {
+        return searchField;
     }
 
     public Button getButtonSelect() {

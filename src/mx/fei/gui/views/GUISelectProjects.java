@@ -6,8 +6,11 @@ import mx.fei.logic.dto.Project;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Student;
 
+import javafx.collections.FXCollections;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.Priority;
@@ -28,12 +31,17 @@ import java.util.List;
 
 public class GUISelectProjects extends Application {
 
+    private static final String ALL_ENTERPRISES = "Todas las empresas";
+
     private Button buttonSelect;
     private Button buttonCancel;
+    private TextField searchField;
+    private ComboBox<String> enterpriseFilter;
     private VBox vBoxProjectList;
     private Stage stage;
     private final List<CheckBox> checkBoxes = new ArrayList<>();
     private final List<Project> projects = new ArrayList<>();
+    private final List<HBox> projectRows = new ArrayList<>();
     private Student student;
     private boolean isModify;
 
@@ -42,6 +50,22 @@ public class GUISelectProjects extends Application {
         this.stage = stage;
         Label title = new Label("Proyectos disponibles");
         title.setFont(Font.font("SansSerif", FontWeight.NORMAL, 14));
+
+        searchField = new TextField();
+        searchField.setPromptText("Buscar por nombre de proyecto...");
+        HBox.setHgrow(searchField, Priority.ALWAYS);
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            applyFilters();
+        });
+
+        enterpriseFilter = new ComboBox<>();
+        enterpriseFilter.setPrefWidth(220);
+        enterpriseFilter.valueProperty().addListener((observable, oldValue, newValue) -> {
+            applyFilters();
+        });
+
+        HBox filterRow = new HBox(10, searchField, enterpriseFilter);
+        filterRow.setAlignment(Pos.CENTER_LEFT);
 
         vBoxProjectList = new VBox(6);
         vBoxProjectList.setPadding(new Insets(10));
@@ -54,7 +78,7 @@ public class GUISelectProjects extends Application {
         scrollPane.getStyleClass().add("card-scroll");
         scrollPane.setPrefHeight(280);
 
-        VBox listPanel = new VBox(10, title, scrollPane);
+        VBox listPanel = new VBox(10, title, filterRow, scrollPane);
         listPanel.setPadding(new Insets(16));
         listPanel.getStyleClass().add("card-panel");
 
@@ -92,7 +116,9 @@ public class GUISelectProjects extends Application {
 
         CheckBox checkBox = new CheckBox();
         checkBox.setUserData(project);
-        checkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> enforceSelectionLimit(checkBox, newValue));
+        checkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            enforceSelectionLimit(checkBox, newValue);
+        });
         checkBoxes.add(checkBox);
         HBox row = new HBox(6, label, checkBox);
         row.setAlignment(Pos.CENTER_LEFT);
@@ -120,13 +146,53 @@ public class GUISelectProjects extends Application {
     }
 
     public void loadProjects(List<Project> projectsToLoad) {
-        vBoxProjectList.getChildren().clear();
         checkBoxes.clear();
         projects.clear();
+        projectRows.clear();
         projects.addAll(projectsToLoad);
         for (Project project : projectsToLoad) {
-            vBoxProjectList.getChildren().add(buildProjectRow(project));
+            projectRows.add(buildProjectRow(project));
         }
+        populateEnterpriseFilter();
+        applyFilters();
+    }
+
+    private void populateEnterpriseFilter() {
+        List<String> options = new ArrayList<>();
+        options.add(ALL_ENTERPRISES);
+        for (Project project : projects) {
+            String enterpriseName = getEnterpriseName(project);
+            if (!enterpriseName.isEmpty() && !options.contains(enterpriseName)) {
+                options.add(enterpriseName);
+            }
+        }
+        enterpriseFilter.setItems(FXCollections.observableArrayList(options));
+        enterpriseFilter.setValue(ALL_ENTERPRISES);
+    }
+
+    private void applyFilters() {
+        String search = GUIUtils.sanitizeSearch(searchField.getText());
+        String enterprise = enterpriseFilter.getValue();
+        vBoxProjectList.getChildren().clear();
+        for (int i = 0; i < projects.size(); i++) {
+            if (matchesFilters(projects.get(i), search, enterprise)) {
+                vBoxProjectList.getChildren().add(projectRows.get(i));
+            }
+        }
+    }
+
+    private boolean matchesFilters(Project project, String search, String enterprise) {
+        boolean matchesName = GUIUtils.matchesSearch(project.getNameProject(), search);
+        boolean matchesEnterprise = enterprise == null || enterprise.equals(ALL_ENTERPRISES) || enterprise.equals(getEnterpriseName(project));
+        return matchesName && matchesEnterprise;
+    }
+
+    private String getEnterpriseName(Project project) {
+        String enterpriseName = "";
+        if (project.getEnterprise() != null && project.getEnterprise().getName() != null) {
+            enterpriseName = project.getEnterprise().getName();
+        }
+        return enterpriseName;
     }
 
     public List<Project> getSelectedProjects() {
