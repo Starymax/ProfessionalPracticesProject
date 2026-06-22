@@ -5,6 +5,7 @@ import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dao.UserDAO;
+import mx.fei.logic.dto.Notification;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -35,6 +36,7 @@ public class ControllerStudentMenu {
     private final GUIStudentMenu guiStudentMenu;
     private final ProjectDAO projectDAO;
     private final PracticeDAO practiceDAO;
+    private final StudentDAO studentDAO;
     private final NotificationDAO notificationDAO = new NotificationDAO();
     private final int minimumProjects = 3;
     private static final Logger logger = Logger.getLogger(ControllerStudentMenu.class.getName());
@@ -43,6 +45,7 @@ public class ControllerStudentMenu {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
         practiceDAO = new PracticeDAO();
+        studentDAO = new StudentDAO();
     }
 
     public void loadUnreadCount() {
@@ -54,10 +57,7 @@ public class ControllerStudentMenu {
             int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
             guiStudentMenu.updateUnreadCount(unread);
         } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "Error al cargar notificaciones no leídas", e);
-            guiStudentMenu.updateUnreadCount(0);
-        } catch (RuntimeException e) {
-            logger.log(Level.WARNING, "Error inesperado al cargar notificaciones no leídas", e);
+            logger.log(Level.WARNING, "Error al cargar notificaciones no leídas:", e.getMessage());
             guiStudentMenu.updateUnreadCount(0);
         }
     }
@@ -125,7 +125,7 @@ public class ControllerStudentMenu {
                 stage.initModality(Modality.APPLICATION_MODAL);
                 guiGenerateReport.start(stage);
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e);
+                logger.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e.getMessage());
                 guiStudentMenu.showError(e.getMessage());
             }
         }
@@ -147,16 +147,23 @@ public class ControllerStudentMenu {
     }
 
     private void openNotifications() {
+        NotificationDAO notificationDAO = new NotificationDAO();
         try {
-            GUINotifications guiNotifications = new GUINotifications();
-            Stage newStage = new Stage();
-            guiNotifications.start(newStage);
-            guiNotifications.setStudent(guiStudentMenu.getStudent());
-            ControllerNotifications controller = new ControllerNotifications(guiNotifications);
-            controller.loadNotifications();
-            newStage.setOnHidden(e -> loadUnreadCount());
-        } catch (RuntimeException e) {
-            logger.log(Level.SEVERE, "Error al abrir notificaciones", e);
+            List<Notification> notifications = notificationDAO.getNotificationsByStudentId(guiStudentMenu.getStudent().getUserId());
+            if (notifications.isEmpty()) {
+                guiStudentMenu.showError("No tiene notificaciones por el momento.");
+            } else {
+                GUINotifications guiNotifications = new GUINotifications();
+                ControllerNotifications controllerNotifications = new ControllerNotifications(guiNotifications);
+                Stage newStage = new Stage();
+                guiNotifications.start(newStage);
+                guiNotifications.setStudent(guiStudentMenu.getStudent());
+                controllerNotifications.loadNotifications();
+                newStage.setOnHidden(e -> loadUnreadCount());
+                }
+            } catch (DataOperationException e) {
+            logger.log(Level.SEVERE, "Error al abrir notificaciones: " + e.getMessage());
+            guiStudentMenu.showError("Error al cargar notificaciones. Intente más tarde.");
         }
     }
 
@@ -173,7 +180,7 @@ public class ControllerStudentMenu {
             }
         } catch (DataOperationException e) {
             guiStudentMenu.showError(e.getMessage());
-            logger.log(Level.SEVERE, "Error al obtener práctica por matrícula", e);
+            logger.log(Level.SEVERE, "Error al obtener práctica por matrícula", e.getMessage());
         }
     }
 

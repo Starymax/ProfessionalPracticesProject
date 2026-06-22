@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class NotificationDAO implements IDAONotification {
 
-    private static final Logger LOGGER = Logger.getLogger(NotificationDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(NotificationDAO.class.getName());
 
     @Override
     public boolean sendNotification(Notification notification) throws DataOperationException {
@@ -28,7 +28,7 @@ public class NotificationDAO implements IDAONotification {
             preparedStatement.setInt(3, notification.getStudent().getUserId());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al enviar notificación", e);
+            logger.log(Level.SEVERE, "Error al enviar notificación", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -56,7 +56,7 @@ public class NotificationDAO implements IDAONotification {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al obtener notificaciones del alumno", e);
+            logger.log(Level.SEVERE, "Error al obtener notificaciones del alumno", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -73,7 +73,7 @@ public class NotificationDAO implements IDAONotification {
             preparedStatement.setInt(1, notificationId);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al marcar notificación como leída", e);
+            logger.log(Level.SEVERE, "Error al marcar notificación como leída", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -94,7 +94,7 @@ public class NotificationDAO implements IDAONotification {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al contar notificaciones no leídas", e);
+            logger.log(Level.SEVERE, "Error al contar notificaciones no leídas", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
