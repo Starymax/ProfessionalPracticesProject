@@ -24,6 +24,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class GUIModifyExperience extends Application {
     private TextField textFieldName;
     private TextField textFieldCareer;
     private TextField textFieldCurrentProfessor;
+    private ComboBox<String> comboBoxSemester;
+    private ComboBox<Integer> comboBoxYear;
     private ComboBox<String> comboBoxProfessors;
     private Button buttonUpdate;
     private Button buttonBack;
@@ -65,11 +68,23 @@ public class GUIModifyExperience extends Application {
         formGrid.add(new Label("Carrera:"), 0, 1);
         textFieldCareer = new TextField();
         formGrid.add(textFieldCareer, 1, 1);
-        formGrid.add(new Label("Profesor actual:"), 0, 2);
+        formGrid.add(new Label("Semestre:"), 0, 2);
+        comboBoxSemester = new ComboBox<>(FXCollections.observableArrayList("Febrero - Julio", "Agosto - Enero"));
+        comboBoxSemester.setPrefWidth(220);
+        comboBoxSemester.setPromptText("Seleccione semestre");
+        formGrid.add(comboBoxSemester, 1, 2);
+        formGrid.add(new Label("Año:"), 0, 3);
+        int currentYear = LocalDate.now().getYear();
+        comboBoxYear = new ComboBox<>(FXCollections.observableArrayList(currentYear, currentYear + 1));
+        comboBoxYear.setPrefWidth(220);
+        comboBoxYear.setPromptText("Seleccione año");
+        formGrid.add(comboBoxYear, 1, 3);
+
+        formGrid.add(new Label("Profesor actual:"), 0, 4);
         textFieldCurrentProfessor = new TextField();
         textFieldCurrentProfessor.setDisable(true);
         textFieldCurrentProfessor.setStyle("-fx-opacity: 1;");
-        formGrid.add(textFieldCurrentProfessor, 1, 5);
+        formGrid.add(textFieldCurrentProfessor, 1, 4);
         populateFields();
         comboBoxProfessors = new ComboBox<>();
         comboBoxProfessors.setPrefWidth(180);
@@ -90,7 +105,7 @@ public class GUIModifyExperience extends Application {
         ControllerModifyExperience controller = new ControllerModifyExperience(this);
         buttonUpdate.setOnAction(controller::handleUpdateReturnButtons);
         buttonBack.setOnAction(controller::handleUpdateReturnButtons);
-        Scene scene = new Scene(mainPanel, 580, 460);
+        Scene scene = new Scene(mainPanel, 580, 370);
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
@@ -124,11 +139,43 @@ public class GUIModifyExperience extends Application {
         return selectedProfessor;
     }
 
+    public String getSelectedPeriod() {
+        if (comboBoxSemester == null || comboBoxYear == null) {
+            return "";
+        }
+        String semester = comboBoxSemester.getValue();
+        Integer year = comboBoxYear.getValue();
+        if (semester == null || year == null) {
+            return "";
+        }
+        String month;
+        if ("Febrero - Julio".equals(semester)) {
+            month = "02";
+        } else if ("Agosto - Enero".equals(semester)) {
+            month = "08";
+        } else {
+            return "";
+        }
+        return String.format("%d-%s", year, month);
+    }
+
     public boolean validateFields() {
         boolean valid = false;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);
+        if (comboBoxSemester.getValue() == null || comboBoxSemester.getValue().isBlank()) {
+            errors.add("Seleccione el semestre.");
+        }
+        if (comboBoxYear.getValue() == null) {
+            errors.add("Seleccione el año.");
+        }
+        String selectedPeriod = getSelectedPeriod();
+        if (selectedPeriod.isBlank()) {
+            errors.add("El periodo seleccionado no es valido.");
+        } else {
+            GUIUtils.validatePeriod(selectedPeriod, errors);
+        }
         if (errors.isEmpty()) {
             valid = true;
         } else {

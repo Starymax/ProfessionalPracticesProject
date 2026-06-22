@@ -36,11 +36,10 @@ public class ControllerRegisterStudent {
         String rawPassword = guiRegisterStudent.getTextFieldPassword().getText();
         String hashedPassword = BCrypt.hashpw(rawPassword, BCrypt.gensalt());
         String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
-        float grade = Float.parseFloat(guiRegisterStudent.getTextFieldGrade().getText().trim());
         String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
         boolean active = true;
-        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, null, grade);
+        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, null, 0);
         try {
             boolean registered = studentDAO.registerStudent(student);
             if (registered) {

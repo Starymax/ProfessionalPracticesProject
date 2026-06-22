@@ -77,7 +77,8 @@ public class ControllerModifyExperience {
                 guiModifyExperience.getExperience().getNrc(),
                 guiModifyExperience.getTextFieldName().getText().trim(),
                 guiModifyExperience.getTextFieldCareer().getText().trim(),
-                professorToAssign
+                professorToAssign,
+                guiModifyExperience.getSelectedPeriod()
         );
     }
 

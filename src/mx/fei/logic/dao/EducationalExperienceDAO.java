@@ -61,30 +61,32 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
 
     @Override
     public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
+        if (educationalExperience == null) {
+            logger.log(Level.WARNING, "La experiencia es nula");
+            throw new IllegalArgumentException("La experiencia educativa no puede ser nula");
+        }
+        String period = educationalExperience.getPeriod();
+        if (period == null || period.isBlank()) {
+            logger.log(Level.WARNING, "El periodo de la experiencia educativa está vacío");
+            throw new IllegalArgumentException("El periodo de la experiencia educativa no puede estar vacío");
+        }
         boolean updated = false;
-        String queryModifyExperience = "UPDATE experiencia_educativa set nombre_experiencia=?,programa_educativo=?,id_profesor=? where nrc=?;";
-        if (educationalExperience != null) {
-            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
-                preparedStatement.setString(1, educationalExperience.getName());
-                preparedStatement.setString(2, educationalExperience.getEducationalProgram());
-                if (educationalExperience.getProfessor() != null) {
-                    preparedStatement.setInt(3, educationalExperience.getProfessor().getUserId());
-                } else {
-                    preparedStatement.setNull(3, Types.NULL);
-                }
-                preparedStatement.setString(4, educationalExperience.getNrc());
-                updated = preparedStatement.executeUpdate() > 0;
-            } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al modificar una experiencia",e);
-                if (DAOUtils.isConnectionError(e)) {
-                    throw new DataOperationException("Error de conexión. Intente más tarde.");
-                }
-                throw new DataOperationException("Error modificando los datos de una experiencia");
+        String queryModifyExperience = "UPDATE experiencia_educativa SET nombre_experiencia=?, programa_educativo=?, id_profesor=?, periodo=? WHERE nrc=?;";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
+            preparedStatement.setString(1, educationalExperience.getName());
+            preparedStatement.setString(2, educationalExperience.getEducationalProgram());
+            if (educationalExperience.getProfessor() != null) {
+                preparedStatement.setInt(3, educationalExperience.getProfessor().getUserId());
+            } else {
+                preparedStatement.setNull(3, Types.NULL);
             }
-        } else {
-            logger.log(Level.WARNING,"La experiencia es nula");
-            throw new IllegalArgumentException("La experiencia educativa  no puede ser nula");
+            preparedStatement.setString(4, period);
+            preparedStatement.setString(5, educationalExperience.getNrc());
+            updated = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error al modificar una experiencia: " + e.getMessage());
+            throw new DataOperationException("Error modificando los datos de una experiencia");
         }
         return updated;
     }
