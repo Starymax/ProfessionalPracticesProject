@@ -1,11 +1,12 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIReportPreview;
 import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 public class ControllerReportPreview {
 
     private final GUIReportPreview guiReportPreview;
-    private static final Logger logger = Logger.getLogger(ControllerReportPreview.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerReportPreview.class.getName());
 
     public ControllerReportPreview(GUIReportPreview guiReportPreview) {
         this.guiReportPreview = guiReportPreview;
@@ -45,7 +46,7 @@ public class ControllerReportPreview {
                 guiReportPreview.showError("No se pudo marcar el reporte como aceptado.");
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al aceptar el reporte", e);
+            LOGGER.log(Level.SEVERE, "Error al aceptar el reporte", e);
             guiReportPreview.showError(e.getMessage());
         }
     }

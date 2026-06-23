@@ -16,7 +16,7 @@ public class ControllerModifyProfessor {
     private GUIModifyProfessor guiModifyProfessor;
     private ProfessorDAO professorDAO;
     private UserDAO userDAO;
-    private static final Logger logger = Logger.getLogger(ControllerModifyProfessor.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerModifyProfessor.class.getName());
 
     public ControllerModifyProfessor(GUIModifyProfessor guiModifyProfessor) {
         this.guiModifyProfessor = guiModifyProfessor;
@@ -55,7 +55,7 @@ public class ControllerModifyProfessor {
             } catch (IllegalArgumentException e) {
                 guiModifyProfessor.showError(e.getMessage());
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al modificar profesor", e);
+                LOGGER.log(Level.SEVERE, "Error al modificar profesor", e);
                 guiModifyProfessor.showError(e.getMessage());
             }
         }

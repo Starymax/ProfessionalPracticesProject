@@ -18,23 +18,13 @@ import java.util.logging.Logger;
 public class ControllerChooseStudent {
     private GUIChooseStudent guiChooseStudent;
     private StudentDAO studentDAO;
-    private static final Logger logger = Logger.getLogger(ControllerChooseStudent.class.getName());
-    private final int noStudentSelected = 0;
+    private static final Logger LOGGER = Logger.getLogger(ControllerChooseStudent.class.getName());
+    private final int NO_STUDENTS_SELECTED = 0;
 
     public ControllerChooseStudent(GUIChooseStudent guiChooseStudent) {
         this.guiChooseStudent = guiChooseStudent;
         this.studentDAO = new StudentDAO();
         loadStudents();
-    }
-
-    private void loadStudents() {
-        try {
-            List<Student> students = studentDAO.getStudents();
-            guiChooseStudent.setStudents(students);
-        } catch (DataOperationException e) {
-            logger.log(Level.SEVERE,"Error al cargar a los estudiantes", e);
-            guiChooseStudent.showError(e.getMessage());
-        }
     }
 
     public void handleSelectAndReturnButtons(ActionEvent event) {
@@ -49,12 +39,22 @@ public class ControllerChooseStudent {
         }
     }
 
+    private void loadStudents() {
+        try {
+            List<Student> students = studentDAO.getStudents();
+            guiChooseStudent.setStudents(students);
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE,"Error al cargar a los estudiantes", e);
+            guiChooseStudent.showError(e.getMessage());
+        }
+    }
+
     private void handleSelectStudent() {
         if (guiChooseStudent.getStudents() == null || guiChooseStudent.getStudents().isEmpty()) {
             guiChooseStudent.showError("No hay estudiantes disponibles para modificar.");
         } else {
             int selectedIndex = guiChooseStudent.getListViewStudents().getSelectionModel().getSelectedIndex();
-            if (selectedIndex < noStudentSelected) {
+            if (selectedIndex < NO_STUDENTS_SELECTED) {
                 guiChooseStudent.showError("Seleccione un estudiante.");
             } else {
                 Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);

@@ -18,21 +18,12 @@ import java.util.logging.Logger;
 public class ControllerChooseProfessor {
     private GUIChooseProfessor guiChooseProfessor;
     private ProfessorDAO professorDAO;
-    private static final Logger logger = Logger.getLogger(ControllerChooseProfessor.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerChooseProfessor.class.getName());
 
     public ControllerChooseProfessor(GUIChooseProfessor guiChooseProfessor) {
         this.guiChooseProfessor = guiChooseProfessor;
         this.professorDAO = new ProfessorDAO();
         loadProfessors();
-    }
-    private void loadProfessors() {
-        try {
-            List<Professor> professors = professorDAO.getProfessors();
-            guiChooseProfessor.setProfessors(professors);
-        } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al cargar a los profesores", e);
-            guiChooseProfessor.showError(e.getMessage());
-        }
     }
 
     public void handleSelectReturnButtons(ActionEvent actionEvent) {
@@ -44,6 +35,16 @@ public class ControllerChooseProfessor {
             case "Regresar" -> {
                 guiChooseProfessor.closeWindow();
             }
+        }
+    }
+
+    private void loadProfessors() {
+        try {
+            List<Professor> professors = professorDAO.getProfessors();
+            guiChooseProfessor.setProfessors(professors);
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar a los profesores", e);
+            guiChooseProfessor.showError(e.getMessage());
         }
     }
 

@@ -23,7 +23,9 @@ public class GUIManageStudent extends Application {
     private Button buttonAssignProject;
     private Button buttonBack;
 
-    public GUIManageStudent() {}
+    public GUIManageStudent() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -57,13 +59,6 @@ public class GUIManageStudent extends Application {
         stage.show();
     }
 
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(260);
-        button.setPrefHeight(55);
-        return button;
-    }
-
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -90,5 +85,12 @@ public class GUIManageStudent extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(260);
+        button.setPrefHeight(55);
+        return button;
     }
 }

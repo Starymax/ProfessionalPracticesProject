@@ -42,20 +42,6 @@ public class ControllerGenerateReport {
         this.documentDAO = new DocumentDAO();
     }
 
-    private boolean arePrerequisitesMet() {
-        boolean met = false;
-        try {
-            met = documentDAO.areInitialDocumentsUploaded(guiGenerateReport.getPractice());
-            if (!met) {
-                guiGenerateReport.showError("Para generar un reporte primero debes subir la carta de aceptación y el horario, y que el coordinador los valide.");
-            }
-        } catch (DataOperationException e) {
-            LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
-            guiGenerateReport.showError(e.getMessage());
-        }
-        return met;
-    }
-
     public void handleMensualPartialFinalBackButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch(source.getText()) {
@@ -72,6 +58,20 @@ public class ControllerGenerateReport {
                 guiGenerateReport.closeWindow();
             }
         }
+    }
+
+    private boolean arePrerequisitesMet() {
+        boolean met = false;
+        try {
+            met = documentDAO.areInitialDocumentsUploaded(guiGenerateReport.getPractice());
+            if (!met) {
+                guiGenerateReport.showError("Para generar un reporte primero debes subir la carta de aceptación y el horario, y que el coordinador los valide.");
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
+            guiGenerateReport.showError(e.getMessage());
+        }
+        return met;
     }
 
     private void openMonthlyReport() {

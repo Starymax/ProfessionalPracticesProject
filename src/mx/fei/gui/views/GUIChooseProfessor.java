@@ -31,9 +31,11 @@ public class GUIChooseProfessor extends Application {
     private Button buttonBack;
     private List<Professor> professors;
     private List<Professor> allProfessors;
-    private final int noProfessorSelected = 0;
+    private final int NO_PROFESSOR_SELECTED = 0;
 
-    public GUIChooseProfessor() {}
+    public GUIChooseProfessor() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -83,33 +85,9 @@ public class GUIChooseProfessor extends Application {
         showProfessors(professors);
     }
 
-    private void showProfessors(List<Professor> professorsToShow) {
-        this.professors = professorsToShow;
-        ObservableList<String> items = FXCollections.observableArrayList();
-        for (Professor professor : professorsToShow) {
-            items.add(buildProfessorLabel(professor));
-        }
-        listViewProfessors.setItems(items);
-    }
-
-    private void filterProfessors(String query) {
-        String search = GUIUtils.sanitizeSearch(query);
-        List<Professor> filteredProfessors = new ArrayList<>();
-        for (Professor professor : allProfessors) {
-            if (GUIUtils.matchesSearch(buildProfessorLabel(professor), search)) {
-                filteredProfessors.add(professor);
-            }
-        }
-        showProfessors(filteredProfessors);
-    }
-
-    private String buildProfessorLabel(Professor professor) {
-        return professor.getPersonalNumber() + " - " + professor.getName() + " " + professor.getLastName();
-    }
-
     public Professor getSelectedProfessor() {
         int selectedIndex = listViewProfessors.getSelectionModel().getSelectedIndex();
-        if (selectedIndex < noProfessorSelected || selectedIndex >= professors.size()) {
+        if (selectedIndex < NO_PROFESSOR_SELECTED || selectedIndex >= professors.size()) {
             throw new IllegalStateException("No hay professor seleccionado.");
         }
         return professors.get(selectedIndex);
@@ -145,5 +123,29 @@ public class GUIChooseProfessor extends Application {
 
     public List<Professor> getProfessors() {
         return professors;
+    }
+
+    private void showProfessors(List<Professor> professorsToShow) {
+        this.professors = professorsToShow;
+        ObservableList<String> items = FXCollections.observableArrayList();
+        for (Professor professor : professorsToShow) {
+            items.add(buildProfessorLabel(professor));
+        }
+        listViewProfessors.setItems(items);
+    }
+
+    private void filterProfessors(String query) {
+        String search = GUIUtils.sanitizeSearch(query);
+        List<Professor> filteredProfessors = new ArrayList<>();
+        for (Professor professor : allProfessors) {
+            if (GUIUtils.matchesSearch(buildProfessorLabel(professor), search)) {
+                filteredProfessors.add(professor);
+            }
+        }
+        showProfessors(filteredProfessors);
+    }
+
+    private String buildProfessorLabel(Professor professor) {
+        return professor.getPersonalNumber() + " - " + professor.getName() + " " + professor.getLastName();
     }
 }

@@ -36,7 +36,9 @@ public class GUIGenerateReport extends Application {
         this.practice = practice;
     }
 
-    public GUIGenerateReport() {}
+    public GUIGenerateReport() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -86,12 +88,6 @@ public class GUIGenerateReport extends Application {
         stage.show();
     }
 
-    private Button createReportButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(110);
-        button.setPrefHeight(40);
-        return button;
-    }
 
     public void showError(String message) {
         GUIUtils.showError(message);
@@ -127,5 +123,12 @@ public class GUIGenerateReport extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private Button createReportButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(110);
+        button.setPrefHeight(40);
+        return button;
     }
 }

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 public class ControllerLogin {
     private final GUILogin guiLogin;
     private final UserDAO userDAO;
-    private static final Logger logger = Logger.getLogger(ControllerLogin.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerLogin.class.getName());
 
     public ControllerLogin(GUILogin guiLogin) {
         this.guiLogin = guiLogin;

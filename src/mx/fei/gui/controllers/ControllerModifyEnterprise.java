@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 public class ControllerModifyEnterprise {
     private GUIModifyEnterprise guiModifyEnterprise;
     private EnterpriseDAO enterpriseDAO;
-    private static final Logger logger = Logger.getLogger(ControllerModifyEnterprise.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerModifyEnterprise.class.getName());
 
     public ControllerModifyEnterprise(GUIModifyEnterprise guiModifyEnterprise) {
         this.guiModifyEnterprise = guiModifyEnterprise;
@@ -50,7 +50,7 @@ public class ControllerModifyEnterprise {
             } catch (IllegalArgumentException e) {
                 guiModifyEnterprise.showError(e.getMessage());
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al modificar la organización", e);
+                LOGGER.log(Level.SEVERE, "Error al modificar la organización", e);
                 guiModifyEnterprise.showError(e.getMessage());
             }
         }

@@ -44,7 +44,9 @@ public class GUIModifyExperience extends Application {
         this.experience = experience;
     }
 
-    public GUIModifyExperience() {}
+    public GUIModifyExperience() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -109,16 +111,6 @@ public class GUIModifyExperience extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
-    }
-
-    private void populateFields() {
-        if (experience != null) {
-            textFieldName.setText(experience.getName());
-            textFieldCareer.setText(experience.getEducationalProgram());
-            if (experience.getProfessor() != null) {
-                textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
-            }
-        }
     }
 
     public void setProfessors(List<Professor> professors) {
@@ -222,5 +214,15 @@ public class GUIModifyExperience extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private void populateFields() {
+        if (experience != null) {
+            textFieldName.setText(experience.getName());
+            textFieldCareer.setText(experience.getEducationalProgram());
+            if (experience.getProfessor() != null) {
+                textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
+            }
+        }
     }
 }

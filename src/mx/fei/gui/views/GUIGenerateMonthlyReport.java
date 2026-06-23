@@ -39,7 +39,7 @@ public class GUIGenerateMonthlyReport extends Application {
     private TableView<ActivityRow> tableActivities;
     private Button buttonExportPDF;
     private Button buttonCancel;
-    private final int invalidRow = -1;
+    private final int INVALID_ROW = -1;
 
     public GUIGenerateMonthlyReport() {
     }
@@ -74,6 +74,48 @@ public class GUIGenerateMonthlyReport extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void setStudentInfo(String name, String enrollment, String email) {
+        labelStudentName.setText(name != null ? name : "-");
+        labelStudentEnrollment.setText(enrollment != null ? enrollment : "-");
+        labelStudentEmail.setText(email != null ? email : "-");
+    }
+
+    public void setProjectInfo(String projectName, String enterprise, String professor) {
+        labelProjectName.setText(projectName != null ? projectName : "-");
+        labelEnterprise.setText(enterprise != null ? enterprise : "-");
+        labelProfessor.setText(professor != null ? professor : "-");
+    }
+
+    public void setActivities(ObservableList<ActivityRow> activities) {
+        tableActivities.setItems(activities);
+    }
+
+    public ObservableList<ActivityRow> getActivityRows() {
+        return tableActivities.getItems();
+    }
+
+    public void commitTableEdits() {
+        if (tableActivities.getEditingCell() != null) {
+            tableActivities.edit(INVALID_ROW, null);
+        }
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
+
+    public void closeWindow() {
+        GUIUtils.closeWindow(stage);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
     private VBox createStudentInfoSection() {
@@ -172,47 +214,5 @@ public class GUIGenerateMonthlyReport extends Application {
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
         buttonRow.setPadding(new Insets(18, 0, 0, 0));
         return buttonRow;
-    }
-
-    public void setStudentInfo(String name, String enrollment, String email) {
-        labelStudentName.setText(name != null ? name : "-");
-        labelStudentEnrollment.setText(enrollment != null ? enrollment : "-");
-        labelStudentEmail.setText(email != null ? email : "-");
-    }
-
-    public void setProjectInfo(String projectName, String enterprise, String professor) {
-        labelProjectName.setText(projectName != null ? projectName : "-");
-        labelEnterprise.setText(enterprise != null ? enterprise : "-");
-        labelProfessor.setText(professor != null ? professor : "-");
-    }
-
-    public void setActivities(ObservableList<ActivityRow> activities) {
-        tableActivities.setItems(activities);
-    }
-
-    public ObservableList<ActivityRow> getActivityRows() {
-        return tableActivities.getItems();
-    }
-
-    public void commitTableEdits() {
-        if (tableActivities.getEditingCell() != null) {
-            tableActivities.edit(invalidRow, null);
-        }
-    }
-
-    public void showError(String message) {
-        GUIUtils.showError(message);
-    }
-
-    public void showSuccess(String message) {
-        GUIUtils.showSuccess(message);
-    }
-
-    public void closeWindow() {
-        GUIUtils.closeWindow(stage);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

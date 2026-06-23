@@ -76,14 +76,6 @@ public class GUIAdministratorMenu extends Application {
         stage.show();
     }
 
-    private Button buildMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(350);
-        button.setPrefHeight(52);
-        button.setFont(Font.font("SansSerif", 15));
-        return button;
-    }
-
     public void setAdministratorInfo(Professor administrator) {
         this.professor = administrator;
         labelAdministratorName.setText(administrator.getName());
@@ -115,5 +107,13 @@ public class GUIAdministratorMenu extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private Button buildMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(350);
+        button.setPrefHeight(52);
+        button.setFont(Font.font("SansSerif", 15));
+        return button;
     }
 }

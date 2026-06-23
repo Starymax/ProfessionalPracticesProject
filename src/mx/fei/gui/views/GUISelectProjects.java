@@ -106,37 +106,6 @@ public class GUISelectProjects extends Application {
         stage.show();
     }
 
-    private HBox buildProjectRow(Project project) {
-        Label label = new Label(project.getNameProject());
-        label.setFont(Font.font("SansSerif", 13));
-        label.setMaxWidth(Double.MAX_VALUE);
-        label.setPadding(new Insets(8, 12, 8, 12));
-        label.getStyleClass().add("list-item-label");
-        HBox.setHgrow(label, Priority.ALWAYS);
-
-        CheckBox checkBox = new CheckBox();
-        checkBox.setUserData(project);
-        checkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
-            enforceSelectionLimit(checkBox, newValue);
-        });
-        checkBoxes.add(checkBox);
-        HBox row = new HBox(6, label, checkBox);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
-    }
-
-    private void enforceSelectionLimit(CheckBox checkBox, boolean isSelected) {
-        long selected = checkBoxes.stream().filter(CheckBox::isSelected).count();
-        if (isSelected && selected > 3) {
-            checkBox.setSelected(false);
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.setTitle("Límite alcanzado");
-            alert.setHeaderText(null);
-            alert.setContentText("Solo puedes seleccionar 3 proyectos.");
-            alert.showAndWait();
-        }
-    }
-
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -155,44 +124,6 @@ public class GUISelectProjects extends Application {
         }
         populateEnterpriseFilter();
         applyFilters();
-    }
-
-    private void populateEnterpriseFilter() {
-        List<String> options = new ArrayList<>();
-        options.add(ALL_ENTERPRISES);
-        for (Project project : projects) {
-            String enterpriseName = getEnterpriseName(project);
-            if (!enterpriseName.isEmpty() && !options.contains(enterpriseName)) {
-                options.add(enterpriseName);
-            }
-        }
-        enterpriseFilter.setItems(FXCollections.observableArrayList(options));
-        enterpriseFilter.setValue(ALL_ENTERPRISES);
-    }
-
-    private void applyFilters() {
-        String search = GUIUtils.sanitizeSearch(searchField.getText());
-        String enterprise = enterpriseFilter.getValue();
-        vBoxProjectList.getChildren().clear();
-        for (int i = 0; i < projects.size(); i++) {
-            if (matchesFilters(projects.get(i), search, enterprise)) {
-                vBoxProjectList.getChildren().add(projectRows.get(i));
-            }
-        }
-    }
-
-    private boolean matchesFilters(Project project, String search, String enterprise) {
-        boolean matchesName = GUIUtils.matchesSearch(project.getNameProject(), search);
-        boolean matchesEnterprise = enterprise == null || enterprise.equals(ALL_ENTERPRISES) || enterprise.equals(getEnterpriseName(project));
-        return matchesName && matchesEnterprise;
-    }
-
-    private String getEnterpriseName(Project project) {
-        String enterpriseName = "";
-        if (project.getEnterprise() != null && project.getEnterprise().getName() != null) {
-            enterpriseName = project.getEnterprise().getName();
-        }
-        return enterpriseName;
     }
 
     public List<Project> getSelectedProjects() {
@@ -239,5 +170,74 @@ public class GUISelectProjects extends Application {
 
     public void setModify(boolean modify) {
         isModify = modify;
+    }
+
+    private HBox buildProjectRow(Project project) {
+        Label label = new Label(project.getNameProject());
+        label.setFont(Font.font("SansSerif", 13));
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setPadding(new Insets(8, 12, 8, 12));
+        label.getStyleClass().add("list-item-label");
+        HBox.setHgrow(label, Priority.ALWAYS);
+
+        CheckBox checkBox = new CheckBox();
+        checkBox.setUserData(project);
+        checkBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            enforceSelectionLimit(checkBox, newValue);
+        });
+        checkBoxes.add(checkBox);
+        HBox row = new HBox(6, label, checkBox);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    private void enforceSelectionLimit(CheckBox checkBox, boolean isSelected) {
+        long selected = checkBoxes.stream().filter(CheckBox::isSelected).count();
+        if (isSelected && selected > 3) {
+            checkBox.setSelected(false);
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Límite alcanzado");
+            alert.setHeaderText(null);
+            alert.setContentText("Solo puedes seleccionar 3 proyectos.");
+            alert.showAndWait();
+        }
+    }
+
+    private void populateEnterpriseFilter() {
+        List<String> options = new ArrayList<>();
+        options.add(ALL_ENTERPRISES);
+        for (Project project : projects) {
+            String enterpriseName = getEnterpriseName(project);
+            if (!enterpriseName.isEmpty() && !options.contains(enterpriseName)) {
+                options.add(enterpriseName);
+            }
+        }
+        enterpriseFilter.setItems(FXCollections.observableArrayList(options));
+        enterpriseFilter.setValue(ALL_ENTERPRISES);
+    }
+
+    private void applyFilters() {
+        String search = GUIUtils.sanitizeSearch(searchField.getText());
+        String enterprise = enterpriseFilter.getValue();
+        vBoxProjectList.getChildren().clear();
+        for (int i = 0; i < projects.size(); i++) {
+            if (matchesFilters(projects.get(i), search, enterprise)) {
+                vBoxProjectList.getChildren().add(projectRows.get(i));
+            }
+        }
+    }
+
+    private boolean matchesFilters(Project project, String search, String enterprise) {
+        boolean matchesName = GUIUtils.matchesSearch(project.getNameProject(), search);
+        boolean matchesEnterprise = enterprise == null || enterprise.equals(ALL_ENTERPRISES) || enterprise.equals(getEnterpriseName(project));
+        return matchesName && matchesEnterprise;
+    }
+
+    private String getEnterpriseName(Project project) {
+        String enterpriseName = "";
+        if (project.getEnterprise() != null && project.getEnterprise().getName() != null) {
+            enterpriseName = project.getEnterprise().getName();
+        }
+        return enterpriseName;
     }
 }

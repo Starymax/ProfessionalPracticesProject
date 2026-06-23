@@ -87,6 +87,40 @@ public class GUIDocumentPreview extends Application {
         stage.show();
     }
 
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
+
+    public void closeWindow() {
+        if (stage != null) {
+            stage.close();
+        }
+    }
+
+    public Document getDocument() {
+        return document;
+    }
+
+    public Button getButtonValidate() {
+        return buttonValidate;
+    }
+
+    public Button getButtonReject() {
+        return buttonReject;
+    }
+
+    public Button getButtonClose() {
+        return buttonClose;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
     private boolean loadPreview(VBox pagesBox) {
         boolean loaded = false;
         try {
@@ -121,39 +155,5 @@ public class GUIDocumentPreview extends Application {
         Button button = new Button(text);
         button.setPrefWidth(140);
         return button;
-    }
-
-    public void showError(String message) {
-        GUIUtils.showError(message);
-    }
-
-    public void showSuccess(String message) {
-        GUIUtils.showSuccess(message);
-    }
-
-    public void closeWindow() {
-        if (stage != null) {
-            stage.close();
-        }
-    }
-
-    public Document getDocument() {
-        return document;
-    }
-
-    public Button getButtonValidate() {
-        return buttonValidate;
-    }
-
-    public Button getButtonReject() {
-        return buttonReject;
-    }
-
-    public Button getButtonClose() {
-        return buttonClose;
-    }
-
-    public Stage getStage() {
-        return stage;
     }
 }

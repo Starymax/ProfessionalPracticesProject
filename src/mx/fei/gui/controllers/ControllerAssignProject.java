@@ -20,7 +20,7 @@ import java.util.Optional;
 public class ControllerAssignProject {
 
     private final GUIAssignProject guiAssignProject;
-    private final int noPlaces = 0;
+    private final int NO_PLACES = 0;
 
     public ControllerAssignProject(GUIAssignProject guiAssignProject) {
         this.guiAssignProject = guiAssignProject;
@@ -43,7 +43,7 @@ public class ControllerAssignProject {
         Student student = guiAssignProject.getStudent();
         if (selected == null) {
             guiAssignProject.showError("Seleccione un proyecto de la lista.");
-        } else if (selected.getAvailablePlaces() > noPlaces) {
+        } else if (selected.getAvailablePlaces() > NO_PLACES) {
             confirmAssign(student, selected);
         } else {
             guiAssignProject.showError("Proyecto lleno, seleccione otro.");

@@ -22,7 +22,7 @@
      * Provides persistence and retrieval operations on the practicas table.
      */
     public class PracticeDAO implements IDAOPractice {
-        private static final Logger logger = Logger.getLogger(PracticeDAO.class.getName());
+        private static final Logger LOGGER = Logger.getLogger(PracticeDAO.class.getName());
 
         /**
          * Retrieves a practice by its identifier, resolving its student and educational experience.
@@ -53,14 +53,14 @@
                     }
                 }
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al buscar la práctica por id", e);
+                LOGGER.log(Level.SEVERE, "Error al buscar la práctica por id", e);
                 if (DAOUtils.isConnectionError(e)) {
                     throw new DataOperationException("Error de conexión. Intente más tarde.");
                 }
                 throw new DataOperationException("Error al obtener los datos de la práctica");
             }
             if (!found) {
-                logger.log(Level.WARNING, "Error al buscar la práctica por id");
+                LOGGER.log(Level.WARNING, "Error al buscar la práctica por id");
                 throw new NoSuchElementException("No se encontró la práctica");
             }
             StudentDAO studentDAO = new StudentDAO();
@@ -94,11 +94,11 @@
         @Override
         public void requirePractice(Practice practice) {
             if (practice == null) {
-                logger.log(Level.WARNING, "La practica es nula");
+                LOGGER.log(Level.WARNING, "La practica es nula");
                 throw new IllegalArgumentException("La practica no puede ser nula");
             }
             if (practice.getStudent() == null) {
-                logger.log(Level.WARNING, "El estudiante de la practica es nulo");
+                LOGGER.log(Level.WARNING, "El estudiante de la practica es nulo");
                 throw new IllegalArgumentException("El estudiante de la practica no puede ser nulo");
             }
         }
@@ -113,7 +113,7 @@
         @Override
         public String requirePracticePeriod(String period) {
             if (period == null || period.isBlank()) {
-                logger.log(Level.WARNING, "El periodo de la practica esta vacio");
+                LOGGER.log(Level.WARNING, "El periodo de la practica esta vacio");
                 throw new IllegalArgumentException("El periodo de la practica no puede estar vacio");
             }
             return period;
@@ -138,7 +138,7 @@
                 preparedStatement.setFloat(4, practice.getGrade());
                 return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al crear la practica", e);
+                LOGGER.log(Level.SEVERE, "Error al crear la practica", e);
                 throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al crear la practica");
             }
         }
@@ -173,7 +173,7 @@
                     }
                 }
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error al obtener la practica por matricula", e);
+                LOGGER.log(Level.SEVERE, "Error al obtener la practica por matricula", e);
                 throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener la practica");
             }
             if (!found || nrc == null || nrc.isBlank()) {
@@ -193,7 +193,7 @@
         @Override
         public void requireEnrollment(String enrollment) {
             if (enrollment == null || enrollment.isBlank()) {
-                logger.log(Level.WARNING, "La matricula esta vacia");
+                LOGGER.log(Level.WARNING, "La matricula esta vacia");
                 throw new IllegalArgumentException("La matricula no puede estar vacia");
             }
         }

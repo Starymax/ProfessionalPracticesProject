@@ -4,6 +4,7 @@ import mx.fei.gui.views.GUIRegisterStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import org.mindrot.jbcrypt.BCrypt;

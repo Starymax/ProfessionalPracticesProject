@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * as well as role-based session management.
  */
 public class UserDAO implements IDAOUser {
-    private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
 
     /**
      * Checks whether a user with the given identifier exists.
@@ -42,7 +42,7 @@ public class UserDAO implements IDAOUser {
                 exist = resultSet.next();
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al verificar si existe un usuario",e);
+            LOGGER.log(Level.SEVERE,"Error al verificar si existe un usuario",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -62,7 +62,7 @@ public class UserDAO implements IDAOUser {
     @Override
     public int registerUser(User user) throws DataOperationException {
         if (user == null) {
-            logger.log(Level.WARNING,"El usuario es nulo");
+            LOGGER.log(Level.WARNING,"El usuario es nulo");
             throw new IllegalArgumentException("El usuario no puede ser nulo");
         }
         int generatedID = -1;
@@ -82,7 +82,7 @@ public class UserDAO implements IDAOUser {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al registrar el usuario",e);
+            LOGGER.log(Level.SEVERE,"Error al registrar el usuario",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -114,7 +114,7 @@ public class UserDAO implements IDAOUser {
                 preparedStatement.setInt(7, user.getUserId());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE,"Error al actualizar el usuario",e);
+                LOGGER.log(Level.SEVERE,"Error al actualizar el usuario",e);
                 if (DAOUtils.isConnectionError(e)) {
                     throw new DataOperationException("Error de conexión. Intente más tarde.");
                 }
@@ -173,10 +173,10 @@ public class UserDAO implements IDAOUser {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el usuario", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener el usuario", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al buscar el usuario");
         }
-        logger.log(Level.WARNING, "Error al obtener el usuario");
+        LOGGER.log(Level.WARNING, "Error al obtener el usuario");
         throw new NoSuchElementException("Error al obtener el usuario");
     }
 

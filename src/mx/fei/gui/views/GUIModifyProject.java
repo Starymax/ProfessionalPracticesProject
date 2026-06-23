@@ -228,60 +228,6 @@ public class GUIModifyProject extends Application {
         stage.show();
     }
 
-    private void addNameRow(int rowIndex) {
-        addFormRow(rowIndex, "Nombre:", textFieldName);
-    }
-
-    private void addDescriptionRow(int rowIndex) {
-        addFormRow(rowIndex, "Descripción:", textAreaDescription);
-    }
-
-    private void addGeneralObjectiveRow(int rowIndex) {
-        addFormRow(rowIndex, "Objetivo General:", textFieldGeneralObjective);
-    }
-
-    private void addImmediateObjectivesRow(int rowIndex) {
-        addFormRow(rowIndex, "Objetivos Inmediatos:", textAreaImmediateObjectives);
-    }
-
-    private void addMediateObjectivesRow(int rowIndex) {
-        addFormRow(rowIndex, "Objetivos Mediatos:", textAreaMediateObjectives);
-    }
-
-    private void addMethodologyRow(int rowIndex) {
-        addFormRow(rowIndex, "Metodología:", textFieldMethodology);
-    }
-
-    private void addResourcesRow(int rowIndex) {
-        addFormRow(rowIndex, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
-    }
-
-    private void addResponsibilitiesRow(int rowIndex) {
-        addFormRow(rowIndex, "Responsabilidades:", textAreaResponsibilities);
-    }
-
-    private void addAvailablePlacesRow(int rowIndex) {
-        addFormRow(rowIndex, "Lugares disponibles:", textFieldAvailablePlaces);
-    }
-
-    private void addEnterpriseRow(int rowIndex) {
-        addFormRow(rowIndex, "Organizacion:", comboBoxEnterprise);
-    }
-
-    private void addProjectManagerRow(int rowIndex) {
-        addFormRow(rowIndex, "Responsable:", comboBoxProjectManager);
-    }
-
-    private void addFormRow(int rowIndex, String labelText, javafx.scene.Node field) {
-        Label label = new Label(labelText);
-        label.setFont(Font.font("SansSerif", 13));
-        label.setWrapText(true);
-        if (field instanceof TextField textField) textField.setMaxWidth(Double.MAX_VALUE);
-        GridPane.setFillWidth(field, true);
-        formGrid.add(label, 0, rowIndex);
-        formGrid.add(field, 1, rowIndex);
-    }
-
     public void loadProject(Project project) {
         this.project = project;
         textFieldName.setText(project.getNameProject());
@@ -300,35 +246,6 @@ public class GUIModifyProject extends Application {
             radioButtonInactive.setSelected(true);
         }
         verifyActivityPlan();
-    }
-
-    private void loadPeriodAndDates(Project project) {
-        LocalDate startDate = project.getStartDate().toLocalDate();
-        LocalDate finalDate = project.getFinalDate().toLocalDate();
-        SchoolPeriod projectSchoolPeriod = SchoolPeriod.getPeriodByDate(startDate);
-        SchoolPeriod currentSchoolPeriod = SchoolPeriod.currentPeriod(LocalDate.now());
-        LinkedHashSet<SchoolPeriod> schoolPeriods = new LinkedHashSet<>();
-        schoolPeriods.add(projectSchoolPeriod);
-        schoolPeriods.add(currentSchoolPeriod);
-        schoolPeriods.add(currentSchoolPeriod.getNextPeriod());
-        comboBoxPeriod.getItems().setAll(schoolPeriods);
-        comboBoxPeriod.setValue(projectSchoolPeriod);
-        datePickerStartDate.setValue(startDate);
-        datePickerFinalDate.setValue(finalDate);
-    }
-
-    private void verifyActivityPlan() {
-        if (project != null) {
-            try {
-                ActivityDAO activityDAO = new ActivityDAO();
-                boolean hasActivities = !activityDAO.getActivitiesByProjectId(project.getProjectId()).isEmpty();
-                if (hasActivities) {
-                    buttonActivityPlan.setDisable(true);
-                }
-            } catch (DataOperationException e) {
-                showError("Error al verificar plan de actividades: " + e.getMessage());
-            }
-        }
     }
 
     public void loadEnterprises(List<Enterprise> enterprises) {
@@ -482,5 +399,88 @@ public class GUIModifyProject extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void addNameRow(int rowIndex) {
+        addFormRow(rowIndex, "Nombre:", textFieldName);
+    }
+
+    private void addDescriptionRow(int rowIndex) {
+        addFormRow(rowIndex, "Descripción:", textAreaDescription);
+    }
+
+    private void addGeneralObjectiveRow(int rowIndex) {
+        addFormRow(rowIndex, "Objetivo General:", textFieldGeneralObjective);
+    }
+
+    private void addImmediateObjectivesRow(int rowIndex) {
+        addFormRow(rowIndex, "Objetivos Inmediatos:", textAreaImmediateObjectives);
+    }
+
+    private void addMediateObjectivesRow(int rowIndex) {
+        addFormRow(rowIndex, "Objetivos Mediatos:", textAreaMediateObjectives);
+    }
+
+    private void addMethodologyRow(int rowIndex) {
+        addFormRow(rowIndex, "Metodología:", textFieldMethodology);
+    }
+
+    private void addResourcesRow(int rowIndex) {
+        addFormRow(rowIndex, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
+    }
+
+    private void addResponsibilitiesRow(int rowIndex) {
+        addFormRow(rowIndex, "Responsabilidades:", textAreaResponsibilities);
+    }
+
+    private void addAvailablePlacesRow(int rowIndex) {
+        addFormRow(rowIndex, "Lugares disponibles:", textFieldAvailablePlaces);
+    }
+
+    private void addEnterpriseRow(int rowIndex) {
+        addFormRow(rowIndex, "Organizacion:", comboBoxEnterprise);
+    }
+
+    private void addProjectManagerRow(int rowIndex) {
+        addFormRow(rowIndex, "Responsable:", comboBoxProjectManager);
+    }
+
+    private void addFormRow(int rowIndex, String labelText, javafx.scene.Node field) {
+        Label label = new Label(labelText);
+        label.setFont(Font.font("SansSerif", 13));
+        label.setWrapText(true);
+        if (field instanceof TextField textField) textField.setMaxWidth(Double.MAX_VALUE);
+        GridPane.setFillWidth(field, true);
+        formGrid.add(label, 0, rowIndex);
+        formGrid.add(field, 1, rowIndex);
+    }
+
+    private void loadPeriodAndDates(Project project) {
+        LocalDate startDate = project.getStartDate().toLocalDate();
+        LocalDate finalDate = project.getFinalDate().toLocalDate();
+        SchoolPeriod projectSchoolPeriod = SchoolPeriod.getPeriodByDate(startDate);
+        SchoolPeriod currentSchoolPeriod = SchoolPeriod.currentPeriod(LocalDate.now());
+        LinkedHashSet<SchoolPeriod> schoolPeriods = new LinkedHashSet<>();
+        schoolPeriods.add(projectSchoolPeriod);
+        schoolPeriods.add(currentSchoolPeriod);
+        schoolPeriods.add(currentSchoolPeriod.getNextPeriod());
+        comboBoxPeriod.getItems().setAll(schoolPeriods);
+        comboBoxPeriod.setValue(projectSchoolPeriod);
+        datePickerStartDate.setValue(startDate);
+        datePickerFinalDate.setValue(finalDate);
+    }
+
+    private void verifyActivityPlan() {
+        if (project != null) {
+            try {
+                ActivityDAO activityDAO = new ActivityDAO();
+                boolean hasActivities = !activityDAO.getActivitiesByProjectId(project.getProjectId()).isEmpty();
+                if (hasActivities) {
+                    buttonActivityPlan.setDisable(true);
+                }
+            } catch (DataOperationException e) {
+                showError("Error al verificar plan de actividades: " + e.getMessage());
+            }
+        }
     }
 }

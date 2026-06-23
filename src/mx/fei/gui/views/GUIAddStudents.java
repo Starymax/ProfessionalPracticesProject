@@ -1,11 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerAddStudents;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Student;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,6 +22,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -112,13 +113,6 @@ public class GUIAddStudents extends Application {
         stage.show();
     }
 
-    private Button createActionButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(120);
-        button.setPrefHeight(40);
-        return button;
-    }
-
     public void setStudentsToAdd(List<Student> students) {
         studentsToAdd.clear();
         studentsToAdd.addAll(students);
@@ -166,5 +160,12 @@ public class GUIAddStudents extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private Button createActionButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(120);
+        button.setPrefHeight(40);
+        return button;
     }
 }

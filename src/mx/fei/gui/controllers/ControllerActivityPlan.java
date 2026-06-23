@@ -11,6 +11,7 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
@@ -24,6 +25,7 @@ public class ControllerActivityPlan {
 
     private final GUIActivityPlan guiActivityPlan;
     private Project project;
+    private final int NO_HOURS = 0;
 
     public ControllerActivityPlan(GUIActivityPlan guiActivityPlan) {
         this.guiActivityPlan = guiActivityPlan;
@@ -84,7 +86,7 @@ public class ControllerActivityPlan {
     }
 
     private boolean showDeleteConfirmation() {
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = new Alert(AlertType.CONFIRMATION);
         confirmationDialog.setTitle("Eliminar actividad");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setContentText("¿Seguro que desea eliminar esta actividad?");
@@ -93,7 +95,7 @@ public class ControllerActivityPlan {
     }
 
     private boolean showSaveConfirmation() {
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = new Alert(AlertType.CONFIRMATION);
         confirmationDialog.setTitle("Confirmar");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setContentText("¿Seguro que desea guardar el proyecto con este plan?");
@@ -102,7 +104,7 @@ public class ControllerActivityPlan {
     }
 
     private boolean showCancelConfirmation() {
-        Alert confirmationDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmationDialog = new Alert(AlertType.CONFIRMATION);
         confirmationDialog.setTitle("Cancelar");
         confirmationDialog.setHeaderText(null);
         confirmationDialog.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");
@@ -140,7 +142,7 @@ public class ControllerActivityPlan {
     private void validateActivityHours(Activity activity, String activityLabel, List<String> errors) {
         Map<Integer, Integer> activityWeekHours = guiActivityPlan.getActivityWeekHours().getOrDefault(activity, Collections.emptyMap());
         int activityTotalHours = activityWeekHours.values().stream().mapToInt(Integer::intValue).sum();
-        if (activityTotalHours == 0) {
+        if (activityTotalHours == NO_HOURS) {
             errors.add(activityLabel + " no tiene horas asignadas.");
         }
     }

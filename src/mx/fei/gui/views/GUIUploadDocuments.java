@@ -135,26 +135,6 @@ public class GUIUploadDocuments extends Application {
         refreshStatusBox();
     }
 
-    private void refreshStatusBox() {
-        if (statusBox == null) return;
-        statusBox.getChildren().clear();
-        for (Map.Entry<String, DocumentType> entry : TYPE_MAP.entrySet()) {
-            boolean uploaded = uploadedDocuments.contains(entry.getValue());
-            String statusText = uploaded ? " ✔ Subido" : " ✘ Pendiente";
-            String color = uploaded ? "#2e7d32" : "#b71c1c";
-            Label label = new Label(entry.getValue().getDocumentType() + ":" + statusText);
-            label.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px;");
-            statusBox.getChildren().add(label);
-        }
-    }
-
-    private Button createActionButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(130);
-        button.setPrefHeight(45);
-        return button;
-    }
-
     public String getSelectedType() {
         return comboBoxType.getValue();
     }
@@ -247,5 +227,25 @@ public class GUIUploadDocuments extends Application {
 
     public Practice getPractice() {
         return practice;
+    }
+
+    private void refreshStatusBox() {
+        if (statusBox == null) return;
+        statusBox.getChildren().clear();
+        for (Map.Entry<String, DocumentType> entry : TYPE_MAP.entrySet()) {
+            boolean uploaded = uploadedDocuments.contains(entry.getValue());
+            String statusText = uploaded ? " ✔ Subido" : " ✘ Pendiente";
+            String color = uploaded ? "#2e7d32" : "#b71c1c";
+            Label label = new Label(entry.getValue().getDocumentType() + ":" + statusText);
+            label.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px;");
+            statusBox.getChildren().add(label);
+        }
+    }
+
+    private Button createActionButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(130);
+        button.setPrefHeight(45);
+        return button;
     }
 }

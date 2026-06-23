@@ -7,6 +7,7 @@ import mx.fei.logic.dto.RegistrationStatus;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOStudent;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,7 +25,7 @@ import java.util.logging.Logger;
  * vw_alumnos view, as well as project selection and assignment operations.
  */
 public class StudentDAO implements IDAOStudent {
-    private static final Logger logger = Logger.getLogger(StudentDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(StudentDAO.class.getName());
 
     /**
      * Builds a Student from the current row of the given result set.
@@ -70,7 +71,7 @@ public class StudentDAO implements IDAOStudent {
             try {
                 resolvedProjects = new ProjectDAO().getProjectsByIds(projectIds);
             } catch (DataOperationException e) {
-                logger.log(Level.WARNING, "Error al resolver los proyectos de los estudiantes");
+                LOGGER.log(Level.WARNING, "Error al resolver los proyectos de los estudiantes");
             }
         }
         List<Student> validStudents = new ArrayList<>();
@@ -87,7 +88,7 @@ public class StudentDAO implements IDAOStudent {
                     student.setAssignedProject(found);
                     validStudents.add(student);
                 } else {
-                    logger.log(Level.WARNING, "No se encontró el proyecto para el alumno " + student.getUserId());
+                    LOGGER.log(Level.WARNING, "No se encontró el proyecto para el alumno " + student.getUserId());
                 }
             } else {
                 validStudents.add(student);
@@ -110,7 +111,7 @@ public class StudentDAO implements IDAOStudent {
         requireEnrollment(enrollment);
         Student student = searchStudentByEnrollment(enrollment);
         if (student == null) {
-            logger.log(Level.WARNING, "Error al buscar el estudiante por matrícula");
+            LOGGER.log(Level.WARNING, "Error al buscar el estudiante por matrícula");
             throw new NoSuchElementException("No se encontró el estudiante");
         }
         resolveProjectsOfStudents(List.of(student));
@@ -126,7 +127,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public void requireEnrollment(String enrollment) {
         if (enrollment == null || enrollment.isBlank()) {
-            logger.log(Level.WARNING, "La matrícula está vacía");
+            LOGGER.log(Level.WARNING, "La matrícula está vacía");
             throw new IllegalArgumentException("La matrícula no puede estar vacía");
         }
     }
@@ -151,7 +152,7 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los datos del estudiante", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los datos del estudiante", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener los datos del estudiante");
         }
         return student;
@@ -177,7 +178,7 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los datos del estudiante", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los datos del estudiante", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener los datos del estudiante");
         }
         return student;
@@ -196,7 +197,7 @@ public class StudentDAO implements IDAOStudent {
         requireStudentId(idStudent);
         Student student = searchStudentById(idStudent);
         if (student == null) {
-            logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
+            LOGGER.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
             throw new DataOperationException("No se encontro el estudiante");
         }
         resolveProjectsOfStudents(List.of(student));
@@ -212,7 +213,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public void requireStudentId(Integer idStudent) {
         if (idStudent == null || idStudent == 0) {
-            logger.log(Level.WARNING, "El id esta vacio");
+            LOGGER.log(Level.WARNING, "El id esta vacio");
             throw new IllegalArgumentException("El Id no puede estar vacio");
         }
     }
@@ -243,7 +244,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public void requireStudent(Student student) {
         if (student == null) {
-            logger.log(Level.WARNING, "El estudiante es nulo");
+            LOGGER.log(Level.WARNING, "El estudiante es nulo");
             throw new IllegalArgumentException("El estudiante no puede ser nulo");
         }
     }
@@ -261,11 +262,11 @@ public class StudentDAO implements IDAOStudent {
         try {
             getStudentByEnrollment(enrollment);
         } catch (NoSuchElementException e) {
-            logger.log(Level.INFO, "Matricula disponible para el registro");
+            LOGGER.log(Level.INFO, "Matricula disponible para el registro");
             exists = false;
         }
         if (exists) {
-            logger.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + enrollment);
+            LOGGER.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + enrollment);
             throw new IllegalStateException("Ya existe un estudiante con esa matricula");
         }
     }
@@ -282,7 +283,7 @@ public class StudentDAO implements IDAOStudent {
         UserDAO userDAO = new UserDAO();
         int idUser = userDAO.registerUser(student);
         if (idUser == RegistrationStatus.FAILURE.getValue()) {
-            logger.log(Level.SEVERE, "No se logro registrar el usuario");
+            LOGGER.log(Level.SEVERE, "No se logro registrar el usuario");
             throw new DataOperationException("No se logro registrar el usuario");
         }
         return idUser;
@@ -307,7 +308,7 @@ public class StudentDAO implements IDAOStudent {
             preparedStatementStudent.setFloat(4, student.getGrade());
             return preparedStatementStudent.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando al estudiante", e);
+            LOGGER.log(Level.SEVERE, "Error registrando al estudiante", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al registrar el alumno");
         }
     }
@@ -323,7 +324,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean modifyStudent(Student student) throws DataOperationException {
         if (student == null) {
-            logger.log(Level.WARNING, "El estudiante es nulo");
+            LOGGER.log(Level.WARNING, "El estudiante es nulo");
             throw new IllegalArgumentException("El estudiante no puede ser nulo");
         }
         boolean updated = false;
@@ -335,7 +336,7 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setInt(3, student.getUserId());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al modificar el alumno", e);
+            LOGGER.log(Level.SEVERE, "Error al modificar el alumno", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -361,7 +362,7 @@ public class StudentDAO implements IDAOStudent {
                 students.add(buildStudentFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener todos los estudiantes", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener todos los estudiantes", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -393,7 +394,7 @@ public class StudentDAO implements IDAOStudent {
                 students.add(buildStudentFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener todos los estudiantes sin proyecto asignado", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener todos los estudiantes sin proyecto asignado", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -419,7 +420,7 @@ public class StudentDAO implements IDAOStudent {
                 students.add(buildStudentFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener todos los estudiantes activos", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener todos los estudiantes activos", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -439,7 +440,7 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public List<Student> getStudentsByEducationalExperience(String nrc) throws DataOperationException {
         if (nrc == null || nrc.isBlank()) {
-            logger.log(Level.WARNING, "El nrc esta vacio");
+            LOGGER.log(Level.WARNING, "El nrc esta vacio");
             throw new IllegalArgumentException("El nrc no puede estar vacio");
         }
         List<Student> students = new ArrayList<>();
@@ -453,7 +454,7 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los estudiantes de la experiencia educativa", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los estudiantes de la experiencia educativa", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -481,7 +482,7 @@ public class StudentDAO implements IDAOStudent {
             }
             preparedStatement.executeBatch();
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al guardar los proyectos seleccionados", e);
+            LOGGER.log(Level.SEVERE, "Error al guardar los proyectos seleccionados", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -510,7 +511,7 @@ public class StudentDAO implements IDAOStudent {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los proyectos seleccionados", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los proyectos seleccionados", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -541,7 +542,7 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(2, student.getEnrollment());
             assigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al asignar un proyecto", e);
+            LOGGER.log(Level.SEVERE, "Error al asignar un proyecto", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -573,7 +574,7 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setString(3, practice.getEducationalExperience().getPeriod());
             assigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al asignar una experiencia educativa", e);
+            LOGGER.log(Level.SEVERE, "Error al asignar una experiencia educativa", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -609,7 +610,7 @@ public class StudentDAO implements IDAOStudent {
                 students.add(student);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo los estudiantes sin experiencia educativa ", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo los estudiantes sin experiencia educativa ", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

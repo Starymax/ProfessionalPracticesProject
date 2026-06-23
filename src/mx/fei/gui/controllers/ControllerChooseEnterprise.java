@@ -18,26 +18,12 @@ import java.util.logging.Logger;
 public class ControllerChooseEnterprise {
     private GUIChooseEnterprise guiChooseEnterprise;
     private EnterpriseDAO enterpriseDAO;
-    private static final Logger logger = Logger.getLogger(ControllerChooseEnterprise.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerChooseEnterprise.class.getName());
 
     public ControllerChooseEnterprise(GUIChooseEnterprise guiChooseEnterprise) {
         this.guiChooseEnterprise = guiChooseEnterprise;
         this.enterpriseDAO = new EnterpriseDAO();
         loadEnterprises();
-    }
-
-    private void loadEnterprises() {
-        try {
-            List<Enterprise> enterprises = enterpriseDAO.getEnterprises();
-            if (enterprises.isEmpty()) {
-                guiChooseEnterprise.showError("No existen organizaciones registradas.");
-            } else {
-                guiChooseEnterprise.setEnterprises(enterprises);
-            }
-        } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al cargar organizaciones", e);
-            guiChooseEnterprise.showError(e.getMessage());
-        }
     }
 
     public void handleSelectReturn(ActionEvent event) {
@@ -49,6 +35,20 @@ public class ControllerChooseEnterprise {
             case "Regresar" -> {
                 guiChooseEnterprise.closeWindow();
             }
+        }
+    }
+
+    private void loadEnterprises() {
+        try {
+            List<Enterprise> enterprises = enterpriseDAO.getEnterprises();
+            if (enterprises.isEmpty()) {
+                guiChooseEnterprise.showError("No existen organizaciones registradas.");
+            } else {
+                guiChooseEnterprise.setEnterprises(enterprises);
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al cargar organizaciones", e);
+            guiChooseEnterprise.showError(e.getMessage());
         }
     }
 

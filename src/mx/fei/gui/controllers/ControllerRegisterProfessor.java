@@ -4,10 +4,11 @@ import mx.fei.gui.views.GUIRegisterProfessor;
 import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
-import org.mindrot.jbcrypt.BCrypt;
 
+import org.mindrot.jbcrypt.BCrypt;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
@@ -29,7 +30,9 @@ public class ControllerRegisterProfessor {
                     register();
                 }
             }
-            case "Cancelar" -> cancel();
+            case "Cancelar" -> {
+                cancel();
+            }
         }
     }
 
@@ -73,7 +76,7 @@ public class ControllerRegisterProfessor {
     }
 
     private void cancel() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar registro");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");

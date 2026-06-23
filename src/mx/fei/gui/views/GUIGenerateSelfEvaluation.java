@@ -37,8 +37,8 @@ public class GUIGenerateSelfEvaluation extends Application {
     private Label labelProject;
     private List<ComboBox<Integer>> answerCombos;
     private Label labelTotalScore;
-    private final int columns = 5;
-    private final int rows = 10;
+    private final int COLUMNS = 5;
+    private final int ROWS = 10;
     private Button buttonPrint;
     private Button buttonBack;
 
@@ -75,6 +75,62 @@ public class GUIGenerateSelfEvaluation extends Application {
         stage.show();
         controller.loadData();
         updateTotalScore();
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public Label getLabelStudentName() {
+        return labelStudentName;
+    }
+
+    public Label getLabelEnrollment() {
+        return labelEnrollment;
+    }
+
+    public Label getLabelOrganization() {
+        return labelOrganization;
+    }
+
+    public Label getLabelResponsible() {
+        return labelResponsible;
+    }
+
+    public Label getLabelProject() {
+        return labelProject;
+    }
+
+    public List<ComboBox<Integer>> getAnswerCombos() {
+        return answerCombos;
+    }
+
+    public Label getLabelTotalScore() {
+        return labelTotalScore;
+    }
+
+    public void showError(String msg) {
+        GUIUtils.showError(msg);
+    }
+
+    public void showSuccess(String msg) {
+        GUIUtils.showSuccess(msg);
+    }
+
+    public int getROWS() {
+        return ROWS;
+    }
+
+    public int getCOLUMNS() {
+        return COLUMNS;
+    }
+
+    public void closeWindow() {
+        stage.close();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
     private VBox createDataTable() {
@@ -123,7 +179,7 @@ public class GUIGenerateSelfEvaluation extends Application {
         header.setHgap(5);
         header.add(new Label("N°"), 0, 0);
         header.add(new Label("Afirmación"), 1, 0);
-        for (int i = 1; i <= columns; i++) {
+        for (int i = 1; i <= COLUMNS; i++) {
             header.add(new Label(String.valueOf(i)), i+1, 0);
         }
         header.getStyleClass().add("report-header");
@@ -143,7 +199,7 @@ public class GUIGenerateSelfEvaluation extends Application {
         answerCombos = new ArrayList<>();
         for (int i = 0; i < questions.length; i++) {
             GridPane rowGrid = new GridPane();
-            rowGrid.setHgap(columns);
+            rowGrid.setHgap(COLUMNS);
             rowGrid.add(new Label(String.valueOf(i+1)), 0, 0);
             Label labelQuestion = new Label(questions[i]);
             labelQuestion.setWrapText(true);
@@ -195,61 +251,5 @@ public class GUIGenerateSelfEvaluation extends Application {
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(18, 0, 0, 0));
         return box;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public Label getLabelStudentName() {
-        return labelStudentName;
-    }
-
-    public Label getLabelEnrollment() {
-        return labelEnrollment;
-    }
-
-    public Label getLabelOrganization() {
-        return labelOrganization;
-    }
-
-    public Label getLabelResponsible() {
-        return labelResponsible;
-    }
-
-    public Label getLabelProject() {
-        return labelProject;
-    }
-
-    public List<ComboBox<Integer>> getAnswerCombos() {
-        return answerCombos;
-    }
-
-    public Label getLabelTotalScore() {
-        return labelTotalScore;
-    }
-
-    public void showError(String msg) {
-        GUIUtils.showError(msg);
-    }
-
-    public void showSuccess(String msg) {
-        GUIUtils.showSuccess(msg);
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getColumns() {
-        return columns;
-    }
-
-    public void closeWindow() {
-        stage.close();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

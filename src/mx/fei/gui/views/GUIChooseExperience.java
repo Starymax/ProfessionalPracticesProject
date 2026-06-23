@@ -28,9 +28,11 @@ public class GUIChooseExperience extends Application {
     private Button buttonBack;
     private List<EducationalExperience> experiences;
     private boolean toModify = false;
-    private final int noExperienceSelected = 0;
+    private final int NO_EXPERIENCE_SELECTED = 0;
 
-    public GUIChooseExperience() {}
+    public GUIChooseExperience() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -71,7 +73,7 @@ public class GUIChooseExperience extends Application {
 
     public EducationalExperience getSelectedExperience() throws IllegalStateException {
         int selectedIndex = listViewExperiences.getSelectionModel().getSelectedIndex();
-        if (selectedIndex < noExperienceSelected || selectedIndex >= experiences.size()) {
+        if (selectedIndex < NO_EXPERIENCE_SELECTED || selectedIndex >= experiences.size()) {
             throw new IllegalStateException("No hay experiencia seleccionada.");
         }
         return experiences.get(selectedIndex);

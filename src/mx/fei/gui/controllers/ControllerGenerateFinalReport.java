@@ -36,7 +36,7 @@ import java.util.logging.Logger;
 
 public class ControllerGenerateFinalReport {
 
-    private static final Logger logger = Logger.getLogger(ControllerGenerateFinalReport.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerGenerateFinalReport.class.getName());
     private final GUIGenerateFinalReport finalReportView;
     private final Stage stage;
     private final ReportDAO reportDAO;
@@ -46,7 +46,7 @@ public class ControllerGenerateFinalReport {
     private final Practice practice;
     private Report currentReport;
     private FinalReport finalReportData;
-    private final int mountRows = 9;
+    private final int MOUNT_OF_ROWS = 9;
 
     public ControllerGenerateFinalReport(GUIGenerateFinalReport finalReportView, Stage stage, Student student, Practice practice) {
         this.finalReportView = finalReportView;
@@ -57,6 +57,18 @@ public class ControllerGenerateFinalReport {
         this.student = student;
         this.practice = practice;
         initialize();
+    }
+
+    public void handleFinalReportButtons(ActionEvent event) {
+        Button sourceButton = (Button) event.getSource();
+        switch (sourceButton.getText()) {
+            case "Exportar PDF" -> {
+                handleExportPDF();
+            }
+            case "Cancelar" -> {
+                handleCancel();
+            }
+        }
     }
 
     private void initialize() {
@@ -80,18 +92,6 @@ public class ControllerGenerateFinalReport {
             }
         }
         loadFinalReportData();
-    }
-
-    public void handleFinalReportButtons(ActionEvent event) {
-        Button sourceButton = (Button) event.getSource();
-        switch (sourceButton.getText()) {
-            case "Exportar PDF" -> {
-                handleExportPDF();
-            }
-            case "Cancelar" -> {
-                handleCancel();
-            }
-        }
     }
 
     private void loadFinalReportData() {
@@ -143,7 +143,7 @@ public class ControllerGenerateFinalReport {
                     rows.add(new FinalReportRow(activity.getName(), advanceText, observationText, "", "", ""));
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.WARNING, "No se pudo cargar la información de actividades para el reporte final", e);
+                LOGGER.log(Level.WARNING, "No se pudo cargar la información de actividades para el reporte final", e);
             }
         }
 
@@ -201,7 +201,7 @@ public class ControllerGenerateFinalReport {
             finalReportView.commitTableEdits();
             syncFinalReportDataFromGui();
         } catch (RuntimeException e) {
-            logger.log(Level.WARNING, "Error al sincronizar los datos del reporte final", e);
+            LOGGER.log(Level.WARNING, "Error al sincronizar los datos del reporte final", e);
             finalReportView.showError("Error en la tabla de actividades. Verifica los datos y vuelve a intentarlo.");
             return;
         }
@@ -231,7 +231,7 @@ public class ControllerGenerateFinalReport {
                 finalReportView.showSuccess("Reporte final exportado a PDF exitosamente en:\n" + outputPath);
                 finalReportView.closeWindow();
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al guardar el reporte final en la base de datos", e);
+                LOGGER.log(Level.SEVERE, "Error al guardar el reporte final en la base de datos", e);
                 finalReportView.showError(e.getMessage());
             }
         }
@@ -260,13 +260,13 @@ public class ControllerGenerateFinalReport {
     private Object getResourceUrl(String resourcePath) {
         var resource = getClass().getResource(resourcePath);
         if (resource == null) {
-            logger.log(Level.WARNING, "No se encontró el recurso: " + resourcePath);
+            LOGGER.log(Level.WARNING, "No se encontró el recurso: " + resourcePath);
         }
         return resource;
     }
 
     private void fillReportRows(Map<String, Object> parameters, List<FinalReportRow> rows) {
-        for (int i = 0; i < mountRows; i++) {
+        for (int i = 0; i < MOUNT_OF_ROWS; i++) {
             String index = String.valueOf(i + 1);
             FinalReportRow row = i < rows.size() ? rows.get(i) : new FinalReportRow("", "", "", "", "", "");
             parameters.put("Activity" + index, row.getActivity() != null ? row.getActivity() : "");
@@ -437,7 +437,7 @@ public class ControllerGenerateFinalReport {
                     totalHours += advance.getRealizedHours();
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.WARNING, "No se pudo obtener las horas realizadas del estudiante", e);
+                LOGGER.log(Level.WARNING, "No se pudo obtener las horas realizadas del estudiante", e);
             }
         }
         return totalHours;

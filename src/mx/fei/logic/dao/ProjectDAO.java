@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * joining the related organizacion_vinculada and responsable_proyecto tables.
  */
 public class ProjectDAO implements IDAOProject {
-    private static final Logger logger = Logger.getLogger(ProjectDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProjectDAO.class.getName());
 
     private static final String BASE_JOIN_QUERY =
             "SELECT p.id_proyecto, p.nombre_proyecto, p.descripcion_proyecto, p.objetivo_general, " +
@@ -101,12 +101,12 @@ public class ProjectDAO implements IDAOProject {
                 }
             }
             if (project == null) {
-                logger.log(Level.WARNING, "No se encontro el proyecto con el id: " + idProject);
+                LOGGER.log(Level.WARNING, "No se encontro el proyecto con el id: " + idProject);
                 throw new NoSuchElementException("No se encontro el proyecto");
             }
             return project;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo el proyecto", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo el proyecto", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -148,7 +148,7 @@ public class ProjectDAO implements IDAOProject {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando el proyecto",e);
+            LOGGER.log(Level.SEVERE, "Error registrando el proyecto",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -174,7 +174,7 @@ public class ProjectDAO implements IDAOProject {
                 projects.add(buildProjectFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos activos", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo todos los proyectos activos", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -199,7 +199,7 @@ public class ProjectDAO implements IDAOProject {
                 projects.add(buildProjectFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo todos los proyectos", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo todos los proyectos", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -262,7 +262,7 @@ public class ProjectDAO implements IDAOProject {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo proyectos por ids", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo proyectos por ids", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -301,7 +301,7 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setString(14, project.getResponsibilities());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error modificando el proyecto",e);
+            LOGGER.log(Level.SEVERE, "Error modificando el proyecto",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

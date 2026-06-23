@@ -1,12 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIActivityPlan;
 import mx.fei.gui.views.GUIRegisterProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
@@ -17,6 +10,15 @@ import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -126,7 +128,7 @@ import java.util.Optional;
         }
 
         private void cancel() {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert confirm = new Alert(AlertType.CONFIRMATION);
             confirm.setTitle("Cancelar");
             confirm.setHeaderText(null);
             confirm.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");

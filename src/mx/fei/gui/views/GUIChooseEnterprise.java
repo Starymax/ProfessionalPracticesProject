@@ -1,11 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
-import javafx.collections.ObservableList;
 import mx.fei.gui.controllers.ControllerChooseEnterprise;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Enterprise;
+
+import javafx.collections.ObservableList;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -27,7 +27,9 @@ public class GUIChooseEnterprise extends Application {
     private Button buttonBack;
     private List<Enterprise> enterprises;
 
-    public GUIChooseEnterprise() {}
+    public GUIChooseEnterprise() {
+
+    }
 
     @Override
     public void start(Stage stage) {

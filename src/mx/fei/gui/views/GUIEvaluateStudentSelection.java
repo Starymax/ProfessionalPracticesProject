@@ -97,21 +97,6 @@ public class GUIEvaluateStudentSelection extends Application {
         stage.show();
     }
 
-    private ListCell<EducationalExperience> buildExperienceCell() {
-        return new ListCell<>() {
-            @Override
-            protected void updateItem(EducationalExperience experience, boolean empty) {
-                super.updateItem(experience, empty);
-                if (empty || experience == null) {
-                    setText(null);
-                } else {
-                    String period = (experience.getPeriod() == null || experience.getPeriod().isBlank()) ? "Sin periodo" : experience.getPeriod();
-                    setText(experience.getName() + " (" + experience.getNrc() + ") - " + period);
-                }
-            }
-        };
-    }
-
     public void loadExperiences(List<EducationalExperience> experiences) {
         comboBoxExperience.getItems().clear();
         comboBoxExperience.getItems().addAll(experiences);
@@ -156,5 +141,20 @@ public class GUIEvaluateStudentSelection extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private ListCell<EducationalExperience> buildExperienceCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(EducationalExperience experience, boolean empty) {
+                super.updateItem(experience, empty);
+                if (empty || experience == null) {
+                    setText(null);
+                } else {
+                    String period = (experience.getPeriod() == null || experience.getPeriod().isBlank()) ? "Sin periodo" : experience.getPeriod();
+                    setText(experience.getName() + " (" + experience.getNrc() + ") - " + period);
+                }
+            }
+        };
     }
 }

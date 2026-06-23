@@ -11,20 +11,20 @@ import java.util.logging.Logger;
 
 public class SelfEvaluationGenerator {
 
-    private static final Logger logger = Logger.getLogger(SelfEvaluationGenerator.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SelfEvaluationGenerator.class.getName());
     private static final String TEMPLATE_PATH = "/templates/selfEvaluation.jasper";
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
         boolean result = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
-                logger.severe("No se encontró la plantilla selfEvaluation.jasper");
+                LOGGER.severe("No se encontró la plantilla selfEvaluation.jasper");
             }
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
             result = true;
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error al generar autoevaluación", e);
+            LOGGER.log(Level.SEVERE, "Error al generar autoevaluación", e);
         }
         return result;
     }

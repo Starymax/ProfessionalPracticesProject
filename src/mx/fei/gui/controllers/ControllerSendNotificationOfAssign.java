@@ -2,12 +2,12 @@ package mx.fei.gui.controllers;
 
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUISendNotificationOfAssign;
+import mx.fei.logic.dto.Notification;
+import mx.fei.logic.exceptions.DataOperationException;
+import mx.fei.logic.dao.NotificationDAO;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
-import mx.fei.logic.dao.NotificationDAO;
-import mx.fei.logic.dto.Notification;
-import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.ArrayList;
 import java.util.Date;

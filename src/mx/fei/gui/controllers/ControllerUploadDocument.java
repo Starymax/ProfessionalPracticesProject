@@ -7,10 +7,12 @@ import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentType;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.exceptions.DataOperationException;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ public class ControllerUploadDocument {
     private Practice practice;
     private DocumentDAO documentDAO;
     private Stage stage;
-    private static final Logger logger = Logger.getLogger(ControllerUploadDocument.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerUploadDocument.class.getName());
 
     public ControllerUploadDocument(GUIUploadDocuments guiUploadDocument, Stage stage) {
         this.guiUploadDocument = guiUploadDocument;
@@ -63,7 +65,7 @@ public class ControllerUploadDocument {
         } catch (NoSuchElementException e) {
 
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al cargar los documentos subidos.", e);
+            LOGGER.log(Level.SEVERE, "Error al cargar los documentos subidos.", e);
         }
     }
 
@@ -110,7 +112,7 @@ public class ControllerUploadDocument {
                 currentPractice = null;
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al obtener la práctica del estudiante.", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener la práctica del estudiante.", e);
             guiUploadDocument.showError("Hubp un error al recuperar los datos de la práctica del estudiante.");
         }
         return  currentPractice;
@@ -155,7 +157,7 @@ public class ControllerUploadDocument {
         try {
             areDocumentsUploaded = documentDAO.areInitialDocumentsUploaded(currentPractice);
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes.", e);
+            LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes.", e);
         }
         return areDocumentsUploaded;
     }
@@ -173,10 +175,10 @@ public class ControllerUploadDocument {
                 succes = true;
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error al subir el documento: " + document.getName(), e);
+            LOGGER.log(Level.SEVERE, "Error al subir el documento: " + document.getName(), e);
             errors.append("- ").append(document.getName()).append(" (Fallo IO\n)");
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error de base de datos al guardar: " + document.getName(), e);
+            LOGGER.log(Level.SEVERE, "Error de base de datos al guardar: " + document.getName(), e);
             errors.append("- ").append(document.getName()).append(" (Fallo BD\n)");
         }
         return succes;

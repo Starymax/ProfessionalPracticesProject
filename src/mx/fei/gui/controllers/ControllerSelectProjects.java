@@ -1,12 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIModifyProject;
 import mx.fei.gui.views.GUISelectProjects;
 import mx.fei.logic.dao.EnterpriseDAO;
@@ -17,6 +10,15 @@ import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +29,7 @@ public class ControllerSelectProjects {
     private final StudentDAO studentDAO;
     private final int MAX_PROJECTS_TO_SELECT = 3;
     private final int MAX_PROJECTS_TO_MODIFY = 1;
+    private final int NO_SELECTIONS = 0;
 
     public ControllerSelectProjects(GUISelectProjects guiSelectProjects) {
         this.guiSelectProjects = guiSelectProjects;
@@ -51,7 +54,7 @@ public class ControllerSelectProjects {
 
     public void chooseProjectToModify() {
         int selectedCount = guiSelectProjects.getSelectedCount();
-        if (selectedCount == 0) {
+        if (selectedCount == NO_SELECTIONS) {
             guiSelectProjects.showError("Seleccione un proyecto de la lista.");
         } else if (selectedCount > MAX_PROJECTS_TO_MODIFY) {
             guiSelectProjects.showError("Solo puedes modificar un proyecto a la vez");

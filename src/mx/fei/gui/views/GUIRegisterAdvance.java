@@ -38,8 +38,8 @@ public class GUIRegisterAdvance {
     private Stage stage;
     private ListView<Activity> listViewActivities;
     private Set<Integer> completedActivityIds = new HashSet<>();
-    private Label labelMes;
-    private Label labelSemana;
+    private Label labelMonth;
+    private Label labelWeek;
     private Label labelPlannedHours;
     private Label labelRealizedHours;
     private Label labelRemainingHours;
@@ -79,114 +79,6 @@ public class GUIRegisterAdvance {
         controllerRegisterAdvance.loadWeeks();
     }
 
-    private VBox buildLeftPanel() {
-        Label title = new Label("Plan de Actividades");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 18));
-
-        listViewActivities = new ListView<>();
-        listViewActivities.setPrefWidth(380);
-        listViewActivities.setPrefHeight(420);
-        listViewActivities.setCellFactory(lv -> new ListCell<Activity>() {
-            @Override
-            protected void updateItem(Activity item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item.getName());
-                    setFont(Font.font(14));
-                    setPadding(new Insets(8, 12, 8, 12));
-                    if (completedActivityIds.contains(item.getActivityId())) {
-                        setStyle("-fx-background-color: " + COMPLETED_COLOR + ";");
-                    } else {
-                        setStyle("");
-                    }
-                }
-            }
-        });
-        listViewActivities.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            savePendingHoursForPreviousActivity();
-            controllerRegisterAdvance.handleActivitySelection(newVal);
-        });
-
-        VBox left = new VBox(12, title, listViewActivities);
-        left.setAlignment(Pos.TOP_LEFT);
-        return left;
-    }
-
-    private VBox buildRightPanel() {
-        Label labelMesTitle = new Label("Mes: ");
-        labelMesTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelMes = new Label("-");
-        labelMes.setFont(Font.font(14));
-        HBox rowMes = new HBox(4, labelMesTitle, labelMes);
-        rowMes.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelSemanaTitle = new Label("Semana: ");
-        labelSemanaTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelSemana = new Label("-");
-        labelSemana.setFont(Font.font(14));
-        HBox rowSemana = new HBox(4, labelSemanaTitle, labelSemana);
-        rowSemana.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelPlannedTitle = new Label("Horas planeadas: ");
-        labelPlannedTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelPlannedHours = new Label("-");
-        labelPlannedHours.setFont(Font.font(14));
-        HBox rowPlanned = new HBox(4, labelPlannedTitle, labelPlannedHours);
-        rowPlanned.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelRealizedTitle = new Label("Horas realizadas: ");
-        labelRealizedTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelRealizedHours = new Label("-");
-        labelRealizedHours.setFont(Font.font(14));
-        HBox rowRealized = new HBox(4, labelRealizedTitle, labelRealizedHours);
-        rowRealized.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelRemainingTitle = new Label("Horas restantes: ");
-        labelRemainingTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelRemainingHours = new Label("-");
-        labelRemainingHours.setFont(Font.font(14));
-        HBox rowRemaining = new HBox(4, labelRemainingTitle, labelRemainingHours);
-        rowRemaining.setAlignment(Pos.CENTER_LEFT);
-
-        Label labelNewHours = new Label("Horas nuevas: ");
-        labelNewHours.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        textFieldNewHours = new TextField();
-        textFieldNewHours.setPrefWidth(100);
-        textFieldNewHours.textProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.matches("\\d*")) {
-                textFieldNewHours.setText(newVal.replaceAll("\\D", ""));
-            }
-        });
-        HBox rowNewHours = new HBox(4, labelNewHours, textFieldNewHours);
-        rowNewHours.setAlignment(Pos.CENTER_LEFT);
-
-        buttonSave = new Button("Guardar");
-        buttonSave.setPrefWidth(180);
-        buttonSave.setPrefHeight(44);
-        buttonSave.setFont(Font.font(15));
-        buttonSave.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
-
-        Button buttonCancel = new Button("Cancelar");
-        buttonCancel.setPrefWidth(180);
-        buttonCancel.setPrefHeight(44);
-        buttonCancel.setFont(Font.font(15));
-        buttonCancel.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
-
-        VBox right = new VBox(16,
-                rowMes, rowSemana,
-                new Separator(),
-                rowPlanned, rowRealized, rowRemaining,
-                new Separator(),
-                rowNewHours,
-                buttonSave, buttonCancel);
-        right.setAlignment(Pos.TOP_LEFT);
-        right.setPadding(new Insets(48, 12, 12, 12));
-        right.setPrefWidth(340);
-        return right;
-    }
 
     public void addWeeklyLog(int week, WeeklyLog weeklyLog) {
         weeklyLogsByWeek.computeIfAbsent(week, k -> new ArrayList<>()).add(weeklyLog);
@@ -226,16 +118,16 @@ public class GUIRegisterAdvance {
 
     public void setActivityInfo(int firstWeek, int totalPlanned, int totalRealized) {
         int month = (firstWeek - 1) / 4 + 1;
-        labelMes.setText(String.valueOf(month));
-        labelSemana.setText("Semana " + firstWeek);
+        labelMonth.setText(String.valueOf(month));
+        labelWeek.setText("Semana " + firstWeek);
         labelPlannedHours.setText(String.valueOf(totalPlanned));
         labelRealizedHours.setText(String.valueOf(totalRealized));
         labelRemainingHours.setText(String.valueOf(Math.max(totalPlanned - totalRealized, 0)));
     }
 
     public void clearActivityInfo() {
-        labelMes.setText("-");
-        labelSemana.setText("-");
+        labelMonth.setText("-");
+        labelWeek.setText("-");
         labelPlannedHours.setText("-");
         labelRealizedHours.setText("-");
         labelRemainingHours.setText("-");
@@ -296,5 +188,113 @@ public class GUIRegisterAdvance {
 
     public Student getStudent() {
         return student;
+    }
+
+    private VBox buildLeftPanel() {
+        Label title = new Label("Plan de Actividades");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 18));
+        listViewActivities = new ListView<>();
+        listViewActivities.setPrefWidth(380);
+        listViewActivities.setPrefHeight(420);
+        listViewActivities.setCellFactory(lv -> new ListCell<Activity>() {
+            @Override
+            protected void updateItem(Activity item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item.getName());
+                    setFont(Font.font(14));
+                    setPadding(new Insets(8, 12, 8, 12));
+                    if (completedActivityIds.contains(item.getActivityId())) {
+                        setStyle("-fx-background-color: " + COMPLETED_COLOR + ";");
+                    } else {
+                        setStyle("");
+                    }
+                }
+            }
+        });
+        listViewActivities.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            savePendingHoursForPreviousActivity();
+            controllerRegisterAdvance.handleActivitySelection(newVal);
+        });
+
+        VBox left = new VBox(12, title, listViewActivities);
+        left.setAlignment(Pos.TOP_LEFT);
+        return left;
+    }
+
+    private VBox buildRightPanel() {
+        Label labelMesTitle = new Label("Mes: ");
+        labelMesTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelMonth = new Label("-");
+        labelMonth.setFont(Font.font(14));
+        HBox rowMes = new HBox(4, labelMesTitle, labelMonth);
+        rowMes.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelSemanaTitle = new Label("Semana: ");
+        labelSemanaTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelWeek = new Label("-");
+        labelWeek.setFont(Font.font(14));
+        HBox rowSemana = new HBox(4, labelSemanaTitle, labelWeek);
+        rowSemana.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelPlannedTitle = new Label("Horas planeadas: ");
+        labelPlannedTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelPlannedHours = new Label("-");
+        labelPlannedHours.setFont(Font.font(14));
+        HBox rowPlanned = new HBox(4, labelPlannedTitle, labelPlannedHours);
+        rowPlanned.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelRealizedTitle = new Label("Horas realizadas: ");
+        labelRealizedTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelRealizedHours = new Label("-");
+        labelRealizedHours.setFont(Font.font(14));
+        HBox rowRealized = new HBox(4, labelRealizedTitle, labelRealizedHours);
+        rowRealized.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelRemainingTitle = new Label("Horas restantes: ");
+        labelRemainingTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelRemainingHours = new Label("-");
+        labelRemainingHours.setFont(Font.font(14));
+        HBox rowRemaining = new HBox(4, labelRemainingTitle, labelRemainingHours);
+        rowRemaining.setAlignment(Pos.CENTER_LEFT);
+
+        Label labelNewHours = new Label("Horas nuevas: ");
+        labelNewHours.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        textFieldNewHours = new TextField();
+        textFieldNewHours.setPrefWidth(100);
+        textFieldNewHours.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.matches("\\d*")) {
+                textFieldNewHours.setText(newVal.replaceAll("\\D", ""));
+            }
+        });
+        HBox rowNewHours = new HBox(4, labelNewHours, textFieldNewHours);
+        rowNewHours.setAlignment(Pos.CENTER_LEFT);
+
+        buttonSave = new Button("Guardar");
+        buttonSave.setPrefWidth(180);
+        buttonSave.setPrefHeight(44);
+        buttonSave.setFont(Font.font(15));
+        buttonSave.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
+
+        Button buttonCancel = new Button("Cancelar");
+        buttonCancel.setPrefWidth(180);
+        buttonCancel.setPrefHeight(44);
+        buttonCancel.setFont(Font.font(15));
+        buttonCancel.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
+
+        VBox right = new VBox(16,
+                rowMes, rowSemana,
+                new Separator(),
+                rowPlanned, rowRealized, rowRemaining,
+                new Separator(),
+                rowNewHours,
+                buttonSave, buttonCancel);
+        right.setAlignment(Pos.TOP_LEFT);
+        right.setPadding(new Insets(48, 12, 12, 12));
+        right.setPrefWidth(340);
+        return right;
     }
 }

@@ -21,27 +21,11 @@ import java.util.logging.Logger;
 public class ControllerEvaluateStudentSelection {
 
     private final GUIEvaluateStudentSelection guiEvaluateStudentSelection;
-    private static final Logger logger = Logger.getLogger(ControllerEvaluateStudentSelection.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerEvaluateStudentSelection.class.getName());
 
     public ControllerEvaluateStudentSelection(GUIEvaluateStudentSelection guiEvaluateStudentSelection) {
         this.guiEvaluateStudentSelection = guiEvaluateStudentSelection;
         loadExperiences();
-    }
-
-    private void loadExperiences() {
-        Professor professor = guiEvaluateStudentSelection.getProfessor();
-        if (professor == null) {
-            guiEvaluateStudentSelection.showError("No se pudo identificar al profesor en sesión.");
-        } else {
-            try {
-                EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                List<EducationalExperience> experiences = educationalExperienceDAO.getEducationalExperiencesByProfessor(professor.getUserId());
-                guiEvaluateStudentSelection.loadExperiences(experiences);
-            } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al cargar las experiencias educativas del profesor", e);
-                guiEvaluateStudentSelection.showError(e.getMessage());
-            }
-        }
     }
 
     public void handleExperienceSelection(ActionEvent event) {
@@ -52,7 +36,7 @@ public class ControllerEvaluateStudentSelection {
                 List<Student> students = studentDAO.getStudentsByEducationalExperience(experience.getNrc());
                 guiEvaluateStudentSelection.loadStudents(students);
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al cargar los estudiantes de la experiencia educativa", e);
+                LOGGER.log(Level.SEVERE, "Error al cargar los estudiantes de la experiencia educativa", e);
                 guiEvaluateStudentSelection.showError(e.getMessage());
             }
         }
@@ -66,6 +50,22 @@ public class ControllerEvaluateStudentSelection {
             }
             case "Cancelar" -> {
                 guiEvaluateStudentSelection.getStage().close();
+            }
+        }
+    }
+
+    private void loadExperiences() {
+        Professor professor = guiEvaluateStudentSelection.getProfessor();
+        if (professor == null) {
+            guiEvaluateStudentSelection.showError("No se pudo identificar al profesor en sesión.");
+        } else {
+            try {
+                EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+                List<EducationalExperience> experiences = educationalExperienceDAO.getEducationalExperiencesByProfessor(professor.getUserId());
+                guiEvaluateStudentSelection.loadExperiences(experiences);
+            } catch (DataOperationException e) {
+                LOGGER.log(Level.SEVERE, "Error al cargar las experiencias educativas del profesor", e);
+                guiEvaluateStudentSelection.showError(e.getMessage());
             }
         }
     }

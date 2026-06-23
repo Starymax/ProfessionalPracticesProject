@@ -86,12 +86,6 @@ public class GUICustomNotification extends Application {
         stage.show();
     }
 
-    private Button createButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(160);
-        return button;
-    }
-
     public Document getDocument() {
         return document;
     }
@@ -134,5 +128,11 @@ public class GUICustomNotification extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    private Button createButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(160);
+        return button;
     }
 }

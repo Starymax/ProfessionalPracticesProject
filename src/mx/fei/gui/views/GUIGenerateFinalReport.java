@@ -105,6 +105,94 @@ public class GUIGenerateFinalReport extends Application {
         stage.show();
     }
 
+    public void setStudentName(String name) {
+        labelStudentName.setText(name != null ? name : "-");
+    }
+
+    public void setStudentEnrollment(String enrollment) {
+        labelStudentEnrollment.setText(enrollment != null ? enrollment : "-");
+    }
+
+    public void setStudentEmail(String email) {
+        labelStudentEmail.setText(email != null ? email : "-");
+    }
+
+    public void setStudentNrc(String nrc) {
+        labelStudentNrc.setText(nrc != null ? nrc : "-");
+    }
+
+    public void setPeriod(String period) {
+        labelPeriod.setText(period != null ? period : "-");
+    }
+
+    public void setProjectInfo(String projectName, String enterprise, String professor) {
+        labelProjectName.setText(projectName != null ? projectName : "-");
+        labelEnterprise.setText(enterprise != null ? enterprise : "-");
+        labelProfessor.setText(professor != null ? professor : "-");
+    }
+
+    public void setEducationalProgram(String educationalProgram) {
+        labelEducationalProgram.setText(educationalProgram != null ? educationalProgram : "-");
+    }
+
+    public String getEducationalProgram() {
+        return labelEducationalProgram.getText();
+    }
+
+    public void setGeneralObjectives(String generalObjectives) {
+        labelGeneralObjectivesContent.setText(generalObjectives != null ? generalObjectives : "");
+    }
+
+    public String getGeneralObjectives() {
+        return labelGeneralObjectivesContent.getText();
+    }
+
+    public void setMethodology(String methodology) {
+        labelMethodologyContent.setText(methodology != null ? methodology : "");
+    }
+
+    public String getMethodology() {
+        return labelMethodologyContent.getText();
+    }
+
+    public void setObservations(String observations) {
+        textAreaObservations.setText(observations != null ? observations : "");
+    }
+
+    public String getObservations() {
+        return textAreaObservations.getText();
+    }
+
+    public void setRows(ObservableList<FinalReportRow> rows) {
+        tableActivities.setItems(rows);
+    }
+
+    public ObservableList<FinalReportRow> getFinalReportRows() {
+        return tableActivities.getItems();
+    }
+
+    public void commitTableEdits() {
+        if (tableActivities.getEditingCell() != null) {
+            tableActivities.edit(-1, null);
+        }
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
+
+    public void closeWindow() {
+        GUIUtils.closeWindow(stage);
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     private VBox createStudentInfoSection() {
         VBox section = new VBox(8);
         section.getStyleClass().add("report-section");
@@ -301,93 +389,5 @@ public class GUIGenerateFinalReport extends Application {
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
         buttonRow.setPadding(new Insets(18, 0, 0, 0));
         return buttonRow;
-    }
-
-    public void setStudentName(String name) {
-        labelStudentName.setText(name != null ? name : "-");
-    }
-
-    public void setStudentEnrollment(String enrollment) {
-        labelStudentEnrollment.setText(enrollment != null ? enrollment : "-");
-    }
-
-    public void setStudentEmail(String email) {
-        labelStudentEmail.setText(email != null ? email : "-");
-    }
-
-    public void setStudentNrc(String nrc) {
-        labelStudentNrc.setText(nrc != null ? nrc : "-");
-    }
-
-    public void setPeriod(String period) {
-        labelPeriod.setText(period != null ? period : "-");
-    }
-
-    public void setProjectInfo(String projectName, String enterprise, String professor) {
-        labelProjectName.setText(projectName != null ? projectName : "-");
-        labelEnterprise.setText(enterprise != null ? enterprise : "-");
-        labelProfessor.setText(professor != null ? professor : "-");
-    }
-
-    public void setEducationalProgram(String educationalProgram) {
-        labelEducationalProgram.setText(educationalProgram != null ? educationalProgram : "-");
-    }
-
-    public String getEducationalProgram() {
-        return labelEducationalProgram.getText();
-    }
-
-    public void setGeneralObjectives(String generalObjectives) {
-        labelGeneralObjectivesContent.setText(generalObjectives != null ? generalObjectives : "");
-    }
-
-    public String getGeneralObjectives() {
-        return labelGeneralObjectivesContent.getText();
-    }
-
-    public void setMethodology(String methodology) {
-        labelMethodologyContent.setText(methodology != null ? methodology : "");
-    }
-
-    public String getMethodology() {
-        return labelMethodologyContent.getText();
-    }
-
-    public void setObservations(String observations) {
-        textAreaObservations.setText(observations != null ? observations : "");
-    }
-
-    public String getObservations() {
-        return textAreaObservations.getText();
-    }
-
-    public void setRows(ObservableList<FinalReportRow> rows) {
-        tableActivities.setItems(rows);
-    }
-
-    public ObservableList<FinalReportRow> getFinalReportRows() {
-        return tableActivities.getItems();
-    }
-
-    public void commitTableEdits() {
-        if (tableActivities.getEditingCell() != null) {
-            tableActivities.edit(-1, null);
-        }
-    }
-
-    public void showError(String message) {
-        GUIUtils.showError(message);
-    }
-
-    public void showSuccess(String message) {
-        GUIUtils.showSuccess(message);
-    }
-
-    public void closeWindow() {
-        GUIUtils.closeWindow(stage);
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
