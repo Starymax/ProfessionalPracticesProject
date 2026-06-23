@@ -128,10 +128,10 @@ public class StudentDAOTest {
     }
 
     @Test
-    void getStudentById_StudentDoesNotExist_ThrowsNoSuchElementException() throws SQLException {
+    void getStudentById_StudentDoesNotExist_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        assertThrows(NoSuchElementException.class, () -> studentDAO.getStudentById(500));
+        assertThrows(DataOperationException.class, () -> studentDAO.getStudentById(500));
     }
 
     @Test

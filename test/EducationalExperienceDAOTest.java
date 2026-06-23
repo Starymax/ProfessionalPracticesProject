@@ -118,6 +118,7 @@ public class EducationalExperienceDAOTest {
         educationalExperience.setName("Sistemas Operativos");
         educationalExperience.setEducationalProgram("Ingeniería de Software");
         educationalExperience.setNrc("12345");
+        educationalExperience.setPeriod("2025-02");
         Professor professor = mock(Professor.class);
         when(professor.getUserId()).thenReturn(101);
         educationalExperience.setProfessor(professor);
@@ -133,6 +134,7 @@ public class EducationalExperienceDAOTest {
         educationalExperience.setName("Redes");
         educationalExperience.setEducationalProgram("Tecnologías de Información");
         educationalExperience.setNrc("55555");
+        educationalExperience.setPeriod("2025-08");
         educationalExperience.setProfessor(null);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
@@ -145,6 +147,7 @@ public class EducationalExperienceDAOTest {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("99999");
         educationalExperience.setName("Inexistente");
+        educationalExperience.setPeriod("2025-02");
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(0);
         boolean result = educationalExperienceDAO.modifyEducationalExperience(educationalExperience);
@@ -155,6 +158,7 @@ public class EducationalExperienceDAOTest {
     void modifyEducationalExperience_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("123");
+        educationalExperience.setPeriod("2025-02");
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de conexión"));
         assertThrows(DataOperationException.class, () -> educationalExperienceDAO.modifyEducationalExperience(educationalExperience));
