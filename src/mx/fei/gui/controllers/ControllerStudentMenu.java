@@ -120,10 +120,14 @@ public class ControllerStudentMenu {
             try {
                 PracticeDAO practiceDAO = new PracticeDAO();
                 Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
-                GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                guiGenerateReport.start(stage);
+                if (practice == null) {
+                    guiStudentMenu.showError("No tiene ninguna practica asignada, intentelo mas tarde.");
+                } else {
+                    GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    guiGenerateReport.start(stage);
+                }
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e.getMessage());
                 guiStudentMenu.showError(e.getMessage());
@@ -135,13 +139,17 @@ public class ControllerStudentMenu {
         if (guiStudentMenu.getStudent() == null) {
             guiStudentMenu.showError("No hay estudiante asignado.");
         } else {
-            try {
-                GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                guiRegisterAdvance.start(stage);
-            } catch (IllegalStateException e) {
-                guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
+            if (guiStudentMenu.getStudent().getAssignedProject() == null) {
+                guiStudentMenu.showError("No hay proyecto asignado.");
+            } else {
+                try {
+                    GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    guiRegisterAdvance.start(stage);
+                } catch (IllegalStateException e) {
+                    guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
+                }
             }
         }
     }
