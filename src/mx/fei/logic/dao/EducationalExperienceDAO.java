@@ -276,24 +276,35 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public List<EducationalExperience> getEducationalExperiences() throws DataOperationException {
         ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
-        String queryGetEducationalExperiences = "SELECT nrc FROM experiencia_educativa;";
+        String queryGetEducationalExperiences =
+                "SELECT e.NRC, e.nombre_experiencia, e.programa_educativo, e.periodo, " +
+                "p.id_usuario, p.numero_de_personal, p.nombre, p.apellidos, p.correo, " +
+                "p.contrasena, p.estado_activo, p.genero, p.es_coordinador, p.es_administrador, p.turno " +
+                "FROM experiencia_educativa e LEFT JOIN vw_profesor p ON e.id_profesor = p.id_usuario;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement(queryGetEducationalExperiences)) {
-            List<String> nrcs = new ArrayList<>();
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    nrcs.add(resultSet.getString("NRC"));
+             PreparedStatement preparedStatement = connection.prepareStatement(queryGetEducationalExperiences);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            ProfessorDAO professorDAO = new ProfessorDAO();
+            while (resultSet.next()) {
+                String nrc = resultSet.getString("NRC");
+                String name = resultSet.getString("nombre_experiencia");
+                String educationalProgram = resultSet.getString("programa_educativo");
+                String period = resultSet.getString("periodo");
+                if (period == null) {
+                    period = "";
                 }
-            }
-            for (String nrc : nrcs) {
-                educationalExperiences.add(getEducationalExperienceByNrc(nrc));
+                Professor professor = null;
+                if (resultSet.getObject("id_usuario") != null) {
+                    professor = professorDAO.buildProfessorFromResultSet(resultSet);
+                }
+                educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los datos de las experiencias",e);
+            logger.log(Level.SEVERE, "Error al obtener los datos de las experiencias", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
-            throw  new DataOperationException("Error al obtener las experiencias educativas");
+            throw new DataOperationException("Error al obtener las experiencias educativas");
         }
         return educationalExperiences;
     }
@@ -308,18 +319,22 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public List<EducationalExperience> getEducationalExperiencesByProfessor(int professorId) throws DataOperationException {
         ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
-        String queryGetExperiencesByProfessor = "SELECT NRC FROM experiencia_educativa WHERE id_profesor = ?;";
+        Professor professor = new ProfessorDAO().getProfessorById(professorId);
+        String queryGetExperiencesByProfessor = "SELECT NRC, nombre_experiencia, programa_educativo, periodo FROM experiencia_educativa WHERE id_profesor = ?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryGetExperiencesByProfessor)) {
             preparedStatement.setInt(1, professorId);
-            List<String> nrcs = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
-                    nrcs.add(resultSet.getString("NRC"));
+                    String nrc = resultSet.getString("NRC");
+                    String name = resultSet.getString("nombre_experiencia");
+                    String educationalProgram = resultSet.getString("programa_educativo");
+                    String period = resultSet.getString("periodo");
+                    if (period == null) {
+                        period = "";
+                    }
+                    educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period));
                 }
-            }
-            for (String nrc : nrcs) {
-                educationalExperiences.add(getEducationalExperienceByNrc(nrc));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener las experiencias del profesor", e);

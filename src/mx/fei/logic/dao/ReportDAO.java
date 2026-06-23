@@ -89,7 +89,7 @@ public class ReportDAO implements IDAOReport {
 
     /**
      * Creates a monthly report together with its activity progress and weekly progress detail,
-     * within a single transaction.
+     * with a single transaction.
      *
      * @param report the monthly report to create, must not be null
      * @return true if the report and all its detail were persisted successfully
@@ -117,7 +117,7 @@ public class ReportDAO implements IDAOReport {
 
     /**
      * Persists a report together with its activity progress and weekly progress detail
-     * within a single transaction, rolling back if the base report could not be created.
+     * with a single transaction, rolling back if the base report could not be created.
      *
      * @param report the report to persist
      * @param errorMessage the base message used for logging and the thrown exception
@@ -129,19 +129,50 @@ public class ReportDAO implements IDAOReport {
         boolean success = false;
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
-            int reportId = createReport(report);
-            if (reportId == 0) {
+            try {
+                int reportId = insertReport(connection, report);
+                if (reportId == 0) {
+                    connection.rollback();
+                } else {
+                    insertActivitiesWithWeeklyDetail(connection, report, reportId);
+                    connection.commit();
+                    success = true;
+                }
+            } catch (SQLException e) {
                 connection.rollback();
-            } else {
-                insertActivitiesWithWeeklyDetail(connection, report, reportId);
-                connection.commit();
-                success = true;
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, errorMessage, e);
-            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, errorMessage + ".");
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException(errorMessage);
         }
         return success;
+    }
+
+    private int insertReport(Connection connection, Report report) throws SQLException {
+        int idGenerated = 0;
+        String query = "INSERT INTO reporte (tipo_reporte, fecha_reporte, observaciones, resultados_obtenidos, id_alumno, nrc) VALUES (?,?,?,?,?,?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            preparedStatement.setString(1, report.getReportType());
+            preparedStatement.setDate(2, new Date(report.getReportDate().getTime()));
+            preparedStatement.setString(3, report.getObservations());
+            preparedStatement.setString(4, report.getResultsObtained());
+            preparedStatement.setInt(5, report.getStudent().getUserId());
+            preparedStatement.setString(6, report.getNrc());
+            preparedStatement.executeUpdate();
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    idGenerated = generatedKeys.getInt(1);
+                    report.setReportId(idGenerated);
+                }
+            }
+        }
+        return idGenerated;
     }
 
     /**
@@ -240,21 +271,29 @@ public class ReportDAO implements IDAOReport {
         String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
-            int reportId = createReport(report);
-            if (reportId == 0) {
-                connection.rollback();
-            } else {
-                for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
-                    try (PreparedStatement psActivity = connection.prepareStatement(queryActivities)) {
-                        psActivity.setFloat(1, activityProgress.getProgressPercentage());
-                        psActivity.setString(2, activityProgress.getObservations());
-                        psActivity.setInt(3, reportId);
-                        psActivity.setInt(4, activityProgress.getActivity().getActivityId());
-                        psActivity.addBatch();
+            try {
+                int reportId = insertReport(connection, report);
+                if (reportId == 0) {
+                    connection.rollback();
+                } else {
+                    try (PreparedStatement preparedStatementActivity = connection.prepareStatement(queryActivities)) {
+                        for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
+                            preparedStatementActivity.setFloat(1, activityProgress.getProgressPercentage());
+                            preparedStatementActivity.setString(2, activityProgress.getObservations());
+                            preparedStatementActivity.setInt(3, reportId);
+                            preparedStatementActivity.setInt(4, activityProgress.getActivity().getActivityId());
+                            preparedStatementActivity.addBatch();
+                        }
+                        preparedStatementActivity.executeBatch();
                     }
+                    connection.commit();
+                    success = true;
                 }
-                connection.commit();
-                success = true;
+            } catch (SQLException e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el reporte final", e);

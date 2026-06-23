@@ -106,11 +106,12 @@ public class StudentDAOTest {
         String enrollment = "S21011011";
         int projectId = 7;
         Project project = mock(Project.class);
+        when(project.getProjectId()).thenReturn(projectId);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true);
         stubStudentRow(resultSet, 50, enrollment, "Juan", projectId, true);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
-                (mock, context) -> when(mock.getProjectById(projectId)).thenReturn(project))) {
+                (mock, context) -> when(mock.getProjectsByIds(List.of(projectId))).thenReturn(List.of(project)))) {
             Student student = studentDAO.getStudentByEnrollment(enrollment);
             assertEquals(project, student.getAssignedProject());
         }
@@ -589,5 +590,33 @@ public class StudentDAOTest {
     void getStudentsByEducationalExperience_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de enlace"));
         assertThrows(DataOperationException.class, () -> studentDAO.getStudentsByEducationalExperience("88421"));
+    }
+
+    @Test
+    void getStudentsWithoutEducationalExperience_NoStudentsWithoutExperience_ReturnsEmptyList() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        List<Student> result = studentDAO.getStudentsWithoutEducationalExperience();
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getStudentsWithoutEducationalExperience_TwoStudentsWithoutExperience_ReturnsListWithTwoStudents() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(20, 21);
+        when(resultSet.getString("nombre")).thenReturn("Hugo", "Paco");
+        when(resultSet.getString("apellidos")).thenReturn("Mar", "Sol");
+        when(resultSet.getString("matricula")).thenReturn("S21011020", "S21011021");
+        Student expectedStudent1 = new Student(20, "Hugo", "Mar", "S21011020");
+        Student expectedStudent2 = new Student(21, "Paco", "Sol", "S21011021");
+        List<Student> result = studentDAO.getStudentsWithoutEducationalExperience();
+        assertEquals(List.of(expectedStudent1, expectedStudent2), result);
+    }
+
+    @Test
+    void getStudentsWithoutEducationalExperience_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de enlace"));
+        assertThrows(DataOperationException.class, () -> studentDAO.getStudentsWithoutEducationalExperience());
     }
 }

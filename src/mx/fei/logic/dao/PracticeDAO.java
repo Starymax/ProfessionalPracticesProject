@@ -34,27 +34,23 @@
          */
         @Override
         public Practice getPracticeById(int practiceId) throws DataOperationException {
-            Practice practice = null;
             String query = "SELECT * FROM practicas WHERE id_practica=?;";
+            int studentId = 0;
+            String nrc = null;
+            String period = null;
+            float grade = 0;
+            boolean found = false;
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, practiceId);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        int studentId = resultSet.getInt("id_alumno");
-                        String nrc = resultSet.getString("nrc");
-                        String period = resultSet.getString("periodo");
-                        float grade = resultSet.getFloat("calificacion");
-                        StudentDAO studentDAO = new StudentDAO();
-                        Student student = studentDAO.getStudentById(studentId);
-                        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-                        EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-                        practice = new Practice(student, educationalExperience, period, grade);
+                        studentId = resultSet.getInt("id_alumno");
+                        nrc = resultSet.getString("nrc");
+                        period = resultSet.getString("periodo");
+                        grade = resultSet.getFloat("calificacion");
+                        found = true;
                     }
-                }
-                if (practice == null) {
-                    logger.log(Level.WARNING, "Error al buscar la práctica por id");
-                    throw new NoSuchElementException("No se encontró la práctica");
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al buscar la práctica por id", e);
@@ -63,7 +59,15 @@
                 }
                 throw new DataOperationException("Error al obtener los datos de la práctica");
             }
-            return practice;
+            if (!found) {
+                logger.log(Level.WARNING, "Error al buscar la práctica por id");
+                throw new NoSuchElementException("No se encontró la práctica");
+            }
+            StudentDAO studentDAO = new StudentDAO();
+            Student student = studentDAO.getStudentById(studentId);
+            EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+            EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+            return new Practice(student, educationalExperience, period, grade);
         }
 
         /**
@@ -151,20 +155,33 @@
         public Practice getPracticeByEnrollment(String enrollment) throws DataOperationException {
             requireEnrollment(enrollment);
             String query = "SELECT p.id_practica, p.periodo, p.nrc, p.calificacion FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
-            Practice practice = null;
+            int practiceId = 0;
+            String period = null;
+            String nrc = null;
+            float grade = 0;
+            boolean found = false;
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, enrollment);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     if (resultSet.next()) {
-                        practice = buildPracticeFromRow(resultSet, enrollment);
+                        practiceId = resultSet.getInt("id_practica");
+                        period = resultSet.getString("periodo");
+                        nrc = resultSet.getString("nrc");
+                        grade = resultSet.getFloat("calificacion");
+                        found = true;
                     }
                 }
             } catch (SQLException e) {
                 logger.log(Level.SEVERE, "Error al obtener la practica por matricula", e);
                 throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener la practica");
             }
-            return practice;
+            if (!found || nrc == null || nrc.isBlank()) {
+                return null;
+            }
+            EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrc(nrc);
+            Student student = new StudentDAO().getStudentByEnrollment(enrollment);
+            return new Practice(practiceId, student, educationalExperience, period != null ? period : "", grade);
         }
 
         /**

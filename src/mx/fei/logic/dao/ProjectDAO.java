@@ -232,6 +232,46 @@ public class ProjectDAO implements IDAOProject {
     }
 
     /**
+     * Retrieves the projects whose identifiers are in the given list.
+     *
+     * @param projectIds the identifiers of the projects to retrieve, must not be null or empty
+     * @return a list of matching projects, empty if none were found
+     * @throws DataOperationException if a database error occurs
+     */
+    public List<Project> getProjectsByIds(List<Integer> projectIds) throws DataOperationException {
+        if (projectIds == null || projectIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < projectIds.size(); i++) {
+            if (i > 0) {
+                placeholders.append(", ");
+            }
+            placeholders.append("?");
+        }
+        String query = BASE_JOIN_QUERY + " WHERE p.id_proyecto IN (" + placeholders.toString() + ")";
+        List<Project> projects = new ArrayList<>();
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (int i = 0; i < projectIds.size(); i++) {
+                preparedStatement.setInt(i + 1, projectIds.get(i));
+            }
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    projects.add(buildProjectFromResultSet(resultSet));
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error obteniendo proyectos por ids", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al obtener los proyectos");
+        }
+        return projects;
+    }
+
+    /**
      * Updates the data of an existing project.
      *
      * @param project the project carrying the updated data

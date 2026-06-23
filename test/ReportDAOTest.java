@@ -131,10 +131,10 @@ public class ReportDAOTest {
     @Test
     void createMonthlyReport_CreateReportReturnsZero_ReturnsFalse() throws SQLException {
         Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doReturn(0).when(secondReportDAO).createReport(report);
-        boolean result = secondReportDAO.createMonthlyReport(report);
+        ResultSet generatedKeys = mock(ResultSet.class);
+        when(generatedKeys.next()).thenReturn(false);
+        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
+        boolean result = reportDAO.createMonthlyReport(report);
         assertFalse(result);
     }
 
@@ -163,10 +163,8 @@ public class ReportDAOTest {
     @Test
     void createMonthlyReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doThrow(new DataOperationException("Error al crear el reporte.")).when(secondReportDAO).createReport(report);
-        assertThrows(DataOperationException.class, () -> secondReportDAO.createMonthlyReport(report));
+        when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de insercion"));
+        assertThrows(DataOperationException.class, () -> reportDAO.createMonthlyReport(report));
     }
 
     @Test
@@ -177,10 +175,10 @@ public class ReportDAOTest {
     @Test
     void createPartialReport_CreateReportReturnsZero_ReturnsFalse() throws SQLException, DataOperationException {
         Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doReturn(0).when(secondReportDAO).createReport(report);
-        boolean result = secondReportDAO.createPartialReport(report);
+        ResultSet generatedKeys = mock(ResultSet.class);
+        when(generatedKeys.next()).thenReturn(false);
+        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
+        boolean result = reportDAO.createPartialReport(report);
         assertFalse(result);
     }
 
@@ -209,10 +207,8 @@ public class ReportDAOTest {
     @Test
     void createPartialReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doThrow(new DataOperationException("Error al crear el reporte.")).when(secondReportDAO).createReport(report);
-        assertThrows(DataOperationException.class, () -> secondReportDAO.createPartialReport(report));
+        when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de insercion"));
+        assertThrows(DataOperationException.class, () -> reportDAO.createPartialReport(report));
     }
 
     @Test
@@ -223,10 +219,10 @@ public class ReportDAOTest {
     @Test
     void createFinalReport_CreateReportReturnsZero_ReturnsFalse() throws SQLException {
         Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doReturn(0).when(secondReportDAO).createReport(report);
-        boolean result = secondReportDAO.createFinalReport(report);
+        ResultSet generatedKeys = mock(ResultSet.class);
+        when(generatedKeys.next()).thenReturn(false);
+        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
+        boolean result = reportDAO.createFinalReport(report);
         assertFalse(result);
     }
 
@@ -235,21 +231,21 @@ public class ReportDAOTest {
         Report report = buildMockReport();
         ReportActivityProgress progress = buildMockActivityProgress(new ArrayList<>());
         when(report.getActivityProgressList()).thenReturn(List.of(progress));
+        ResultSet generatedKeys = mock(ResultSet.class);
+        when(generatedKeys.next()).thenReturn(true);
+        when(generatedKeys.getInt(1)).thenReturn(3);
+        when(preparedStatement.getGeneratedKeys()).thenReturn(generatedKeys);
         PreparedStatement activityStatement = mock(PreparedStatement.class);
         when(connection.prepareStatement(anyString())).thenReturn(activityStatement);
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doReturn(3).when(secondReportDAO).createReport(report);
-        boolean result = secondReportDAO.createFinalReport(report);
+        boolean result = reportDAO.createFinalReport(report);
         assertTrue(result);
     }
 
     @Test
     void createFinalReport_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException, DataOperationException {
         Report report = buildMockReport();
-        when(report.getActivityProgressList()).thenReturn(new ArrayList<>());
-        ReportDAO secondReportDAO = spy(reportDAO);
-        doThrow(new DataOperationException("Error al crear el reporte.")).when(secondReportDAO).createReport(report);
-        assertThrows(DataOperationException.class, () -> secondReportDAO.createFinalReport(report));
+        when(preparedStatement.executeUpdate()).thenThrow(new SQLException("Error de insercion"));
+        assertThrows(DataOperationException.class, () -> reportDAO.createFinalReport(report));
     }
 
     @Test

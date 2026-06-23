@@ -305,6 +305,48 @@ public class ProjectDAOTest {
     }
 
     @Test
+    void getProjectsByIds_IdsListIsEmpty_ReturnsEmptyList() throws SQLException {
+        List<Project> result = projectDAO.getProjectsByIds(new ArrayList<>());
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getProjectsByIds_IdsListIsNull_ReturnsEmptyList() throws SQLException {
+        List<Project> result = projectDAO.getProjectsByIds(null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getProjectsByIds_TwoIdsProvided_ReturnsListWithTwoProjects() throws SQLException {
+        Date date = new Date(1000000000L);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(true, true, false);
+        stubProjectResultSet(resultSet);
+        when(resultSet.getInt("id_proyecto")).thenReturn(1, 2);
+        when(resultSet.getString("nombre_proyecto")).thenReturn("Proyecto A", "Proyecto B");
+        Enterprise expectedEnterprise = new Enterprise(1, "Empresa A", "Tech", "111", "a@test.com", "Xalapa", 1L, 2L, true, "México");
+        ProjectManager expectedManager = new ProjectManager(2, "Manager A", "manager@test.com", "222", "Director", 1);
+        Project expectedProject1 = new Project(1, "Proyecto A", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
+        Project expectedProject2 = new Project(2, "Proyecto B", "Descripcion", "Objetivo", "Inm", "Med", "Metodologia", "Resp", "Rec", date, date, true, 5, expectedEnterprise, expectedManager);
+        List<Project> result = projectDAO.getProjectsByIds(List.of(1, 2));
+        assertEquals(List.of(expectedProject1, expectedProject2), result);
+    }
+
+    @Test
+    void getProjectsByIds_NoMatchingProjects_ReturnsEmptyList() throws SQLException {
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+        List<Project> result = projectDAO.getProjectsByIds(List.of(99, 100));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void getProjectsByIds_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
+        when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de red"));
+        assertThrows(DataOperationException.class, () -> projectDAO.getProjectsByIds(List.of(1)));
+    }
+
+    @Test
     void modifyProject_UpdateAffectsOneRow_ReturnsTrue() throws SQLException {
         Project project = buildMockProject();
         when(preparedStatement.executeUpdate()).thenReturn(1);

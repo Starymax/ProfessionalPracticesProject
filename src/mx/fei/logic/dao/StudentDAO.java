@@ -59,14 +59,34 @@ public class StudentDAO implements IDAOStudent {
      */
     @Override
     public List<Student> resolveProjectsOfStudents(List<Student> students) {
-        ProjectDAO projectDAO = new ProjectDAO();
+        List<Integer> projectIds = new ArrayList<>();
+        for (Student student : students) {
+            if (student.getPendingProjectId() > 0) {
+                projectIds.add(student.getPendingProjectId());
+            }
+        }
+        List<Project> resolvedProjects = new ArrayList<>();
+        if (!projectIds.isEmpty()) {
+            try {
+                resolvedProjects = new ProjectDAO().getProjectsByIds(projectIds);
+            } catch (DataOperationException e) {
+                logger.log(Level.WARNING, "Error al resolver los proyectos de los estudiantes");
+            }
+        }
         List<Student> validStudents = new ArrayList<>();
         for (Student student : students) {
             if (student.getPendingProjectId() > 0) {
-                try {
-                    student.setAssignedProject(projectDAO.getProjectById(student.getPendingProjectId()));
+                Project found = null;
+                for (Project project : resolvedProjects) {
+                    if (project.getProjectId() == student.getPendingProjectId()) {
+                        found = project;
+                        break;
+                    }
+                }
+                if (found != null) {
+                    student.setAssignedProject(found);
                     validStudents.add(student);
-                } catch (NoSuchElementException | DataOperationException e) {
+                } else {
                     logger.log(Level.WARNING, "No se encontró el proyecto para el alumno " + student.getUserId());
                 }
             } else {
@@ -480,18 +500,14 @@ public class StudentDAO implements IDAOStudent {
     public List<Project> getSelectedProjects(Student student) throws DataOperationException {
         ArrayList<Project> selectedProjects = new ArrayList<>();
         String query = "SELECT proyecto_seleccionado FROM seleccion WHERE matricula = ?;";
+        List<Integer> projectIds = new ArrayList<>();
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, student.getEnrollment());
-            List<Integer> projectIds = new ArrayList<>();
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     projectIds.add(resultSet.getInt("proyecto_seleccionado"));
                 }
-            }
-            ProjectDAO projectDAO = new ProjectDAO();
-            for (Integer projectId : projectIds) {
-                selectedProjects.add(projectDAO.getProjectById(projectId));
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener los proyectos seleccionados", e);
@@ -499,6 +515,10 @@ public class StudentDAO implements IDAOStudent {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
             throw new DataOperationException("Error al obtener los proyectos seleccionados");
+        }
+        ProjectDAO projectDAO = new ProjectDAO();
+        for (Integer projectId : projectIds) {
+            selectedProjects.add(projectDAO.getProjectById(projectId));
         }
         return selectedProjects;
     }
@@ -520,17 +540,17 @@ public class StudentDAO implements IDAOStudent {
             preparedStatement.setInt(1, project.getProjectId());
             preparedStatement.setString(2, student.getEnrollment());
             assigned = preparedStatement.executeUpdate() > 0;
-            if (assigned) {
-                project.setAvailablePlaces(project.getAvailablePlaces() - 1);
-                ProjectDAO projectDAO = new ProjectDAO();
-                projectDAO.modifyProject(project);
-            }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al asignar un proyecto", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
             throw new DataOperationException("Error al asignar el proyecto");
+        }
+        if (assigned) {
+            project.setAvailablePlaces(project.getAvailablePlaces() - 1);
+            ProjectDAO projectDAO = new ProjectDAO();
+            projectDAO.modifyProject(project);
         }
         return assigned;
     }

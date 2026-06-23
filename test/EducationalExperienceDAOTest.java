@@ -227,18 +227,18 @@ public class EducationalExperienceDAOTest {
 
     @Test
     void getEducationalExperiences_TwoExperiencesRegistered_ReturnsListWithTwoExperiences() throws SQLException {
-        String nrc1 = "11111";
-        String nrc2 = "22222";
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString("NRC")).thenReturn(nrc1, nrc2);
-        EducationalExperience experience1 = mock(EducationalExperience.class);
-        EducationalExperience experience2 = mock(EducationalExperience.class);
-        doReturn(experience1).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc1);
-        doReturn(experience2).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc2);
-        List<EducationalExperience> result = spyEducationalExperienceDAO.getEducationalExperiences();
-        assertEquals(List.of(experience1, experience2), result);
+        when(resultSet.getString("NRC")).thenReturn("11111", "22222");
+        when(resultSet.getString("nombre_experiencia")).thenReturn("Pruebas de Software", "Base de Datos");
+        when(resultSet.getString("programa_educativo")).thenReturn("ISW", "ISW");
+        when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026", "AGO-ENE 2026");
+        when(resultSet.getObject("id_usuario")).thenReturn(null, null);
+        EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", null, "FEB-JUN 2026");
+        EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", null, "AGO-ENE 2026");
+        List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiences();
+        assertEquals(List.of(expectedExperience1, expectedExperience2), result);
     }
 
     @Test
@@ -259,18 +259,22 @@ public class EducationalExperienceDAOTest {
 
     @Test
     void getEducationalExperiencesByProfessor_ProfessorHasTwoExperiences_ReturnsListWithTwoExperiences() throws SQLException {
-        String nrc1 = "11111";
-        String nrc2 = "22222";
+        int professorId = 50;
+        Professor professor = mock(Professor.class);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(true, true, false);
-        when(resultSet.getString("NRC")).thenReturn(nrc1, nrc2);
-        EducationalExperience experience1 = mock(EducationalExperience.class);
-        EducationalExperience experience2 = mock(EducationalExperience.class);
-        doReturn(experience1).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc1);
-        doReturn(experience2).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc(nrc2);
-        List<EducationalExperience> result = spyEducationalExperienceDAO.getEducationalExperiencesByProfessor(50);
-        assertEquals(List.of(experience1, experience2), result);
+        when(resultSet.getString("NRC")).thenReturn("11111", "22222");
+        when(resultSet.getString("nombre_experiencia")).thenReturn("Pruebas de Software", "Base de Datos");
+        when(resultSet.getString("programa_educativo")).thenReturn("ISW", "ISW");
+        when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026", "AGO-ENE 2026");
+        EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", professor, "FEB-JUN 2026");
+        EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", professor, "AGO-ENE 2026");
+        try (MockedConstruction<ProfessorDAO> mockedProfessorDAO = mockConstruction(ProfessorDAO.class,
+                (mock, context) -> when(mock.getProfessorById(professorId)).thenReturn(professor))) {
+            List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiencesByProfessor(professorId);
+            assertEquals(List.of(expectedExperience1, expectedExperience2), result);
+        }
     }
 
     @Test
