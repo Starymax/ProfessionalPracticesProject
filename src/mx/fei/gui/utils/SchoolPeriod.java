@@ -11,6 +11,10 @@ public class SchoolPeriod {
 
     private final String semester;
     private final int year;
+    private static int february = 2;
+    private static int july = 7;
+    private static final int august = 8;
+    private static final int january = 1;
 
     public SchoolPeriod(String semester, int year) {
         this.semester = semester;
@@ -21,9 +25,9 @@ public class SchoolPeriod {
         int month = today.getMonthValue();
         int year = today.getYear();
         SchoolPeriod schoolPeriod;
-        if (month >= 2 && month <= 7) {
+        if (month >= february && month <= july) {
             schoolPeriod = new SchoolPeriod(SEMESTER_FEB_JUL, year);
-        } else if (month >= 8) {
+        } else if (month >= august) {
             schoolPeriod = new SchoolPeriod(SEMESTER_AUG_JAN, year);
         } else {
             schoolPeriod = new SchoolPeriod(SEMESTER_AUG_JAN, year - 1);
@@ -34,10 +38,10 @@ public class SchoolPeriod {
     public static SchoolPeriod getPeriodByDate(LocalDate startDate) {
         int month = startDate.getMonthValue();
         SchoolPeriod schoolPeriod;
-        if (month == 1) {
+        if (month == january) {
             schoolPeriod = new SchoolPeriod(SEMESTER_AUG_JAN, startDate.getYear() - 1);
         } else {
-            schoolPeriod = new SchoolPeriod(month <= 7 ? SEMESTER_FEB_JUL : SEMESTER_AUG_JAN, startDate.getYear());
+            schoolPeriod = new SchoolPeriod(month <= july ? SEMESTER_FEB_JUL : SEMESTER_AUG_JAN, startDate.getYear());
         }
         return schoolPeriod;
     }

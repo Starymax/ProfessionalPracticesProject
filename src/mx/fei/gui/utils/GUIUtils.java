@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class GUIUtils {
     public static final Pattern NAME_PATTERN = Pattern.compile("^[\\p{L}\\s]{3,50}$");
     public static final Pattern LONG_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,65535}$");
+    public static final Pattern REPORT_OBSERVATION_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,195}$");
     public static final Pattern SHORT_TEXT_PATTERN = Pattern.compile("^[\\p{L}\\d\\s.,¡!¿?()%\\-]{1,100}$");
     public static final Pattern REPETITION_PATTERN = Pattern.compile("(\\p{L})\\1{3,}", Pattern.CASE_INSENSITIVE);
     public static final Pattern CONTAINS_NUMBERS_PATTERN = Pattern.compile("\\d");
@@ -25,6 +26,16 @@ public class GUIUtils {
     public static final Pattern NUMERIC_PATTERN = Pattern.compile("^\\d+$");
     public static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^\\d{6,}$");
     public static final Pattern SEARCH_FORBIDDEN_PATTERN = Pattern.compile("[^\\p{L}\\d\\s-]");
+    private static final int limitNumberPhone = 10;
+    private static final int limitMail = 100;
+    private static final int limitNrc = 5;
+    private static final float minimumGrade = 0.0f;
+    private static final float maxGrade = 10.0f;
+    private static final int minimumPersonalNumber = 3;
+    private static final int maxPersonalNumber = 10;
+    private static final int limitSingleDigitNumber = 9;
+    private static final int singleDigitNumber = 2;
+    private static final int longDigitNumber = 15;
 
     public static void validateNames(String value, String fieldName, List<String> errors) {
         if (value == null || value.isEmpty()) {
@@ -77,7 +88,7 @@ public class GUIUtils {
             errors.add("El campo de correo es obligatorio.");
         } else if (!EMAIL_PATTERN.matcher(email).matches()) {
             errors.add("El correo electrónico no tiene un formato válido (ejemplo: usuario@dominio.com).");
-        } else if (email.length() > 100) {
+        } else if (email.length() > limitMail) {
             errors.add("El correo electrónico no puede tener más de 100 caracteres.");
         } else if (email.contains("..") || email.startsWith(".") || email.endsWith(".")) {
             errors.add("El correo electrónico tiene puntos consecutivos o puntos al inicio/final.");
@@ -106,7 +117,7 @@ public class GUIUtils {
         } else {
             try {
                 float grade = Float.parseFloat(value);
-                if (grade < 0.0f || grade > 10.0f) {
+                if (grade < minimumGrade || grade > maxGrade) {
                     errors.add(fieldName + " debe estar entre 0.0 y 10.0.");
                 }
             } catch (NumberFormatException e) {
@@ -120,9 +131,9 @@ public class GUIUtils {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
-        } else if (value.length() < 3) {
+        } else if (value.length() < minimumPersonalNumber) {
             errors.add(fieldName + " debe tener al menos 3 dígitos.");
-        } else if (value.length() > 10) {
+        } else if (value.length() > maxPersonalNumber) {
             errors.add(fieldName + " no puede tener más de 10 dígitos.");
         } else if (value.startsWith("0")) {
             errors.add(fieldName + " no puede empezar con cero.");
@@ -134,7 +145,7 @@ public class GUIUtils {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
-        } else if (value.length() != 10) {
+        } else if (value.length() != limitNumberPhone) {
             errors.add(fieldName + " debe tener 10 dígitos.");
         }
     }
@@ -144,7 +155,7 @@ public class GUIUtils {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
-        } else if (value.length() > 15) {
+        } else if (value.length() > longDigitNumber) {
             errors.add(fieldName + " no puede ser un valor tan grande.");
         }
     }
@@ -154,7 +165,7 @@ public class GUIUtils {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
-        } else if (value.length() > 2) {
+        } else if (value.length() > singleDigitNumber) {
             errors.add(fieldName + " no puede ser un valor tan grande.");
         }
     }
@@ -164,7 +175,7 @@ public class GUIUtils {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
-        } else if (value.length() > 9) {
+        } else if (value.length() > limitSingleDigitNumber) {
             errors.add(fieldName + " no puede ser un valor tan grande.");
         }
     }
@@ -174,7 +185,7 @@ public class GUIUtils {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!NUMERIC_PATTERN.matcher(value).matches()) {
             errors.add(fieldName + " debe contener solo números.");
-        } else if (value.length() != 5) {
+        } else if (value.length() != limitNrc) {
             errors.add(fieldName + " debe tener 5 dígitos");
         } else if (value.charAt(0) == '0') {
             errors.add(fieldName + " no puede comenzar con el número 0.");
@@ -187,6 +198,20 @@ public class GUIUtils {
             errors.add("El campo de contraseña es obligatorio.");
         } else if (!password.matches(regex)) {
             errors.add("La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.");
+        }
+    }
+
+    public static void validateObsesrvationsText(String value, String fieldName, List<String> errors) {
+        if (value == null || value.isEmpty()) {
+            errors.add("El campo de " + fieldName + " es obligatorio.");
+        } else if (value.trim().isEmpty()) {
+            errors.add(fieldName + " no puede contener solo espacios.");
+        } else if (!value.equals(value.trim())) {
+            errors.add(fieldName + " no puede empezar ni terminar con espacios.");
+        } else if (!REPORT_OBSERVATION_PATTERN.matcher(value).matches()) {
+            errors.add(fieldName + " no debe contener caracteres inválidos o contener más de 195 caracteres");
+        } else if (REPETITION_PATTERN.matcher(value).find()) {
+            errors.add(fieldName + " no puede tener 3 o más veces consecutivas la misma letra.");
         }
     }
 

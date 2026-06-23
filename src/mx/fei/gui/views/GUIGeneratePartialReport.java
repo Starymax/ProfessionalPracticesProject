@@ -172,15 +172,33 @@ public class GUIGeneratePartialReport extends Application {
 
     private StringProperty getPlanProperty(PartialActivityRow row, int week) {
         switch (week) {
-            case 1: return row.week1PlanProperty();
-            case 2: return row.week2PlanProperty();
-            case 3: return row.week3PlanProperty();
-            case 4: return row.week4PlanProperty();
-            case 5: return row.week5PlanProperty();
-            case 6: return row.week6PlanProperty();
-            case 7: return row.week7PlanProperty();
-            case 8: return row.week8PlanProperty();
-            default: return new SimpleStringProperty("");
+            case 1 -> {
+                return row.week1PlanProperty();
+            }
+            case 2 -> {
+                return row.week2PlanProperty();
+            }
+            case 3 -> {
+                return row.week3PlanProperty();
+            }
+            case 4 -> {
+                return row.week4PlanProperty();
+            }
+            case 5 -> {
+                return row.week5PlanProperty();
+            }
+            case 6 -> {
+                return row.week6PlanProperty();
+            }
+            case 7 -> {
+                return row.week7PlanProperty();
+            }
+            case 8 -> {
+                return row.week8PlanProperty();
+            }
+            default -> {
+                return new SimpleStringProperty("");
+            }
         }
     }
 
@@ -236,7 +254,6 @@ public class GUIGeneratePartialReport extends Application {
     private HBox createButtonRow() {
         buttonExportPDF = new Button("Exportar PDF");
         buttonExportPDF.setPrefWidth(120);
-        buttonExportPDF.setId("buttonExportPdf");
         buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(120);
         buttonCancel.setId("buttonCancel");
@@ -251,8 +268,8 @@ public class GUIGeneratePartialReport extends Application {
     public boolean validateFields() {
         boolean validated = true;
         List<String> errors = new ArrayList<>();
-        GUIUtils.validateLongText(textAreaObservations.getText(),"Observaciones", errors);
-        GUIUtils.validateLongText(textAreaResults.getText(),"Observaciones", errors);
+        GUIUtils.validateObsesrvationsText(textAreaObservations.getText(),"Observaciones", errors);
+        GUIUtils.validateObsesrvationsText(textAreaResults.getText(),"Resultados obtenidos", errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
             validated = false;
