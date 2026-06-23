@@ -232,7 +232,7 @@ public class ControllerGeneratePartialReport {
         parameters.put("student", (cleanNull(student.getName()) + " " + cleanNull(student.getLastName())).trim());
         putProjectParameters(parameters);
         parameters.put("reportNumber", String.valueOf(calculateReportNumber()));
-        parameters.put("resultsObtained", cleanNull(results));
+        parameters.put("resultsObtaneid", cleanNull(results));
         String currentPeriod = formatPeriod(practice.getPeriod());
         parameters.put("period", cleanNull(currentPeriod));
         parameters.put("reportPeriod", cleanNull(currentPeriod));

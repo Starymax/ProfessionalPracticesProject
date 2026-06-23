@@ -69,7 +69,7 @@ public class ControllerLogin {
             } catch (NoSuchElementException e) {
                 guiLogin.showError("Correo o contraseña incorrectos.");
             } catch (DataOperationException e) {
-                guiLogin.showError("Error interno. Intente más tarde.");
+                guiLogin.showError(e.getMessage());
             }
         }
     }
@@ -90,7 +90,7 @@ public class ControllerLogin {
         try {
             userDAO.logInByRole(UserRole.DEFAULT);
         }  catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 
@@ -105,7 +105,7 @@ public class ControllerLogin {
             guiStudentMenu.setStudentInfo(student);
             guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 
@@ -118,7 +118,7 @@ public class ControllerLogin {
             guiAdministratorMenu.setAdministratorInfo(professor);
             guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 
@@ -131,7 +131,7 @@ public class ControllerLogin {
             guiCoordinatorMenu.setCoordinatorInfo(coordinator);
             guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 
@@ -144,7 +144,7 @@ public class ControllerLogin {
             guiProfessorMenu.setProfessorInfo(professor);
             guiLogin.closeWindow();
         } catch (DataOperationException e) {
-            guiLogin.showError("Error interno. Intente más tarde.");
+            guiLogin.showError(e.getMessage());
         }
     }
 }
