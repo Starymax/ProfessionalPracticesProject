@@ -4,8 +4,10 @@ import mx.fei.gui.views.GUIRegisterProjectManager;
 import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
+
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
@@ -33,7 +35,7 @@ public class ControllerRegisterProjectManager{
 
     private void register() {
         if (guiRegisterProjectManager.validateFields()) {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+            Alert confirmation = new Alert(AlertType.CONFIRMATION);
             confirmation.setTitle("Confirmar registro");
             confirmation.setHeaderText(null);
             confirmation.setContentText("¿Seguro que desea guardar estos datos?");
@@ -59,7 +61,7 @@ public class ControllerRegisterProjectManager{
     }
 
     private void cancel() {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Cancelar registro");
         confirmation.setHeaderText(null);
         confirmation.setContentText("¿Seguro que desea cancelar? Se perderá la información ingresada.");

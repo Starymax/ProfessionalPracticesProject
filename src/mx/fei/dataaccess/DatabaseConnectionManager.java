@@ -1,16 +1,16 @@
 package mx.fei.dataaccess;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class DatabaseConnectionManager {
-    private static final Logger logger = Logger.getLogger(DatabaseConnectionManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DatabaseConnectionManager.class.getName());
 
     private static volatile DatabaseConnectionManager instance;
     private Connection connection;
@@ -18,7 +18,7 @@ public class DatabaseConnectionManager {
     private String username;
     private String password;
     private String currentRole;
-    private final int timeOut = 2;
+    private final int TIME_OUT = 2;
 
     private DatabaseConnectionManager() {}
 
@@ -51,12 +51,12 @@ public class DatabaseConnectionManager {
         if (url == null) {
             throw new SQLException("Sistema no disponible, inténtelo de nuevo");
         }
-        if (connection == null || connection.isClosed() || !connection.isValid(timeOut)) {
-            logger.log(Level.INFO, "Estableciendo nueva conexión a la base de datos");
+        if (connection == null || connection.isClosed() || !connection.isValid(TIME_OUT)) {
+            LOGGER.log(Level.INFO, "Estableciendo nueva conexión a la base de datos");
             try {
                 connection = DriverManager.getConnection(url, username, password);
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "No se pudo conectar a la base de datos: " + url, e);
+                LOGGER.log(Level.SEVERE, "No se pudo conectar a la base de datos: " + url, e);
                 throw e;
             }
         }
@@ -68,10 +68,10 @@ public class DatabaseConnectionManager {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                logger.log(Level.INFO, "Conexión cerrada correctamente");
+                LOGGER.log(Level.INFO, "Conexión cerrada correctamente");
             }
         } catch (SQLException e) {
-            logger.log(Level.WARNING, "Error al cerrar la conexión: " + e.getMessage());
+            LOGGER.log(Level.WARNING, "Error al cerrar la conexión: " + e.getMessage());
         } finally {
             connection = null;
             url = null;
@@ -86,7 +86,7 @@ public class DatabaseConnectionManager {
         String fileName = "db_" + role + ".properties";
         InputStream input = DatabaseConnectionManager.class.getClassLoader().getResourceAsStream(fileName);
         if (input == null) {
-            logger.log(Level.SEVERE, "No se encontró el archivo de propiedades: " + fileName);
+            LOGGER.log(Level.SEVERE, "No se encontró el archivo de propiedades: " + fileName);
             throw new IOException("Error al iniciar sesión: archivo de configuracion no encontrado");
         }
         try (input) {
@@ -98,7 +98,7 @@ public class DatabaseConnectionManager {
             String port = properties.getProperty("db.port");
             String name = properties.getProperty("db.name");
             if (isBlank(username) || isBlank(password) || isBlank(host) || isBlank(port) || isBlank(name)) {
-                logger.log(Level.SEVERE, "Archivo de propiedades incompleto o mal formado: " + fileName);
+                LOGGER.log(Level.SEVERE, "Archivo de propiedades incompleto o mal formado: " + fileName);
                 throw new IOException("Error al iniciar sesión: configuración de conexión inválida");
             }
 

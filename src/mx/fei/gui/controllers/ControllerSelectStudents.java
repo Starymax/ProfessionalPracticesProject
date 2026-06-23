@@ -1,12 +1,13 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUISelectStudents;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Stage;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -16,7 +17,7 @@ public class ControllerSelectStudents {
     private GUISelectStudents guiSelectStudents;
     private StudentDAO studentDAO;
     private Stage stage;
-    private static final Logger logger = Logger.getLogger(ControllerSelectStudents.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerSelectStudents.class.getName());
 
     public ControllerSelectStudents(GUISelectStudents guiSelectStudents, Stage stage) {
         this.guiSelectStudents = guiSelectStudents;
@@ -43,7 +44,7 @@ public class ControllerSelectStudents {
             List<Student> studentsAlreadySelected = guiSelectStudents.getGuiAddStudents().getStudentsToAdd();
             guiSelectStudents.setStudents(students, studentsAlreadySelected);
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al cargar estudiantes", e);
+            LOGGER.log(Level.SEVERE, "Error al cargar estudiantes", e);
             guiSelectStudents.showError(e.getMessage());
         }
     }

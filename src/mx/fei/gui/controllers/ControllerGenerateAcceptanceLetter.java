@@ -23,7 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ControllerGenerateAcceptanceLetter {
-    private static final Logger logger = Logger.getLogger(ControllerGenerateAcceptanceLetter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerGenerateAcceptanceLetter.class.getName());
     private final GUIGenerateAcceptanceLetter guiGenerateAcceptanceLetter;
     private final Stage stage;
     private final Student student;
@@ -40,6 +40,18 @@ public class ControllerGenerateAcceptanceLetter {
         String errorMessage = resolveLetterData();
         if (errorMessage != null) {
             guiGenerateAcceptanceLetter.showError(errorMessage);
+        }
+    }
+
+    public void handleAcceptanceLetterButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Imprimir" -> {
+                printPDF();
+            }
+            case "Regresar" -> {
+                guiGenerateAcceptanceLetter.closeWindow();
+            }
         }
     }
 
@@ -63,7 +75,7 @@ public class ControllerGenerateAcceptanceLetter {
                     }
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error cargando datos para carta de aceptación", e);
+                LOGGER.log(Level.SEVERE, "Error cargando datos para carta de aceptación", e);
                 errorMessage = "Error al cargar datos: " + e.getMessage();
             }
         }
@@ -92,18 +104,6 @@ public class ControllerGenerateAcceptanceLetter {
         } else {
             guiGenerateAcceptanceLetter.setResponsibleEmail(manager.getEmailProjectManager() != null ? manager.getEmailProjectManager() : "");
             guiGenerateAcceptanceLetter.setResponsiblePhone(manager.getPhoneNumberProjectManager() != null ? manager.getPhoneNumberProjectManager() : "");
-        }
-    }
-
-    public void handleAcceptanceLetterButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Imprimir" -> {
-                printPDF();
-            }
-            case "Regresar" -> {
-                guiGenerateAcceptanceLetter.closeWindow();
-            }
         }
     }
 

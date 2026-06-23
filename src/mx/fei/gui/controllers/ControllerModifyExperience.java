@@ -26,15 +26,6 @@ public class ControllerModifyExperience {
         loadProfessors();
     }
 
-    private void loadProfessors() {
-        try {
-            List<Professor> professors = professorDAO.getProfessors();
-            guiModifyExperience.setProfessors(professors);
-        } catch (DataOperationException e) {
-            guiModifyExperience.showError(e.getMessage());
-        }
-    }
-
     public void handleUpdateReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
@@ -45,6 +36,15 @@ public class ControllerModifyExperience {
                 guiModifyExperience.closeWindow();
                 openChooseExperience();
             }
+        }
+    }
+
+    private void loadProfessors() {
+        try {
+            List<Professor> professors = professorDAO.getProfessors();
+            guiModifyExperience.setProfessors(professors);
+        } catch (DataOperationException e) {
+            guiModifyExperience.showError(e.getMessage());
         }
     }
 

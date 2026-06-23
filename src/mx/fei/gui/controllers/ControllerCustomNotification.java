@@ -24,7 +24,7 @@ public class ControllerCustomNotification {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Enviar y eliminar" -> {
-                    sendNotificationAndDeleteDocument();
+                    rejectDocument();
             }
             case "Cancelar" -> {
                 guiCustomNotification.closeWindow();
@@ -33,35 +33,52 @@ public class ControllerCustomNotification {
         }
     }
 
-    private void sendNotificationAndDeleteDocument() {
+    private boolean validateNotificationFields() {
         String title = guiCustomNotification.getNotificationTitle();
         String message = guiCustomNotification.getNotificationMessage();
+        boolean valid = true;
         if (title == null || title.trim().isEmpty()) {
             guiCustomNotification.showError("El título de la notificación no puede estar vacío.");
-            return;
+            valid = false;
         }
         if (message == null || message.trim().isEmpty()) {
             guiCustomNotification.showError("El mensaje de la notificación no puede estar vacío.");
-            return;
+            valid = false;
         }
         if (message.length() > MAX_MESSAGE_LENGTH) {
             guiCustomNotification.showError("El mensaje no puede superar los " + MAX_MESSAGE_LENGTH + " caracteres.");
+            valid = false;
+        }
+        return valid;
+    }
+
+    private void deleteDocument(Document document) throws DataOperationException {
+        DocumentDAO documentDAO = new DocumentDAO();
+        boolean deleted = documentDAO.deleteDocument(document);
+        if (!deleted) {
+            throw new DataOperationException("No se pudo eliminar el documento.");
+        }
+    }
+
+    private void sendNotification(Student student) throws DataOperationException {
+        if (student != null) {
+            String title = guiCustomNotification.getNotificationTitle().trim();
+            String message = guiCustomNotification.getNotificationMessage().trim();
+            NotificationDAO notificationDAO = new NotificationDAO();
+            Notification notification = new Notification(0, title, message, null, false, student);
+            notificationDAO.sendNotification(notification);
+        }
+    }
+
+    private void rejectDocument() {
+        if (!validateNotificationFields()) {
             return;
         }
         Document document = guiCustomNotification.getDocument();
         Student student = document.getPractice() != null ? document.getPractice().getStudent() : null;
         try {
-            DocumentDAO documentDAO = new DocumentDAO();
-            boolean deleted = documentDAO.deleteDocument(document);
-            if (!deleted) {
-                guiCustomNotification.showError("No se pudo eliminar el documento.");
-                return;
-            }
-            if (student != null) {
-                NotificationDAO notificationDAO = new NotificationDAO();
-                Notification notification = new Notification(0, title.trim(), message.trim(), null, false, student);
-                notificationDAO.sendNotification(notification);
-            }
+            deleteDocument(document);
+            sendNotification(student);
             guiCustomNotification.showSuccess("Documento rechazado y eliminado. Se notificó al alumno.");
             guiCustomNotification.closeWindow();
             guiCustomNotification.closeParentPreview();

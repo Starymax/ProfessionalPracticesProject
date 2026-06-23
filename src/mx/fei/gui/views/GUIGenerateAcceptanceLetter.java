@@ -41,14 +41,14 @@ public class GUIGenerateAcceptanceLetter extends Application {
     private Label labelResponsiblePhone;
     private ComboBox<String>[] startHourCombo = new ComboBox[5];
     private ComboBox<String>[] endHourCombo = new ComboBox[5];
-    private final String[] dias = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes"};
+    private final String[] DAYS = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes"};
     private Button buttonPrint;
     private Button buttonBack;
     private ObservableList<String> hourOptions;
-    private final int hourStart = 8;
-    private final int hourEnd = 19;
-    private final int mountOfDays = 5;
-    private final int seconds = 60;
+    private final int HOUR_START = 8;
+    private final int HOUR_END = 19;
+    private final int MOUNT_OF_DAYS = 5;
+    private final int SECONDS = 60;
 
     public GUIGenerateAcceptanceLetter(Student student) {
         this.student = student;
@@ -129,14 +129,14 @@ public class GUIGenerateAcceptanceLetter extends Application {
 
     public boolean validateSchedule() {
         boolean isValid = true;
-        for (int i = 0; i < dias.length && isValid; i++) {
+        for (int i = 0; i < DAYS.length && isValid; i++) {
             String start = startHourCombo[i].getValue();
             String end = endHourCombo[i].getValue();
             if (start == null || end == null) {
-                showError("Debe seleccionar horario para " + dias[i]);
+                showError("Debe seleccionar horario para " + DAYS[i]);
                 isValid = false;
             } else if (timeToMinutes(start) >= timeToMinutes(end)) {
-                showError("En " + dias[i] + ", la hora de inicio debe ser menor que la hora de fin.");
+                showError("En " + DAYS[i] + ", la hora de inicio debe ser menor que la hora de fin.");
                 isValid = false;
             }
         }
@@ -144,8 +144,8 @@ public class GUIGenerateAcceptanceLetter extends Application {
     }
 
     public String[] getScheduleStrings() {
-        String[] horarios = new String[mountOfDays];
-        for (int i = 0; i < dias.length; i++) {
+        String[] horarios = new String[MOUNT_OF_DAYS];
+        for (int i = 0; i < DAYS.length; i++) {
             horarios[i] = startHourCombo[i].getValue() + " - " + endHourCombo[i].getValue();
         }
         return horarios;
@@ -153,12 +153,12 @@ public class GUIGenerateAcceptanceLetter extends Application {
 
     private int timeToMinutes(String time) {
         String[] parts = time.split(":");
-        return Integer.parseInt(parts[0]) * seconds + Integer.parseInt(parts[1]);
+        return Integer.parseInt(parts[0]) * SECONDS + Integer.parseInt(parts[1]);
     }
 
     private ObservableList<String> getHourOptions() {
         ObservableList<String> hours = FXCollections.observableArrayList();
-        for (int h = hourStart; h < hourEnd; h++) {
+        for (int h = HOUR_START; h < HOUR_END; h++) {
             hours.add(String.format("%02d:00", h));
             hours.add(String.format("%02d:30", h));
         }
@@ -233,11 +233,11 @@ public class GUIGenerateAcceptanceLetter extends Application {
         scheduleGrid.setHgap(15);
         scheduleGrid.setVgap(8);
         scheduleGrid.getStyleClass().add("report-header-lg");
-        for (int i = 0; i < dias.length; i++) {
-            scheduleGrid.add(new Label(dias[i]), i, 0);
+        for (int i = 0; i < DAYS.length; i++) {
+            scheduleGrid.add(new Label(DAYS[i]), i, 0);
         }
         hourOptions = getHourOptions();
-        for (int i = 0; i < dias.length; i++) {
+        for (int i = 0; i < DAYS.length; i++) {
             startHourCombo[i] = new ComboBox<>(hourOptions);
             endHourCombo[i] = new ComboBox<>(hourOptions);
             startHourCombo[i].setValue("08:00");

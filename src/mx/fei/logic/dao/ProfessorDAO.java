@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * and the vw_profesor view.
  */
 public class ProfessorDAO implements IDAOProfessor {
-    private static final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProfessorDAO.class.getName());
 
     /**
      * Builds a Professor from the current row of the given result set.
@@ -66,7 +66,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el profesor", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener el profesor", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -95,7 +95,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el profesor", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener el profesor", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -130,7 +130,7 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public void requireProfessor(Professor professor) {
         if (professor == null) {
-            logger.log(Level.WARNING, "El profesor es nulo");
+            LOGGER.log(Level.WARNING, "El profesor es nulo");
             throw new IllegalArgumentException("El profesor es nulo");
         }
     }
@@ -145,7 +145,7 @@ public class ProfessorDAO implements IDAOProfessor {
     @Override
     public void ensurePersonalNumberAvailable(int personalNumber) throws DataOperationException {
         if (getProfessorByPersonalNumber(personalNumber) != null) {
-            logger.log(Level.WARNING, "El profesor con el numero de personal ya existe");
+            LOGGER.log(Level.WARNING, "El profesor con el numero de personal ya existe");
             throw new IllegalStateException("El profesor con el numero de personal ya existe");
         }
     }
@@ -162,7 +162,7 @@ public class ProfessorDAO implements IDAOProfessor {
         UserDAO userDAO = new UserDAO();
         int idUser = userDAO.registerUser(professor);
         if (idUser == RegistrationStatus.FAILURE.getValue()) {
-            logger.log(Level.WARNING, "No se logro registrar el profesor");
+            LOGGER.log(Level.WARNING, "No se logro registrar el profesor");
             throw new DataOperationException("No se logro registrar el profesor");
         }
         return idUser;
@@ -188,7 +188,7 @@ public class ProfessorDAO implements IDAOProfessor {
             preparedStatement.setString(5, professor.getShift());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando el profesor", e);
+            LOGGER.log(Level.SEVERE, "Error registrando el profesor", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al registrar el profesor");
         }
     }
@@ -210,7 +210,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 professors.add(buildProfessorFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo todos los profesores", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo todos los profesores", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -239,7 +239,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 preparedStatement.setInt(4, professor.getPersonalNumber());
                 updated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
-                logger.log(Level.SEVERE, "Error modificando los datos del profesor", e);
+                LOGGER.log(Level.SEVERE, "Error modificando los datos del profesor", e);
                 if (DAOUtils.isConnectionError(e)) {
                     throw new DataOperationException("Error de conexión. Intente más tarde.");
                 }
@@ -266,7 +266,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 exists = true;
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al verificar si existe un coordinador", e);
+            LOGGER.log(Level.SEVERE, "Error al verificar si existe un coordinador", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

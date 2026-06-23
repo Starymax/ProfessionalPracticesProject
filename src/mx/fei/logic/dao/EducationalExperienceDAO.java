@@ -5,6 +5,7 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAOEducationalExperience;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
  * experiencia_educativa table.
  */
 public class EducationalExperienceDAO implements IDAOEducationalExperience {
-    private static final Logger logger = Logger.getLogger(EducationalExperienceDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EducationalExperienceDAO.class.getName());
 
     /**
      * Registers a new educational experience.
@@ -50,7 +51,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public void requireEducationalExperience(EducationalExperience educationalExperience) {
         if (educationalExperience == null) {
-            logger.log(Level.WARNING, "La experiencia es nula");
+            LOGGER.log(Level.WARNING, "La experiencia es nula");
             throw new IllegalArgumentException("La experiencia educativa no puede ser nula");
         }
     }
@@ -68,11 +69,11 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         try {
             getEducationalExperienceByNrc(nrc);
         } catch (NoSuchElementException e) {
-            logger.log(Level.INFO, "Nrc disponible para el registro");
+            LOGGER.log(Level.INFO, "Nrc disponible para el registro");
             exists = false;
         }
         if (exists) {
-            logger.log(Level.WARNING, "Ya existe una experiencia educativa con el nrc: " + nrc);
+            LOGGER.log(Level.WARNING, "Ya existe una experiencia educativa con el nrc: " + nrc);
             throw new IllegalStateException("Ya existe una experiencia educativa con ese nrc");
         }
     }
@@ -87,7 +88,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public String requirePeriod(String period) {
         if (period == null || period.isBlank()) {
-            logger.log(Level.WARNING, "El periodo de la experiencia educativa esta vacio");
+            LOGGER.log(Level.WARNING, "El periodo de la experiencia educativa esta vacio");
             throw new IllegalArgumentException("El periodo de la experiencia educativa no puede estar vacio");
         }
         return period;
@@ -113,7 +114,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             preparedStatement.setString(5, period);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al registrar una experiencia educativa", e);
+            LOGGER.log(Level.SEVERE, "Error al registrar una experiencia educativa", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al registrar la experiencia educativa");
         }
     }
@@ -146,12 +147,12 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     @Override
     public boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException {
         if (educationalExperience == null) {
-            logger.log(Level.WARNING, "La experiencia es nula");
+            LOGGER.log(Level.WARNING, "La experiencia es nula");
             throw new IllegalArgumentException("La experiencia educativa no puede ser nula");
         }
         String period = educationalExperience.getPeriod();
         if (period == null || period.isBlank()) {
-            logger.log(Level.WARNING, "El periodo de la experiencia educativa está vacío");
+            LOGGER.log(Level.WARNING, "El periodo de la experiencia educativa está vacío");
             throw new IllegalArgumentException("El periodo de la experiencia educativa no puede estar vacío");
         }
         boolean updated = false;
@@ -165,7 +166,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             preparedStatement.setString(5, educationalExperience.getNrc());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al modificar una experiencia: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al modificar una experiencia: " + e.getMessage());
             throw new DataOperationException("Error modificando los datos de una experiencia");
         }
         return updated;
@@ -185,7 +186,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         requireNrc(nrc);
         EducationalExperience experience = searchExperienceByNrc(nrc);
         if (experience == null) {
-            logger.log(Level.WARNING, "No se encontro el experiencia con el nrc: " + nrc);
+            LOGGER.log(Level.WARNING, "No se encontro el experiencia con el nrc: " + nrc);
             throw new NoSuchElementException("No se encontro la experiencia educativa");
         }
         return experience;
@@ -199,7 +200,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
      */
     private void requireNrc(String nrc) {
         if (nrc == null || nrc.isBlank()) {
-            logger.log(Level.WARNING, "El nrc es nulo");
+            LOGGER.log(Level.WARNING, "El nrc es nulo");
             throw new IllegalArgumentException("El nrc no puede ser nulo");
         }
     }
@@ -224,7 +225,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener la experiencia educativa por NRC", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener la experiencia educativa por NRC", e);
             throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener los datos de la experiencia");
         }
         return experience;
@@ -300,7 +301,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los datos de las experiencias", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los datos de las experiencias", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -337,7 +338,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener las experiencias del profesor", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener las experiencias del profesor", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

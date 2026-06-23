@@ -105,12 +105,6 @@ public class GUIEvaluateStudent extends Application {
         stage.show();
     }
 
-    private Label buildInfoLabel(String text) {
-        Label label = new Label(text);
-        label.setFont(Font.font("SansSerif", 13));
-        return label;
-    }
-
     public void loadData() {
         controllerEvaluateStudent.loadData();
     }
@@ -157,5 +151,11 @@ public class GUIEvaluateStudent extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private Label buildInfoLabel(String text) {
+        Label label = new Label(text);
+        label.setFont(Font.font("SansSerif", 13));
+        return label;
     }
 }

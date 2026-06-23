@@ -40,7 +40,7 @@ import java.util.logging.Logger;
 
 public class ControllerGeneratePartialReport {
 
-    private static final Logger logger = Logger.getLogger(ControllerGeneratePartialReport.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerGeneratePartialReport.class.getName());
     private final GUIGeneratePartialReport guiGeneratePartialReport;
     private final Stage stage;
     private final Student student;
@@ -65,6 +65,18 @@ public class ControllerGeneratePartialReport {
         }
     }
 
+    public void handlePartialReportButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Exportar PDF" -> {
+                exportPDF();
+            }
+            case "Cancelar" -> {
+                guiGeneratePartialReport.closeWindow();
+            }
+        }
+    }
+
     private String resolveStudentData() {
         String errorMessage = null;
         if (student == null) {
@@ -81,7 +93,7 @@ public class ControllerGeneratePartialReport {
                     populateActivityRows();
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error cargando datos para reporte parcial", e);
+                LOGGER.log(Level.SEVERE, "Error cargando datos para reporte parcial", e);
                 errorMessage = "Error al cargar los datos: " + e.getMessage();
             }
         }
@@ -161,7 +173,7 @@ public class ControllerGeneratePartialReport {
         }
         String[] plan = new String[9];
         String[] real = new String[9];
-        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+        for (int week = 1; week <= guiGeneratePartialReport.getTOTAL_WEEKS(); week++) {
             plan[week] = String.format("%.1f", plannedByWeek.getOrDefault(week, 0f));
             real[week] = String.format("%.1f", realByWeek.getOrDefault(week, 0f));
         }
@@ -174,18 +186,6 @@ public class ControllerGeneratePartialReport {
                 plan[5], real[5], plan[6], real[6],
                 plan[7], real[7], plan[8], real[8]
         );
-    }
-
-    public void handlePartialReportButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Exportar PDF" -> {
-                exportPDF();
-            }
-            case "Cancelar" -> {
-                guiGeneratePartialReport.closeWindow();
-            }
-        }
     }
 
     private void exportPDF() {
@@ -260,18 +260,18 @@ public class ControllerGeneratePartialReport {
 
     private void putActivityParameters(Map<String, Object> parameters) {
         ObservableList<PartialActivityRow> rows = guiGeneratePartialReport.getTableActivities().getItems();
-        int rowCount = Math.min(rows.size(), guiGeneratePartialReport.getAmountOfActivities());
+        int rowCount = Math.min(rows.size(), guiGeneratePartialReport.getAMOUNT_OF_ACTIVITIES());
         for (int i = 0; i < rowCount; i++) {
             putFilledActivity(parameters, rows.get(i), i + 1);
         }
-        for (int i = rowCount + 1; i <= guiGeneratePartialReport.getAmountOfActivities(); i++) {
+        for (int i = rowCount + 1; i <= guiGeneratePartialReport.getAMOUNT_OF_ACTIVITIES(); i++) {
             putEmptyActivity(parameters, i);
         }
     }
 
     private void putFilledActivity(Map<String, Object> parameters, PartialActivityRow partialActivityRow, int index) {
         parameters.put("activity" + index, cleanNull(partialActivityRow.getActivityName()));
-        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+        for (int week = 1; week <= guiGeneratePartialReport.getTOTAL_WEEKS(); week++) {
             parameters.put("activity" + index + "PlanS" + week, cleanNull(getPlanValue(partialActivityRow, week)));
             parameters.put("activity" + index + "RealS" + week, cleanNull(getRealValue(partialActivityRow, week)));
         }
@@ -279,7 +279,7 @@ public class ControllerGeneratePartialReport {
 
     private void putEmptyActivity(Map<String, Object> parameters, int index) {
         parameters.put("activity" + index, "");
-        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+        for (int week = 1; week <= guiGeneratePartialReport.getTOTAL_WEEKS(); week++) {
             parameters.put("activity" + index + "PlanS" + week, "");
             parameters.put("activity" + index + "RealS" + week, "");
         }
@@ -291,28 +291,64 @@ public class ControllerGeneratePartialReport {
 
     private String getPlanValue(PartialActivityRow row, int week) {
         switch (week) {
-            case 1: return row.getWeek1Plan();
-            case 2: return row.getWeek2Plan();
-            case 3: return row.getWeek3Plan();
-            case 4: return row.getWeek4Plan();
-            case 5: return row.getWeek5Plan();
-            case 6: return row.getWeek6Plan();
-            case 7: return row.getWeek7Plan();
-            case 8: return row.getWeek8Plan();
-            default: return "0";
+            case 1 -> {
+                return row.getWeek1Plan();
+            }
+            case 2 -> {
+                return row.getWeek2Plan();
+            }
+            case 3 -> {
+                return row.getWeek3Plan();
+            }
+            case 4 -> {
+                return row.getWeek4Plan();
+            }
+            case 5 -> {
+                return row.getWeek5Plan();
+            }
+            case 6 -> {
+                return row.getWeek6Plan();
+            }
+            case 7 -> {
+                return row.getWeek7Plan();
+            }
+            case 8 -> {
+                return row.getWeek8Plan();
+            }
+            default -> {
+                return "0";
+            }
         }
     }
     private String getRealValue(PartialActivityRow row, int week) {
         switch (week) {
-            case 1: return row.getWeek1Real();
-            case 2: return row.getWeek2Real();
-            case 3: return row.getWeek3Real();
-            case 4: return row.getWeek4Real();
-            case 5: return row.getWeek5Real();
-            case 6: return row.getWeek6Real();
-            case 7: return row.getWeek7Real();
-            case 8: return row.getWeek8Real();
-            default: return "0";
+            case 1 -> {
+                return row.getWeek1Real();
+            }
+            case 2 -> {
+                return row.getWeek2Real();
+            }
+            case 3 -> {
+                return row.getWeek3Real();
+            }
+            case 4 -> {
+                return row.getWeek4Real();
+            }
+            case 5 -> {
+                return row.getWeek5Real();
+            }
+            case 6 -> {
+                return row.getWeek6Real();
+            }
+            case 7 -> {
+                return row.getWeek7Real();
+            }
+            case 8 -> {
+                return row.getWeek8Real();
+            }
+            default -> {
+                return "0";
+            }
         }
     }
 
@@ -345,16 +381,16 @@ public class ControllerGeneratePartialReport {
             Report report = new Report(0, "PARCIAL", new Date(), "", results, student, educationalExperience.getNrc());
             report.setActivityProgressList(buildProgressList());
             if (reportDAO.createPartialReport(report)) {
-                logger.log(Level.INFO, "Reporte guardado correctamente.");
+                LOGGER.log(Level.INFO, "Reporte guardado correctamente.");
                 saved = true;
             } else {
                 errorMessage = "No se pudo guardar el reporte.";
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al guardar reporte parcial", e);
+            LOGGER.log(Level.SEVERE, "Error al guardar reporte parcial", e);
             errorMessage = "Error al guardar el reporte: " + e.getMessage();
         } catch (NumberFormatException e) {
-            logger.log(Level.SEVERE, "Error de formato en las horas de la tabla", e);
+            LOGGER.log(Level.SEVERE, "Error de formato en las horas de la tabla", e);
             errorMessage = "Error: Asegúrese de que las horas en la tabla sean números válidos.";
         }
         if (errorMessage != null) {
@@ -367,7 +403,7 @@ public class ControllerGeneratePartialReport {
         ObservableList<PartialActivityRow> partialActivityRows = guiGeneratePartialReport.getTableActivities().getItems();
         List<Activity> activityList = activities;
         if (partialActivityRows.size() != activityList.size()) {
-            logger.warning("Número de filas en tabla no coincide con actividades reales.");
+            LOGGER.warning("Número de filas en tabla no coincide con actividades reales.");
         }
         List<ReportActivityProgress> progressList = new ArrayList<>();
         int limit = Math.min(partialActivityRows.size(), activityList.size());
@@ -381,7 +417,7 @@ public class ControllerGeneratePartialReport {
         float totalPlanned = 0f;
         float totalReal = 0f;
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
-        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+        for (int week = 1; week <= guiGeneratePartialReport.getTOTAL_WEEKS(); week++) {
             float planned = Float.parseFloat(getPlanValue(partialActivityRow, week));
             float real = Float.parseFloat(getRealValue(partialActivityRow, week));
             totalPlanned += planned;
@@ -402,11 +438,11 @@ public class ControllerGeneratePartialReport {
         float totalCovered = 0f;
         ObservableList<PartialActivityRow> rows = guiGeneratePartialReport.getTableActivities().getItems();
         for (PartialActivityRow partialActivityRow : rows) {
-            for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+            for (int week = 1; week <= guiGeneratePartialReport.getTOTAL_WEEKS(); week++) {
                 try {
                     totalCovered += Float.parseFloat(getRealValue(partialActivityRow, week));
                 } catch (NumberFormatException e) {
-                    logger.log(Level.WARNING, "Valor no numérico ignorado en la suma de horas: " + getRealValue(partialActivityRow, week));
+                    LOGGER.log(Level.WARNING, "Valor no numérico ignorado en la suma de horas: " + getRealValue(partialActivityRow, week));
                 }
             }
         }
@@ -435,7 +471,7 @@ public class ControllerGeneratePartialReport {
             int previousReports = reportDAO.countReportsByTypeAndStudent("PARCIAL", student.getUserId());
             reportNumber = previousReports + 1;
         } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "Error al obtener el conteo  de los reportes previos. Se asignará 1", e);
+            LOGGER.log(Level.WARNING, "Error al obtener el conteo  de los reportes previos. Se asignará 1", e);
         }
         return reportNumber;
     }

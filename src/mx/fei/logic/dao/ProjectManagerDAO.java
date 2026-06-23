@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * responsable_proyecto table.
  */
 public class ProjectManagerDAO implements IDAOProjectManager {
-    private static final Logger logger = Logger.getLogger(ProjectManagerDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ProjectManagerDAO.class.getName());
 
     /**
      * Registers a new project manager, unless one with the same id already exists.
@@ -35,7 +35,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
         boolean sucess = false;
         if (projectManager != null) {
             if (this.getProjectManagerById(projectManager.getProjectManagerId()) != null) {
-                logger.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
+                LOGGER.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
             } else {
                 try {
                     String query = "INSERT INTO responsable_proyecto (nombre_responsable, correo_responsable, telefono_responsable, cargo, id_empresa) VALUES (?, ?, ?, ?, ?);";
@@ -50,7 +50,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                         sucess = true;
                     }
                 } catch (SQLException e) {
-                    logger.log(Level.SEVERE, "Error al registrar el responsable",e);
+                    LOGGER.log(Level.SEVERE, "Error al registrar el responsable",e);
                     if (DAOUtils.isConnectionError(e)) {
                         throw new DataOperationException("Error de conexión. Intente más tarde.");
                     }
@@ -86,7 +86,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el Responsable",e);
+            LOGGER.log(Level.SEVERE, "Error al obtener el Responsable",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -121,7 +121,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los responsables",e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los responsables",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

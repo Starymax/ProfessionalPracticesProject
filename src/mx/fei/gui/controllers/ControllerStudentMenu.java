@@ -37,15 +37,16 @@ public class ControllerStudentMenu {
     private final ProjectDAO projectDAO;
     private final PracticeDAO practiceDAO;
     private final StudentDAO studentDAO;
-    private final NotificationDAO notificationDAO = new NotificationDAO();
-    private final int minimumProjects = 3;
-    private static final Logger logger = Logger.getLogger(ControllerStudentMenu.class.getName());
+    private final NotificationDAO notificationDAO;
+    private final int MINIMUM_PROJECTS = 3;
+    private static final Logger LOGGER = Logger.getLogger(ControllerStudentMenu.class.getName());
 
     public ControllerStudentMenu(GUIStudentMenu guiStudentMenu) {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
         practiceDAO = new PracticeDAO();
         studentDAO = new StudentDAO();
+        notificationDAO = new NotificationDAO();
     }
 
     public void loadUnreadCount() {
@@ -57,7 +58,7 @@ public class ControllerStudentMenu {
             int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
             guiStudentMenu.updateUnreadCount(unread);
         } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "Error al cargar notificaciones no leídas:", e.getMessage());
+            LOGGER.log(Level.WARNING, "Error al cargar notificaciones no leídas:", e.getMessage());
             guiStudentMenu.updateUnreadCount(0);
         }
     }
@@ -94,7 +95,7 @@ public class ControllerStudentMenu {
         try {
             if (studentDAO.getSelectedProjects(guiStudentMenu.getStudent()).isEmpty()) {
                 List<Project> projectList = projectDAO.getAvailableProjects();
-                if (projectList.size() < minimumProjects) {
+                if (projectList.size() < MINIMUM_PROJECTS) {
                     guiStudentMenu.showError("No hay suficientes proyectos disponibles por el momento. Intente más tarde.");
                 } else {
                     GUISelectProjects guiSelectProjects = new GUISelectProjects();
@@ -129,7 +130,7 @@ public class ControllerStudentMenu {
                     guiGenerateReport.start(stage);
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e.getMessage());
+                LOGGER.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e.getMessage());
                 guiStudentMenu.showError(e.getMessage());
             }
         }
@@ -170,7 +171,7 @@ public class ControllerStudentMenu {
                 newStage.setOnHidden(e -> loadUnreadCount());
                 }
             } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al abrir notificaciones: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al abrir notificaciones: " + e.getMessage());
             guiStudentMenu.showError("Error al cargar notificaciones. Intente más tarde.");
         }
     }
@@ -188,7 +189,7 @@ public class ControllerStudentMenu {
             }
         } catch (DataOperationException e) {
             guiStudentMenu.showError(e.getMessage());
-            logger.log(Level.SEVERE, "Error al obtener práctica por matrícula", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error al obtener práctica por matrícula", e.getMessage());
         }
     }
 

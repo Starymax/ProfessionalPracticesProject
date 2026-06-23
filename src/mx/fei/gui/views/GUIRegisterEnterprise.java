@@ -37,7 +37,9 @@ public class GUIRegisterEnterprise extends Application {
     private Button buttonRegister;
     private Button buttonCancel;
 
-    public GUIRegisterEnterprise() {}
+    public GUIRegisterEnterprise() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -108,24 +110,6 @@ public class GUIRegisterEnterprise extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
-    }
-
-    private void loadCountries() {
-        List<String> countries = CountryCityLoader.getCountries();
-        comboBoxCountry.setItems(FXCollections.observableArrayList(countries));
-    }
-
-    private void configureLocationCombos() {
-        comboBoxCountry.setOnAction(e -> {
-            String selectedCountry = comboBoxCountry.getValue();
-            if (selectedCountry != null) {
-                List<String> cities = CountryCityLoader.getCitiesByCountry(selectedCountry);
-                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
-                comboBoxCity.setDisable(false);
-                comboBoxCity.setValue(null);
-                comboBoxCity.setPromptText("Ciudades");
-            }
-        });
     }
 
     public  boolean validatedFields() {
@@ -200,4 +184,23 @@ public class GUIRegisterEnterprise extends Application {
     public Button getButtonCancel() {
         return buttonCancel;
     }
+
+    private void loadCountries() {
+        List<String> countries = CountryCityLoader.getCountries();
+        comboBoxCountry.setItems(FXCollections.observableArrayList(countries));
+    }
+
+    private void configureLocationCombos() {
+        comboBoxCountry.setOnAction(e -> {
+            String selectedCountry = comboBoxCountry.getValue();
+            if (selectedCountry != null) {
+                List<String> cities = CountryCityLoader.getCitiesByCountry(selectedCountry);
+                comboBoxCity.setItems(FXCollections.observableArrayList(cities));
+                comboBoxCity.setDisable(false);
+                comboBoxCity.setValue(null);
+                comboBoxCity.setPromptText("Ciudades");
+            }
+        });
+    }
+
 }

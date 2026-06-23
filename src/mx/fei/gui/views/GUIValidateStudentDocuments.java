@@ -99,10 +99,57 @@ public class GUIValidateStudentDocuments extends Application {
         controller.loadStudents();
     }
 
+    public void loadStudents(List<StudentValidationSummary> summaries) {
+        listViewStudents.getSelectionModel().clearSelection();
+        listViewStudents.getItems().setAll(summaries);
+    }
+
+    public void showStudentDetail(Student student, Project project, List<DocumentReviewItem> items) {
+        labelDetailTitle.setText("Documentos de " + student.getName() + " " + student.getLastName());
+        labelStudentName.setText("Nombre: " + student.getName() + " " + student.getLastName());
+        labelEnrollment.setText("Matrícula: " + student.getEnrollment());
+        labelEmail.setText("Correo: " + student.getEmail());
+        labelProject.setText("Proyecto asignado: " + (project != null ? project.getNameProject() : "Sin proyecto"));
+        listViewDocuments.getItems().setAll(items);
+    }
+
+    public StudentValidationSummary getSelectedStudentSummary() {
+        return listViewStudents.getSelectionModel().getSelectedItem();
+    }
+
+    public DocumentReviewItem getSelectedDocumentItem() {
+        return listViewDocuments.getSelectionModel().getSelectedItem();
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
+
+    public void closeWindow() {
+        if (stage != null) {
+            stage.close();
+        }
+    }
+
+    public Button getButtonReview() {
+        return buttonReview;
+    }
+
+    public Button getButtonClose() {
+        return buttonClose;
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
     private void buildDetailPanel() {
         labelDetailTitle = new Label("Seleccione un alumno para ver sus documentos");
         labelDetailTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-
         labelStudentName = new Label();
         labelEnrollment = new Label();
         labelEmail = new Label();
@@ -148,74 +195,42 @@ public class GUIValidateStudentDocuments extends Application {
         VBox.setVgrow(listViewDocuments, Priority.ALWAYS);
     }
 
-    public void loadStudents(List<StudentValidationSummary> summaries) {
-        listViewStudents.getSelectionModel().clearSelection();
-        listViewStudents.getItems().setAll(summaries);
-    }
-
-    public void showStudentDetail(Student student, Project project, List<DocumentReviewItem> items) {
-        labelDetailTitle.setText("Documentos de " + student.getName() + " " + student.getLastName());
-        labelStudentName.setText("Nombre: " + student.getName() + " " + student.getLastName());
-        labelEnrollment.setText("Matrícula: " + student.getEnrollment());
-        labelEmail.setText("Correo: " + student.getEmail());
-        labelProject.setText("Proyecto asignado: " + (project != null ? project.getNameProject() : "Sin proyecto"));
-        listViewDocuments.getItems().setAll(items);
-    }
-
     private String statusLabel(ValidationStatus status) {
         return switch (status) {
-            case VALIDATED -> "Validado";
-            case REJECTED -> "Rechazado";
-            case NOT_UPLOADED -> "No subido";
-            default -> "Subido (sin revisión)";
+            case VALIDATED -> {
+                yield "Validado";
+            }
+            case REJECTED -> {
+                yield "Rechazado";
+            }
+            case NOT_UPLOADED -> {
+                yield "No subido";
+            }
+            default -> {
+                yield "Subido (sin revisión)";
+            }
         };
     }
 
     private String statusColor(ValidationStatus status) {
         return switch (status) {
-            case VALIDATED -> "#2e7d32";
-            case REJECTED -> "#b71c1c";
-            case NOT_UPLOADED -> "#757575";
-            default -> "#e65100";
+            case VALIDATED -> {
+                yield "#2e7d32";
+            }
+            case REJECTED -> {
+                yield "#b71c1c";
+            }
+            case NOT_UPLOADED -> {
+                yield "#757575";
+            }
+            default -> {
+                yield "#e65100";
+            }
         };
     }
 
     private Button createButton(String text) {
         Button button = new Button(text);
         return button;
-    }
-
-    public StudentValidationSummary getSelectedStudentSummary() {
-        return listViewStudents.getSelectionModel().getSelectedItem();
-    }
-
-    public DocumentReviewItem getSelectedDocumentItem() {
-        return listViewDocuments.getSelectionModel().getSelectedItem();
-    }
-
-    public void showError(String message) {
-        GUIUtils.showError(message);
-    }
-
-    public void showSuccess(String message) {
-        GUIUtils.showSuccess(message);
-    }
-
-    public void closeWindow() {
-        if (stage != null) {
-            stage.close();
-        }
-    }
-
-    public Button getButtonReview() {
-        return buttonReview;
-    }
-
-    public Button getButtonClose() {
-        return buttonClose;
-    }
-
-    public Stage getStage() {
-        return stage;
     }
 }

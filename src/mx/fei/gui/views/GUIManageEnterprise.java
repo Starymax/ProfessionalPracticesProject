@@ -23,7 +23,9 @@ public class GUIManageEnterprise extends Application {
     private Button buttonModifyEnterprise;
     private Button buttonBack;
 
-    public GUIManageEnterprise() {}
+    public GUIManageEnterprise() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -55,13 +57,6 @@ public class GUIManageEnterprise extends Application {
         stage.show();
     }
 
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(340);
-        button.setPrefHeight(60);
-        return button;
-    }
-
     public void closeWindow() {
         GUIUtils.closeWindow((Stage) buttonBack.getScene().getWindow());
     }
@@ -80,5 +75,12 @@ public class GUIManageEnterprise extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(340);
+        button.setPrefHeight(60);
+        return button;
     }
 }

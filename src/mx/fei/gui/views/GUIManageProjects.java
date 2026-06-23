@@ -49,14 +49,6 @@ public class GUIManageProjects extends Application {
         stage.show();
     }
 
-    private Button buildMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(320);
-        button.setPrefHeight(60);
-        button.setFont(Font.font("SansSerif", 15));
-        return button;
-    }
-
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -79,5 +71,13 @@ public class GUIManageProjects extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private Button buildMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(320);
+        button.setPrefHeight(60);
+        button.setFont(Font.font("SansSerif", 15));
+        return button;
     }
 }

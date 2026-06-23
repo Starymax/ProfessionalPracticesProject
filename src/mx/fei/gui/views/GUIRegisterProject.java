@@ -191,73 +191,6 @@ public class GUIRegisterProject extends Application {
         stage.show();
     }
 
-    private void addNameRow(int rowIndex) {
-        addRow(rowIndex, "Nombre:", textFieldName);
-    }
-
-    private void addDescriptionRow(int rowIndex) {
-        addRow(rowIndex, "Descripción:", textAreaDescription);
-    }
-
-    private void addGeneralObjectiveRow(int rowIndex) {
-        addRow(rowIndex, "Objetivo General:", textFieldGeneralObjective);
-    }
-
-    private void addImmediateObjectivesRow(int rowIndex) {
-        addRow(rowIndex, "Objetivos Inmediatos:", textAreaImmediateObjective);
-    }
-
-    private void addMediateObjectivesRow(int rowIndex) {
-        addRow(rowIndex, "Objetivos Mediatos:", textAreaMediateObjectives);
-    }
-
-    private void addMethodologyRow(int rowIndex) {
-        addRow(rowIndex, "Metodología:", textFieldMethodology);
-    }
-
-    private void addResourcesRow(int rowIndex) {
-        addRow(rowIndex, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
-    }
-
-    private void addResponsibilitiesRow(int rowIndex) {
-        addRow(rowIndex, "Responsabilidades:", textAreaResponsibilities);
-    }
-
-    private void addAvailablePlacesRow(int rowIndex) {
-        addRow(rowIndex, "Lugares disponibles:", textFieldAvailablePlaces);
-    }
-
-    private void addEnterpriseRow(int rowIndex) {
-        addRow(rowIndex, "Organizacion:", comboBoxEnterprise);
-    }
-
-    private void addProjectManagerRow(int rowIndex) {
-        addRow(rowIndex, "Responsable:", comboBoxProjectManager);
-    }
-
-    private void addRow(int row, String labelText, Node field) {
-        Label label = new Label(labelText);
-        label.setFont(Font.font("SansSerif", 13));
-        label.setWrapText(true);
-        GridPane.setFillWidth(field, true);
-        if (field instanceof TextField textField) {
-            textField.setMaxWidth(Double.MAX_VALUE);
-        }
-        form.add(label, 0, row);
-        form.add(field, 1, row);
-    }
-
-    private ColumnConstraints columnConstraint(double width) {
-        ColumnConstraints columnConstraints = new ColumnConstraints();
-        if (width == Double.MAX_VALUE) {
-            columnConstraints.setHgrow(Priority.ALWAYS);
-        } else {
-            columnConstraints.setMinWidth(width);
-            columnConstraints.setPrefWidth(width);
-        }
-        return columnConstraints;
-    }
-
     public boolean validateFields() {
         boolean validated = true;
         List<String> errors = new ArrayList<>();
@@ -394,4 +327,73 @@ public class GUIRegisterProject extends Application {
     public static void main(String[] args) {
         launch(args);
     }
+
+    private void addNameRow(int rowIndex) {
+        addRow(rowIndex, "Nombre:", textFieldName);
+    }
+
+    private void addDescriptionRow(int rowIndex) {
+        addRow(rowIndex, "Descripción:", textAreaDescription);
+    }
+
+    private void addGeneralObjectiveRow(int rowIndex) {
+        addRow(rowIndex, "Objetivo General:", textFieldGeneralObjective);
+    }
+
+    private void addImmediateObjectivesRow(int rowIndex) {
+        addRow(rowIndex, "Objetivos Inmediatos:", textAreaImmediateObjective);
+    }
+
+    private void addMediateObjectivesRow(int rowIndex) {
+        addRow(rowIndex, "Objetivos Mediatos:", textAreaMediateObjectives);
+    }
+
+    private void addMethodologyRow(int rowIndex) {
+        addRow(rowIndex, "Metodología:", textFieldMethodology);
+    }
+
+    private void addResourcesRow(int rowIndex) {
+        addRow(rowIndex, "Recursos humanos,\neconómicos y materiales:", textAreaResources);
+    }
+
+    private void addResponsibilitiesRow(int rowIndex) {
+        addRow(rowIndex, "Responsabilidades:", textAreaResponsibilities);
+    }
+
+    private void addAvailablePlacesRow(int rowIndex) {
+        addRow(rowIndex, "Lugares disponibles:", textFieldAvailablePlaces);
+    }
+
+    private void addEnterpriseRow(int rowIndex) {
+        addRow(rowIndex, "Organizacion:", comboBoxEnterprise);
+    }
+
+    private void addProjectManagerRow(int rowIndex) {
+        addRow(rowIndex, "Responsable:", comboBoxProjectManager);
+    }
+
+    private void addRow(int row, String labelText, Node field) {
+        Label label = new Label(labelText);
+        label.setFont(Font.font("SansSerif", 13));
+        label.setWrapText(true);
+        GridPane.setFillWidth(field, true);
+        if (field instanceof TextField textField) {
+            textField.setMaxWidth(Double.MAX_VALUE);
+        }
+        form.add(label, 0, row);
+        form.add(field, 1, row);
+    }
+
+    private ColumnConstraints columnConstraint(double width) {
+        ColumnConstraints columnConstraints = new ColumnConstraints();
+        if (width == Double.MAX_VALUE) {
+            columnConstraints.setHgrow(Priority.ALWAYS);
+        } else {
+            columnConstraints.setMinWidth(width);
+            columnConstraints.setPrefWidth(width);
+        }
+        return columnConstraints;
+    }
+
+
 }

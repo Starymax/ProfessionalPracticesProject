@@ -30,7 +30,9 @@ public class GUIProfessorMenu extends Application {
         this.professor = professor;
     }
 
-    public GUIProfessorMenu() {}
+    public GUIProfessorMenu() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -68,12 +70,6 @@ public class GUIProfessorMenu extends Application {
         stage.show();
     }
 
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(250);
-        return button;
-    }
-
     public void setProfessorInfo(Professor professor) {
         this.professor = professor;
         if (labelProfessorName != null) {
@@ -106,5 +102,11 @@ public class GUIProfessorMenu extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(250);
+        return button;
     }
 }

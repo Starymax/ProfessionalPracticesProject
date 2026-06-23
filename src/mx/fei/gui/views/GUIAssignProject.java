@@ -1,11 +1,11 @@
 package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
-
 import mx.fei.gui.controllers.ControllerAssignProject;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -115,16 +115,6 @@ public class GUIAssignProject extends Application {
         stage.show();
     }
 
-    private HBox buildInfoRow(String boldText, Label valueLabel) {
-        Label bold = new Label(boldText);
-        bold.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
-        bold.setMinWidth(100);
-        valueLabel.setFont(Font.font("SansSerif", 15));
-        HBox row = new HBox(10, bold, valueLabel);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
-    }
-
     public void setStudent(Student student) {
         this.student = student;
         labelStudentName.setText(student.getName() + " " + student.getLastName());
@@ -183,5 +173,15 @@ public class GUIAssignProject extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private HBox buildInfoRow(String boldText, Label valueLabel) {
+        Label bold = new Label(boldText);
+        bold.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
+        bold.setMinWidth(100);
+        valueLabel.setFont(Font.font("SansSerif", 15));
+        HBox row = new HBox(10, bold, valueLabel);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
     }
 }

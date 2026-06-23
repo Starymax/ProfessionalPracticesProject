@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 public class ControllerGenerateDocuments {
     private GUIGenerateDocuments guiGenerateDocuments;
-    private final int hoursObjective = 420;
+    private final int HOURS_OBJECTIVE = 420;
 
     public ControllerGenerateDocuments(GUIGenerateDocuments guiGenerateDocuments) {
         this.guiGenerateDocuments = guiGenerateDocuments;
@@ -51,7 +51,7 @@ public class ControllerGenerateDocuments {
         try {
             StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
             float totalHours = studentAdvanceDAO.getTotalHoursByIdStudent(guiGenerateDocuments.getPractice().getStudent().getUserId());
-            if (totalHours < hoursObjective) {
+            if (totalHours < HOURS_OBJECTIVE) {
                 guiGenerateDocuments.showError("No puedes generar la autoevaluación porque aún no has completado las 420 horas requeridas. Llevas " + totalHours + " horas.");
             } else {
                 Stage stage = new Stage();

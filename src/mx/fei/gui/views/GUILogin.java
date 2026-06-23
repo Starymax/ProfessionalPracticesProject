@@ -39,7 +39,7 @@ public class GUILogin extends Application {
     private Button buttonLogin;
     private Button buttonCancel;
 
-    private static final Logger logger = Logger.getLogger(GUILogin.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GUILogin.class.getName());
 
     static {
         try {
@@ -48,7 +48,7 @@ public class GUILogin extends Application {
                 LogManager.getLogManager().readConfiguration(configLogger);
             }
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error cargando configuración de logging", e);
+            LOGGER.log(Level.SEVERE, "Error cargando configuración de logging", e);
         }
     }
 
@@ -124,7 +124,7 @@ public class GUILogin extends Application {
             try {
                 instanceLock.close();
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error al liberar el bloqueo de instancia única", e);
+                LOGGER.log(Level.SEVERE, "Error al liberar el bloqueo de instancia única", e);
             }
         }
     }
@@ -133,9 +133,9 @@ public class GUILogin extends Application {
         try {
             instanceLock = new ServerSocket(INSTANCE_LOCK_PORT, 1, InetAddress.getByName("localhost"));
         } catch (BindException e) {
-            logger.log(Level.WARNING, "Se intentó abrir una segunda instancia de la aplicación", e);
+            LOGGER.log(Level.WARNING, "Se intentó abrir una segunda instancia de la aplicación", e);
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error al inicializar el bloqueo de instancia única", e);
+            LOGGER.log(Level.SEVERE, "Error al inicializar el bloqueo de instancia única", e);
         }
         launch(args);
     }

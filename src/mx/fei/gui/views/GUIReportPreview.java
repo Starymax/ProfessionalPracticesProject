@@ -46,7 +46,7 @@ public class GUIReportPreview extends Application {
     private Button buttonAccept;
     private Button buttonClose;
     private Stage stage;
-    private static final Logger logger = Logger.getLogger(GUIReportPreview.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GUIReportPreview.class.getName());
 
     public GUIReportPreview(Document report, GUIEvaluateStudent parent) {
         this.report = report;
@@ -100,34 +100,6 @@ public class GUIReportPreview extends Application {
         stage.show();
     }
 
-    private List<Image> renderReport() {
-        List<Image> pages = new ArrayList<>();
-        File file = new File(report.getDirectory());
-        try (PDDocument pdfDocument = Loader.loadPDF(file)) {
-            PDFRenderer renderer = new PDFRenderer(pdfDocument);
-            for (int page = 0; page < pdfDocument.getNumberOfPages(); page++) {
-                BufferedImage bufferedImage = renderer.renderImageWithDPI(page, RENDER_DPI);
-                pages.add(toFXImage(bufferedImage));
-            }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error al renderizar el reporte PDF", e);
-            showError("No se pudo abrir la vista previa del reporte.");
-        }
-        return pages;
-    }
-
-    private Image toFXImage(BufferedImage bufferedImage) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, "png", outputStream);
-        return new Image(new ByteArrayInputStream(outputStream.toByteArray()));
-    }
-
-    public void markAsAccepted() {
-        labelStatus.setText("Estado: Aceptado");
-        labelStatus.setTextFill(Color.web("#2e7d32"));
-        buttonAccept.setDisable(true);
-    }
-
     public Document getReport() {
         return report;
     }
@@ -158,5 +130,33 @@ public class GUIReportPreview extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private List<Image> renderReport() {
+        List<Image> pages = new ArrayList<>();
+        File file = new File(report.getDirectory());
+        try (PDDocument pdfDocument = Loader.loadPDF(file)) {
+            PDFRenderer renderer = new PDFRenderer(pdfDocument);
+            for (int page = 0; page < pdfDocument.getNumberOfPages(); page++) {
+                BufferedImage bufferedImage = renderer.renderImageWithDPI(page, RENDER_DPI);
+                pages.add(toFXImage(bufferedImage));
+            }
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error al renderizar el reporte PDF", e);
+            showError("No se pudo abrir la vista previa del reporte.");
+        }
+        return pages;
+    }
+
+    private Image toFXImage(BufferedImage bufferedImage) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", outputStream);
+        return new Image(new ByteArrayInputStream(outputStream.toByteArray()));
+    }
+
+    public void markAsAccepted() {
+        labelStatus.setText("Estado: Aceptado");
+        labelStatus.setTextFill(Color.web("#2e7d32"));
+        buttonAccept.setDisable(true);
     }
 }

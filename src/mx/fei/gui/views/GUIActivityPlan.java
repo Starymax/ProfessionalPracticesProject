@@ -1,5 +1,12 @@
 package mx.fei.gui.views;
 
+import mx.fei.gui.controllers.ControllerActivityPlan;
+import mx.fei.gui.utils.GUIStyle;
+import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.Activity;
+import mx.fei.logic.dto.Project;
+import mx.fei.logic.dto.WeeklyLog;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -7,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -20,12 +28,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import mx.fei.gui.controllers.ControllerActivityPlan;
-import mx.fei.gui.utils.GUIStyle;
-import mx.fei.gui.utils.GUIUtils;
-import mx.fei.logic.dto.Activity;
-import mx.fei.logic.dto.Project;
-import mx.fei.logic.dto.WeeklyLog;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,6 +90,127 @@ public class GUIActivityPlan extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void refreshWeekGrid() {
+        weekGrid.getChildren().clear();
+        for (int week = 1; week <= TOTAL_WEEKS; week++) {
+            int columnIndex = (week - 1) % 6;
+            int rowIndex = (week - 1) / 6;
+            weekGrid.add(buildWeekCell(week), columnIndex, rowIndex);
+        }
+    }
+
+    public void selectActivity(Activity activity) {
+        selectedActivity = activity;
+        textFieldName.setDisable(false);
+        textAreaDescription.setDisable(false);
+        buttonDelete.setDisable(false);
+        textFieldName.setText(activity.getName() != null ? activity.getName() : "");
+        textAreaDescription.setText(activity.getObservationsActivity() != null ? activity.getObservationsActivity() : "");
+        refreshWeekGrid();
+        refreshActivityList();
+        refreshTotalsLabel();
+    }
+
+    public void refreshTotalsLabel() {
+        if (selectedActivity == null) {
+            labelTotals.setText("Selecciona o crea una actividad");
+        } else {
+            int activityTotalHours = activityWeekHours.getOrDefault(selectedActivity, Collections.emptyMap()).values().stream().mapToInt(Integer::intValue).sum();
+            int totalPlanHours = getTotalPlannedHours();
+            int remainingPlanHours = Math.max(0, TOTAL_PLAN_HOURS - totalPlanHours);
+            labelTotals.setText("Total actividad: " + activityTotalHours + " h  ·  Restante del plan: " + remainingPlanHours + " h");
+        }
+    }
+
+    public void refreshActivityList() {
+        activityListBox.getChildren().clear();
+        for (Activity activity : activities) {
+            activityListBox.getChildren().add(buildActivityCard(activity));
+        }
+    }
+
+    public int getTotalPlannedHours() {
+        return activityWeekHours.values().stream().flatMap(weekHoursMap -> weekHoursMap.values().stream()).mapToInt(Integer::intValue).sum();
+    }
+
+    public Map<Activity, ArrayList<WeeklyLog>> getWeeklyLogsMap() {
+        Map<Activity, ArrayList<WeeklyLog>> weeklyLogsMap = new HashMap<>();
+        for (Activity activity : activities) {
+            ArrayList<WeeklyLog> activityWeeklyLogs = new ArrayList<>();
+            Map<Integer, Integer> activityHours = activityWeekHours.getOrDefault(activity, Collections.emptyMap());
+            for (Map.Entry<Integer, Integer> entry : activityHours.entrySet()) {
+                if (entry.getValue() > 0) {
+                    activityWeeklyLogs.add(new WeeklyLog(0, entry.getKey(), 0, entry.getValue(), activity));
+                }
+            }
+            weeklyLogsMap.put(activity, activityWeeklyLogs);
+        }
+        return weeklyLogsMap;
+    }
+
+    public void addActivity(Activity activity) {
+        activities.add(activity);
+        activityWeekHours.put(activity, new HashMap<>());
+        selectActivity(activity);
+        refreshActivityList();
+    }
+
+    public void removeSelectedActivity() {
+        if (selectedActivity != null) {
+            activities.remove(selectedActivity);
+            activityWeekHours.remove(selectedActivity);
+            selectedActivity = null;
+            textFieldName.setText("");
+            textFieldName.setDisable(true);
+            textAreaDescription.setText("");
+            textAreaDescription.setDisable(true);
+            buttonDelete.setDisable(true);
+            weekGrid.getChildren().clear();
+            refreshActivityList();
+            refreshTotalsLabel();
+        }
+    }
+
+    public Map<Activity, Map<Integer, Integer>> getActivityWeekHours() {
+        return activityWeekHours;
+    }
+
+    public void showError(String message) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
+
+    public Stage getStage() {
+        return stage;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public Activity getSelectedActivity() {
+        return selectedActivity;
     }
 
     private VBox buildLeftPanel() {
@@ -163,15 +286,6 @@ public class GUIActivityPlan extends Application {
         rightPanel.setPadding(new Insets(10));
         rightPanel.getStyleClass().add("form-panel");
         return rightPanel;
-    }
-
-    public void refreshWeekGrid() {
-        weekGrid.getChildren().clear();
-        for (int week = 1; week <= TOTAL_WEEKS; week++) {
-            int columnIndex = (week - 1) % 6;
-            int rowIndex = (week - 1) / 6;
-            weekGrid.add(buildWeekCell(week), columnIndex, rowIndex);
-        }
     }
 
     private VBox buildWeekCell(int week) {
@@ -268,13 +382,6 @@ public class GUIActivityPlan extends Application {
         labelWeekNumber.getStyleClass().add(cellHasHours ? "week-label-active" : "week-label");
     }
 
-    public void refreshActivityList() {
-        activityListBox.getChildren().clear();
-        for (Activity activity : activities) {
-            activityListBox.getChildren().add(buildActivityCard(activity));
-        }
-    }
-
     private VBox buildActivityCard(Activity activity) {
         Map<Integer, Integer> activityHours = activityWeekHours.getOrDefault(activity, Collections.emptyMap());
         int totalActivityHours = activityHours.values().stream().mapToInt(Integer::intValue).sum();
@@ -299,29 +406,6 @@ public class GUIActivityPlan extends Application {
         return activityCard;
     }
 
-    public void selectActivity(Activity activity) {
-        selectedActivity = activity;
-        textFieldName.setDisable(false);
-        textAreaDescription.setDisable(false);
-        buttonDelete.setDisable(false);
-        textFieldName.setText(activity.getName() != null ? activity.getName() : "");
-        textAreaDescription.setText(activity.getObservationsActivity() != null ? activity.getObservationsActivity() : "");
-        refreshWeekGrid();
-        refreshActivityList();
-        refreshTotalsLabel();
-    }
-
-    public void refreshTotalsLabel() {
-        if (selectedActivity == null) {
-            labelTotals.setText("Selecciona o crea una actividad");
-        } else {
-            int activityTotalHours = activityWeekHours.getOrDefault(selectedActivity, Collections.emptyMap()).values().stream().mapToInt(Integer::intValue).sum();
-            int totalPlanHours = getTotalPlannedHours();
-            int remainingPlanHours = Math.max(0, TOTAL_PLAN_HOURS - totalPlanHours);
-            labelTotals.setText("Total actividad: " + activityTotalHours + " h  ·  Restante del plan: " + remainingPlanHours + " h");
-        }
-    }
-
     private String computeWeekRange(Map<Integer, Integer> activityHours) {
         OptionalInt minimumWeek = activityHours.entrySet().stream().filter(entry -> entry.getValue() > 0).mapToInt(Map.Entry::getKey).min();
         OptionalInt maximumWeek = activityHours.entrySet().stream().filter(entry -> entry.getValue() > 0).mapToInt(Map.Entry::getKey).max();
@@ -340,87 +424,5 @@ public class GUIActivityPlan extends Application {
             }
         }
         return totalOtherHours;
-    }
-
-    public int getTotalPlannedHours() {
-        return activityWeekHours.values().stream().flatMap(weekHoursMap -> weekHoursMap.values().stream()).mapToInt(Integer::intValue).sum();
-    }
-
-    public Map<Activity, ArrayList<WeeklyLog>> getWeeklyLogsMap() {
-        Map<Activity, ArrayList<WeeklyLog>> weeklyLogsMap = new HashMap<>();
-        for (Activity activity : activities) {
-            ArrayList<WeeklyLog> activityWeeklyLogs = new ArrayList<>();
-            Map<Integer, Integer> activityHours = activityWeekHours.getOrDefault(activity, Collections.emptyMap());
-            for (Map.Entry<Integer, Integer> entry : activityHours.entrySet()) {
-                if (entry.getValue() > 0) {
-                    activityWeeklyLogs.add(new WeeklyLog(0, entry.getKey(), 0, entry.getValue(), activity));
-                }
-            }
-            weeklyLogsMap.put(activity, activityWeeklyLogs);
-        }
-        return weeklyLogsMap;
-    }
-
-    public void addActivity(Activity activity) {
-        activities.add(activity);
-        activityWeekHours.put(activity, new HashMap<>());
-        selectActivity(activity);
-        refreshActivityList();
-    }
-
-    public void removeSelectedActivity() {
-        if (selectedActivity != null) {
-            activities.remove(selectedActivity);
-            activityWeekHours.remove(selectedActivity);
-            selectedActivity = null;
-            textFieldName.setText("");
-            textFieldName.setDisable(true);
-            textAreaDescription.setText("");
-            textAreaDescription.setDisable(true);
-            buttonDelete.setDisable(true);
-            weekGrid.getChildren().clear();
-            refreshActivityList();
-            refreshTotalsLabel();
-        }
-    }
-
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    public Activity getSelectedActivity() {
-        return selectedActivity;
-    }
-
-    public Map<Activity, Map<Integer, Integer>> getActivityWeekHours() {
-        return activityWeekHours;
-    }
-
-    public void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    public void showSuccess(String message) {
-        GUIUtils.showSuccess(message);
-    }
-
-    public Stage getStage() {
-        return stage;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

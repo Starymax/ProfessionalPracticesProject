@@ -118,27 +118,6 @@ public class GUIModifyStudent extends Application {
         stage.show();
     }
 
-    private void populateFields() {
-        if (student != null) {
-            textFieldNames.setText(student.getName());
-            textFieldLastName.setText(student.getLastName());
-            textFieldMail.setText(student.getEmail());
-            if (student.getGender() != null && student.getGender().equals("Hombre")) {
-                radioButtonMan.setSelected(true);
-            } else {
-                radioButtonWoman.setSelected(true);
-            }
-            if (student.isIndigenousLanguage()) {
-                radioButtonSpeakIndigenousLanguage.setSelected(true);
-            } else {
-                radioButtonDontSpeakIndigenousLanguage.setSelected(true);
-            }
-            textFieldGrade.setText(String.valueOf(student.getGrade()));
-            toggleState.setSelected(student.isActive());
-            toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
-        }
-    }
-
     public boolean validateFields() {
         boolean valid = true;
         List<String> errors = new ArrayList<String>();
@@ -217,5 +196,26 @@ public class GUIModifyStudent extends Application {
 
     public Button getButtonCancel() {
         return buttonCancel;
+    }
+
+    private void populateFields() {
+        if (student != null) {
+            textFieldNames.setText(student.getName());
+            textFieldLastName.setText(student.getLastName());
+            textFieldMail.setText(student.getEmail());
+            if (student.getGender() != null && student.getGender().equals("Hombre")) {
+                radioButtonMan.setSelected(true);
+            } else {
+                radioButtonWoman.setSelected(true);
+            }
+            if (student.isIndigenousLanguage()) {
+                radioButtonSpeakIndigenousLanguage.setSelected(true);
+            } else {
+                radioButtonDontSpeakIndigenousLanguage.setSelected(true);
+            }
+            textFieldGrade.setText(String.valueOf(student.getGrade()));
+            toggleState.setSelected(student.isActive());
+            toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
+        }
     }
 }

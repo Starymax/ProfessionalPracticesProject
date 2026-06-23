@@ -1,19 +1,19 @@
 package mx.fei.gui.controllers;
 
-import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIAdministratorMenu;
 import mx.fei.gui.views.GUIChooseProfessor;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
+import mx.fei.logic.dao.UserDAO;
 import mx.fei.gui.views.GUIRegisterProfessor;
 
 import javafx.stage.Modality;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import mx.fei.logic.dao.UserDAO;
 
 import java.util.Optional;
 

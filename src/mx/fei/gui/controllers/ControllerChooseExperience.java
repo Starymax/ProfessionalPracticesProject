@@ -6,11 +6,11 @@ import mx.fei.gui.views.GUIModifyExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
+import mx.fei.gui.views.GUIAddStudents;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-import mx.fei.gui.views.GUIAddStudents;
 
 import java.util.List;
 
@@ -24,15 +24,6 @@ public class ControllerChooseExperience {
         loadExperiences();
     }
 
-    private void loadExperiences() {
-        try {
-            List<EducationalExperience> experiences = educationalExperienceDAO.getEducationalExperiences();
-            guiChooseExperience.setExperiences(experiences);
-        } catch (DataOperationException e) {
-            guiChooseExperience.showError(e.getMessage());
-        }
-    }
-
     public void handleSelectReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
@@ -42,6 +33,15 @@ public class ControllerChooseExperience {
             case "Regresar" -> {
                 openMenuExperience();
             }
+        }
+    }
+
+    private void loadExperiences() {
+        try {
+            List<EducationalExperience> experiences = educationalExperienceDAO.getEducationalExperiences();
+            guiChooseExperience.setExperiences(experiences);
+        } catch (DataOperationException e) {
+            guiChooseExperience.showError(e.getMessage());
         }
     }
 

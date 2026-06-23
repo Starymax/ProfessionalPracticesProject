@@ -49,8 +49,8 @@ public class GUIGeneratePartialReport extends Application {
     private TextArea textAreaResults;
     private TextArea textAreaObservations;
     private Button buttonExportPDF, buttonCancel;
-    private final int totalWeeks = 8;
-    private final int amountOfActivities = 6;
+    private final int TOTAL_WEEKS = 8;
+    private final int AMOUNT_OF_ACTIVITIES = 6;
 
     public GUIGeneratePartialReport(Student student) {
         this.student = student;
@@ -79,190 +79,6 @@ public class GUIGeneratePartialReport extends Application {
         stage.setScene(scene);
         stage.show();
         controller.loadData();
-    }
-
-    private VBox createGeneralSection() {
-        VBox section = new VBox(8);
-        section.getStyleClass().add("report-section-flat");
-        Label title = new Label("Datos Generales de la EE");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        GridPane grid = new GridPane();
-        grid.setHgap(16);
-        grid.setVgap(10);
-        grid.add(new Label("Carrera:"), 0, 0);
-        labelCareer = new Label("-");
-        grid.add(labelCareer, 1, 0);
-        grid.add(new Label("NRC:"), 0, 1);
-        labelNrc = new Label("-");
-        grid.add(labelNrc, 1, 1);
-        grid.add(new Label("Profesor:"), 0, 2);
-        labelProfessor = new Label("-");
-        grid.add(labelProfessor, 1, 2);
-        grid.add(new Label("Período escolar:"), 0, 3);
-        labelPeriod = new Label("-");
-        grid.add(labelPeriod, 1, 3);
-        section.getChildren().addAll(title, grid);
-        return section;
-    }
-
-    private VBox createProjectSection() {
-        VBox section = new VBox(8);
-        section.getStyleClass().add("report-section-flat");
-        Label title = new Label("Datos del Proyecto");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        GridPane grid = new GridPane();
-        grid.setHgap(16);
-        grid.setVgap(10);
-        grid.add(new Label("Alumno(s):"), 0, 0);
-        labelStudentName = new Label("-");
-        grid.add(labelStudentName, 1, 0);
-        grid.add(new Label("Matrícula:"), 0, 1);
-        labelEnrollment = new Label("-");
-        grid.add(labelEnrollment, 1, 1);
-        grid.add(new Label("Organización vinculada:"), 0, 2);
-        labelOrganization = new Label("-");
-        grid.add(labelOrganization, 1, 2);
-        grid.add(new Label("Proyecto:"), 0, 3);
-        labelProject = new Label("-");
-        grid.add(labelProject, 1, 3);
-        section.getChildren().addAll(title, grid);
-        return section;
-    }
-
-    private VBox createObjectiveMethodologySection() {
-        VBox section = new VBox(8);
-        section.getStyleClass().add("report-section-flat");
-        Label titleObj = new Label("Objetivo(s) general del proyecto");
-        titleObj.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelObjective = new Label();
-        labelObjective.setWrapText(true);
-        Label titleMet = new Label("Metodología");
-        titleMet.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        labelMethodology = new Label();
-        labelMethodology.setWrapText(true);
-        section.getChildren().addAll(titleObj, labelObjective, titleMet, labelMethodology);
-        return section;
-    }
-
-    private VBox createActivitiesSection() {
-        VBox section = new VBox(8);
-        section.getStyleClass().add("report-section-flat");
-        Label title = new Label("Avance de actividades realizadas (Semanas 1 a 8)");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        tableActivities = new TableView<>();
-        tableActivities.setEditable(false);
-        TableColumn<PartialActivityRow, String> colAct = new TableColumn<>("Actividades");
-        colAct.setCellValueFactory(cellData -> cellData.getValue().activityNameProperty());
-        TableColumn<PartialActivityRow, String> colTime = new TableColumn<>("Tiempo");
-        colTime.setCellValueFactory(cellData -> cellData.getValue().plannedTimeProperty());
-        tableActivities.getColumns().addAll(colAct, colTime);
-        for (int i = 1; i <= totalWeeks; i++) {
-            TableColumn<PartialActivityRow, String> colPlan = new TableColumn<>("S" + i + " Plan");
-            int finalI = i;
-            colPlan.setCellValueFactory(cellData -> getPlanProperty(cellData.getValue(), finalI));
-            TableColumn<PartialActivityRow, String> colReal = new TableColumn<>("S" + i + " Real");
-            int finalI1 = i;
-            colReal.setCellValueFactory(cellData -> getRealProperty(cellData.getValue(), finalI1));
-            tableActivities.getColumns().addAll(colPlan, colReal);
-        }
-        tableActivities.setPrefHeight(300);
-        section.getChildren().addAll(title, tableActivities);
-        return section;
-    }
-
-    private StringProperty getPlanProperty(PartialActivityRow row, int week) {
-        switch (week) {
-            case 1 -> {
-                return row.week1PlanProperty();
-            }
-            case 2 -> {
-                return row.week2PlanProperty();
-            }
-            case 3 -> {
-                return row.week3PlanProperty();
-            }
-            case 4 -> {
-                return row.week4PlanProperty();
-            }
-            case 5 -> {
-                return row.week5PlanProperty();
-            }
-            case 6 -> {
-                return row.week6PlanProperty();
-            }
-            case 7 -> {
-                return row.week7PlanProperty();
-            }
-            case 8 -> {
-                return row.week8PlanProperty();
-            }
-            default -> {
-                return new SimpleStringProperty("");
-            }
-        }
-    }
-
-    private StringProperty getRealProperty(PartialActivityRow row, int week) {
-        switch (week) {
-            case 1 -> {
-                return row.week1RealProperty();
-            }
-            case 2 -> {
-                return row.week2RealProperty();
-            }
-            case 3 -> {
-                return row.week3RealProperty();
-            }
-            case 4 -> {
-                return row.week4RealProperty();
-            }
-            case 5 -> {
-                return row.week5RealProperty();
-            }
-            case 6 -> {
-                return row.week6RealProperty();
-            }
-            case 7 -> {
-                return row.week7RealProperty();
-            }
-            case 8 -> {
-                return row.week8RealProperty();
-            }
-            default -> {
-                return new SimpleStringProperty("");
-            }
-        }
-    }
-
-    private VBox createResultsSection() {
-        VBox section = new VBox(8);
-        section.getStyleClass().add("report-section-flat");
-        Label title = new Label("Resultados obtenidos al momento");
-        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        textAreaResults = new TextArea();
-        textAreaResults.setPrefRowCount(5);
-        textAreaResults.setWrapText(true);
-        Label observations = new Label("Observaciones:");
-        observations.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        textAreaObservations = new TextArea();
-        textAreaObservations.setPrefRowCount(5);
-        textAreaObservations.setWrapText(true);
-        section.getChildren().addAll(title, textAreaResults, observations,textAreaObservations);
-        return section;
-    }
-
-    private HBox createButtonRow() {
-        buttonExportPDF = new Button("Exportar PDF");
-        buttonExportPDF.setPrefWidth(120);
-        buttonCancel = new Button("Cancelar");
-        buttonCancel.setPrefWidth(120);
-        buttonCancel.setId("buttonCancel");
-        buttonExportPDF.setOnAction(controller::handlePartialReportButtons);
-        buttonCancel.setOnAction(controller::handlePartialReportButtons);
-        HBox box = new HBox(12, buttonExportPDF, buttonCancel);
-        box.setAlignment(Pos.CENTER_RIGHT);
-        box.setPadding(new Insets(18, 0, 0, 0));
-        return box;
     }
 
     public boolean validateFields() {
@@ -474,15 +290,199 @@ public class GUIGeneratePartialReport extends Application {
         this.buttonCancel = buttonCancel;
     }
 
-    public int getTotalWeeks() {
-        return totalWeeks;
+    public int getTOTAL_WEEKS() {
+        return TOTAL_WEEKS;
     }
 
-    public int getAmountOfActivities() {
-        return amountOfActivities;
+    public int getAMOUNT_OF_ACTIVITIES() {
+        return AMOUNT_OF_ACTIVITIES;
     }
 
     public TextArea getTextAreaObservations() {
         return textAreaObservations;
+    }
+
+    private VBox createGeneralSection() {
+        VBox section = new VBox(8);
+        section.getStyleClass().add("report-section-flat");
+        Label title = new Label("Datos Generales de la EE");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        GridPane grid = new GridPane();
+        grid.setHgap(16);
+        grid.setVgap(10);
+        grid.add(new Label("Carrera:"), 0, 0);
+        labelCareer = new Label("-");
+        grid.add(labelCareer, 1, 0);
+        grid.add(new Label("NRC:"), 0, 1);
+        labelNrc = new Label("-");
+        grid.add(labelNrc, 1, 1);
+        grid.add(new Label("Profesor:"), 0, 2);
+        labelProfessor = new Label("-");
+        grid.add(labelProfessor, 1, 2);
+        grid.add(new Label("Período escolar:"), 0, 3);
+        labelPeriod = new Label("-");
+        grid.add(labelPeriod, 1, 3);
+        section.getChildren().addAll(title, grid);
+        return section;
+    }
+
+    private VBox createProjectSection() {
+        VBox section = new VBox(8);
+        section.getStyleClass().add("report-section-flat");
+        Label title = new Label("Datos del Proyecto");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        GridPane grid = new GridPane();
+        grid.setHgap(16);
+        grid.setVgap(10);
+        grid.add(new Label("Alumno(s):"), 0, 0);
+        labelStudentName = new Label("-");
+        grid.add(labelStudentName, 1, 0);
+        grid.add(new Label("Matrícula:"), 0, 1);
+        labelEnrollment = new Label("-");
+        grid.add(labelEnrollment, 1, 1);
+        grid.add(new Label("Organización vinculada:"), 0, 2);
+        labelOrganization = new Label("-");
+        grid.add(labelOrganization, 1, 2);
+        grid.add(new Label("Proyecto:"), 0, 3);
+        labelProject = new Label("-");
+        grid.add(labelProject, 1, 3);
+        section.getChildren().addAll(title, grid);
+        return section;
+    }
+
+    private VBox createObjectiveMethodologySection() {
+        VBox section = new VBox(8);
+        section.getStyleClass().add("report-section-flat");
+        Label titleObj = new Label("Objetivo(s) general del proyecto");
+        titleObj.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelObjective = new Label();
+        labelObjective.setWrapText(true);
+        Label titleMet = new Label("Metodología");
+        titleMet.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        labelMethodology = new Label();
+        labelMethodology.setWrapText(true);
+        section.getChildren().addAll(titleObj, labelObjective, titleMet, labelMethodology);
+        return section;
+    }
+
+    private VBox createActivitiesSection() {
+        VBox section = new VBox(8);
+        section.getStyleClass().add("report-section-flat");
+        Label title = new Label("Avance de actividades realizadas (Semanas 1 a 8)");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        tableActivities = new TableView<>();
+        tableActivities.setEditable(false);
+        TableColumn<PartialActivityRow, String> colAct = new TableColumn<>("Actividades");
+        colAct.setCellValueFactory(cellData -> cellData.getValue().activityNameProperty());
+        TableColumn<PartialActivityRow, String> colTime = new TableColumn<>("Tiempo");
+        colTime.setCellValueFactory(cellData -> cellData.getValue().plannedTimeProperty());
+        tableActivities.getColumns().addAll(colAct, colTime);
+        for (int i = 1; i <= TOTAL_WEEKS; i++) {
+            TableColumn<PartialActivityRow, String> colPlan = new TableColumn<>("S" + i + " Plan");
+            int finalI = i;
+            colPlan.setCellValueFactory(cellData -> getPlanProperty(cellData.getValue(), finalI));
+            TableColumn<PartialActivityRow, String> colReal = new TableColumn<>("S" + i + " Real");
+            int finalI1 = i;
+            colReal.setCellValueFactory(cellData -> getRealProperty(cellData.getValue(), finalI1));
+            tableActivities.getColumns().addAll(colPlan, colReal);
+        }
+        tableActivities.setPrefHeight(300);
+        section.getChildren().addAll(title, tableActivities);
+        return section;
+    }
+
+    private StringProperty getPlanProperty(PartialActivityRow row, int week) {
+        switch (week) {
+            case 1 -> {
+                return row.week1PlanProperty();
+            }
+            case 2 -> {
+                return row.week2PlanProperty();
+            }
+            case 3 -> {
+                return row.week3PlanProperty();
+            }
+            case 4 -> {
+                return row.week4PlanProperty();
+            }
+            case 5 -> {
+                return row.week5PlanProperty();
+            }
+            case 6 -> {
+                return row.week6PlanProperty();
+            }
+            case 7 -> {
+                return row.week7PlanProperty();
+            }
+            case 8 -> {
+                return row.week8PlanProperty();
+            }
+            default -> {
+                return new SimpleStringProperty("");
+            }
+        }
+    }
+
+    private StringProperty getRealProperty(PartialActivityRow row, int week) {
+        switch (week) {
+            case 1 -> {
+                return row.week1RealProperty();
+            }
+            case 2 -> {
+                return row.week2RealProperty();
+            }
+            case 3 -> {
+                return row.week3RealProperty();
+            }
+            case 4 -> {
+                return row.week4RealProperty();
+            }
+            case 5 -> {
+                return row.week5RealProperty();
+            }
+            case 6 -> {
+                return row.week6RealProperty();
+            }
+            case 7 -> {
+                return row.week7RealProperty();
+            }
+            case 8 -> {
+                return row.week8RealProperty();
+            }
+            default -> {
+                return new SimpleStringProperty("");
+            }
+        }
+    }
+
+    private VBox createResultsSection() {
+        VBox section = new VBox(8);
+        section.getStyleClass().add("report-section-flat");
+        Label title = new Label("Resultados obtenidos al momento");
+        title.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        textAreaResults = new TextArea();
+        textAreaResults.setPrefRowCount(5);
+        textAreaResults.setWrapText(true);
+        Label observations = new Label("Observaciones:");
+        observations.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        textAreaObservations = new TextArea();
+        textAreaObservations.setPrefRowCount(5);
+        textAreaObservations.setWrapText(true);
+        section.getChildren().addAll(title, textAreaResults, observations,textAreaObservations);
+        return section;
+    }
+
+    private HBox createButtonRow() {
+        buttonExportPDF = new Button("Exportar PDF");
+        buttonExportPDF.setPrefWidth(120);
+        buttonCancel = new Button("Cancelar");
+        buttonCancel.setPrefWidth(120);
+        buttonCancel.setId("buttonCancel");
+        buttonExportPDF.setOnAction(controller::handlePartialReportButtons);
+        buttonCancel.setOnAction(controller::handlePartialReportButtons);
+        HBox box = new HBox(12, buttonExportPDF, buttonCancel);
+        box.setAlignment(Pos.CENTER_RIGHT);
+        box.setPadding(new Insets(18, 0, 0, 0));
+        return box;
     }
 }

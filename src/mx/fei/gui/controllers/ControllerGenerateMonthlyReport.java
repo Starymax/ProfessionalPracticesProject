@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 
 public class ControllerGenerateMonthlyReport {
 
-    private static final Logger logger = Logger.getLogger(ControllerGenerateMonthlyReport.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerGenerateMonthlyReport.class.getName());
     private static final int WEEKS_PER_MONTH = 4;
     private final GUIGenerateMonthlyReport monthlyReportView;
     private final Stage stage;
@@ -56,7 +56,8 @@ public class ControllerGenerateMonthlyReport {
     private Report currentReport;
     private int currentBlockStartWeek;
     private int currentBlockEndWeek;
-    private final int daysOfWeeks = 7;
+    private final int DAYS_OF_WEEK = 7;
+    private final int NO_WORKED_HOURS = 0;
 
     public ControllerGenerateMonthlyReport(GUIGenerateMonthlyReport monthlyReportView, Stage stage, Student student) {
         this.monthlyReportView = monthlyReportView;
@@ -67,6 +68,18 @@ public class ControllerGenerateMonthlyReport {
         this.practiceDAO = new PracticeDAO();
         this.student = student;
         initialize();
+    }
+
+    public void handleMonthlyReportButtons(ActionEvent event) {
+        Button sourceButton = (Button) event.getSource();
+        switch (sourceButton.getText()) {
+            case "Exportar PDF" -> {
+                handleExportPDF();
+            }
+            case "Cancelar" -> {
+                handleCancel();
+            }
+        }
     }
 
     private void initialize() {
@@ -85,18 +98,6 @@ public class ControllerGenerateMonthlyReport {
             }
         }
         loadStudentActivitiesWithProgress();
-    }
-
-    public void handleMonthlyReportButtons(ActionEvent event) {
-        Button sourceButton = (Button) event.getSource();
-        switch (sourceButton.getText()) {
-            case "Exportar PDF" -> {
-                handleExportPDF();
-            }
-            case "Cancelar" -> {
-                handleCancel();
-            }
-        }
     }
 
     private void loadStudentActivitiesWithProgress() {
@@ -124,7 +125,7 @@ public class ControllerGenerateMonthlyReport {
                 monthlyReportView.setActivities(activityRows);
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al procesar y cargar las actividades con progreso del estudiante", e);
+            LOGGER.log(Level.SEVERE, "Error al procesar y cargar las actividades con progreso del estudiante", e);
             monthlyReportView.showError(e.getMessage());
         }
     }
@@ -146,7 +147,7 @@ public class ControllerGenerateMonthlyReport {
         try {
             reportNumber = reportDAO.countReportsByTypeAndStudent(ReportType.MONTHLY_REPORT.getReportType(), student.getUserId()) + 1;
         } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "No se pudo determinar el número de reporte mensual, se asume el primero");
+            LOGGER.log(Level.WARNING, "No se pudo determinar el número de reporte mensual, se asume el primero");
         }
         currentBlockStartWeek = (reportNumber - 1) * WEEKS_PER_MONTH + 1;
         currentBlockEndWeek = reportNumber * WEEKS_PER_MONTH;
@@ -173,7 +174,7 @@ public class ControllerGenerateMonthlyReport {
             totalWorked += workedHours;
             if (weeklyLog.getWeek() >= currentBlockStartWeek && weeklyLog.getWeek() <= currentBlockEndWeek) {
                 currentMonthLogs.add(weeklyLog);
-                if (workedHours > 0) {
+                if (workedHours > NO_WORKED_HOURS) {
                     hasAdvanceThisMonth = true;
                 }
             }
@@ -203,7 +204,7 @@ public class ControllerGenerateMonthlyReport {
         try {
             report.setReportNumber(reportDAO.countReportsByTypeAndStudent(reportType.getReportType(), student.getUserId()) + 1);
         } catch (DataOperationException e) {
-            logger.log(Level.WARNING, "No se pudo calcular el número de reporte");
+            LOGGER.log(Level.WARNING, "No se pudo calcular el número de reporte");
             report.setReportNumber(1);
         }
         report.setMonth(getCurrentMonthName());
@@ -231,7 +232,7 @@ public class ControllerGenerateMonthlyReport {
                     practiceNrc = practice.getEducationalExperience().getNrc();
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.WARNING, "No se pudo obtener la práctica del estudiante para determinar el NRC");
+                LOGGER.log(Level.WARNING, "No se pudo obtener la práctica del estudiante para determinar el NRC");
             }
         }
         return practiceNrc;
@@ -312,7 +313,7 @@ public class ControllerGenerateMonthlyReport {
                 monthlyReportView.showSuccess("Reporte exportado a PDF exitosamente en:\n" + outputPath);
                 monthlyReportView.closeWindow();
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al guardar el reporte mensual en la base de datos", e);
+                LOGGER.log(Level.SEVERE, "Error al guardar el reporte mensual en la base de datos", e);
                 monthlyReportView.showError(e.getMessage());
             }
         }
@@ -330,7 +331,7 @@ public class ControllerGenerateMonthlyReport {
         parameters.put("ProfessorName", getProfessorName(report));
         URL logoResource = getClass().getResource("/images/MonthlyReport.png");
         if (logoResource == null) {
-            logger.log(Level.WARNING, "No se encontró el recurso del logo en classpath: /images/MonthlyReport.png");
+            LOGGER.log(Level.WARNING, "No se encontró el recurso del logo en classpath: /images/MonthlyReport.png");
         }
         parameters.put("Logo", logoResource);
         fillWeeklyLogs(parameters, report);
@@ -399,7 +400,7 @@ public class ControllerGenerateMonthlyReport {
                 }
             }
         }
-        for (int i = 0; i < daysOfWeeks; i++) {
+        for (int i = 0; i < DAYS_OF_WEEK; i++) {
             String index = String.valueOf(i + 1);
             if (i < weeklyLogs.size()) {
                 WeeklyLog weeklyLog = weeklyLogs.get(i);

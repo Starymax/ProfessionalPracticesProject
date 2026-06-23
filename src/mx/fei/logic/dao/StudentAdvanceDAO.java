@@ -21,7 +21,7 @@ import java.util.logging.Logger;
  * Provides persistence and retrieval operations on the avance_alumno table.
  */
 public class StudentAdvanceDAO implements IDAOStudentAdvance {
-    private static final Logger logger = Logger.getLogger(StudentAdvanceDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(StudentAdvanceDAO.class.getName());
 
     /**
      * Inserts a student advance, or updates the realized hours if one already exists for the same key.
@@ -34,7 +34,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
     @Override
     public boolean createAdvance(StudentAdvance advance) throws DataOperationException {
         if (advance == null) {
-            logger.log(Level.WARNING, "El avance del alumno es nulo");
+            LOGGER.log(Level.WARNING, "El avance del alumno es nulo");
             throw new IllegalArgumentException("El avance del alumno no puede ser nulo");
         }
         String query = "INSERT INTO avance_alumno (horas_realizadas, id_registro, id_alumno) VALUES (?,?,?) ON DUPLICATE KEY UPDATE horas_realizadas = VALUES(horas_realizadas)";
@@ -45,7 +45,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             preparedStatement.setInt(3, advance.getStudent().getUserId());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al insertar o actualizar el avance del alumno", e);
+            LOGGER.log(Level.SEVERE, "Error al insertar o actualizar el avance del alumno", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -79,7 +79,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el avance del alumno", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener el avance del alumno", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -118,7 +118,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los avances del alumno", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los avances del alumno", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -158,7 +158,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los avances por registro semanal", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los avances por registro semanal", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -193,7 +193,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             preparedStatement.setInt(2, advanceId);
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar las horas realizadas del avance", e);
+            LOGGER.log(Level.SEVERE, "Error al actualizar las horas realizadas del avance", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -227,7 +227,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los avances del alumno", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los avances del alumno", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -263,7 +263,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
                 return resultSet.getFloat(1);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al sumar horas del estudiante", e);
+            LOGGER.log(Level.SEVERE, "Error al sumar horas del estudiante", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

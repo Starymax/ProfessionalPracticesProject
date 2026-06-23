@@ -22,7 +22,9 @@ public class GUIManageExperience extends Application {
     private Button buttonActivateExperience;
     private Button buttonBack;
 
-    public GUIManageExperience() {}
+    public GUIManageExperience() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -56,13 +58,6 @@ public class GUIManageExperience extends Application {
         stage.show();
     }
 
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(340);
-        button.setPrefHeight(60);
-        return button;
-    }
-
     public void closeWindow() {
         ((Stage) buttonBack.getScene().getWindow()).close();
     }
@@ -85,5 +80,12 @@ public class GUIManageExperience extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(340);
+        button.setPrefHeight(60);
+        return button;
     }
 }

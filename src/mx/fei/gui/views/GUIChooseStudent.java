@@ -32,7 +32,9 @@ public class GUIChooseStudent extends Application {
     private List<Student> students;
     private List<Student> allStudents;
 
-    public GUIChooseStudent() {}
+    public GUIChooseStudent() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -82,30 +84,6 @@ public class GUIChooseStudent extends Application {
         showStudents(students);
     }
 
-    private void showStudents(List<Student> studentsToShow) {
-        this.students = studentsToShow;
-        ObservableList<String> items = FXCollections.observableArrayList();
-        for (Student student : studentsToShow) {
-            items.add(buildStudentLabel(student));
-        }
-        listViewStudents.setItems(items);
-    }
-
-    private void filterStudents(String query) {
-        String search = GUIUtils.sanitizeSearch(query);
-        List<Student> filteredStudents = new ArrayList<>();
-        for (Student student : allStudents) {
-            if (GUIUtils.matchesSearch(buildStudentLabel(student), search)) {
-                filteredStudents.add(student);
-            }
-        }
-        showStudents(filteredStudents);
-    }
-
-    private String buildStudentLabel(Student student) {
-        return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
-    }
-
     public Student getSelectedStudent() {
         int selectedIndex = listViewStudents.getSelectionModel().getSelectedIndex();
         return students.get(selectedIndex);
@@ -141,5 +119,29 @@ public class GUIChooseStudent extends Application {
 
     public List<Student> getStudents() {
         return students;
+    }
+
+    private void showStudents(List<Student> studentsToShow) {
+        this.students = studentsToShow;
+        ObservableList<String> items = FXCollections.observableArrayList();
+        for (Student student : studentsToShow) {
+            items.add(buildStudentLabel(student));
+        }
+        listViewStudents.setItems(items);
+    }
+
+    private void filterStudents(String query) {
+        String search = GUIUtils.sanitizeSearch(query);
+        List<Student> filteredStudents = new ArrayList<>();
+        for (Student student : allStudents) {
+            if (GUIUtils.matchesSearch(buildStudentLabel(student), search)) {
+                filteredStudents.add(student);
+            }
+        }
+        showStudents(filteredStudents);
+    }
+
+    private String buildStudentLabel(Student student) {
+        return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
     }
 }

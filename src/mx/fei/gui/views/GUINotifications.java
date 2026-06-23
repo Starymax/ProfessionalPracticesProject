@@ -101,19 +101,7 @@ public class GUINotifications extends Application {
         stage.show();
     }
 
-    private void loadNotificationDetail(Notification notification) {
-        labelTitle.setText(notification.getTitle());
-        labelDate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(notification.getEmissionDate()));
-        textAreaMessage.setText(notification.getMessage());
-    }
 
-    public void loadNotifications(List<Notification> notifications) {
-        listViewNotifications.getItems().clear();
-        listViewNotifications.getItems().addAll(notifications);
-        if (!notifications.isEmpty()) {
-            listViewNotifications.getSelectionModel().selectFirst();
-        }
-    }
 
     public void refreshList() {
         listViewNotifications.refresh();
@@ -175,5 +163,19 @@ public class GUINotifications extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private void loadNotificationDetail(Notification notification) {
+        labelTitle.setText(notification.getTitle());
+        labelDate.setText(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(notification.getEmissionDate()));
+        textAreaMessage.setText(notification.getMessage());
+    }
+
+    public void loadNotifications(List<Notification> notifications) {
+        listViewNotifications.getItems().clear();
+        listViewNotifications.getItems().addAll(notifications);
+        if (!notifications.isEmpty()) {
+            listViewNotifications.getSelectionModel().selectFirst();
+        }
     }
 }

@@ -1,9 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import mx.fei.gui.views.GUIDocumentPreview;
 import mx.fei.gui.views.GUIValidateStudentDocuments;
 import mx.fei.logic.dao.DocumentDAO;
@@ -15,6 +11,11 @@ import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.StudentValidationSummary;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,18 @@ public class ControllerValidateStudentDocuments {
         if (summary != null) {
             currentStudent = summary.getStudent();
             refreshStudentDetail();
+        }
+    }
+
+    public void handleReviewCloseButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Ver / Revisar documento" -> {
+                openDocumentPreview();
+            }
+            case "Cerrar" -> {
+                guiValidateStudentDocuments.closeWindow();
+            }
         }
     }
 
@@ -84,18 +97,6 @@ public class ControllerValidateStudentDocuments {
             }
         }
         return found;
-    }
-
-    public void handleReviewCloseButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Ver / Revisar documento" -> {
-                openDocumentPreview();
-            }
-            case "Cerrar" -> {
-                guiValidateStudentDocuments.closeWindow();
-            }
-        }
     }
 
     private void openDocumentPreview() {

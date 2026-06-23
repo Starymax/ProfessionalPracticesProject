@@ -101,26 +101,6 @@ public class GUISelectStudents extends Application {
         showCheckBoxes(studentCheckBoxes);
     }
 
-    private void showCheckBoxes(List<CheckBox> checkBoxesToShow) {
-        ObservableList<CheckBox> items = FXCollections.observableArrayList(checkBoxesToShow);
-        listViewStudents.setItems(items);
-    }
-
-    private void filterStudents(String query) {
-        String search = GUIUtils.sanitizeSearch(query);
-        List<CheckBox> filteredCheckBoxes = new ArrayList<>();
-        for (CheckBox checkBox : studentCheckBoxes) {
-            if (GUIUtils.matchesSearch(checkBox.getText(), search)) {
-                filteredCheckBoxes.add(checkBox);
-            }
-        }
-        showCheckBoxes(filteredCheckBoxes);
-    }
-
-    private String buildStudentLabel(Student student) {
-        return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
-    }
-
     public List<Student> getCheckedStudents() {
         List<Student> checked = new ArrayList<>();
         for (int i = 0; i < studentCheckBoxes.size(); i++) {
@@ -167,4 +147,23 @@ public class GUISelectStudents extends Application {
         return buttonBack; 
     }
 
+    private void showCheckBoxes(List<CheckBox> checkBoxesToShow) {
+        ObservableList<CheckBox> items = FXCollections.observableArrayList(checkBoxesToShow);
+        listViewStudents.setItems(items);
+    }
+
+    private void filterStudents(String query) {
+        String search = GUIUtils.sanitizeSearch(query);
+        List<CheckBox> filteredCheckBoxes = new ArrayList<>();
+        for (CheckBox checkBox : studentCheckBoxes) {
+            if (GUIUtils.matchesSearch(checkBox.getText(), search)) {
+                filteredCheckBoxes.add(checkBox);
+            }
+        }
+        showCheckBoxes(filteredCheckBoxes);
+    }
+
+    private String buildStudentLabel(Student student) {
+        return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
+    }
 }

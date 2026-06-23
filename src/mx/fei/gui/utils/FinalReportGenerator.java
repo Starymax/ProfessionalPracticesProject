@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 public class FinalReportGenerator {
 
-    private static final Logger logger = Logger.getLogger(FinalReportGenerator.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FinalReportGenerator.class.getName());
     private static final String TEMPLATE_PATH = "/templates/FinalReport.jasper";
 
     public FinalReportGenerator() {
@@ -27,12 +27,12 @@ public class FinalReportGenerator {
         boolean result = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
-                logger.log(Level.SEVERE, "No se encontró la plantilla FinalReport.jasper en el classpath");
+                LOGGER.log(Level.SEVERE, "No se encontró la plantilla FinalReport.jasper en el classpath");
             }
             JasperPrint combinedPrint = buildCombinedPrint(parameters);
             result = exportReport(combinedPrint, templateStream, parameters, outputPath);
         } catch (JRException | IOException e) {
-            logger.log(Level.SEVERE, "Error crítico al rellenar o exportar el reporte final", e);
+            LOGGER.log(Level.SEVERE, "Error crítico al rellenar o exportar el reporte final", e);
         }
         return result;
     }
@@ -44,7 +44,7 @@ public class FinalReportGenerator {
             combinedPrint = fillFirstSubreport(subreport1Stream, parameters);
             combinedPrint = appendSecondSubreport(combinedPrint, subreport2Stream, parameters);
         } catch (IOException e) {
-            logger.log(Level.WARNING, "Error al cargar subreportes", e);
+            LOGGER.log(Level.WARNING, "Error al cargar subreportes", e);
         }
         return combinedPrint;
     }
@@ -52,13 +52,13 @@ public class FinalReportGenerator {
     private JasperPrint fillFirstSubreport(InputStream subreportStream, Map<String, Object> parameters) {
         JasperPrint subreportPrint = null;
         if (subreportStream == null) {
-            logger.log(Level.WARNING, "No se encontró subFinalReport1.jasper en el classpath");
+            LOGGER.log(Level.WARNING, "No se encontró subFinalReport1.jasper en el classpath");
         } else {
             try {
                 JasperReport subreport = (JasperReport) JRLoader.loadObject(subreportStream);
                 subreportPrint = JasperFillManager.fillReport(subreport, parameters, new JREmptyDataSource());
             } catch (JRException e) {
-                logger.log(Level.WARNING, "Error al rellenar subFinalReport1.jasper", e);
+                LOGGER.log(Level.WARNING, "Error al rellenar subFinalReport1.jasper", e);
             }
         }
         return subreportPrint;
@@ -67,7 +67,7 @@ public class FinalReportGenerator {
     private JasperPrint appendSecondSubreport(JasperPrint combinedPrint, InputStream subreportStream, Map<String, Object> parameters) {
         JasperPrint result = combinedPrint;
         if (subreportStream == null) {
-            logger.log(Level.WARNING, "No se encontró subFinalReport2.jasper en el classpath");
+            LOGGER.log(Level.WARNING, "No se encontró subFinalReport2.jasper en el classpath");
         } else {
             try {
                 ensureObservationsParameter(parameters);
@@ -81,7 +81,7 @@ public class FinalReportGenerator {
                     }
                 }
             } catch (JRException e) {
-                logger.log(Level.WARNING, "Error al rellenar subFinalReport2.jasper", e);
+                LOGGER.log(Level.WARNING, "Error al rellenar subFinalReport2.jasper", e);
             }
         }
         return result;

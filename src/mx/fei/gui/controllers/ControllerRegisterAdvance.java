@@ -1,7 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.gui.views.GUIRegisterAdvance;
 import mx.fei.logic.dao.ActivityDAO;
@@ -14,6 +12,9 @@ import mx.fei.logic.dto.ReportType;
 import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
+
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -88,6 +89,34 @@ public class ControllerRegisterAdvance {
         }
     }
 
+    public void handleActivitySelection(Activity activity) {
+        if (activity == null) {
+            guiRegisterAdvance.clearActivityInfo();
+        } else {
+            List<WeeklyLog> weeklyLogs = logsByActivity.getOrDefault(activity.getActivityId(), new ArrayList<>());
+            int totalPlanned = 0;
+            int totalRealized = 0;
+            for (WeeklyLog log : weeklyLogs) {
+                totalPlanned += log.getPlannedHours();
+                totalRealized += (int) getExistingRealized(log);
+            }
+            guiRegisterAdvance.setActivityInfo(currentWeek, totalPlanned, totalRealized);
+            guiRegisterAdvance.restorePendingHoursForCurrentActivity(activity);
+        }
+    }
+
+    public void handleSaveCancelButtons(ActionEvent event) {
+        Button source = (Button) event.getSource();
+        switch (source.getText()) {
+            case "Guardar" -> {
+                save();
+            }
+            case "Cancelar" -> {
+                guiRegisterAdvance.closeWindow();
+            }
+        }
+    }
+
     private void buildActivityMap(List<Activity> allActivities, int maxWeek) {
         Map<Integer, Activity> activityIndex = new HashMap<>();
         for (Activity activity : allActivities) {
@@ -128,35 +157,7 @@ public class ControllerRegisterAdvance {
         }
         return completed;
     }
-
-    public void handleActivitySelection(Activity activity) {
-        if (activity == null) {
-            guiRegisterAdvance.clearActivityInfo();
-        } else {
-            List<WeeklyLog> weeklyLogs = logsByActivity.getOrDefault(activity.getActivityId(), new ArrayList<>());
-            int totalPlanned = 0;
-            int totalRealized = 0;
-            for (WeeklyLog log : weeklyLogs) {
-                totalPlanned += log.getPlannedHours();
-                totalRealized += (int) getExistingRealized(log);
-            }
-            guiRegisterAdvance.setActivityInfo(currentWeek, totalPlanned, totalRealized);
-            guiRegisterAdvance.restorePendingHoursForCurrentActivity(activity);
-        }
-    }
-
-    public void handleSaveCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Guardar" -> {
-                save();
-            }
-            case "Cancelar" -> {
-                guiRegisterAdvance.closeWindow();
-            }
-        }
-    }
-
+    
     private void save() {
         Map<Integer, String> pendingHours = guiRegisterAdvance.getPendingHoursByActivityId();
         if (pendingHours.isEmpty()) {

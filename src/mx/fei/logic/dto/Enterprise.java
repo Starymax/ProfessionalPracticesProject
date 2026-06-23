@@ -27,7 +27,9 @@ public class Enterprise {
         this.country = country;
     }
 
-    public Enterprise() {}
+    public Enterprise() {
+
+    }
 
     public int getEnterpriseId() {
         return id;

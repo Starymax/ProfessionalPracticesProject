@@ -23,7 +23,8 @@ public class ControllerAddStudents {
     private GUIAddStudents guiAddStudents;
     private StudentDAO studentDAO;
     private Stage stage;
-    private static final Logger logger = Logger.getLogger(ControllerAddStudents.class.getName());
+    private final float DEFAULT_GRADE = 0.0f;
+    private static final Logger LOGGER = Logger.getLogger(ControllerAddStudents.class.getName());
 
     public ControllerAddStudents(GUIAddStudents guiAddStudents, Stage stage) {
         this.guiAddStudents = guiAddStudents;
@@ -58,7 +59,7 @@ public class ControllerAddStudents {
                 guiSelectStudents.start(selectStage);
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al cargar estudiantes", e);
+            LOGGER.log(Level.SEVERE, "Error al cargar estudiantes", e);
             guiAddStudents.showError(e.getMessage());
         }
     }
@@ -81,11 +82,11 @@ public class ControllerAddStudents {
             boolean allAssigned = true;
             PracticeDAO practiceDAO = new PracticeDAO();
             for (Student student : studentsToAdd) {
-                Practice practice = new Practice(student, experience, period, 0.0f);
+                Practice practice = new Practice(student, experience, period, DEFAULT_GRADE);
                 boolean assigned = practiceDAO.createPractice(practice);
                 if (!assigned) {
                     allAssigned = false;
-                    logger.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());
+                    LOGGER.log(Level.WARNING, "No se pudo asignar la experiencia al estudiante: " + student.getEnrollment());
                 }
             }
             if (allAssigned) {
@@ -95,7 +96,7 @@ public class ControllerAddStudents {
                 guiAddStudents.showError("Algunos estudiantes no pudieron ser asignados.");
             }
         } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al asignar experiencia educativa", e);
+            LOGGER.log(Level.SEVERE, "Error al asignar experiencia educativa", e);
             guiAddStudents.showError(e.getMessage());
         }
     }

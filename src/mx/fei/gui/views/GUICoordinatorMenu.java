@@ -33,7 +33,9 @@ public class GUICoordinatorMenu extends Application {
     public GUICoordinatorMenu(Professor coordinator) {
         this.coordinator = coordinator;
     }
-    public GUICoordinatorMenu() {}
+    public GUICoordinatorMenu() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -77,12 +79,6 @@ public class GUICoordinatorMenu extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
-    }
-
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(250);
-        return button;
     }
 
     public void setCoordinatorInfo(Professor professor) {
@@ -137,5 +133,11 @@ public class GUICoordinatorMenu extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(250);
+        return button;
     }
 }

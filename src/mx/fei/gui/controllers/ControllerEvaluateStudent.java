@@ -28,7 +28,7 @@ public class ControllerEvaluateStudent {
     private final GUIEvaluateStudent guiEvaluateStudent;
     private final Student student;
     private Practice practice;
-    private static final Logger logger = Logger.getLogger(ControllerEvaluateStudent.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerEvaluateStudent.class.getName());
 
     public ControllerEvaluateStudent(GUIEvaluateStudent guiEvaluateStudent, Student student) {
         this.guiEvaluateStudent = guiEvaluateStudent;
@@ -48,28 +48,6 @@ public class ControllerEvaluateStudent {
         }
     }
 
-    private void loadHours() {
-        try {
-            StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
-            float realizedHours = studentAdvanceDAO.getTotalHoursByIdStudent(student.getUserId());
-            float remainingHours = Math.max(0f, REQUIRED_PRACTICE_HOURS - realizedHours);
-            guiEvaluateStudent.setHours(realizedHours, remainingHours);
-        } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al obtener las horas del alumno", e);
-            guiEvaluateStudent.showError(e.getMessage());
-        }
-    }
-
-    private void loadPractice() {
-        try {
-            PracticeDAO practiceDAO = new PracticeDAO();
-            practice = practiceDAO.getPracticeByEnrollment(student.getEnrollment());
-        } catch (DataOperationException e) {
-            logger.log(Level.SEVERE, "Error al obtener la práctica del alumno", e);
-            guiEvaluateStudent.showError(e.getMessage());
-        }
-    }
-
     public void loadReports() {
         if (practice == null) {
             guiEvaluateStudent.setReports(new ArrayList<>());
@@ -79,7 +57,7 @@ public class ControllerEvaluateStudent {
                 List<Document> reports = documentDAO.getUploadedReportsByPractice(practice);
                 guiEvaluateStudent.setReports(reports);
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al obtener los reportes subidos del alumno", e);
+                LOGGER.log(Level.SEVERE, "Error al obtener los reportes subidos del alumno", e);
                 guiEvaluateStudent.showError(e.getMessage());
             }
         }
@@ -94,6 +72,28 @@ public class ControllerEvaluateStudent {
             case "Cerrar" -> {
                 guiEvaluateStudent.getStage().close();
             }
+        }
+    }
+
+    private void loadHours() {
+        try {
+            StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
+            float realizedHours = studentAdvanceDAO.getTotalHoursByIdStudent(student.getUserId());
+            float remainingHours = Math.max(0f, REQUIRED_PRACTICE_HOURS - realizedHours);
+            guiEvaluateStudent.setHours(realizedHours, remainingHours);
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener las horas del alumno", e);
+            guiEvaluateStudent.showError(e.getMessage());
+        }
+    }
+
+    private void loadPractice() {
+        try {
+            PracticeDAO practiceDAO = new PracticeDAO();
+            practice = practiceDAO.getPracticeByEnrollment(student.getEnrollment());
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener la práctica del alumno", e);
+            guiEvaluateStudent.showError(e.getMessage());
         }
     }
 

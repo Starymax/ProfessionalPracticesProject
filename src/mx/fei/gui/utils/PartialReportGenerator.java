@@ -12,20 +12,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PartialReportGenerator {
-    private static final Logger logger = Logger.getLogger(PartialReportGenerator.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PartialReportGenerator.class.getName());
     private static final String TEMPLATE_PATH = "/templates/partialReport2.jasper";
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
         boolean result = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
-                logger.log(Level.SEVERE, "No se encontró la plantilla: " + TEMPLATE_PATH);
+                LOGGER.log(Level.SEVERE, "No se encontró la plantilla: " + TEMPLATE_PATH);
             }
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
             result = true;
         } catch (JRException | IOException e) {
-            logger.log(Level.SEVERE, "Error al generar el reporte parcial", e);
+            LOGGER.log(Level.SEVERE, "Error al generar el reporte parcial", e);
         }
         return result;
     }

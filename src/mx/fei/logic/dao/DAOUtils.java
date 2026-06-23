@@ -8,7 +8,9 @@ import java.sql.SQLNonTransientConnectionException;
  * Utility helpers shared across the DAO layer.
  */
 public class DAOUtils {
-    private DAOUtils() {}
+    private DAOUtils() {
+
+    }
 
     public static DataOperationException convertSQLExceptiontoDataOperationException(SQLException e, String defaultMessage) {
         String message = isConnectionError(e) ? "Error de conexión. Intente más tarde." : defaultMessage;

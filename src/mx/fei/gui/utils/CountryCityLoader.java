@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CountryCityLoader {
-    private static final Logger logger = Logger.getLogger(CountryCityLoader.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CountryCityLoader.class.getName());
     private static Map<String, List<String>> countryCityMap;
 
     private CountryCityLoader() {}
@@ -39,7 +39,7 @@ public class CountryCityLoader {
         countryCityMap = new LinkedHashMap<>();
         InputStream input = CountryCityLoader.class.getClassLoader().getResourceAsStream("countries_cities.json");
         if (input == null) {
-            logger.log(Level.SEVERE, "No se encontró countries_cities.json en resources");
+            LOGGER.log(Level.SEVERE, "No se encontró countries_cities.json en resources");
         } else {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(input,"UTF-8"))) {
                 StringBuilder stringBuilder = new StringBuilder();
@@ -62,7 +62,7 @@ public class CountryCityLoader {
                     countryCityMap.put(countryName, cities);
                 }
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "Error al leer countries_cities.json", e);
+                LOGGER.log(Level.SEVERE, "Error al leer countries_cities.json", e);
             }
         }
     }

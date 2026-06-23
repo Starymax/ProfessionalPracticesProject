@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 public class ControllerGenerateSelfEvaluation {
 
-    private static final Logger logger = Logger.getLogger(ControllerGenerateSelfEvaluation.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ControllerGenerateSelfEvaluation.class.getName());
     private final GUIGenerateSelfEvaluation guiGenerateSelfEvaluation;
     private final Stage stage;
     private final Student student;
@@ -67,7 +67,7 @@ public class ControllerGenerateSelfEvaluation {
                     }
                 }
             } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error cargando datos para autoevaluación", e);
+                LOGGER.log(Level.SEVERE, "Error cargando datos para autoevaluación", e);
                 guiGenerateSelfEvaluation.showError("Error al cargar los datos: " + e.getMessage());
             }
         }
@@ -118,14 +118,14 @@ public class ControllerGenerateSelfEvaluation {
         params.put("logo", logoResource);
         for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
             int answer = guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
-            for (int col = 1; col <= guiGenerateSelfEvaluation.getColumns(); col++) {
+            for (int col = 1; col <= guiGenerateSelfEvaluation.getCOLUMNS(); col++) {
                 String paramName = "quest" + (i+1) + "response" + col;
                 String value = (answer == col) ? "X" : "";
                 params.put(paramName, value);
             }
         }
         int total = 0;
-        for (int i = 0; i < guiGenerateSelfEvaluation.getRows(); i++) {
+        for (int i = 0; i < guiGenerateSelfEvaluation.getROWS(); i++) {
             total += guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
         }
         String totalStr = String.valueOf(total);

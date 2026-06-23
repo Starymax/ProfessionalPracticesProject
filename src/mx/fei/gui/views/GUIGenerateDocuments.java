@@ -29,7 +29,9 @@ public class GUIGenerateDocuments extends Application {
         this.practice = practice;
     }
 
-    public GUIGenerateDocuments() {}
+    public GUIGenerateDocuments() {
+
+    }
 
     @Override
     public void start(Stage stage) {
@@ -59,13 +61,6 @@ public class GUIGenerateDocuments extends Application {
         GUIStyle.apply(scene);
         stage.setScene(scene);
         stage.show();
-    }
-
-    private Button createMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(320);
-        button.setPrefHeight(60);
-        return button;
     }
 
     public void showError(String message) {
@@ -98,5 +93,12 @@ public class GUIGenerateDocuments extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    private Button createMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(320);
+        button.setPrefHeight(60);
+        return button;
     }
 }

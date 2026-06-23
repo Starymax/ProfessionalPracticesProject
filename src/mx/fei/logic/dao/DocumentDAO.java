@@ -10,6 +10,7 @@ import mx.fei.logic.dto.StudentValidationSummary;
 import mx.fei.logic.dto.ValidationStatus;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.idao.IDAODocument;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,7 +35,7 @@ import java.util.logging.Logger;
  * expediente_practicas tables, as well as physical file handling for uploaded documents.
  */
 public class DocumentDAO implements IDAODocument {
-    private static final Logger logger = Logger.getLogger(DocumentDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(DocumentDAO.class.getName());
 
     /**
      * Creates an empty practice expedient for a student in the given period.
@@ -48,7 +49,7 @@ public class DocumentDAO implements IDAODocument {
     @Override
     public boolean createExpedient(int studentId, String period) throws DataOperationException {
         if (period == null || period.isBlank()) {
-            logger.log(Level.WARNING, "El periodo esta vacio");
+            LOGGER.log(Level.WARNING, "El periodo esta vacio");
             throw new IllegalArgumentException("El periodo no puede estar vacio");
         }
         boolean result = false;
@@ -60,7 +61,7 @@ public class DocumentDAO implements IDAODocument {
             preparedStatement.executeUpdate();
             result = true;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al crear el expediente", e);
+            LOGGER.log(Level.SEVERE, "Error al crear el expediente", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -79,7 +80,7 @@ public class DocumentDAO implements IDAODocument {
      */
     public String getPeriodByStudentEnrollment(String enrollment) throws DataOperationException {
         if (enrollment == null || enrollment.isBlank()) {
-            logger.log(Level.WARNING, "La matricula esta vacia");
+            LOGGER.log(Level.WARNING, "La matricula esta vacia");
             throw new IllegalArgumentException("La matricula no puede estar vacia");
         }
         String period = null;
@@ -93,7 +94,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener el periodo del expediente", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener el periodo del expediente", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -137,7 +138,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE,"Error al cargar los documentos", e);
+            LOGGER.log(Level.SEVERE,"Error al cargar los documentos", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -167,7 +168,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al comprobar los documentos", e);
+            LOGGER.log(Level.SEVERE, "Error al comprobar los documentos", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -189,7 +190,7 @@ public class DocumentDAO implements IDAODocument {
     public String uploadDocument(String enrollment, Document document) throws IOException{
     String targetPath = null;
     if (document.getDirectory() == null || document.getDirectory().isEmpty()) {
-        logger.log(Level.WARNING, "La ruta del documento esta vacia");
+        LOGGER.log(Level.WARNING, "La ruta del documento esta vacia");
         throw new IllegalArgumentException("La ruta del documento no puede estar vacia");
     }
         try {
@@ -200,7 +201,7 @@ public class DocumentDAO implements IDAODocument {
             Files.copy(sourceFilePath, targetFilePath, StandardCopyOption.REPLACE_EXISTING);
             targetPath = targetFilePath.toString();
         } catch (IOException e) {
-            logger.log(Level.SEVERE, "Error al subir el documento", e);
+            LOGGER.log(Level.SEVERE, "Error al subir el documento", e);
             throw new IOException("Error al subir el documento");
         }
     return targetPath;
@@ -217,7 +218,7 @@ public class DocumentDAO implements IDAODocument {
     @Override
     public List<Document> getDocumentsByPractice(Practice practice) throws DataOperationException {
         if (practice == null) {
-            logger.log(Level.WARNING, "La practica es nula");
+            LOGGER.log(Level.WARNING, "La practica es nula");
             throw new IllegalArgumentException("La practica no puede ser nula");
         }
         List<Document> documents = new ArrayList<>();
@@ -238,7 +239,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los documentos de la practica", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los documentos de la practica", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -258,7 +259,7 @@ public class DocumentDAO implements IDAODocument {
      */
     public List<Document> getUploadedReportsByPractice(Practice practice) throws DataOperationException {
         if (practice == null) {
-            logger.log(Level.WARNING, "La practica es nula");
+            LOGGER.log(Level.WARNING, "La practica es nula");
             throw new IllegalArgumentException("La practica no puede ser nula");
         }
         List<Document> reports = new ArrayList<>();
@@ -282,7 +283,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los reportes subidos de la practica", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los reportes subidos de la practica", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -306,7 +307,7 @@ public class DocumentDAO implements IDAODocument {
             preparedStatement.setInt(1, documentId);
             accepted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al aceptar el reporte", e);
+            LOGGER.log(Level.SEVERE, "Error al aceptar el reporte", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -343,7 +344,7 @@ public class DocumentDAO implements IDAODocument {
                 rawSummaries.add(new int[]{studentId, pendingDocuments, totalDocuments});
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los alumnos con documentos subidos", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los alumnos con documentos subidos", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -357,7 +358,7 @@ public class DocumentDAO implements IDAODocument {
                 Student student = studentDAO.getStudentById(studentId);
                 summaries.add(new StudentValidationSummary(student, rawSummary[1], rawSummary[2]));
             } catch (NoSuchElementException e) {
-                logger.log(Level.WARNING, "No se encontró el alumno con id: " + studentId);
+                LOGGER.log(Level.WARNING, "No se encontró el alumno con id: " + studentId);
             }
         }
         return summaries;
@@ -373,7 +374,7 @@ public class DocumentDAO implements IDAODocument {
      */
     public List<Document> getDocumentsForValidation(Practice practice) throws DataOperationException {
         if (practice == null) {
-            logger.log(Level.WARNING, "La practica es nula");
+            LOGGER.log(Level.WARNING, "La practica es nula");
             throw new IllegalArgumentException("La practica no puede ser nula");
         }
         List<Document> documents = new ArrayList<>();
@@ -395,7 +396,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al obtener los documentos para validar", e);
+            LOGGER.log(Level.SEVERE, "Error al obtener los documentos para validar", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -426,7 +427,7 @@ public class DocumentDAO implements IDAODocument {
      */
     public boolean areInitialDocumentsUploaded(Practice practice) throws DataOperationException {
         if (practice == null) {
-            logger.log(Level.WARNING, "La practica es nula");
+            LOGGER.log(Level.WARNING, "La practica es nula");
             throw new IllegalArgumentException("La practica no puede ser nula");
         }
         boolean uploaded = false;
@@ -442,7 +443,7 @@ public class DocumentDAO implements IDAODocument {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
+            LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -461,7 +462,7 @@ public class DocumentDAO implements IDAODocument {
      */
     public boolean deleteDocument(Document document) throws DataOperationException {
         if (document == null) {
-            logger.log(Level.WARNING, "El documento es nulo");
+            LOGGER.log(Level.WARNING, "El documento es nulo");
             throw new IllegalArgumentException("El documento no puede ser nulo");
         }
         boolean deleted = false;
@@ -471,7 +472,7 @@ public class DocumentDAO implements IDAODocument {
             preparedStatement.setInt(1, document.getId());
             deleted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al eliminar el documento", e);
+            LOGGER.log(Level.SEVERE, "Error al eliminar el documento", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -493,7 +494,7 @@ public class DocumentDAO implements IDAODocument {
             try {
                 Files.deleteIfExists(Paths.get(path));
             } catch (IOException e) {
-                logger.log(Level.WARNING, "No se pudo eliminar el archivo físico del documento: " + path, e);
+                LOGGER.log(Level.WARNING, "No se pudo eliminar el archivo físico del documento: " + path, e);
             }
         }
     }
@@ -515,7 +516,7 @@ public class DocumentDAO implements IDAODocument {
             preparedStatement.setInt(2, documentId);
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al actualizar el estado de validación del documento", e);
+            LOGGER.log(Level.SEVERE, "Error al actualizar el estado de validación del documento", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }

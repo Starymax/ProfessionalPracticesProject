@@ -38,8 +38,8 @@ public class GUIStudentMenu extends Application {
     private Student student;
     private StackPane badgePane;
     private ControllerStudentMenu controllerStudentMenu;
-    private final int maxNotifications = 99;
-    private final int noNotifications = 0;
+    private final int MAX_NOTIFICATIONS = 99;
+    private final int NO_NOTIFICATIONS = 0;
 
     @Override
     public void start(Stage stage) {
@@ -117,8 +117,8 @@ public class GUIStudentMenu extends Application {
     }
 
     public void updateUnreadCount(int count) {
-        if (count > noNotifications) {
-            labelUnreadCount.setText(count > maxNotifications ? "99+" : String.valueOf(count));
+        if (count > NO_NOTIFICATIONS) {
+            labelUnreadCount.setText(count > MAX_NOTIFICATIONS ? "99+" : String.valueOf(count));
             if (badgePane != null) {
                 badgePane.setVisible(true);
             }
@@ -128,25 +128,6 @@ public class GUIStudentMenu extends Application {
             }
         }
     }
-
-    private HBox buildInfoRow(String boldText, String normalText) {
-        Label bold = new Label(boldText);
-        bold.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
-        Label normal = new Label(normalText);
-        normal.setFont(Font.font("SansSerif", 15));
-        HBox row = new HBox(8, bold, normal);
-        row.setAlignment(Pos.CENTER_LEFT);
-        return row;
-    }
-
-    private Button buildMenuButton(String text) {
-        Button button = new Button(text);
-        button.setPrefWidth(380);
-        button.setPrefHeight(52);
-        button.setFont(Font.font("SansSerif", 15));
-        return button;
-    }
-
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -205,5 +186,23 @@ public class GUIStudentMenu extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private HBox buildInfoRow(String boldText, String normalText) {
+        Label bold = new Label(boldText);
+        bold.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
+        Label normal = new Label(normalText);
+        normal.setFont(Font.font("SansSerif", 15));
+        HBox row = new HBox(8, bold, normal);
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    private Button buildMenuButton(String text) {
+        Button button = new Button(text);
+        button.setPrefWidth(380);
+        button.setPrefHeight(52);
+        button.setFont(Font.font("SansSerif", 15));
+        return button;
     }
 }

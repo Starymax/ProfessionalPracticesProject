@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * organizacion_vinculada table.
  */
 public class EnterpriseDAO implements IDAOEnterprise {
-    private static final Logger logger = Logger.getLogger(EnterpriseDAO.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(EnterpriseDAO.class.getName());
 
     /**
      * Retrieves an enterprise by its identifier.
@@ -54,12 +54,12 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 }
             }
             if (enterprise == null) {
-                logger.log(Level.WARNING, "No se encontro a la empresa con el id: " + idEnterprise);
+                LOGGER.log(Level.WARNING, "No se encontro a la empresa con el id: " + idEnterprise);
                 throw new NoSuchElementException("No se encontro a la empresa");
             }
             return enterprise;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo la organizacion vinculada",e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo la organizacion vinculada",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -78,7 +78,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
     @Override
     public int registerEnterprise(Enterprise enterprise) throws DataOperationException {
         if (enterprise == null) {
-            logger.log(Level.WARNING,"La empresa es nula");
+            LOGGER.log(Level.WARNING,"La empresa es nula");
             throw new IllegalArgumentException("La empresa no puede ser nula");
         }
         int generatedId = -1;
@@ -101,7 +101,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 }
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando la organizacion vinculada",e);
+            LOGGER.log(Level.SEVERE, "Error registrando la organizacion vinculada",e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -148,7 +148,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 enterprises.add(buildEnterpriseFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo las organizaciones vinculadas activas", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -173,7 +173,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
                 enterprises.add(buildEnterpriseFromResultSet(resultSet));
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error obteniendo las organizaciones activas", e);
+            LOGGER.log(Level.SEVERE, "Error obteniendo las organizaciones activas", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
@@ -193,7 +193,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
     @Override
     public boolean modifyEnterprise(Enterprise enterprise) throws DataOperationException {
         if (enterprise == null) {
-            logger.log(Level.WARNING, "La empresa es nula");
+            LOGGER.log(Level.WARNING, "La empresa es nula");
             throw new IllegalArgumentException("La empresa no puede ser nula");
         }
         boolean updated = false;
@@ -212,7 +212,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
             preparedStatement.setInt(10, enterprise.getEnterpriseId());
             updated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al modificar la organizacion vinculada", e);
+            LOGGER.log(Level.SEVERE, "Error al modificar la organizacion vinculada", e);
             if (DAOUtils.isConnectionError(e)) {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
