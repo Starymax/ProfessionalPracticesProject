@@ -20,6 +20,11 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Project.
+ * Provides persistence and retrieval operations on the proyecto table,
+ * joining the related organizacion_vinculada and responsable_proyecto tables.
+ */
 public class ProjectDAO implements IDAOProject {
     private static final Logger logger = Logger.getLogger(ProjectDAO.class.getName());
 
@@ -35,6 +40,14 @@ public class ProjectDAO implements IDAOProject {
             "LEFT JOIN organizacion_vinculada e ON p.id_empresa = e.id_empresa " +
             "LEFT JOIN responsable_proyecto r ON p.id_responsable = r.id_responsable";
 
+    /**
+     * Builds a Project from the current row of the given result set,
+     * including its associated enterprise and project manager when present.
+     *
+     * @param resultSet a result set positioned on a valid row
+     * @return the Project represented by the current row
+     * @throws SQLException if a column cannot be read from the result set
+     */
     private Project buildProjectFromResultSet(ResultSet resultSet) throws SQLException {
         int id = resultSet.getInt("id_proyecto");
         String projectName = resultSet.getString("nombre_proyecto");
@@ -67,6 +80,14 @@ public class ProjectDAO implements IDAOProject {
         return new Project(id, projectName, description, generalObjective, immediateObjectives, mediateObjectives, methodology, responsibilities, resources, startDate, endDate, activeStatus, availablePlaces, enterprise, projectManager);
     }
 
+    /**
+     * Retrieves a project by its identifier, including its enterprise and project manager.
+     *
+     * @param idProject the identifier of the project to retrieve
+     * @return the matching Project
+     * @throws NoSuchElementException if no project exists with the given id
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public Project getProjectById(Integer idProject) throws DataOperationException {
         Project project = null;
@@ -93,6 +114,13 @@ public class ProjectDAO implements IDAOProject {
         }
     }
 
+    /**
+     * Registers a new project.
+     *
+     * @param project the project to register
+     * @return the generated identifier of the new project, or -1 if none was generated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public int registerProject(Project project) throws DataOperationException {
         int generatedID = -1;
@@ -129,6 +157,12 @@ public class ProjectDAO implements IDAOProject {
         return generatedID;
     }
 
+    /**
+     * Retrieves all projects whose status is active.
+     *
+     * @return a list of active projects, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Project> getActiveProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
@@ -149,6 +183,12 @@ public class ProjectDAO implements IDAOProject {
         return projects;
     }
 
+    /**
+     * Retrieves all projects regardless of their status.
+     *
+     * @return a list of all projects, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Project> getAllProjects() throws DataOperationException {
         List<Project> projects = new ArrayList<>();
@@ -168,6 +208,13 @@ public class ProjectDAO implements IDAOProject {
         return projects;
     }
 
+    /**
+     * Retrieves the active projects that still have available places and at least one activity,
+     * meaning they can take new students.
+     *
+     * @return a list of available projects, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Project> getAvailableProjects() throws DataOperationException {
         List<Project> availableProjects = new ArrayList<>();
@@ -184,6 +231,13 @@ public class ProjectDAO implements IDAOProject {
         return availableProjects;
     }
 
+    /**
+     * Updates the data of an existing project.
+     *
+     * @param project the project carrying the updated data
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean modifyProject(Project project) throws DataOperationException {
         boolean updated = false;

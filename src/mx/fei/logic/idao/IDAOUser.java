@@ -13,6 +13,12 @@ public interface IDAOUser {
 
     User getUserByEmail(String email) throws DataOperationException;
 
+    void requireEmail(String email);
+
+    int findUserIdByEmail(String email) throws DataOperationException;
+
+    User loadUserByRole(int idUser) throws DataOperationException;
+
     boolean isStudent(int idUser) throws DataOperationException;
 
     void logInByRole(UserRole role) throws DataOperationException;

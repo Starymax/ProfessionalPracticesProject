@@ -16,9 +16,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for StudentAdvance (a student's reported hours per weekly log).
+ * Provides persistence and retrieval operations on the avance_alumno table.
+ */
 public class StudentAdvanceDAO implements IDAOStudentAdvance {
     private static final Logger logger = Logger.getLogger(StudentAdvanceDAO.class.getName());
 
+    /**
+     * Inserts a student advance, or updates the realized hours if one already exists for the same key.
+     *
+     * @param advance the advance to create or update, must not be null
+     * @return true if the row was inserted or updated
+     * @throws IllegalArgumentException if advance is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean createAdvance(StudentAdvance advance) throws DataOperationException {
         if (advance == null) {
@@ -41,6 +53,13 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         }
     }
 
+    /**
+     * Retrieves a student advance by its identifier, resolving its weekly log and student.
+     *
+     * @param advanceId the identifier of the advance to retrieve
+     * @return the matching StudentAdvance, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public StudentAdvance getAdvanceById(int advanceId) throws DataOperationException {
         String query = "SELECT * FROM avance_alumno WHERE id_avance = ?";
@@ -70,6 +89,13 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         return advance;
     }
 
+    /**
+     * Retrieves all advances reported by a given student.
+     *
+     * @param studentId the student's identifier
+     * @return a list of the student's advances, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<StudentAdvance> getAdvancesByStudentId(int studentId) throws DataOperationException {
         String query = "SELECT id_avance, horas_realizadas, id_registro, id_alumno FROM avance_alumno WHERE id_alumno = ?";
@@ -103,6 +129,13 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         return advances;
     }
 
+    /**
+     * Retrieves all advances associated with a given weekly log.
+     *
+     * @param weeklyLogId the identifier of the weekly log
+     * @return a list of advances for the weekly log, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<StudentAdvance> getAdvancesByWeeklyLogId(int weeklyLogId) throws DataOperationException {
         String query = "SELECT id_avance, horas_realizadas, id_registro, id_alumno FROM avance_alumno WHERE id_registro = ?";
@@ -136,6 +169,14 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         return advances;
     }
 
+    /**
+     * Updates the realized hours of an existing advance.
+     *
+     * @param advanceId the identifier of the advance to update
+     * @param realizedHours the new realized hours value
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean updateRealizedHours(int advanceId, float realizedHours) throws DataOperationException {
         boolean updated = false;
@@ -155,6 +196,14 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         return updated;
     }
 
+    /**
+     * Retrieves the advances of a student for a specific weekly log.
+     *
+     * @param studentId the student's identifier
+     * @param weeklyLogId the identifier of the weekly log
+     * @return a list of matching advances, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<StudentAdvance> getAdvancesByStudentAndWeeklyLog(int studentId, int weeklyLogId) throws DataOperationException {
         List<StudentAdvance> advances = new ArrayList<>();
@@ -190,6 +239,14 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         return advances;
     }
 
+    /**
+     * Returns the total realized hours reported by a student across all their advances.
+     *
+     * @param studentId the student's identifier
+     * @return the sum of realized hours, or 0 if the student has no advances
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
     public float getTotalHoursByIdStudent(int studentId) throws DataOperationException {
         String query = "SELECT SUM(horas_realizadas) FROM avance_alumno WHERE id_alumno = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();

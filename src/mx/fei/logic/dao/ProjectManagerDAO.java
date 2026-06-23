@@ -15,8 +15,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for ProjectManager (project representatives).
+ * Provides persistence and retrieval operations on the
+ * responsable_proyecto table.
+ */
 public class ProjectManagerDAO implements IDAOProjectManager {
     private static final Logger logger = Logger.getLogger(ProjectManagerDAO.class.getName());
+
+    /**
+     * Registers a new project manager, unless one with the same id already exists.
+     *
+     * @param projectManager the project manager to register, ignored if null
+     * @return true if the project manager was registered successfully
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean registerProjectManager(ProjectManager projectManager) throws DataOperationException {
         boolean sucess = false;
@@ -48,6 +61,13 @@ public class ProjectManagerDAO implements IDAOProjectManager {
         return sucess;
     }
 
+    /**
+     * Retrieves a project manager by its identifier.
+     *
+     * @param idProjectManager the identifier of the project manager to retrieve
+     * @return the matching ProjectManager, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public ProjectManager getProjectManagerById(int idProjectManager) throws DataOperationException {
         ProjectManager projectManager =  null;
@@ -75,6 +95,13 @@ public class ProjectManagerDAO implements IDAOProjectManager {
         return projectManager;
     }
 
+    /**
+     * Retrieves all project managers belonging to a given enterprise.
+     *
+     * @param enterprise the enterprise whose project managers are requested
+     * @return a list of project managers for the enterprise, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<ProjectManager> getProjectManagersByEnterprise(Enterprise enterprise) throws DataOperationException {
         List<ProjectManager> projectManagers = new ArrayList<>();

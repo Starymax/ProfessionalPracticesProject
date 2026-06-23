@@ -17,4 +17,6 @@ public interface IDAOStudentAdvance {
     boolean updateRealizedHours(int advanceId, float realizedHours) throws DataOperationException;
 
     List<StudentAdvance> getAdvancesByStudentAndWeeklyLog(int studentId, int weeklyLogId) throws DataOperationException;
+
+    float getTotalHoursByIdStudent(int studentId) throws DataOperationException;
 }

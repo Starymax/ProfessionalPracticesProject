@@ -16,8 +16,21 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for User.
+ * Provides persistence and retrieval operations on the usuario table,
+ * as well as role-based session management.
+ */
 public class UserDAO implements IDAOUser {
     private static final Logger logger = Logger.getLogger(UserDAO.class.getName());
+
+    /**
+     * Checks whether a user with the given identifier exists.
+     *
+     * @param idUser the user identifier to check
+     * @return true if a matching user exists
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean userExist(int idUser) throws DataOperationException {
         String query = "SELECT id_usuario FROM  usuario where id_usuario=?;";
@@ -38,6 +51,14 @@ public class UserDAO implements IDAOUser {
         return exist;
     }
 
+    /**
+     * Registers the base user record shared by all roles.
+     *
+     * @param user the user to register, must not be null
+     * @return the generated identifier of the new user, or -1 if none was generated
+     * @throws IllegalArgumentException if user is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public int registerUser(User user) throws DataOperationException {
         if (user == null) {
@@ -70,6 +91,13 @@ public class UserDAO implements IDAOUser {
         return generatedID;
     }
 
+    /**
+     * Updates the base data of an existing user.
+     *
+     * @param user the user carrying the updated data, ignored if null
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean updateUser(User user) throws DataOperationException {
         boolean updated = false;
@@ -96,38 +124,81 @@ public class UserDAO implements IDAOUser {
         return updated;
     }
 
+    /**
+     * Retrieves a user by email, returning the concrete role (student or professor).
+     *
+     * @param email the email to search for, must not be null or blank
+     * @return the matching User, as a Student or Professor
+     * @throws IllegalArgumentException if email is null or blank
+     * @throws java.util.NoSuchElementException if no user exists with the given email
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public User getUserByEmail(String email) throws DataOperationException {
+        requireEmail(email);
+        int idUser = findUserIdByEmail(email);
+        return loadUserByRole(idUser);
+    }
+
+    /**
+     * Validates that the given email is present.
+     *
+     * @param email the email to validate
+     * @throws IllegalArgumentException if email is null or blank
+     */
+    @Override
+    public void requireEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("El correo no puede estar vacio");
         }
-        StudentDAO studentDAO = new StudentDAO();
-        ProfessorDAO professorDAO = new ProfessorDAO();
+    }
+
+    /**
+     * Looks up the identifier of the user registered with the given email.
+     *
+     * @param email the email to search for
+     * @return the matching user identifier
+     * @throws NoSuchElementException if no user exists with the given email
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public int findUserIdByEmail(String email) throws DataOperationException {
         String query = "SELECT id_usuario FROM usuario WHERE correo = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, email);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    int idUser = resultSet.getInt("id_usuario");
-                    if (isStudent(idUser)) {
-                        return studentDAO.getStudentById(idUser);
-                    } else {
-                        return professorDAO.getProfessorById(idUser);
-                    }
+                    return resultSet.getInt("id_usuario");
                 }
             }
-            logger.log(Level.WARNING, "Error al obtener el usuario");
-            throw new NoSuchElementException("Error al obtener el usuario");
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error al obtener el usuario", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al buscar el usuario");
+            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al buscar el usuario");
         }
+        logger.log(Level.WARNING, "Error al obtener el usuario");
+        throw new NoSuchElementException("Error al obtener el usuario");
     }
 
+    /**
+     * Loads the concrete user (student or professor) for the given identifier.
+     *
+     * @param idUser the user identifier
+     * @return the matching User, as a Student or Professor
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public User loadUserByRole(int idUser) throws DataOperationException {
+        return isStudent(idUser) ? new StudentDAO().getStudentById(idUser) : new ProfessorDAO().getProfessorById(idUser);
+    }
+
+    /**
+     * Determines whether the given user is a student.
+     *
+     * @param idUser the user identifier to check
+     * @return true if the user has a student record
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean isStudent(int idUser) throws DataOperationException {
         String query = "SELECT COUNT(*) FROM alumno WHERE id_usuario = ?";
@@ -146,6 +217,12 @@ public class UserDAO implements IDAOUser {
         }
     }
 
+    /**
+     * Opens the database connection using the credentials associated with the given role.
+     *
+     * @param role the role whose connection properties should be used
+     * @throws DataOperationException if the session could not be started
+     */
     @Override
     public void logInByRole(UserRole role) throws DataOperationException {
         try {
@@ -155,6 +232,9 @@ public class UserDAO implements IDAOUser {
         }
     }
 
+    /**
+     * Closes the current database connection, ending the user session.
+     */
     @Override
     public void logout() {
         DatabaseConnectionManager.getInstance().closeConnection();

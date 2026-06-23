@@ -28,9 +28,23 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Document and the student practice expedient.
+ * Provides persistence and retrieval operations on the documentos and
+ * expediente_practicas tables, as well as physical file handling for uploaded documents.
+ */
 public class DocumentDAO implements IDAODocument {
     private static final Logger logger = Logger.getLogger(DocumentDAO.class.getName());
 
+    /**
+     * Creates an empty practice expedient for a student in the given period.
+     *
+     * @param studentId the student's identifier
+     * @param period the period for the expedient, must not be null or blank
+     * @return true if the expedient was created successfully
+     * @throws IllegalArgumentException if period is null or blank
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean createExpedient(int studentId, String period) throws DataOperationException {
         if (period == null || period.isBlank()) {
@@ -55,6 +69,14 @@ public class DocumentDAO implements IDAODocument {
         return result;
     }
 
+    /**
+     * Retrieves the expedient period for a student identified by enrollment.
+     *
+     * @param enrollment the student's enrollment, must not be null or blank
+     * @return the expedient period, or null if none was found
+     * @throws IllegalArgumentException if enrollment is null or blank
+     * @throws DataOperationException if a database error occurs
+     */
     public String getPeriodByStudentEnrollment(String enrollment) throws DataOperationException {
         if (enrollment == null || enrollment.isBlank()) {
             logger.log(Level.WARNING, "La matricula esta vacia");
@@ -80,11 +102,24 @@ public class DocumentDAO implements IDAODocument {
         return period;
     }
 
+    /**
+     * Returns the current period formatted as yyyy-MM.
+     *
+     * @return the current period based on the system date
+     */
     public String getCurrentPeriod() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
         return LocalDate.now().format(formatter);
     }
 
+    /**
+     * Persists a document record associated with a practice.
+     *
+     * @param practice the practice the document belongs to
+     * @param document the document metadata to store
+     * @return the generated document identifier, or RegistrationStatus.FAILURE value if none was generated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public int loadDocument(Practice practice, Document document) throws DataOperationException {
         int generatedID = RegistrationStatus.FAILURE.getValue();
@@ -111,6 +146,14 @@ public class DocumentDAO implements IDAODocument {
         return generatedID;
     }
 
+    /**
+     * Checks whether a given document type has been loaded in a student's expedient.
+     *
+     * @param enrollment the student's enrollment
+     * @param documentType the expedient column name representing the document type
+     * @return true if the document type is marked as loaded
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean isLoaded(String enrollment, String documentType) throws DataOperationException {
         boolean isLoaded = false;
@@ -133,6 +176,15 @@ public class DocumentDAO implements IDAODocument {
         return isLoaded;
     }
 
+    /**
+     * Copies the document's source file into the student's expedient directory on disk.
+     *
+     * @param enrollment the student's enrollment, used as the target subdirectory
+     * @param document the document whose source file is copied, its directory must not be empty
+     * @return the absolute path of the stored file
+     * @throws IllegalArgumentException if the document's directory is null or empty
+     * @throws IOException if the file cannot be copied
+     */
     @Override
     public String uploadDocument(String enrollment, Document document) throws IOException{
     String targetPath = null;
@@ -154,6 +206,14 @@ public class DocumentDAO implements IDAODocument {
     return targetPath;
     }
 
+    /**
+     * Retrieves all documents associated with a practice.
+     *
+     * @param practice the practice whose documents are requested, must not be null
+     * @return a list of documents for the practice, empty if there are none
+     * @throws IllegalArgumentException if practice is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Document> getDocumentsByPractice(Practice practice) throws DataOperationException {
         if (practice == null) {
@@ -187,6 +247,15 @@ public class DocumentDAO implements IDAODocument {
         return documents;
     }
 
+    /**
+     * Retrieves the report documents (partial, monthly and final) uploaded for a practice,
+     * including their validation status.
+     *
+     * @param practice the practice whose uploaded reports are requested, must not be null
+     * @return a list of uploaded report documents, empty if there are none
+     * @throws IllegalArgumentException if practice is null
+     * @throws DataOperationException if a database error occurs
+     */
     public List<Document> getUploadedReportsByPractice(Practice practice) throws DataOperationException {
         if (practice == null) {
             logger.log(Level.WARNING, "La practica es nula");
@@ -222,6 +291,13 @@ public class DocumentDAO implements IDAODocument {
         return reports;
     }
 
+    /**
+     * Marks a report document as validated (accepted).
+     *
+     * @param documentId the identifier of the document to accept
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     public boolean acceptReport(int documentId) throws DataOperationException {
         boolean accepted = false;
         String query = "UPDATE documentos SET estado_validacion = 'VALIDADO' WHERE id_documento = ?";
@@ -239,6 +315,13 @@ public class DocumentDAO implements IDAODocument {
         return accepted;
     }
 
+    /**
+     * Retrieves a validation summary for each student that has uploaded non-report documents
+     * while having an assigned project.
+     *
+     * @return a list of student validation summaries, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     public List<StudentValidationSummary> getStudentsWithUploadedDocuments() throws DataOperationException {
         List<int[]> rawSummaries = new ArrayList<>();
         String query = "SELECT a.id_usuario AS id_alumno, " +
@@ -280,6 +363,14 @@ public class DocumentDAO implements IDAODocument {
         return summaries;
     }
 
+    /**
+     * Retrieves all documents of a practice along with their validation status, for review.
+     *
+     * @param practice the practice whose documents are requested, must not be null
+     * @return a list of documents pending or available for validation, empty if there are none
+     * @throws IllegalArgumentException if practice is null
+     * @throws DataOperationException if a database error occurs
+     */
     public List<Document> getDocumentsForValidation(Practice practice) throws DataOperationException {
         if (practice == null) {
             logger.log(Level.WARNING, "La practica es nula");
@@ -313,10 +404,26 @@ public class DocumentDAO implements IDAODocument {
         return documents;
     }
 
+    /**
+     * Sets a document's validation status to validated.
+     *
+     * @param documentId the identifier of the document to validate
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     public boolean validateDocument(int documentId) throws DataOperationException {
         return updateValidationStatus(documentId, ValidationStatus.VALIDATED);
     }
 
+    /**
+     * Checks whether the required initial documents (acceptance letter and student schedule)
+     * have been validated for a practice.
+     *
+     * @param practice the practice to check, must not be null
+     * @return true if both required initial documents are validated
+     * @throws IllegalArgumentException if practice is null
+     * @throws DataOperationException if a database error occurs
+     */
     public boolean areInitialDocumentsUploaded(Practice practice) throws DataOperationException {
         if (practice == null) {
             logger.log(Level.WARNING, "La practica es nula");
@@ -344,6 +451,14 @@ public class DocumentDAO implements IDAODocument {
         return uploaded;
     }
 
+    /**
+     * Deletes a document record and, on success, removes its physical file from disk.
+     *
+     * @param document the document to delete, must not be null
+     * @return true if the document record was deleted
+     * @throws IllegalArgumentException if document is null
+     * @throws DataOperationException if a database error occurs
+     */
     public boolean deleteDocument(Document document) throws DataOperationException {
         if (document == null) {
             logger.log(Level.WARNING, "El documento es nulo");
@@ -368,6 +483,11 @@ public class DocumentDAO implements IDAODocument {
         return deleted;
     }
 
+    /**
+     * Deletes the physical file at the given path if it exists. Failures are logged but not propagated.
+     *
+     * @param path the absolute path of the file to delete
+     */
     private void deletePhysicalFile(String path) {
         if (path != null && !path.isBlank()) {
             try {
@@ -378,6 +498,14 @@ public class DocumentDAO implements IDAODocument {
         }
     }
 
+    /**
+     * Updates the validation status of a document.
+     *
+     * @param documentId the identifier of the document to update
+     * @param status the new validation status
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     private boolean updateValidationStatus(int documentId, ValidationStatus status) throws DataOperationException {
         boolean updated = false;
         String query = "UPDATE documentos SET estado_validacion = ? WHERE id_documento = ?";

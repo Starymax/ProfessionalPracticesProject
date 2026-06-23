@@ -14,10 +14,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Notification.
+ * Provides persistence and retrieval operations on the notificacion table.
+ */
 public class NotificationDAO implements IDAONotification {
 
     private static final Logger logger = Logger.getLogger(NotificationDAO.class.getName());
 
+    /**
+     * Sends (persists) a notification addressed to a student.
+     *
+     * @param notification the notification to send
+     * @return true if the notification was stored successfully
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean sendNotification(Notification notification) throws DataOperationException {
         String query = "INSERT INTO notificacion (titulo, mensaje, id_alumno) VALUES (?,?,?)";
@@ -36,6 +47,13 @@ public class NotificationDAO implements IDAONotification {
         }
     }
 
+    /**
+     * Retrieves all notifications of a student, ordered by emission date descending.
+     *
+     * @param studentId the student's identifier
+     * @return a list of the student's notifications, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Notification> getNotificationsByStudentId(int studentId) throws DataOperationException {
         String query = "SELECT id_notificacion, titulo, mensaje, fecha_emision, leida FROM notificacion WHERE id_alumno = ? ORDER BY fecha_emision DESC";
@@ -65,6 +83,13 @@ public class NotificationDAO implements IDAONotification {
         return notifications;
     }
 
+    /**
+     * Marks a notification as read.
+     *
+     * @param notificationId the identifier of the notification to update
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean markAsRead(int notificationId) throws DataOperationException {
         String query = "UPDATE notificacion SET leida = TRUE WHERE id_notificacion = ?";
@@ -81,6 +106,13 @@ public class NotificationDAO implements IDAONotification {
         }
     }
 
+    /**
+     * Counts how many unread notifications a student has.
+     *
+     * @param studentId the student's identifier
+     * @return the number of unread notifications
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public int countUnreadNotifications(int studentId) throws DataOperationException {
         int count = 0;

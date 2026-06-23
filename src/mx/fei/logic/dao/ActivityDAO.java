@@ -17,9 +17,23 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Activity and its associated WeeklyLog records.
+ * Provides persistence and retrieval operations on the actividad and
+ * registro_semanal tables.
+ */
 public class ActivityDAO implements IDAOActivity {
     private static final Logger logger = Logger.getLogger(ActivityDAO.class.getName());
 
+    /**
+     * Inserts an activity together with its weekly logs.
+     *
+     * @param activity the activity to persist, must not be null
+     * @param project the project the activity belongs to, must not be null
+     * @param weeklyLogs the weekly logs to associate with the new activity
+     * @return true if the activity and its weekly logs were inserted successfully
+     * @throws DataOperationException if the activity or project is null, or a database error occurs
+     */
     @Override
     public boolean insertActivity(Activity activity, Project project, ArrayList<WeeklyLog> weeklyLogs) throws DataOperationException {
         if (activity == null) {
@@ -54,6 +68,17 @@ public class ActivityDAO implements IDAOActivity {
         }
     }
 
+    /**
+     * Inserts the given weekly logs for an activity using an existing connection.
+     * This method does not manage the connection lifecycle, allowing it to participate
+     * in a wider transaction.
+     *
+     * @param connection an open database connection
+     * @param logs the weekly logs to insert
+     * @param activityId the identifier of the activity the logs belong to
+     * @return true if the weekly logs were inserted successfully
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataOperationException {
         boolean success = false;
@@ -76,6 +101,13 @@ public class ActivityDAO implements IDAOActivity {
         return success;
     }
 
+    /**
+     * Retrieves an activity by its identifier, including its associated project.
+     *
+     * @param activityId the identifier of the activity to retrieve
+     * @return the matching Activity, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public Activity getActivityById(int activityId) throws DataOperationException {
         String query = "SELECT id_actividad, nombre_actividad, observaciones_actividad, id_proyecto FROM actividad WHERE id_actividad = ?";
@@ -103,6 +135,13 @@ public class ActivityDAO implements IDAOActivity {
         return activity;
     }
 
+    /**
+     * Retrieves all activities that belong to a given project, ordered by activity id.
+     *
+     * @param projectId the identifier of the project whose activities are requested
+     * @return a list of activities for the project, empty if the project has none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Activity> getActivitiesByProjectId(int projectId) throws DataOperationException {
         String query = "SELECT id_actividad, nombre_actividad, observaciones_actividad FROM actividad WHERE id_proyecto = ? ORDER BY id_actividad ASC";
@@ -132,6 +171,13 @@ public class ActivityDAO implements IDAOActivity {
         return activities;
     }
 
+    /**
+     * Retrieves a weekly log by its identifier, including its associated activity.
+     *
+     * @param weeklyLogId the identifier of the weekly log to retrieve
+     * @return the matching WeeklyLog, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public WeeklyLog getWeeklyLogById(int weeklyLogId) throws DataOperationException {
         String query = "SELECT semana, horas_planificadas, id_actividad FROM registro_semanal WHERE id_registro = ?";
@@ -157,6 +203,13 @@ public class ActivityDAO implements IDAOActivity {
         return weeklyLog;
     }
 
+    /**
+     * Retrieves all weekly logs associated with a given activity.
+     *
+     * @param activityId the identifier of the activity whose weekly logs are requested
+     * @return a list of weekly logs for the activity, empty if it has none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<WeeklyLog> getWeeklyLogsByActivityId(int activityId) throws DataOperationException {
         String query = "SELECT id_registro, semana, horas_planificadas FROM registro_semanal WHERE id_actividad = ?";

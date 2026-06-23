@@ -37,15 +37,18 @@ public class ControllerGenerateAcceptanceLetter {
     }
 
     public void loadData() {
+        String errorMessage = resolveLetterData();
+        if (errorMessage != null) {
+            guiGenerateAcceptanceLetter.showError(errorMessage);
+        }
+    }
+
+    private String resolveLetterData() {
         String errorMessage = null;
         if (student == null) {
             errorMessage = "No hay estudiante seleccionado.";
         } else {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy");
-            String currentDate = simpleDateFormat.format(new Date());
-            guiGenerateAcceptanceLetter.setDate(currentDate);
-            guiGenerateAcceptanceLetter.setStudentName(student.getName() + " " + student.getLastName());
-            guiGenerateAcceptanceLetter.setEnrollment(student.getEnrollment());
+            populateStudentHeader();
             try {
                 PracticeDAO practiceDAO = new PracticeDAO();
                 practice = practiceDAO.getPracticeByEnrollment(student.getEnrollment());
@@ -56,18 +59,7 @@ public class ControllerGenerateAcceptanceLetter {
                     if (project == null) {
                         errorMessage = "El estudiante no tiene un proyecto asignado.";
                     } else {
-                        String enterpriseName = (project.getEnterprise() != null) ? project.getEnterprise().getName() : "No especificada";
-                        guiGenerateAcceptanceLetter.setEnterprise(enterpriseName);
-                        guiGenerateAcceptanceLetter.setStartDate(project.getStartDate() != null ? project.getStartDate().toString() : "No definida");
-                        guiGenerateAcceptanceLetter.setEndDate(project.getFinalDate() != null ? project.getFinalDate().toString() : "No definida");
-                        ProjectManager manager = project.getProjectManager();
-                        if (manager != null) {
-                            guiGenerateAcceptanceLetter.setResponsibleEmail(manager.getEmailProjectManager() != null ? manager.getEmailProjectManager() : "");
-                            guiGenerateAcceptanceLetter.setResponsiblePhone(manager.getPhoneNumberProjectManager() != null ? manager.getPhoneNumberProjectManager() : "");
-                        } else {
-                            guiGenerateAcceptanceLetter.setResponsibleEmail("No especificado");
-                            guiGenerateAcceptanceLetter.setResponsiblePhone("No especificado");
-                        }
+                        populateProjectData();
                     }
                 }
             } catch (DataOperationException e) {
@@ -75,8 +67,31 @@ public class ControllerGenerateAcceptanceLetter {
                 errorMessage = "Error al cargar datos: " + e.getMessage();
             }
         }
-        if (errorMessage != null) {
-            guiGenerateAcceptanceLetter.showError(errorMessage);
+        return errorMessage;
+    }
+
+    private void populateStudentHeader() {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy");
+        guiGenerateAcceptanceLetter.setDate(simpleDateFormat.format(new Date()));
+        guiGenerateAcceptanceLetter.setStudentName(student.getName() + " " + student.getLastName());
+        guiGenerateAcceptanceLetter.setEnrollment(student.getEnrollment());
+    }
+
+    private void populateProjectData() {
+        String enterpriseName = (project.getEnterprise() != null) ? project.getEnterprise().getName() : "No especificada";
+        guiGenerateAcceptanceLetter.setEnterprise(enterpriseName);
+        guiGenerateAcceptanceLetter.setStartDate(project.getStartDate() != null ? project.getStartDate().toString() : "No definida");
+        guiGenerateAcceptanceLetter.setEndDate(project.getFinalDate() != null ? project.getFinalDate().toString() : "No definida");
+        populateResponsibleContact(project.getProjectManager());
+    }
+
+    private void populateResponsibleContact(ProjectManager manager) {
+        if (manager == null) {
+            guiGenerateAcceptanceLetter.setResponsibleEmail("No especificado");
+            guiGenerateAcceptanceLetter.setResponsiblePhone("No especificado");
+        } else {
+            guiGenerateAcceptanceLetter.setResponsibleEmail(manager.getEmailProjectManager() != null ? manager.getEmailProjectManager() : "");
+            guiGenerateAcceptanceLetter.setResponsiblePhone(manager.getPhoneNumberProjectManager() != null ? manager.getPhoneNumberProjectManager() : "");
         }
     }
 

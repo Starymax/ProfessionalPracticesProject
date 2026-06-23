@@ -18,9 +18,22 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Student.
+ * Provides persistence and retrieval operations on the alumno table and the
+ * vw_alumnos view, as well as project selection and assignment operations.
+ */
 public class StudentDAO implements IDAOStudent {
     private static final Logger logger = Logger.getLogger(StudentDAO.class.getName());
 
+    /**
+     * Builds a Student from the current row of the given result set.
+     * The assigned project is left unresolved and must be loaded separately if needed.
+     *
+     * @param resultSet a result set positioned on a valid row
+     * @return the Student represented by the current row
+     * @throws SQLException if a column cannot be read from the result set
+     */
     @Override
     public Student buildStudentFromResultSet(ResultSet resultSet) throws SQLException {
         int idUser = resultSet.getInt("id_usuario");
@@ -37,6 +50,13 @@ public class StudentDAO implements IDAOStudent {
         return new Student(idUser, name, lastName, mail, password, gender, activeStatus, enrollment, indigenousLanguage, null, grade, studentProjectId);
     }
 
+    /**
+     * Resolves and attaches the assigned project to each student that has a pending project id.
+     * Students whose project cannot be found are still kept in the returned list without a project.
+     *
+     * @param students the students whose assigned projects should be resolved
+     * @return the list of students with their assigned projects resolved when possible
+     */
     @Override
     public List<Student> resolveProjectsOfStudents(List<Student> students) {
         ProjectDAO projectDAO = new ProjectDAO();
@@ -56,12 +76,50 @@ public class StudentDAO implements IDAOStudent {
         return validStudents;
     }
 
+    /**
+     * Retrieves a student by enrollment, resolving their assigned project.
+     *
+     * @param enrollment the student's enrollment, must not be null or blank
+     * @return the matching Student
+     * @throws IllegalArgumentException if enrollment is null or blank
+     * @throws NoSuchElementException if no student exists with the given enrollment
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public Student getStudentByEnrollment(String enrollment) throws DataOperationException, NoSuchElementException {
+        requireEnrollment(enrollment);
+        Student student = searchStudentByEnrollment(enrollment);
+        if (student == null) {
+            logger.log(Level.WARNING, "Error al buscar el estudiante por matrícula");
+            throw new NoSuchElementException("No se encontró el estudiante");
+        }
+        resolveProjectsOfStudents(List.of(student));
+        return student;
+    }
+
+    /**
+     * Validates that the given enrollment is present.
+     *
+     * @param enrollment the enrollment to validate
+     * @throws IllegalArgumentException if enrollment is null or blank
+     */
+    @Override
+    public void requireEnrollment(String enrollment) {
         if (enrollment == null || enrollment.isBlank()) {
             logger.log(Level.WARNING, "La matrícula está vacía");
             throw new IllegalArgumentException("La matrícula no puede estar vacía");
         }
+    }
+
+    /**
+     * Searches the student matching the given enrollment, without resolving the assigned project.
+     *
+     * @param enrollment the enrollment to search for
+     * @return the matching Student, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public Student searchStudentByEnrollment(String enrollment) throws DataOperationException {
         Student student = null;
         String query = "SELECT * FROM vw_alumnos WHERE matricula=?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
@@ -72,29 +130,22 @@ public class StudentDAO implements IDAOStudent {
                     student = buildStudentFromResultSet(resultSet);
                 }
             }
-            if (student == null) {
-                logger.log(Level.WARNING, "Error al buscar el estudiante por matrícula");
-                throw new NoSuchElementException("No se encontró el estudiante");
-            }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al buscar el estudiante por matrícula", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al obtener los datos del estudiante");
-        }
-        if (student != null) {
-            resolveProjectsOfStudents(List.of(student));
+            logger.log(Level.SEVERE, "Error al obtener los datos del estudiante", e);
+            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener los datos del estudiante");
         }
         return student;
     }
 
+    /**
+     * Searches the student matching the given identifier, without resolving the assigned project.
+     *
+     * @param idStudent the user identifier to search for
+     * @return the matching Student, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
-    public Student getStudentById(Integer idStudent) throws DataOperationException {
-        if (idStudent == null || idStudent == 0) {
-            logger.log(Level.WARNING, "El id esta vacio");
-            throw new IllegalArgumentException("El Id no puede estar vacio");
-        }
+    public Student searchStudentById(Integer idStudent) throws DataOperationException {
         Student student = null;
         String query = "SELECT * FROM vw_alumnos WHERE id_usuario=?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
@@ -105,63 +156,150 @@ public class StudentDAO implements IDAOStudent {
                     student = buildStudentFromResultSet(resultSet);
                 }
             }
-            if (student == null) {
-                logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
-                throw new DataOperationException("No se encontro el estudiante");
-            }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error al buscar el estudiante por ID", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al obtener los datos del estudiante");
-        }
-        if (student != null) {
-            resolveProjectsOfStudents(List.of(student));
+            logger.log(Level.SEVERE, "Error al obtener los datos del estudiante", e);
+            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener los datos del estudiante");
         }
         return student;
     }
 
+    /**
+     * Retrieves a student by their user identifier, resolving their assigned project.
+     *
+     * @param idStudent the student's user identifier, must not be null or 0
+     * @return the matching Student
+     * @throws IllegalArgumentException if idStudent is null or 0
+     * @throws DataOperationException if no student is found or a database error occurs
+     */
+    @Override
+    public Student getStudentById(Integer idStudent) throws DataOperationException {
+        requireStudentId(idStudent);
+        Student student = searchStudentById(idStudent);
+        if (student == null) {
+            logger.log(Level.WARNING, "No se encontro el estudiante con el id: " + idStudent);
+            throw new DataOperationException("No se encontro el estudiante");
+        }
+        resolveProjectsOfStudents(List.of(student));
+        return student;
+    }
+
+    /**
+     * Validates that the given student identifier is present.
+     *
+     * @param idStudent the identifier to validate
+     * @throws IllegalArgumentException if idStudent is null or 0
+     */
+    @Override
+    public void requireStudentId(Integer idStudent) {
+        if (idStudent == null || idStudent == 0) {
+            logger.log(Level.WARNING, "El id esta vacio");
+            throw new IllegalArgumentException("El Id no puede estar vacio");
+        }
+    }
+
+    /**
+     * Registers a new student, creating the underlying user record first.
+     *
+     * @param student the student to register, must not be null
+     * @return true if the student was registered successfully
+     * @throws IllegalArgumentException if student is null
+     * @throws IllegalStateException if a student with the same enrollment already exists
+     * @throws DataOperationException if the user could not be created or a database error occurs
+     */
     @Override
     public boolean registerStudent(Student student) throws DataOperationException {
-        boolean result = false;
+        requireStudent(student);
+        ensureEnrollmentAvailable(student.getEnrollment());
+        int idUser = createUserForStudent(student);
+        return insertStudentRecord(student, idUser);
+    }
+
+    /**
+     * Validates that the given student is present.
+     *
+     * @param student the student to validate
+     * @throws IllegalArgumentException if student is null
+     */
+    @Override
+    public void requireStudent(Student student) {
         if (student == null) {
             logger.log(Level.WARNING, "El estudiante es nulo");
             throw new IllegalArgumentException("El estudiante no puede ser nulo");
         }
-        try {
-            getStudentByEnrollment(student.getEnrollment());
-            logger.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + student.getEnrollment());
-            throw new IllegalStateException("Ya existe un estudiante con esa matricula");
-        } catch (NoSuchElementException e) {
-            logger.log(Level.INFO, "Matricula disponible para el registro");
-        }
-        try {
-            UserDAO userDAO = new UserDAO();
-            int idUser = userDAO.registerUser(student);
-            if (idUser == RegistrationStatus.FAILURE.getValue()) {
-                logger.log(Level.SEVERE, "No se logro registrar el usuario");
-                throw new DataOperationException("No se logro registrar el usuario");
-            }
-            String queryRegisterStudent = "INSERT INTO alumno (id_usuario, matricula, lengua_indigena, calificacion) VALUES (?,?,?,?)";
-            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
-                 PreparedStatement preparedStatementStudent = connection.prepareStatement(queryRegisterStudent)) {
-                preparedStatementStudent.setInt(1, idUser);
-                preparedStatementStudent.setString(2, student.getEnrollment());
-                preparedStatementStudent.setBoolean(3, student.isIndigenousLanguage());
-                preparedStatementStudent.setFloat(4, student.getGrade());
-                result = preparedStatementStudent.executeUpdate() > 0;
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando al estudiante", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al registrar el alumno");
-        }
-        return result;
     }
 
+    /**
+     * Ensures no student is already registered with the given enrollment.
+     *
+     * @param enrollment the enrollment to check
+     * @throws IllegalStateException if a student with the same enrollment already exists
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public void ensureEnrollmentAvailable(String enrollment) throws DataOperationException {
+        boolean exists = true;
+        try {
+            getStudentByEnrollment(enrollment);
+        } catch (NoSuchElementException e) {
+            logger.log(Level.INFO, "Matricula disponible para el registro");
+            exists = false;
+        }
+        if (exists) {
+            logger.log(Level.WARNING, "Ya existe un estudiante con la matricula: " + enrollment);
+            throw new IllegalStateException("Ya existe un estudiante con esa matricula");
+        }
+    }
+
+    /**
+     * Creates the underlying user record for a student.
+     *
+     * @param student the student whose user record is created
+     * @return the generated user identifier
+     * @throws DataOperationException if the user could not be created
+     */
+    @Override
+    public int createUserForStudent(Student student) throws DataOperationException {
+        UserDAO userDAO = new UserDAO();
+        int idUser = userDAO.registerUser(student);
+        if (idUser == RegistrationStatus.FAILURE.getValue()) {
+            logger.log(Level.SEVERE, "No se logro registrar el usuario");
+            throw new DataOperationException("No se logro registrar el usuario");
+        }
+        return idUser;
+    }
+
+    /**
+     * Inserts the student-specific record linked to an existing user.
+     *
+     * @param student the student to insert
+     * @param idUser the identifier of the previously created user
+     * @return true if the student record was inserted
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public boolean insertStudentRecord(Student student, int idUser) throws DataOperationException {
+        String query = "INSERT INTO alumno (id_usuario, matricula, lengua_indigena, calificacion) VALUES (?,?,?,?)";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatementStudent = connection.prepareStatement(query)) {
+            preparedStatementStudent.setInt(1, idUser);
+            preparedStatementStudent.setString(2, student.getEnrollment());
+            preparedStatementStudent.setBoolean(3, student.isIndigenousLanguage());
+            preparedStatementStudent.setFloat(4, student.getGrade());
+            return preparedStatementStudent.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error registrando al estudiante", e);
+            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al registrar el alumno");
+        }
+    }
+
+    /**
+     * Updates the student-specific data (indigenous language flag and grade).
+     *
+     * @param student the student carrying the updated data, must not be null
+     * @return true if at least one row was updated
+     * @throws IllegalArgumentException if student is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean modifyStudent(Student student) throws DataOperationException {
         if (student == null) {
@@ -186,6 +324,12 @@ public class StudentDAO implements IDAOStudent {
         return updated;
     }
 
+    /**
+     * Retrieves all students with their assigned projects resolved.
+     *
+     * @return a list of all students, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Student> getStudents() throws DataOperationException {
         List<Student> students = new ArrayList<>();
@@ -206,6 +350,13 @@ public class StudentDAO implements IDAOStudent {
         return resolveProjectsOfStudents(students);
     }
 
+    /**
+     * Retrieves the students that have completed their three project selections but have not yet
+     * been assigned a project.
+     *
+     * @return a list of students awaiting project assignment, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Student> getStudentsWithoutProject() throws DataOperationException {
         List<Student> students = new ArrayList<>();
@@ -231,6 +382,12 @@ public class StudentDAO implements IDAOStudent {
         return resolveProjectsOfStudents(students);
     }
 
+    /**
+     * Retrieves all active students with their assigned projects resolved.
+     *
+     * @return a list of active students, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Student> getActiveStudents() throws DataOperationException {
         List<Student> students = new ArrayList<>();
@@ -251,6 +408,15 @@ public class StudentDAO implements IDAOStudent {
         return resolveProjectsOfStudents(students);
     }
 
+    /**
+     * Retrieves the students enrolled in the practice associated with a given educational experience.
+     *
+     * @param nrc the NRC of the educational experience, must not be null or blank
+     * @return a list of students for the educational experience, empty if there are none
+     * @throws IllegalArgumentException if nrc is null or blank
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
     public List<Student> getStudentsByEducationalExperience(String nrc) throws DataOperationException {
         if (nrc == null || nrc.isBlank()) {
             logger.log(Level.WARNING, "El nrc esta vacio");
@@ -276,6 +442,13 @@ public class StudentDAO implements IDAOStudent {
         return resolveProjectsOfStudents(students);
     }
 
+    /**
+     * Stores the projects a student has selected as preferences.
+     *
+     * @param selectedProjects the projects selected by the student
+     * @param student the student making the selection
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public void saveSelectedProjects(List<Project> selectedProjects, Student student) throws DataOperationException {
         String query = "INSERT INTO seleccion (matricula, proyecto_seleccionado) VALUES (?,?);";
@@ -296,6 +469,13 @@ public class StudentDAO implements IDAOStudent {
         }
     }
 
+    /**
+     * Retrieves the projects a student selected as preferences.
+     *
+     * @param student the student whose selected projects are requested
+     * @return a list of the student's selected projects, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Project> getSelectedProjects(Student student) throws DataOperationException {
         ArrayList<Project> selectedProjects = new ArrayList<>();
@@ -323,6 +503,14 @@ public class StudentDAO implements IDAOStudent {
         return selectedProjects;
     }
 
+    /**
+     * Assigns a project to a student and decrements the project's available places.
+     *
+     * @param student the student to assign the project to
+     * @param project the project being assigned
+     * @return true if the project was assigned successfully
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean assignProject(Student student, Project project) throws DataOperationException {
         boolean assigned = false;
@@ -347,6 +535,13 @@ public class StudentDAO implements IDAOStudent {
         return assigned;
     }
 
+    /**
+     * Assigns an educational experience to a student by creating the corresponding practice record.
+     *
+     * @param practice the practice linking the student to the educational experience
+     * @return true if the educational experience was assigned successfully
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean assignEducationalExperience(Practice practice) throws DataOperationException {
         boolean assigned = false;
@@ -367,6 +562,13 @@ public class StudentDAO implements IDAOStudent {
         return assigned;
     }
 
+    /**
+     * Retrieves the active students who have not yet been assigned any educational experience.
+     *
+     * @return a list of students without an educational experience, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
     public List<Student> getStudentsWithoutEducationalExperience() throws DataOperationException {
         String query = "SELECT u.id_usuario, u.nombre, u.apellidos, a.matricula " +
                 "FROM usuario u " +

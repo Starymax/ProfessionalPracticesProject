@@ -26,7 +26,6 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -60,6 +59,13 @@ public class ControllerGeneratePartialReport {
     }
 
     public void loadData() {
+        String errorMessage = resolveStudentData();
+        if (errorMessage != null) {
+            guiGeneratePartialReport.showError(errorMessage);
+        }
+    }
+
+    private String resolveStudentData() {
         String errorMessage = null;
         if (student == null) {
             errorMessage = "No hay estudiante seleccionado para generar el reporte.";
@@ -70,52 +76,71 @@ public class ControllerGeneratePartialReport {
                 if (practice == null || practice.getEducationalExperience() == null) {
                     errorMessage = "El estudiante no tiene una práctica o experiencia educativa asignada.";
                 } else {
-                    educationalExperience = practice.getEducationalExperience();
-                    String career = educationalExperience.getEducationalProgram();
-                    String nrc = educationalExperience.getNrc();
-                    String professor = (educationalExperience.getProfessor() != null) ? educationalExperience.getProfessor().getName() + " " + educationalExperience.getProfessor().getLastName() : "N/A";
-                    String period = educationalExperience.getPeriod();
-                    guiGeneratePartialReport.setCareer(career);
-                    guiGeneratePartialReport.setNrc(nrc);
-                    guiGeneratePartialReport.setProfessor(professor);
-                    guiGeneratePartialReport.setPeriod(period);
-                    Project project = student.getAssignedProject();
-                    String enterprise = (project != null && project.getEnterprise() != null) ? project.getEnterprise().getName() : "N/A";
-                    String projectName = (project != null) ? project.getNameProject() : "N/A";
-                    String objective = (project != null) ? project.getGeneralObjective() : "N/A";
-                    String methodology = (project != null) ? project.getMethodology() : "N/A";
-                    guiGeneratePartialReport.setStudentName(student.getName() + " " + student.getLastName());
-                    guiGeneratePartialReport.setEnrollment(student.getEnrollment());
-                    guiGeneratePartialReport.setOrganization(enterprise);
-                    guiGeneratePartialReport.setProjectName(projectName);
-                    guiGeneratePartialReport.setObjectiveAndMethodology(objective, methodology);
-                    ActivityDAO activityDAO = new ActivityDAO();
-                    activities = activityDAO.getActivitiesByProjectId(project.getProjectId());
-                    weeklyLogs = new ArrayList<>();
-                    advancesByWeek = new HashMap<>();
-                    StudentAdvanceDAO advanceDAO = new StudentAdvanceDAO();
-                    for (Activity activity : activities) {
-                        List<WeeklyLog> logs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
-                        weeklyLogs.addAll(logs);
-                        for (WeeklyLog log : logs) {
-                            List<StudentAdvance> advances = advanceDAO.getAdvancesByStudentAndWeeklyLog(student.getUserId(), log.getWeeklyLogId());
-                            advancesByWeek.put(log.getWeeklyLogId(), advances);
-                        }
-                    }
-                    ObservableList<PartialActivityRow> rows = FXCollections.observableArrayList();
-                    for (Activity activity : activities) {
-                        rows.add(createActivityRow(activity));
-                    }
-                    guiGeneratePartialReport.setActivities(rows);
+                    populateReportFields();
+                    loadActivitiesData();
+                    populateActivityRows();
                 }
             } catch (DataOperationException e) {
                 logger.log(Level.SEVERE, "Error cargando datos para reporte parcial", e);
                 errorMessage = "Error al cargar los datos: " + e.getMessage();
             }
         }
-        if (errorMessage != null) {
-            guiGeneratePartialReport.showError(errorMessage);
+        return errorMessage;
+    }
+
+    private void populateReportFields() {
+        educationalExperience = practice.getEducationalExperience();
+        guiGeneratePartialReport.setCareer(educationalExperience.getEducationalProgram());
+        guiGeneratePartialReport.setNrc(educationalExperience.getNrc());
+        guiGeneratePartialReport.setProfessor(formatProfessorName(educationalExperience));
+        guiGeneratePartialReport.setPeriod(educationalExperience.getPeriod());
+        Project project = student.getAssignedProject();
+        String enterprise = (project != null && project.getEnterprise() != null) ? project.getEnterprise().getName() : "N/A";
+        String projectName = (project != null) ? project.getNameProject() : "N/A";
+        String objective = (project != null) ? project.getGeneralObjective() : "N/A";
+        String methodology = (project != null) ? project.getMethodology() : "N/A";
+        guiGeneratePartialReport.setStudentName(student.getName() + " " + student.getLastName());
+        guiGeneratePartialReport.setEnrollment(student.getEnrollment());
+        guiGeneratePartialReport.setOrganization(enterprise);
+        guiGeneratePartialReport.setProjectName(projectName);
+        guiGeneratePartialReport.setObjectiveAndMethodology(objective, methodology);
+    }
+
+    private String formatProfessorName(EducationalExperience experience) {
+        String professor = "N/A";
+        if (experience.getProfessor() != null) {
+            professor = experience.getProfessor().getName() + " " + experience.getProfessor().getLastName();
         }
+        return professor;
+    }
+
+    private void loadActivitiesData() throws DataOperationException {
+        Project project = student.getAssignedProject();
+        ActivityDAO activityDAO = new ActivityDAO();
+        activities = activityDAO.getActivitiesByProjectId(project.getProjectId());
+        weeklyLogs = new ArrayList<>();
+        advancesByWeek = new HashMap<>();
+        StudentAdvanceDAO advanceDAO = new StudentAdvanceDAO();
+        for (Activity activity : activities) {
+            List<WeeklyLog> logs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
+            weeklyLogs.addAll(logs);
+            loadAdvancesForLogs(logs, advanceDAO);
+        }
+    }
+
+    private void loadAdvancesForLogs(List<WeeklyLog> logs, StudentAdvanceDAO advanceDAO) throws DataOperationException {
+        for (WeeklyLog log : logs) {
+            List<StudentAdvance> advances = advanceDAO.getAdvancesByStudentAndWeeklyLog(student.getUserId(), log.getWeeklyLogId());
+            advancesByWeek.put(log.getWeeklyLogId(), advances);
+        }
+    }
+
+    private void populateActivityRows() {
+        ObservableList<PartialActivityRow> partialActivityRows = FXCollections.observableArrayList();
+        for (Activity activity : activities) {
+            partialActivityRows.add(createActivityRow(activity));
+        }
+        guiGeneratePartialReport.setActivities(partialActivityRows);
     }
 
     private PartialActivityRow createActivityRow(Activity activity) {
@@ -136,9 +161,9 @@ public class ControllerGeneratePartialReport {
         }
         String[] plan = new String[9];
         String[] real = new String[9];
-        for (int w = 1; w <= guiGeneratePartialReport.getTotalWeeks(); w++) {
-            plan[w] = String.format("%.1f", plannedByWeek.getOrDefault(w, 0f));
-            real[w] = String.format("%.1f", realByWeek.getOrDefault(w, 0f));
+        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+            plan[week] = String.format("%.1f", plannedByWeek.getOrDefault(week, 0f));
+            real[week] = String.format("%.1f", realByWeek.getOrDefault(week, 0f));
         }
 
         return new PartialActivityRow(
@@ -185,9 +210,9 @@ public class ControllerGeneratePartialReport {
         String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String fileName = String.format("ReporteParcial_%s_%s.pdf", student.getEnrollment(), timestamp);
         String outputPath = new File(directory, fileName).getAbsolutePath();
-        Map<String, Object> params = buildParameters(results);
+        Map<String, Object> parameters = buildParameters(results);
         PartialReportGenerator generator = new PartialReportGenerator();
-        boolean isGenerated = generator.generate(params, outputPath);
+        boolean isGenerated = generator.generate(parameters, outputPath);
         if (!isGenerated) {
             guiGeneratePartialReport.showError("Error al generar el PDF.");
         } else if (savePartialReport()) {
@@ -197,57 +222,67 @@ public class ControllerGeneratePartialReport {
     }
 
     private Map<String, Object> buildParameters(String results) {
-        Map<String, Object> params = new HashMap<>();
-        URL logoResource = getClass().getResource("/images/reporte_parcial1.png");
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        params.put("logo", logoResource);
-        params.put("dateReport", date.format(formatter));
-        params.put("career", cleanNull(educationalExperience.getEducationalProgram()));
-        params.put("nrc", cleanNull(educationalExperience.getNrc()));
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("logo", getClass().getResource("/images/reporte_parcial1.png"));
+        parameters.put("dateReport", LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        parameters.put("career", cleanNull(educationalExperience.getEducationalProgram()));
+        parameters.put("nrc", cleanNull(educationalExperience.getNrc()));
+        parameters.put("coveredHours", cleanNull(calculateTotalCoveredHours()));
+        parameters.put("professor", buildProfessorParameter());
+        parameters.put("student", (cleanNull(student.getName()) + " " + cleanNull(student.getLastName())).trim());
+        putProjectParameters(parameters);
+        parameters.put("reportNumber", String.valueOf(calculateReportNumber()));
+        parameters.put("resultsObtained", cleanNull(results));
+        String currentPeriod = formatPeriod(practice.getPeriod());
+        parameters.put("period", cleanNull(currentPeriod));
+        parameters.put("reportPeriod", cleanNull(currentPeriod));
+        putActivityParameters(parameters);
+        parameters.put("logoPartial2", getClass().getResource("/images/partialReport2.png"));
+        parameters.put("observations", guiGeneratePartialReport.getTextAreaObservations().getText());
+        return parameters;
+    }
+
+    private String buildProfessorParameter() {
         String professorName = "";
         if (educationalExperience.getProfessor() != null) {
-            professorName = cleanNull(educationalExperience.getProfessor().getName()) + " " +
-                    cleanNull(educationalExperience.getProfessor().getLastName());
+            professorName = cleanNull(educationalExperience.getProfessor().getName()) + " " + cleanNull(educationalExperience.getProfessor().getLastName());
         }
-        String coveredHours = calculateTotalCoveredHours();
-        params.put("coveredHours", cleanNull(coveredHours));
-        params.put("professor", professorName.trim().isEmpty() ? "N/A" : professorName.trim());
-        params.put("student", (cleanNull(student.getName()) + " " + cleanNull(student.getLastName())).trim());
+        return professorName.trim().isEmpty() ? "N/A" : professorName.trim();
+    }
+
+    private void putProjectParameters(Map<String, Object> parameters) {
         Project project = student.getAssignedProject();
-        params.put("enterprise", (project != null && project.getEnterprise() != null) ? cleanNull(project.getEnterprise().getName()) : "N/A");
-        params.put("project", project != null ? cleanNull(project.getNameProject()) : "N/A");
-        params.put("generalObjective", project != null ? cleanNull(project.getGeneralObjective()) : "N/A");
-        params.put("methodology", project != null ? cleanNull(project.getMethodology()) : "N/A");
-        params.put("reportNumber", String.valueOf(calculateReportNumber()));
-        params.put("resultsObtained", cleanNull(results));
-        String currentPeriod = formatPeriod(practice.getPeriod());
-        params.put("period", cleanNull(currentPeriod));
-        params.put("reportPeriod",  cleanNull(currentPeriod));
+        parameters.put("enterprise", (project != null && project.getEnterprise() != null) ? cleanNull(project.getEnterprise().getName()) : "N/A");
+        parameters.put("project", project != null ? cleanNull(project.getNameProject()) : "N/A");
+        parameters.put("generalObjective", project != null ? cleanNull(project.getGeneralObjective()) : "N/A");
+        parameters.put("methodology", project != null ? cleanNull(project.getMethodology()) : "N/A");
+    }
+
+    private void putActivityParameters(Map<String, Object> parameters) {
         ObservableList<PartialActivityRow> rows = guiGeneratePartialReport.getTableActivities().getItems();
         int rowCount = Math.min(rows.size(), guiGeneratePartialReport.getAmountOfActivities());
         for (int i = 0; i < rowCount; i++) {
-            PartialActivityRow row = rows.get(i);
-            int index = i + 1;
-            params.put("activity" + index, cleanNull(row.getActivityName()));
-            for (int w = 1; w <= guiGeneratePartialReport.getTotalWeeks(); w++) {
-                params.put("activity" + index + "PlanS" + w, cleanNull(getPlanValue(row, w)));
-                String realKey = "activity" + index + "RealS" + w;
-                params.put(realKey, cleanNull(getRealValue(row, w)));
-            }
+            putFilledActivity(parameters, rows.get(i), i + 1);
         }
         for (int i = rowCount + 1; i <= guiGeneratePartialReport.getAmountOfActivities(); i++) {
-            params.put("activity" + i, "");
-            for (int w = 1; w <= guiGeneratePartialReport.getTotalWeeks(); w++) {
-                params.put("activity" + i + "PlanS" + w, "");
-                params.put("activity" + i + "RealS" + w, "");
-            }
+            putEmptyActivity(parameters, i);
         }
-        URL logoResource2 = getClass().getResource("/images/partialReport2.png");
-        params.put("logoPartial2", logoResource2);
-        String observations = guiGeneratePartialReport.getTextAreaObservations().getText();
-        params.put("observations", observations);
-        return params;
+    }
+
+    private void putFilledActivity(Map<String, Object> parameters, PartialActivityRow partialActivityRow, int index) {
+        parameters.put("activity" + index, cleanNull(partialActivityRow.getActivityName()));
+        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+            parameters.put("activity" + index + "PlanS" + week, cleanNull(getPlanValue(partialActivityRow, week)));
+            parameters.put("activity" + index + "RealS" + week, cleanNull(getRealValue(partialActivityRow, week)));
+        }
+    }
+
+    private void putEmptyActivity(Map<String, Object> parameters, int index) {
+        parameters.put("activity" + index, "");
+        for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
+            parameters.put("activity" + index + "PlanS" + week, "");
+            parameters.put("activity" + index + "RealS" + week, "");
+        }
     }
 
     private String cleanNull(String value) {
@@ -282,40 +317,45 @@ public class ControllerGeneratePartialReport {
     }
 
     private boolean savePartialReport() {
-        boolean saved = false;
-        String errorMessage = null;
         String results = guiGeneratePartialReport.getResultsObtained();
+        String validationError = validateReportData(results);
+        boolean saved = false;
+        if (validationError != null) {
+            guiGeneratePartialReport.showError(validationError);
+        } else {
+            saved = persistPartialReport(results);
+        }
+        return saved;
+    }
+
+    private String validateReportData(String results) {
+        String errorMessage = null;
         if (student == null || educationalExperience == null) {
             errorMessage = "Faltan datos del estudiante o de la experiencia educativa.";
         } else if (results == null || results.trim().isEmpty()) {
             errorMessage = "Debe escribir los resultados obtenidos antes de guardar.";
-        } else {
-            try {
-                Report report = new Report(0, "PARCIAL", new Date(), "", results, student, educationalExperience.getNrc());
-                ObservableList<PartialActivityRow> rows = guiGeneratePartialReport.getTableActivities().getItems();
-                List<Activity> activityList = activities;
-                if (rows.size() != activityList.size()) {
-                    logger.warning("Número de filas en tabla no coincide con actividades reales.");
-                }
-                List<ReportActivityProgress> progressList = new ArrayList<>();
-                int limit = Math.min(rows.size(), activityList.size());
-                for (int i = 0; i < limit; i++) {
-                    progressList.add(calculateActivityProgress(rows.get(i), activityList.get(i)));
-                }
-                report.setActivityProgressList(progressList);
-                if (reportDAO.createPartialReport(report)) {
-                    logger.log(Level.INFO, "Reporte guardado correctamente.");
-                    saved = true;
-                } else {
-                    errorMessage = "No se pudo guardar el reporte.";
-                }
-            } catch (DataOperationException e) {
-                logger.log(Level.SEVERE, "Error al guardar reporte parcial", e);
-                errorMessage = "Error al guardar el reporte: " + e.getMessage();
-            } catch (NumberFormatException e) {
-                logger.log(Level.SEVERE, "Error de formato en las horas de la tabla", e);
-                errorMessage = "Error: Asegúrese de que las horas en la tabla sean números válidos.";
+        }
+        return errorMessage;
+    }
+
+    private boolean persistPartialReport(String results) {
+        String errorMessage = null;
+        boolean saved = false;
+        try {
+            Report report = new Report(0, "PARCIAL", new Date(), "", results, student, educationalExperience.getNrc());
+            report.setActivityProgressList(buildProgressList());
+            if (reportDAO.createPartialReport(report)) {
+                logger.log(Level.INFO, "Reporte guardado correctamente.");
+                saved = true;
+            } else {
+                errorMessage = "No se pudo guardar el reporte.";
             }
+        } catch (DataOperationException e) {
+            logger.log(Level.SEVERE, "Error al guardar reporte parcial", e);
+            errorMessage = "Error al guardar el reporte: " + e.getMessage();
+        } catch (NumberFormatException e) {
+            logger.log(Level.SEVERE, "Error de formato en las horas de la tabla", e);
+            errorMessage = "Error: Asegúrese de que las horas en la tabla sean números válidos.";
         }
         if (errorMessage != null) {
             guiGeneratePartialReport.showError(errorMessage);
@@ -323,13 +363,27 @@ public class ControllerGeneratePartialReport {
         return saved;
     }
 
-    private ReportActivityProgress calculateActivityProgress(PartialActivityRow row, Activity activity) {
+    private List<ReportActivityProgress> buildProgressList() {
+        ObservableList<PartialActivityRow> partialActivityRows = guiGeneratePartialReport.getTableActivities().getItems();
+        List<Activity> activityList = activities;
+        if (partialActivityRows.size() != activityList.size()) {
+            logger.warning("Número de filas en tabla no coincide con actividades reales.");
+        }
+        List<ReportActivityProgress> progressList = new ArrayList<>();
+        int limit = Math.min(partialActivityRows.size(), activityList.size());
+        for (int i = 0; i < limit; i++) {
+            progressList.add(calculateActivityProgress(partialActivityRows.get(i), activityList.get(i)));
+        }
+        return progressList;
+    }
+
+    private ReportActivityProgress calculateActivityProgress(PartialActivityRow partialActivityRow, Activity activity) {
         float totalPlanned = 0f;
         float totalReal = 0f;
         List<WeeklyLog> weeklyLogs = new ArrayList<>();
         for (int week = 1; week <= guiGeneratePartialReport.getTotalWeeks(); week++) {
-            float planned = Float.parseFloat(getPlanValue(row, week));
-            float real = Float.parseFloat(getRealValue(row, week));
+            float planned = Float.parseFloat(getPlanValue(partialActivityRow, week));
+            float real = Float.parseFloat(getRealValue(partialActivityRow, week));
             totalPlanned += planned;
             totalReal += real;
             if (planned > 0 || real > 0) {

@@ -19,10 +19,23 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Report and its activity/weekly progress detail.
+ * Provides persistence and retrieval operations on the reporte,
+ * reporte_actividad and reporte_actividad_semana tables.
+ */
 public class ReportDAO implements IDAOReport {
 
     private static final Logger LOGGER = Logger.getLogger(ReportDAO.class.getName());
 
+    /**
+     * Builds a Report from the current row of the given result set.
+     *
+     * @param resultSet a result set positioned on a valid row
+     * @param student the student the report belongs to
+     * @return the Report represented by the current row
+     * @throws SQLException if a column cannot be read from the result set
+     */
     @Override
     public Report buildReportFromResultSet(ResultSet resultSet, Student student) throws SQLException {
         int reportId = resultSet.getInt("id_reporte");
@@ -34,6 +47,14 @@ public class ReportDAO implements IDAOReport {
         return new Report(reportId, reportType, reportDate, observations, resultsObtained, student, nrc);
     }
 
+    /**
+     * Inserts the base report record and assigns the generated id back to the report.
+     *
+     * @param report the report to create, must not be null
+     * @return the generated identifier of the new report, or 0 if none was generated
+     * @throws IllegalArgumentException if report is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public int createReport(Report report) throws DataOperationException {
         int idGenerated = 0;
@@ -66,108 +87,150 @@ public class ReportDAO implements IDAOReport {
         return idGenerated;
     }
 
+    /**
+     * Creates a monthly report together with its activity progress and weekly progress detail,
+     * within a single transaction.
+     *
+     * @param report the monthly report to create, must not be null
+     * @return true if the report and all its detail were persisted successfully
+     * @throws IllegalArgumentException if report is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean createMonthlyReport(Report report) throws DataOperationException {
-        boolean success = false;
+        requireReport(report);
+        return persistReportWithWeeklyDetail(report, "Error al crear el reporte mensual");
+    }
+
+    /**
+     * Validates that the given report is present.
+     *
+     * @param report the report to validate
+     * @throws IllegalArgumentException if report is null
+     */
+    @Override
+    public void requireReport(Report report) {
         if (report == null) {
             throw new IllegalArgumentException("El reporte no puede ser nulo.");
         }
-        String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
-        String queryWeeklyProgress = "INSERT INTO reporte_actividad_semana (semana, horas_plan, horas_real, id_reporte_actividad) VALUES (?,?,?,?)";
+    }
+
+    /**
+     * Persists a report together with its activity progress and weekly progress detail
+     * within a single transaction, rolling back if the base report could not be created.
+     *
+     * @param report the report to persist
+     * @param errorMessage the base message used for logging and the thrown exception
+     * @return true if the report and all its detail were persisted successfully
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public boolean persistReportWithWeeklyDetail(Report report, String errorMessage) throws DataOperationException {
+        boolean success = false;
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
             int reportId = createReport(report);
             if (reportId == 0) {
                 connection.rollback();
             } else {
-                for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(queryActivities, Statement.RETURN_GENERATED_KEYS)) {
-                        preparedStatement.setFloat(1, activityProgress.getProgressPercentage());
-                        preparedStatement.setString(2, activityProgress.getObservations());
-                        preparedStatement.setInt(3, reportId);
-                        preparedStatement.setInt(4, activityProgress.getActivity().getActivityId());
-                        preparedStatement.executeUpdate();
-                        try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                            if (generatedKeys.next()) {
-                                int reportActivityId = generatedKeys.getInt(1);
-                                try (PreparedStatement weeklyStatement = connection.prepareStatement(queryWeeklyProgress)) {
-                                    for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
-                                        weeklyStatement.setInt(1, weeklyProgress.getWeek());
-                                        weeklyStatement.setFloat(2, weeklyProgress.getPlannedHours());
-                                        weeklyStatement.setFloat(3, weeklyProgress.getWorkedHours());
-                                        weeklyStatement.setInt(4, reportActivityId);
-                                        weeklyStatement.addBatch();
-                                    }
-                                    weeklyStatement.executeBatch();
-                                }
-                            }
-                        }
-                    }
-                }
+                insertActivitiesWithWeeklyDetail(connection, report, reportId);
                 connection.commit();
                 success = true;
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al crear el reporte mensual", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al crear el reporte mensual.");
+            LOGGER.log(Level.SEVERE, errorMessage, e);
+            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, errorMessage + ".");
         }
         return success;
     }
 
+    /**
+     * Inserts every activity progress of a report along with its weekly progress detail.
+     *
+     * @param connection the active transactional connection
+     * @param report the report whose activity progress is inserted
+     * @param reportId the generated identifier of the base report
+     * @throws SQLException if a database error occurs
+     */
+    @Override
+    public void insertActivitiesWithWeeklyDetail(Connection connection, Report report, int reportId) throws SQLException {
+        String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
+        for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
+            try (PreparedStatement preparedStatement = connection.prepareStatement(queryActivities, Statement.RETURN_GENERATED_KEYS)) {
+                bindActivityProgress(preparedStatement, activityProgress, reportId);
+                preparedStatement.executeUpdate();
+                insertWeeklyDetail(connection, preparedStatement, activityProgress);
+            }
+        }
+    }
+
+    /**
+     * Binds the activity progress parameters to the given statement.
+     *
+     * @param preparedStatement the statement to bind
+     * @param activityProgress the activity progress to bind
+     * @param reportId the generated identifier of the base report
+     * @throws SQLException if a parameter cannot be set
+     */
+    @Override
+    public void bindActivityProgress(PreparedStatement preparedStatement, ReportActivityProgress activityProgress, int reportId) throws SQLException {
+        preparedStatement.setFloat(1, activityProgress.getProgressPercentage());
+        preparedStatement.setString(2, activityProgress.getObservations());
+        preparedStatement.setInt(3, reportId);
+        preparedStatement.setInt(4, activityProgress.getActivity().getActivityId());
+    }
+
+    /**
+     * Inserts the weekly progress detail for the activity progress just persisted by the given statement.
+     *
+     * @param connection the active transactional connection
+     * @param activityStatement the statement that inserted the activity progress
+     * @param activityProgress the activity progress whose weekly detail is inserted
+     * @throws SQLException if a database error occurs
+     */
+    @Override
+    public void insertWeeklyDetail(Connection connection, PreparedStatement activityStatement, ReportActivityProgress activityProgress) throws SQLException {
+        String queryWeeklyProgress = "INSERT INTO reporte_actividad_semana (semana, horas_plan, horas_real, id_reporte_actividad) VALUES (?,?,?,?)";
+        try (ResultSet generatedKeys = activityStatement.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+                int reportActivityId = generatedKeys.getInt(1);
+                try (PreparedStatement weeklyStatement = connection.prepareStatement(queryWeeklyProgress)) {
+                    for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
+                        weeklyStatement.setInt(1, weeklyProgress.getWeek());
+                        weeklyStatement.setFloat(2, weeklyProgress.getPlannedHours());
+                        weeklyStatement.setFloat(3, weeklyProgress.getWorkedHours());
+                        weeklyStatement.setInt(4, reportActivityId);
+                        weeklyStatement.addBatch();
+                    }
+                    weeklyStatement.executeBatch();
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a partial report together with its activity progress and weekly progress detail,
+     * within a single transaction.
+     *
+     * @param report the partial report to create, must not be null
+     * @return true if the report and all its detail were persisted successfully
+     * @throws IllegalArgumentException if report is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean createPartialReport(Report report) throws DataOperationException {
-        boolean success = false;
-        if (report == null) {
-            throw new IllegalArgumentException("El reporte no puede ser nulo.");
-        }
-        String queryActivities = "INSERT INTO reporte_actividad (porcentaje_avance, observaciones, id_reporte, id_actividad) VALUES (?,?,?,?)";
-        String queryWeeklyProgress = "INSERT INTO reporte_actividad_semana (semana, horas_plan, horas_real, id_reporte_actividad) VALUES (?,?,?,?)";
-        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
-            connection.setAutoCommit(false);
-            int reportId = createReport(report);
-            if (reportId == 0) {
-                connection.rollback();
-            } else {
-                for (ReportActivityProgress activityProgress : report.getActivityProgressList()) {
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(queryActivities, Statement.RETURN_GENERATED_KEYS)) {
-                        preparedStatement.setFloat(1, activityProgress.getProgressPercentage());
-                        preparedStatement.setString(2, activityProgress.getObservations());
-                        preparedStatement.setInt(3, reportId);
-                        preparedStatement.setInt(4, activityProgress.getActivity().getActivityId());
-                        preparedStatement.executeUpdate();
-                        try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
-                            if (generatedKeys.next()) {
-                                int reportActivityId = generatedKeys.getInt(1);
-                                try (PreparedStatement weeklyStatement = connection.prepareStatement(queryWeeklyProgress)) {
-                                    for (WeeklyLog weeklyProgress : activityProgress.getWeeklyProgressList()) {
-                                        weeklyStatement.setInt(1, weeklyProgress.getWeek());
-                                        weeklyStatement.setFloat(2, weeklyProgress.getPlannedHours());
-                                        weeklyStatement.setFloat(3, weeklyProgress.getWorkedHours());
-                                        weeklyStatement.setInt(4, reportActivityId);
-                                        weeklyStatement.addBatch();
-                                    }
-                                    weeklyStatement.executeBatch();
-                                }
-                            }
-                        }
-                    }
-                }
-                connection.commit();
-                success = true;
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al crear el reporte parcial", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al crear el reporte parcial.");
-        }
-        return success;
+        requireReport(report);
+        return persistReportWithWeeklyDetail(report, "Error al crear el reporte parcial");
     }
 
+    /**
+     * Creates a final report together with its activity progress, within a single transaction.
+     *
+     * @param report the final report to create, must not be null
+     * @return true if the report and its detail were persisted successfully
+     * @throws IllegalArgumentException if report is null
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean createFinalReport(Report report) throws DataOperationException {
         boolean success = false;
@@ -203,6 +266,13 @@ public class ReportDAO implements IDAOReport {
         return success;
     }
 
+    /**
+     * Retrieves a report by its identifier, resolving its student.
+     *
+     * @param reportId the identifier of the report to retrieve
+     * @return the matching Report, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public Report getReportById(int reportId) throws DataOperationException {
         Report report = null;
@@ -228,6 +298,13 @@ public class ReportDAO implements IDAOReport {
         return report;
     }
 
+    /**
+     * Retrieves all reports of a student identified by enrollment, ordered by date descending.
+     *
+     * @param enrollment the student's enrollment
+     * @return a list of the student's reports, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Report> getReportsByStudentEnrollment(String enrollment) throws DataOperationException {
         List<Report> reports = new ArrayList<>();
@@ -257,6 +334,14 @@ public class ReportDAO implements IDAOReport {
         return reports;
     }
 
+    /**
+     * Counts how many reports of a given type a student has.
+     *
+     * @param reportType the report type to count
+     * @param studentId the student's identifier
+     * @return the number of matching reports
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public int countReportsByTypeAndStudent(String reportType, int studentId) throws DataOperationException {
         int count = 0;
@@ -280,6 +365,14 @@ public class ReportDAO implements IDAOReport {
         return count;
     }
 
+    /**
+     * Updates the observations of a report.
+     *
+     * @param reportId the identifier of the report to update
+     * @param observations the new observations text
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean setObservations(int reportId, String observations) throws DataOperationException {
         boolean success = false;
@@ -299,6 +392,15 @@ public class ReportDAO implements IDAOReport {
         return success;
     }
 
+    /**
+     * Updates the observations of each activity associated with a report in a single batch.
+     *
+     * @param reportId the identifier of the report whose activity observations are updated
+     * @param activityProgressList the activity progress entries carrying the new observations
+     * @return true if the batch update completed successfully
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
     public boolean updateActivityObservations(int reportId, List<ReportActivityProgress> activityProgressList) throws DataOperationException {
         boolean success = false;
         String query = "UPDATE reporte_actividad SET observaciones = ? WHERE id_reporte = ? AND id_actividad = ?";

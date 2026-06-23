@@ -16,6 +16,14 @@ public interface IDAOProfessor {
 
     boolean registerProfessor(Professor professor) throws DataOperationException;
 
+    void requireProfessor(Professor professor);
+
+    void ensurePersonalNumberAvailable(int personalNumber) throws DataOperationException;
+
+    int createUserFor(Professor professor) throws DataOperationException;
+
+    boolean insertProfessorRecord(Professor professor, int idUser) throws DataOperationException;
+
     List<Professor> getProfessors() throws DataOperationException;
 
     boolean modifyProfessor(Professor professor) throws DataOperationException;

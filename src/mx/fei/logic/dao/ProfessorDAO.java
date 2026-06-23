@@ -15,9 +15,21 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Data Access Object for Professor.
+ * Provides persistence and retrieval operations on the profesor table
+ * and the vw_profesor view.
+ */
 public class ProfessorDAO implements IDAOProfessor {
     private static final Logger logger = Logger.getLogger(ProfessorDAO.class.getName());
 
+    /**
+     * Builds a Professor from the current row of the given result set.
+     *
+     * @param resultSet a result set positioned on a valid row
+     * @return the Professor represented by the current row
+     * @throws SQLException if a column cannot be read from the result set
+     */
     @Override
     public Professor buildProfessorFromResultSet(ResultSet resultSet) throws SQLException {
         int idUser = resultSet.getInt("id_usuario");
@@ -34,6 +46,13 @@ public class ProfessorDAO implements IDAOProfessor {
         return new Professor(idUser, name, lastName, mail, password, gender, activeStatus, personalNumber, isCoordinator, isAdmin, shift);
     }
 
+    /**
+     * Retrieves a professor by their personal number.
+     *
+     * @param personalNumber the professor's personal number
+     * @return the matching Professor, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public Professor getProfessorByPersonalNumber(int personalNumber) throws DataOperationException {
         Professor professor = null;
@@ -56,6 +75,13 @@ public class ProfessorDAO implements IDAOProfessor {
         return professor;
     }
 
+    /**
+     * Retrieves a professor by their user identifier.
+     *
+     * @param idProfessor the professor's user identifier
+     * @return the matching Professor, or null if none was found
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public Professor getProfessorById(int idProfessor) throws DataOperationException {
         Professor professor = null;
@@ -78,44 +104,101 @@ public class ProfessorDAO implements IDAOProfessor {
         return professor;
     }
 
+    /**
+     * Registers a new professor, creating the underlying user record first.
+     *
+     * @param professor the professor to register, must not be null
+     * @return true if the professor was registered successfully
+     * @throws IllegalArgumentException if professor is null
+     * @throws IllegalStateException if a professor with the same personal number already exists
+     * @throws DataOperationException if the user could not be created or a database error occurs
+     */
     @Override
     public boolean registerProfessor(Professor professor) throws DataOperationException {
+        requireProfessor(professor);
+        ensurePersonalNumberAvailable(professor.getPersonalNumber());
+        int idUser = createUserFor(professor);
+        return insertProfessorRecord(professor, idUser);
+    }
+
+    /**
+     * Validates that the given professor is present.
+     *
+     * @param professor the professor to validate
+     * @throws IllegalArgumentException if professor is null
+     */
+    @Override
+    public void requireProfessor(Professor professor) {
         if (professor == null) {
             logger.log(Level.WARNING, "El profesor es nulo");
             throw new IllegalArgumentException("El profesor es nulo");
         }
-        if (getProfessorByPersonalNumber(professor.getPersonalNumber()) != null) {
+    }
+
+    /**
+     * Ensures no professor is already registered with the given personal number.
+     *
+     * @param personalNumber the personal number to check
+     * @throws IllegalStateException if a professor with the same personal number already exists
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public void ensurePersonalNumberAvailable(int personalNumber) throws DataOperationException {
+        if (getProfessorByPersonalNumber(personalNumber) != null) {
             logger.log(Level.WARNING, "El profesor con el numero de personal ya existe");
             throw new IllegalStateException("El profesor con el numero de personal ya existe");
         }
-        boolean registered = false;
-        try {
-            UserDAO userDAO = new UserDAO();
-            int idUser = userDAO.registerUser(professor);
-            if (idUser == RegistrationStatus.FAILURE.getValue()) {
-                logger.log(Level.WARNING, "No se logro registrar el profesor");
-                throw new DataOperationException("No se logro registrar el profesor");
-            }
-            String query = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) VALUES (?, ?, ?, ?, ?);";
-            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
-                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, idUser);
-                preparedStatement.setInt(2, professor.getPersonalNumber());
-                preparedStatement.setBoolean(3, professor.isCoordinator());
-                preparedStatement.setBoolean(4, professor.isAdmin());
-                preparedStatement.setString(5, professor.getShift());
-                registered = preparedStatement.executeUpdate() > 0;
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error registrando el profesor", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al registrar el profesor");
-        }
-        return registered;
     }
 
+    /**
+     * Creates the underlying user record for a professor.
+     *
+     * @param professor the professor whose user record is created
+     * @return the generated user identifier
+     * @throws DataOperationException if the user could not be created
+     */
+    @Override
+    public int createUserFor(Professor professor) throws DataOperationException {
+        UserDAO userDAO = new UserDAO();
+        int idUser = userDAO.registerUser(professor);
+        if (idUser == RegistrationStatus.FAILURE.getValue()) {
+            logger.log(Level.WARNING, "No se logro registrar el profesor");
+            throw new DataOperationException("No se logro registrar el profesor");
+        }
+        return idUser;
+    }
+
+    /**
+     * Inserts the professor-specific record linked to an existing user.
+     *
+     * @param professor the professor to insert
+     * @param idUser the identifier of the previously created user
+     * @return true if the professor record was inserted
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public boolean insertProfessorRecord(Professor professor, int idUser) throws DataOperationException {
+        String query = "INSERT INTO profesor (id_usuario, numero_de_personal, es_coordinador, es_administrador, turno) VALUES (?, ?, ?, ?, ?);";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, idUser);
+            preparedStatement.setInt(2, professor.getPersonalNumber());
+            preparedStatement.setBoolean(3, professor.isCoordinator());
+            preparedStatement.setBoolean(4, professor.isAdmin());
+            preparedStatement.setString(5, professor.getShift());
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error registrando el profesor", e);
+            throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al registrar el profesor");
+        }
+    }
+
+    /**
+     * Retrieves all professors.
+     *
+     * @return a list of all professors, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public List<Professor> getProfessors() throws DataOperationException {
         List<Professor> professors = new ArrayList<>();
@@ -136,6 +219,13 @@ public class ProfessorDAO implements IDAOProfessor {
         return professors;
     }
 
+    /**
+     * Updates the professor-specific data (coordinator flag, admin flag and shift).
+     *
+     * @param professor the professor carrying the updated data, ignored if null
+     * @return true if at least one row was updated
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean modifyProfessor(Professor professor) throws DataOperationException {
         boolean updated = false;
@@ -159,6 +249,12 @@ public class ProfessorDAO implements IDAOProfessor {
         return updated;
     }
 
+    /**
+     * Checks whether an active coordinator currently exists.
+     *
+     * @return true if there is at least one active professor flagged as coordinator
+     * @throws DataOperationException if a database error occurs
+     */
     @Override
     public boolean existsCoordinator() throws DataOperationException {
         boolean exists = false;
