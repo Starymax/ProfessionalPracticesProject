@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 public class GUILogin extends Application {
     private static final int INSTANCE_LOCK_PORT = 54321;
     private static ServerSocket instanceLock;
-
     private TextField textFieldMail;
     private PasswordField textFieldPassword;
     private Button buttonLogin;

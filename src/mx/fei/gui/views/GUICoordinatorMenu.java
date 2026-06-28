@@ -2,6 +2,7 @@ package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.controllers.ControllerCoordinatorMenu;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Professor;
 
 import javafx.application.Application;
@@ -89,6 +90,10 @@ public class GUICoordinatorMenu extends Application {
         if (labelCoordinatorShift != null) {
             labelCoordinatorShift.setText("Turno: " + professor.getShift());
         }
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
     }
 
     public void closeWindow() {

@@ -3,12 +3,13 @@ package mx.fei.gui.controllers;
 import mx.fei.gui.views.GUIChooseEnterprise;
 import mx.fei.gui.views.GUIManageEnterprise;
 import mx.fei.gui.views.GUIRegisterEnterprise;
+import mx.fei.logic.dao.EnterpriseDAO;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 
 public class ControllerManageEnterprise {
     private GUIManageEnterprise guiManageEnterprise;
@@ -25,7 +26,11 @@ public class ControllerManageEnterprise {
                 openRegisterEnterprise();
             }
             case "Modificar organización vinculada" -> {
-                openSelectEnterprise();
+                if (!existEnterprises()) {
+                    guiManageEnterprise.showError("No existen organizaciones disponibles por el momento.");
+                } else {
+                    openSelectEnterprise();
+                }
             }
             case "Regresar" -> {
                 guiManageEnterprise.closeWindow();
@@ -45,5 +50,18 @@ public class ControllerManageEnterprise {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiChooseEnterprise.start(stage);
+    }
+
+    private boolean existEnterprises() {
+        EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
+        boolean exist = true;
+        try {
+            if (enterpriseDAO.getEnterprises().isEmpty()) {
+                exist = false;
+            }
+        } catch (DataOperationException e) {
+            guiManageEnterprise.showError("Error al obtener la lista de la lista de las organizaciones");
+        }
+        return exist;
     }
 }

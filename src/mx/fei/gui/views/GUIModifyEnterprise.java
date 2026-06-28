@@ -209,7 +209,6 @@ public class GUIModifyEnterprise extends Application {
         return buttonCancel;
     }
 
-
     private void configureLocationCombos() {
         comboBoxCountry.setOnAction(e -> {
             String selectedCountry = comboBoxCountry.getValue();

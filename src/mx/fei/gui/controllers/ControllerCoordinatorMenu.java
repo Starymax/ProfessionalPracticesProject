@@ -8,6 +8,7 @@ import mx.fei.gui.views.GUIValidateStudentDocuments;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.gui.views.GUICoordinatorMenu;
+import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.UserDAO;
 
 import javafx.event.ActionEvent;
@@ -17,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.Optional;
 
@@ -43,7 +45,11 @@ public class ControllerCoordinatorMenu {
                 manageEducationalExperience();
             }
             case "Validar documentos" -> {
-                ValidateDocuments();
+                if (!existStudentsWithUploadedDocuments()) {
+                    guiCoordinatorMenu.showError("No hay estudiantes con documentos pendientes por el momento.");
+                } else {
+                    ValidateDocuments();
+                }
             }
             case "Consultar profesor" -> {
                 ConsultProfessor();
@@ -116,5 +122,18 @@ public class ControllerCoordinatorMenu {
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);
         }
+    }
+
+    private boolean existStudentsWithUploadedDocuments() {
+        DocumentDAO documentDAO = new DocumentDAO();
+        boolean exists = true;
+        try {
+            if (documentDAO.getStudentsWithUploadedDocuments().isEmpty()){
+                exists = false;
+            }
+        } catch (DataOperationException e) {
+            guiCoordinatorMenu.showError("Error al obtener la lista de la lista de las organizaciones");
+        }
+        return exists;
     }
 }

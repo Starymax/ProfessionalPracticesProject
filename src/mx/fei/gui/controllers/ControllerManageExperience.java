@@ -3,6 +3,8 @@ package mx.fei.gui.controllers;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
+import mx.fei.logic.dao.EducationalExperienceDAO;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -22,10 +24,18 @@ public class ControllerManageExperience {
                 openRegisterExperience();
             }
             case "Modificar experiencia" -> {
-                openModifyExperience();
+                if (!existEducationalExperiences()){
+                    guiManageExperience.showError("No existen experiencias disponibles por el momento.");
+                } else {
+                    openModifyExperience();
+                }
             }
             case "Dar de alta experiencia" -> {
-                fillExperience();
+                if (!existEducationalExperiences()){
+                    guiManageExperience.showError("No existen experiencias disponibles por el momento.");
+                } else {
+                    fillExperience();
+                }
             }
             case "Regresar" -> {
                 guiManageExperience.closeWindow();
@@ -54,5 +64,18 @@ public class ControllerManageExperience {
         stage.setTitle("Dar de alta experiencia");
         guiChooseExperience.start(stage);
         guiManageExperience.closeWindow();
+    }
+
+    private boolean existEducationalExperiences() {
+        EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
+        boolean exist = true;
+        try {
+            if (educationalExperienceDAO.getEducationalExperiences().isEmpty()) {
+                exist = false;
+            }
+        } catch (DataOperationException e) {
+            guiManageExperience.showError("Error al obtener la lista de la lista de las experiencias");
+        }
+        return exist;
     }
 }

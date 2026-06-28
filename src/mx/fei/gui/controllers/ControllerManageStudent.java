@@ -29,10 +29,18 @@ public class ControllerManageStudent {
                 registerStudent();
             }
             case "Modificar estudiante" -> {
-                modifyStudent();
+                if (!existStudents()) {
+                    guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
+                } else {
+                    modifyStudent();
+                }
             }
             case "Asignar proyecto" -> {
-                assignProject();
+                if (!existStudents()) {
+                    guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
+                } else {
+                    assignProject();
+                }
             }
             case "Regresar" -> {
                 guiManageStudent.closeWindow();
@@ -69,5 +77,18 @@ public class ControllerManageStudent {
         } catch (DataOperationException e) {
             guiManageStudent.showError(e.getMessage());
         }
+    }
+
+    private boolean existStudents() {
+        StudentDAO studentDAO = new StudentDAO();
+        boolean exists = true;
+        try {
+            if (studentDAO.getStudents().isEmpty()) {
+                exists = false;
+            }
+        } catch (DataOperationException e) {
+            guiManageStudent.showError("Error al obtener la lista de estudiantes.");
+        }
+        return exists;
     }
 }

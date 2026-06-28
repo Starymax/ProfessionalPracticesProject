@@ -27,7 +27,11 @@ public class ControllerManageProjects {
                 openRegisterProject();
             }
             case "Gestionar proyecto" -> {
-                openModifyProject();
+                if (!existProjects()){
+                    guiManageProjects.showError("No existen proyectos disponibles por el momento.");
+                } else {
+                    openModifyProject();
+                }
             }
             case "Regresar" -> {
                 goBack();
@@ -63,6 +67,19 @@ public class ControllerManageProjects {
             stage.close();
             guiManageProjects.showError(e.getMessage());
         }
+    }
+
+    private boolean existProjects() {
+        ProjectDAO projectDAO = new ProjectDAO();
+        boolean exist = true;
+        try {
+            if (projectDAO.getAllProjects().isEmpty()){
+                exist = false;
+            }
+        } catch (DataOperationException e) {
+            guiManageProjects.showError("Error al obtener la lista de proyectos.");
+        }
+        return exist;
     }
 
     private void goBack() {

@@ -15,6 +15,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import mx.fei.gui.utils.GUIUtils;
 
 public class GUIManageExperience extends Application {
     private Button buttonRegisterExperience;
@@ -80,6 +81,10 @@ public class GUIManageExperience extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
     }
 
     private Button createMenuButton(String text) {

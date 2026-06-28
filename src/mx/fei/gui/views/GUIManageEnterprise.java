@@ -77,6 +77,10 @@ public class GUIManageEnterprise extends Application {
         return buttonBack;
     }
 
+    public void showError(String message) {
+        GUIUtils.showError(message);
+    }
+
     private Button createMenuButton(String text) {
         Button button = new Button(text);
         button.setPrefWidth(340);
