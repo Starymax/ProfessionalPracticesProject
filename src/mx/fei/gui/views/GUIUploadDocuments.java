@@ -57,13 +57,17 @@ public class GUIUploadDocuments extends Application {
             Map.entry("Final", DocumentType.FINAL_REPORT),
             Map.entry("Acta de nacimiento", DocumentType.BIRTH_CERTIFICATE),
             Map.entry("Curp", DocumentType.CURP),
-            Map.entry("Constancia de estudios", DocumentType.CERTIFICATE_OF_ENROLLMENT)
+            Map.entry("Constancia de estudios", DocumentType.CERTIFICATE_OF_ENROLLMENT),
+            Map.entry("Identificacion oficial", DocumentType.OFFICIAL_IDENTIFICATION)
     );
 
     private final List<String> documentOptions = Arrays.asList(
             "Evaluacion de competencias", "Carta de asignacion",
-            "Plan de trabajo", "Horario", "Carta de liberacion", "Acta de nacimiento", "Curp", "Constancia de estudios"
+            "Plan de trabajo", "Horario", "Carta de liberacion",
+            "Acta de nacimiento", "Curp", "Constancia de estudios",
+            "Identificacion oficial"
     );
+
     private final List<String> reportOptions = Arrays.asList("Parcial", "Mensual", "Final");
 
     public GUIUploadDocuments(Practice practice) {

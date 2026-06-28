@@ -74,8 +74,7 @@ public class GUIValidateStudentDocuments extends Application {
         buildDetailPanel();
 
         ControllerValidateStudentDocuments controller = new ControllerValidateStudentDocuments(this);
-        listViewStudents.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> controller.onStudentSelected());
+        listViewStudents.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> controller.onStudentSelected());
         buttonReview.setOnAction(controller::handleReviewCloseButtons);
         buttonClose.setOnAction(controller::handleReviewCloseButtons);
 

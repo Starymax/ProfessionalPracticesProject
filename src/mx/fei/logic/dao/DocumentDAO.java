@@ -332,7 +332,6 @@ public class DocumentDAO implements IDAODocument {
                 "INNER JOIN practicas p ON p.id_alumno = a.id_usuario " +
                 "INNER JOIN documentos d ON d.id_practica = p.id_practica " +
                 "AND d.tipoDocumento NOT IN ('PARTIAL_REPORT', 'MONTHLY_REPORT', 'FINAL_REPORT') " +
-                "WHERE a.proyecto_asignado IS NOT NULL " +
                 "GROUP BY a.id_usuario";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -432,7 +431,7 @@ public class DocumentDAO implements IDAODocument {
         }
         boolean uploaded = false;
         String query = "SELECT COUNT(DISTINCT tipoDocumento) AS total FROM documentos " +
-                "WHERE id_practica = ? AND tipoDocumento IN ('ACCEPTANCE_LETTER', 'STUDENT_SCHEDULE') " +
+                "WHERE id_practica = ? AND tipoDocumento IN ('ACCEPTANCE_LETTER', 'STUDENT_SCHEDULE', 'BIRTH_CERTIFICATE', 'CURP', 'CERTIFICATE_OF_ENROLLMENT', 'OFFICIAL_IDENTIFICATION') " +
                 "AND estado_validacion = 'VALIDADO'";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
