@@ -32,7 +32,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
      */
     @Override
     public boolean registerProjectManager(ProjectManager projectManager) throws DataOperationException {
-        boolean sucess = false;
+        boolean projectManagerRegistered = false;
         if (projectManager != null) {
             if (this.getProjectManagerById(projectManager.getProjectManagerId()) != null) {
                 LOGGER.log(Level.WARNING, "El Representante de Proyecto ingresado ya existe");
@@ -47,7 +47,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                         preparedStatement.setString(4, projectManager.getRol());
                         preparedStatement.setInt(5, projectManager.getEnterpriseId());
                         preparedStatement.executeUpdate();
-                        sucess = true;
+                        projectManagerRegistered = true;
                     }
                 } catch (SQLException e) {
                     LOGGER.log(Level.SEVERE, "Error al registrar el responsable",e);
@@ -58,7 +58,7 @@ public class ProjectManagerDAO implements IDAOProjectManager {
                 }
             }
         }
-        return sucess;
+        return projectManagerRegistered;
     }
 
     /**

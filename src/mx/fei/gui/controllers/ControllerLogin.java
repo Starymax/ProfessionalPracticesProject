@@ -75,15 +75,15 @@ public class ControllerLogin {
     }
 
     private boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         if (guiLogin.getTextFieldMail().getText().trim().isEmpty()) {
             guiLogin.showError("El campo correo es obligatorio.");
-            validated = false;
+            fieldsValidated = false;
         } else if (guiLogin.getTextFieldPassword().getText().isEmpty()) {
             guiLogin.showError("El campo contraseña es obligatorio.");
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     private void defaultSession() {

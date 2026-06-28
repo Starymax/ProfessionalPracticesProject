@@ -43,7 +43,7 @@ public class ActivityDAO implements IDAOActivity {
             LOGGER.log(Level.WARNING,"Error al guardar el proyecto");
             throw new DataOperationException("Error al guardar el proyecto");
         } else {
-            boolean success = false;
+            boolean activityInserted = false;
             String query = "INSERT INTO actividad (nombre_actividad, observaciones_actividad, id_proyecto) VALUES (?,?,?)";
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);) {
@@ -54,7 +54,7 @@ public class ActivityDAO implements IDAOActivity {
                 try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int activityId = generatedKeys.getInt(1);
-                        success = insertWeeklyLogs(connection, weeklyLogs, activityId);
+                        activityInserted = insertWeeklyLogs(connection, weeklyLogs, activityId);
                     }
                 }
             } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class ActivityDAO implements IDAOActivity {
                 }
                 throw new DataOperationException("Error al insertar actividad");
             }
-            return success;
+            return activityInserted;
         }
     }
 
@@ -81,7 +81,7 @@ public class ActivityDAO implements IDAOActivity {
      */
     @Override
     public boolean insertWeeklyLogs(Connection connection, List<WeeklyLog> logs, int activityId) throws DataOperationException {
-        boolean success = false;
+        boolean weeklyLogsInserted = false;
         String query = "INSERT INTO registro_semanal (semana, horas_planificadas, id_actividad) VALUES (?,?,?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query);) {
             for (WeeklyLog log : logs) {
@@ -90,7 +90,7 @@ public class ActivityDAO implements IDAOActivity {
                 preparedStatement.setInt(3, activityId);
                 preparedStatement.executeUpdate();
             }
-            success = true;
+            weeklyLogsInserted = true;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al insertar el horario a la actividad",e);
             if (DAOUtils.isConnectionError(e)) {
@@ -98,7 +98,7 @@ public class ActivityDAO implements IDAOActivity {
             }
             throw new DataOperationException("Error al insertar el horario a la actividad");
         }
-        return success;
+        return weeklyLogsInserted;
     }
 
     /**

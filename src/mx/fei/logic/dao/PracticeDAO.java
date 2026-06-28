@@ -39,7 +39,7 @@
             String nrc = null;
             String period = null;
             float grade = 0;
-            boolean found = false;
+            boolean practiceFound = false;
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, practiceId);
@@ -49,7 +49,7 @@
                         nrc = resultSet.getString("nrc");
                         period = resultSet.getString("periodo");
                         grade = resultSet.getFloat("calificacion");
-                        found = true;
+                        practiceFound = true;
                     }
                 }
             } catch (SQLException e) {
@@ -59,7 +59,7 @@
                 }
                 throw new DataOperationException("Error al obtener los datos de la práctica");
             }
-            if (!found) {
+            if (!practiceFound) {
                 LOGGER.log(Level.WARNING, "Error al buscar la práctica por id");
                 throw new NoSuchElementException("No se encontró la práctica");
             }
@@ -159,7 +159,7 @@
             String period = null;
             String nrc = null;
             float grade = 0;
-            boolean found = false;
+            boolean practiceFound = false;
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, enrollment);
@@ -169,14 +169,14 @@
                         period = resultSet.getString("periodo");
                         nrc = resultSet.getString("nrc");
                         grade = resultSet.getFloat("calificacion");
-                        found = true;
+                        practiceFound = true;
                     }
                 }
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, "Error al obtener la practica por matricula", e);
                 throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener la practica");
             }
-            if (!found || nrc == null || nrc.isBlank()) {
+            if (!practiceFound || nrc == null || nrc.isBlank()) {
                 return null;
             }
             EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrc(nrc);

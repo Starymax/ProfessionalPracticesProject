@@ -24,7 +24,7 @@ public class ControllerCustomNotification {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Enviar y eliminar" -> {
-                    rejectDocument();
+                rejectDocument();
             }
             case "Cancelar" -> {
                 guiCustomNotification.closeWindow();
@@ -36,20 +36,20 @@ public class ControllerCustomNotification {
     private boolean validateNotificationFields() {
         String title = guiCustomNotification.getNotificationTitle();
         String message = guiCustomNotification.getNotificationMessage();
-        boolean valid = true;
+        boolean notificationFieldsValid = true;
         if (title == null || title.trim().isEmpty()) {
             guiCustomNotification.showError("El título de la notificación no puede estar vacío.");
-            valid = false;
+            notificationFieldsValid = false;
         }
         if (message == null || message.trim().isEmpty()) {
             guiCustomNotification.showError("El mensaje de la notificación no puede estar vacío.");
-            valid = false;
+            notificationFieldsValid = false;
         }
         if (message.length() > MAX_MESSAGE_LENGTH) {
             guiCustomNotification.showError("El mensaje no puede superar los " + MAX_MESSAGE_LENGTH + " caracteres.");
-            valid = false;
+            notificationFieldsValid = false;
         }
-        return valid;
+        return notificationFieldsValid;
     }
 
     private void deleteDocument(Document document) throws DataOperationException {

@@ -61,17 +61,17 @@ public class ControllerGenerateReport {
     }
 
     private boolean arePrerequisitesMet() {
-        boolean met = false;
+        boolean prerequisitesMet = false;
         try {
-            met = documentDAO.areInitialDocumentsUploaded(guiGenerateReport.getPractice());
-            if (!met) {
+            prerequisitesMet = documentDAO.areInitialDocumentsUploaded(guiGenerateReport.getPractice());
+            if (!prerequisitesMet) {
                 guiGenerateReport.showError("Para generar un reporte primero debes subir la carta de aceptación y el horario, y que el coordinador los valide.");
             }
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al verificar los prerrequisitos de los reportes", e);
             guiGenerateReport.showError(e.getMessage());
         }
-        return met;
+        return prerequisitesMet;
     }
 
     private void openMonthlyReport() {

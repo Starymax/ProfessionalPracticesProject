@@ -327,14 +327,14 @@ public class StudentDAO implements IDAOStudent {
             LOGGER.log(Level.WARNING, "El estudiante es nulo");
             throw new IllegalArgumentException("El estudiante no puede ser nulo");
         }
-        boolean updated = false;
+        boolean studentUpdated = false;
         String query = "UPDATE alumno SET lengua_indigena=?, calificacion=? WHERE id_usuario=?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setBoolean(1, student.isIndigenousLanguage());
             preparedStatement.setFloat(2, student.getGrade());
             preparedStatement.setInt(3, student.getUserId());
-            updated = preparedStatement.executeUpdate() > 0;
+            studentUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al modificar el alumno", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -342,7 +342,7 @@ public class StudentDAO implements IDAOStudent {
             }
             throw new DataOperationException("Error al modificar el alumno");
         }
-        return updated;
+        return studentUpdated;
     }
 
     /**
@@ -534,13 +534,13 @@ public class StudentDAO implements IDAOStudent {
      */
     @Override
     public boolean assignProject(Student student, Project project) throws DataOperationException {
-        boolean assigned = false;
+        boolean projectAssigned = false;
         String query = "UPDATE alumno SET proyecto_asignado = ? WHERE matricula = ?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, project.getProjectId());
             preparedStatement.setString(2, student.getEnrollment());
-            assigned = preparedStatement.executeUpdate() > 0;
+            projectAssigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al asignar un proyecto", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -548,12 +548,12 @@ public class StudentDAO implements IDAOStudent {
             }
             throw new DataOperationException("Error al asignar el proyecto");
         }
-        if (assigned) {
+        if (projectAssigned) {
             project.setAvailablePlaces(project.getAvailablePlaces() - 1);
             ProjectDAO projectDAO = new ProjectDAO();
             projectDAO.modifyProject(project);
         }
-        return assigned;
+        return projectAssigned;
     }
 
     /**
@@ -565,14 +565,14 @@ public class StudentDAO implements IDAOStudent {
      */
     @Override
     public boolean assignEducationalExperience(Practice practice) throws DataOperationException {
-        boolean assigned = false;
+        boolean experienceAssigned = false;
         String query = "INSERT INTO practicas (id_alumno, nrc, periodo) VALUES (?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, practice.getStudent().getUserId());
             preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
             preparedStatement.setString(3, practice.getEducationalExperience().getPeriod());
-            assigned = preparedStatement.executeUpdate() > 0;
+            experienceAssigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al asignar una experiencia educativa", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -580,7 +580,7 @@ public class StudentDAO implements IDAOStudent {
             }
             throw new DataOperationException("Error al asignar la experiencia educativa");
         }
-        return assigned;
+        return experienceAssigned;
     }
 
     /**

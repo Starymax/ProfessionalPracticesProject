@@ -111,7 +111,7 @@ public class GUIRegisterEducationalExperience extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNRC(textFieldNrc.getText().trim(), "NRC:", errors);
         GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
@@ -130,9 +130,9 @@ public class GUIRegisterEducationalExperience extends Application {
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void showError(String message) {

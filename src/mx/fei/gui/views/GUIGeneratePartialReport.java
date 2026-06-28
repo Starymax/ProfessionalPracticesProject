@@ -82,15 +82,15 @@ public class GUIGeneratePartialReport extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateObsesrvationsText(textAreaObservations.getText(),"Observaciones", errors);
         GUIUtils.validateObsesrvationsText(textAreaResults.getText(),"Resultados obtenidos", errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void setCareer(String career) {

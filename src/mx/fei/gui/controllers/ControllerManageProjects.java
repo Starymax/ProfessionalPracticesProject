@@ -71,15 +71,15 @@ public class ControllerManageProjects {
 
     private boolean existProjects() {
         ProjectDAO projectDAO = new ProjectDAO();
-        boolean exist = true;
+        boolean projectsExist = true;
         try {
             if (projectDAO.getAllProjects().isEmpty()){
-                exist = false;
+                projectsExist = false;
             }
         } catch (DataOperationException e) {
             guiManageProjects.showError("Error al obtener la lista de proyectos.");
         }
-        return exist;
+        return projectsExist;
     }
 
     private void goBack() {

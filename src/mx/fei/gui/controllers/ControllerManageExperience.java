@@ -68,14 +68,14 @@ public class ControllerManageExperience {
 
     private boolean existEducationalExperiences() {
         EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-        boolean exist = true;
+        boolean experiencesExist = true;
         try {
             if (educationalExperienceDAO.getEducationalExperiences().isEmpty()) {
-                exist = false;
+                experiencesExist = false;
             }
         } catch (DataOperationException e) {
             guiManageExperience.showError("Error al obtener la lista de la lista de las experiencias");
         }
-        return exist;
+        return experiencesExist;
     }
 }

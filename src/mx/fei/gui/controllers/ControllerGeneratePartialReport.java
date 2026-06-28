@@ -355,13 +355,13 @@ public class ControllerGeneratePartialReport {
     private boolean savePartialReport() {
         String results = guiGeneratePartialReport.getResultsObtained();
         String validationError = validateReportData(results);
-        boolean saved = false;
+        boolean partialReportSaved = false;
         if (validationError != null) {
             guiGeneratePartialReport.showError(validationError);
         } else {
-            saved = persistPartialReport(results);
+            partialReportSaved = persistPartialReport(results);
         }
-        return saved;
+        return partialReportSaved;
     }
 
     private String validateReportData(String results) {
@@ -376,13 +376,13 @@ public class ControllerGeneratePartialReport {
 
     private boolean persistPartialReport(String results) {
         String errorMessage = null;
-        boolean saved = false;
+        boolean partialReportPersisted = false;
         try {
             Report report = new Report(0, "PARCIAL", new Date(), "", results, student, educationalExperience.getNrc());
             report.setActivityProgressList(buildProgressList());
             if (reportDAO.createPartialReport(report)) {
                 LOGGER.log(Level.INFO, "Reporte guardado correctamente.");
-                saved = true;
+                partialReportPersisted = true;
             } else {
                 errorMessage = "No se pudo guardar el reporte.";
             }
@@ -396,7 +396,7 @@ public class ControllerGeneratePartialReport {
         if (errorMessage != null) {
             guiGeneratePartialReport.showError(errorMessage);
         }
-        return saved;
+        return partialReportPersisted;
     }
 
     private List<ReportActivityProgress> buildProgressList() {

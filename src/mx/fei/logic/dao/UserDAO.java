@@ -100,7 +100,7 @@ public class UserDAO implements IDAOUser {
      */
     @Override
     public boolean updateUser(User user) throws DataOperationException {
-        boolean updated = false;
+        boolean userUpdated = false;
         if (user != null) {
             String query = "UPDATE usuario SET nombre=?, apellidos=?, correo=?, contrasena=?, estado_activo=?, genero=? WHERE id_usuario=?;";
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
@@ -112,7 +112,7 @@ public class UserDAO implements IDAOUser {
                 preparedStatement.setBoolean(5, user.isActive());
                 preparedStatement.setString(6, user.getGender());
                 preparedStatement.setInt(7, user.getUserId());
-                updated = preparedStatement.executeUpdate() > 0;
+                userUpdated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE,"Error al actualizar el usuario",e);
                 if (DAOUtils.isConnectionError(e)) {
@@ -121,7 +121,7 @@ public class UserDAO implements IDAOUser {
                 throw new DataOperationException("Error al actualizar el usuario");
             }
         }
-        return updated;
+        return userUpdated;
     }
 
     /**

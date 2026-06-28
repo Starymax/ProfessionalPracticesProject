@@ -54,14 +54,14 @@ public class ControllerManageEnterprise {
 
     private boolean existEnterprises() {
         EnterpriseDAO enterpriseDAO = new EnterpriseDAO();
-        boolean exist = true;
+        boolean enterprisesExist = true;
         try {
             if (enterpriseDAO.getEnterprises().isEmpty()) {
-                exist = false;
+                enterprisesExist = false;
             }
         } catch (DataOperationException e) {
             guiManageEnterprise.showError("Error al obtener la lista de la lista de las organizaciones");
         }
-        return exist;
+        return enterprisesExist;
     }
 }

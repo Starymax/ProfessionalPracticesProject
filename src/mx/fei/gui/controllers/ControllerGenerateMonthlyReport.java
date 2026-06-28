@@ -261,7 +261,7 @@ public class ControllerGenerateMonthlyReport {
     }
 
     private boolean validateObservations() {
-        boolean validated = true;
+        boolean observationsValidated = true;
         List<String> errors = new ArrayList<>();
         if (currentReport != null && currentReport.getActivityProgressList() != null) {
             int activityIndex = 1;
@@ -272,9 +272,9 @@ public class ControllerGenerateMonthlyReport {
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            observationsValidated = false;
         }
-        return validated;
+        return observationsValidated;
     }
 
     public void handleExportPDF() {

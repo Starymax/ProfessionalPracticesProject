@@ -24,17 +24,17 @@ public class FinalReportGenerator {
     }
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
-        boolean result = false;
+        boolean reportGenerated = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
                 LOGGER.log(Level.SEVERE, "No se encontró la plantilla FinalReport.jasper en el classpath");
             }
             JasperPrint combinedPrint = buildCombinedPrint(parameters);
-            result = exportReport(combinedPrint, templateStream, parameters, outputPath);
+            reportGenerated = exportReport(combinedPrint, templateStream, parameters, outputPath);
         } catch (JRException | IOException e) {
             LOGGER.log(Level.SEVERE, "Error crítico al rellenar o exportar el reporte final", e);
         }
-        return result;
+        return reportGenerated;
     }
 
     private JasperPrint buildCombinedPrint(Map<String, Object> parameters) {

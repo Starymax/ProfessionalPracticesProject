@@ -119,7 +119,7 @@ public class GUIModifyStudent extends Application {
     }
 
     public boolean validateFields() {
-        boolean valid = true;
+        boolean fieldsValid = true;
         List<String> errors = new ArrayList<String>();
         GUIUtils.validateNames(textFieldNames.getText().trim(), "Nombres", errors);
         GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
@@ -128,10 +128,10 @@ public class GUIModifyStudent extends Application {
         GUIUtils.validateRadioSelection(radioButtonMan.getToggleGroup().getSelectedToggle() != null, "un género", errors);
         GUIUtils.validateRadioSelection(radioButtonSpeakIndigenousLanguage.getToggleGroup().getSelectedToggle() != null, "si el alumno habla lengua indígena", errors);
         if (!errors.isEmpty()) {
-            valid = false;
+            fieldsValid = false;
             GUIUtils.showErrors(errors);
         }
-        return valid;
+        return fieldsValid;
     }
 
     public void closeWindow() {

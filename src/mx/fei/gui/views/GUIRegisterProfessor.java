@@ -122,7 +122,7 @@ public class GUIRegisterProfessor extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validatePersonalNumber(textFieldPersonalNumber.getText().trim(), "No. de personal", errors);
         GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
@@ -134,9 +134,9 @@ public class GUIRegisterProfessor extends Application {
         GUIUtils.validateComboBoxSelection(comboBoxShift.getValue(), "Turno", errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void showError(String message) {

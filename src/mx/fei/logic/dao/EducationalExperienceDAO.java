@@ -155,7 +155,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             LOGGER.log(Level.WARNING, "El periodo de la experiencia educativa está vacío");
             throw new IllegalArgumentException("El periodo de la experiencia educativa no puede estar vacío");
         }
-        boolean updated = false;
+        boolean experienceUpdated = false;
         String queryModifyExperience = "UPDATE experiencia_educativa SET nombre_experiencia=?, programa_educativo=?, id_profesor=?, periodo=? WHERE nrc=?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
@@ -164,12 +164,12 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             setProfessorParameter(preparedStatement, 3, educationalExperience.getProfessor());
             preparedStatement.setString(4, period);
             preparedStatement.setString(5, educationalExperience.getNrc());
-            updated = preparedStatement.executeUpdate() > 0;
+            experienceUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al modificar una experiencia: " + e.getMessage());
             throw new DataOperationException("Error modificando los datos de una experiencia");
         }
-        return updated;
+        return experienceUpdated;
     }
 
     /**

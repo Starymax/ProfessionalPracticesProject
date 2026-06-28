@@ -41,11 +41,11 @@ public class ControllerRegisterEnterprise {
             try {
                 Enterprise enterprise = getEnterprise();
                 int idGenerated = enterpriseDAO.registerEnterprise(enterprise);
-                boolean registered = false;
+                boolean enterpriseRegistered = false;
                 if (idGenerated > 0) {
-                    registered = true;
+                    enterpriseRegistered = true;
                 }
-                if (registered) {
+                if (enterpriseRegistered) {
                     guiRegisterEnterprise.showSuccess("Organización registrada exitosamente.");
                     openManageEnterprise();
                     guiRegisterEnterprise.closeWindow();

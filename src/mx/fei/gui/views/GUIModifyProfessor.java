@@ -118,7 +118,7 @@ public class GUIModifyProfessor extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateNames(textFieldLastName.getText().trim(), "Apellidos", errors);
@@ -127,9 +127,9 @@ public class GUIModifyProfessor extends Application {
         GUIUtils.validateComboBoxSelection(comboBoxShift.getValue(), "Turno", errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void showError(String message) {

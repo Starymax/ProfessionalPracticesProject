@@ -137,14 +137,14 @@ public class ControllerGenerateSelfEvaluation {
     }
 
     private boolean validateAnswers() {
-        boolean valid = true;
+        boolean answersValid = true;
         for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
             Integer value = guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
             if (value == null) {
                 guiGenerateSelfEvaluation.showError("Debe seleccionar una respuesta para la afirmación " + (i+1));
-                valid = false;
+                answersValid = false;
             }
         }
-        return valid;
+        return answersValid;
     }
 }

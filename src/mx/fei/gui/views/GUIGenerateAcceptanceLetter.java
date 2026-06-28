@@ -128,19 +128,19 @@ public class GUIGenerateAcceptanceLetter extends Application {
     public static void main(String[] args) { launch(args); }
 
     public boolean validateSchedule() {
-        boolean isValid = true;
-        for (int i = 0; i < DAYS.length && isValid; i++) {
+        boolean scheduleValid = true;
+        for (int i = 0; i < DAYS.length && scheduleValid; i++) {
             String start = startHourCombo[i].getValue();
             String end = endHourCombo[i].getValue();
             if (start == null || end == null) {
                 showError("Debe seleccionar horario para " + DAYS[i]);
-                isValid = false;
+                scheduleValid = false;
             } else if (timeToMinutes(start) >= timeToMinutes(end)) {
                 showError("En " + DAYS[i] + ", la hora de inicio debe ser menor que la hora de fin.");
-                isValid = false;
+                scheduleValid = false;
             }
         }
-        return isValid;
+        return scheduleValid;
     }
 
     public String[] getScheduleStrings() {

@@ -102,7 +102,7 @@ public class GUIRegisterProjectManager extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNames(textFieldName.getText(), "Nombre", errors);
         GUIUtils.validateShortText(textFieldPosition.getText().trim(), "Cargo", errors);
@@ -110,9 +110,9 @@ public class GUIRegisterProjectManager extends Application {
         GUIUtils.validateEmail(textFieldEmail.getText().trim(), errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void loadEnterprise(Enterprise enterprise) {

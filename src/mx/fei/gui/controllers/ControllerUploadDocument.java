@@ -73,14 +73,14 @@ public class ControllerUploadDocument {
         String selectedTypeStr = guiUploadDocument.getSelectedType();
         if (selectedTypeStr == null || selectedTypeStr.isEmpty()) {
             guiUploadDocument.showError("Por favor, selecciona una categoría y un tipo antes de buscar el archivo.");
-            return;
-        }
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleccionar documento para: " + selectedTypeStr);
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
-        File selectedFile = fileChooser.showOpenDialog(stage);
-        if (selectedFile != null) {
-            guiUploadDocument.processSingleFile(selectedFile, selectedTypeStr);
+        } else {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Seleccionar documento para: " + selectedTypeStr);
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
+            File selectedFile = fileChooser.showOpenDialog(stage);
+            if (selectedFile != null) {
+                guiUploadDocument.processSingleFile(selectedFile, selectedTypeStr);
+            }
         }
     }
 
@@ -115,7 +115,7 @@ public class ControllerUploadDocument {
             LOGGER.log(Level.SEVERE, "Error al obtener la práctica del estudiante.", e);
             guiUploadDocument.showError("Hubp un error al recuperar los datos de la práctica del estudiante.");
         }
-        return  currentPractice;
+        return currentPractice;
     }
 
     private void processDocuments(Map<DocumentType, Document> selectedDocuments, Practice currentPractice) {
@@ -163,7 +163,7 @@ public class ControllerUploadDocument {
     }
 
     private boolean uploadSingleDocument(Document document, Practice currentPractice, StringBuilder errors) {
-        boolean succes = false;
+        boolean documentUploaded = false;
         try {
             String targetPath = documentDAO.uploadDocument(guiUploadDocument.getStudentEnrollment(), document);
             document.setDirectory(targetPath);
@@ -172,7 +172,7 @@ public class ControllerUploadDocument {
                 errors.append("- ").append(document.getName()).append(" (Error en BD\n)");
             } else {
                 guiUploadDocument.markAsUploaded(document.getDocumentType());
-                succes = true;
+                documentUploaded = true;
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error al subir el documento: " + document.getName(), e);
@@ -181,6 +181,6 @@ public class ControllerUploadDocument {
             LOGGER.log(Level.SEVERE, "Error de base de datos al guardar: " + document.getName(), e);
             errors.append("- ").append(document.getName()).append(" (Fallo BD\n)");
         }
-        return succes;
+        return documentUploaded;
     }
 }

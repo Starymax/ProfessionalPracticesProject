@@ -101,7 +101,6 @@ public class DatabaseConnectionManager {
                 LOGGER.log(Level.SEVERE, "Archivo de propiedades incompleto o mal formado: " + fileName);
                 throw new IOException("Error al iniciar sesión: configuración de conexión inválida");
             }
-
             this.url = "jdbc:mysql://" + host + ":" + port + "/" + name;
         }
     }

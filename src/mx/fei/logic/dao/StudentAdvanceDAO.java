@@ -66,7 +66,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
         float realizedHours = 0;
         int weeklyLogId = 0;
         int studentId = 0;
-        boolean found = false;
+        boolean advanceFound = false;
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, advanceId);
@@ -75,7 +75,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
                     realizedHours = resultSet.getFloat("horas_realizadas");
                     weeklyLogId = resultSet.getInt("id_registro");
                     studentId = resultSet.getInt("id_alumno");
-                    found = true;
+                    advanceFound = true;
                 }
             }
         } catch (SQLException e) {
@@ -85,7 +85,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             }
             throw new DataOperationException("Error al obtener el avance del alumno");
         }
-        if (!found) {
+        if (!advanceFound) {
             return null;
         }
         ActivityDAO activityDAO = new ActivityDAO();
@@ -185,13 +185,13 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
      */
     @Override
     public boolean updateRealizedHours(int advanceId, float realizedHours) throws DataOperationException {
-        boolean updated = false;
+        boolean realizedHoursUpdated = false;
         String query = "UPDATE avance_alumno SET horas_realizadas = ? WHERE id_avance = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setFloat(1, realizedHours);
             preparedStatement.setInt(2, advanceId);
-            updated = preparedStatement.executeUpdate() > 0;
+            realizedHoursUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar las horas realizadas del avance", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -199,7 +199,7 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             }
             throw new DataOperationException("Error al actualizar las horas realizadas del avance");
         }
-        return updated;
+        return realizedHoursUpdated;
     }
 
     /**

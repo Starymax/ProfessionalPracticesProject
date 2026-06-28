@@ -228,7 +228,7 @@ public class ProfessorDAO implements IDAOProfessor {
      */
     @Override
     public boolean modifyProfessor(Professor professor) throws DataOperationException {
-        boolean updated = false;
+        boolean professorUpdated = false;
         if (professor != null) {
             String query = "UPDATE profesor SET es_coordinador=?, es_administrador=?, turno=? WHERE numero_de_personal=?;";
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
@@ -237,7 +237,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 preparedStatement.setBoolean(2, professor.isAdmin());
                 preparedStatement.setString(3, professor.getShift());
                 preparedStatement.setInt(4, professor.getPersonalNumber());
-                updated = preparedStatement.executeUpdate() > 0;
+                professorUpdated = preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, "Error modificando los datos del profesor", e);
                 if (DAOUtils.isConnectionError(e)) {
@@ -246,7 +246,7 @@ public class ProfessorDAO implements IDAOProfessor {
                 throw new DataOperationException("Error al modificar los datos del profesor");
             }
         }
-        return updated;
+        return professorUpdated;
     }
 
     /**

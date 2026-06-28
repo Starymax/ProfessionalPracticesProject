@@ -280,7 +280,7 @@ public class ProjectDAO implements IDAOProject {
      */
     @Override
     public boolean modifyProject(Project project) throws DataOperationException {
-        boolean updated = false;
+        boolean projectUpdated = false;
         String query = "UPDATE proyecto SET nombre_proyecto = ?, descripcion_proyecto = ?, objetivo_general = ?, objetivos_inmediatos = ?, objetivos_mediatos = ?, metodologia = ?, recursos = ?, fecha_inicio = ?, fecha_final = ?, estado_activo = ?, lugares_disponibles = ?, id_empresa = ?, id_responsable = ?, responsabilidades = ? WHERE id_proyecto = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -299,7 +299,7 @@ public class ProjectDAO implements IDAOProject {
             preparedStatement.setInt(13, project.getProjectManager().getProjectManagerId());
             preparedStatement.setInt(15, project.getProjectId());
             preparedStatement.setString(14, project.getResponsibilities());
-            updated = preparedStatement.executeUpdate() > 0;
+            projectUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error modificando el proyecto",e);
             if (DAOUtils.isConnectionError(e)) {
@@ -307,6 +307,6 @@ public class ProjectDAO implements IDAOProject {
             }
             throw new DataOperationException("Error al modificar los datos del proyecto");
         }
-        return updated;
+        return projectUpdated;
     }
 }

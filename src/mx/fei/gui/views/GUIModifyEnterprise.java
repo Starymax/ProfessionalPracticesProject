@@ -128,7 +128,7 @@ public class GUIModifyEnterprise extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validatePhone(textFieldPhone.getText().trim(),"Telefono", errors);
@@ -140,9 +140,9 @@ public class GUIModifyEnterprise extends Application {
         GUIUtils.validateLong(textFieldIndirectUsers.getText().trim(), "Usuarios indirectos", errors);
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void showError(String message) {

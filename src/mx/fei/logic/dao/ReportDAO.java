@@ -126,7 +126,7 @@ public class ReportDAO implements IDAOReport {
      */
     @Override
     public boolean persistReportWithWeeklyDetail(Report report, String errorMessage) throws DataOperationException {
-        boolean success = false;
+        boolean reportPersisted = false;
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection()) {
             connection.setAutoCommit(false);
             try {
@@ -136,7 +136,7 @@ public class ReportDAO implements IDAOReport {
                 } else {
                     insertActivitiesWithWeeklyDetail(connection, report, reportId);
                     connection.commit();
-                    success = true;
+                    reportPersisted = true;
                 }
             } catch (SQLException e) {
                 connection.rollback();
@@ -151,7 +151,7 @@ public class ReportDAO implements IDAOReport {
             }
             throw new DataOperationException(errorMessage);
         }
-        return success;
+        return reportPersisted;
     }
 
     private int insertReport(Connection connection, Report report) throws SQLException {
@@ -264,7 +264,7 @@ public class ReportDAO implements IDAOReport {
      */
     @Override
     public boolean createFinalReport(Report report) throws DataOperationException {
-        boolean success = false;
+        boolean finalReportCreated = false;
         if (report == null) {
             throw new IllegalArgumentException("El reporte no puede ser nulo.");
         }
@@ -287,7 +287,7 @@ public class ReportDAO implements IDAOReport {
                         preparedStatementActivity.executeBatch();
                     }
                     connection.commit();
-                    success = true;
+                    finalReportCreated = true;
                 }
             } catch (SQLException e) {
                 connection.rollback();
@@ -302,7 +302,7 @@ public class ReportDAO implements IDAOReport {
             }
             throw new DataOperationException("Error al crear el reporte final.");
         }
-        return success;
+        return finalReportCreated;
     }
 
     /**
@@ -414,13 +414,13 @@ public class ReportDAO implements IDAOReport {
      */
     @Override
     public boolean setObservations(int reportId, String observations) throws DataOperationException {
-        boolean success = false;
+        boolean observationsUpdated = false;
         String query = "UPDATE reporte SET observaciones = ? WHERE id_reporte = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, observations);
             preparedStatement.setInt(2, reportId);
-            success = preparedStatement.executeUpdate() > 0;
+            observationsUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar observaciones del reporte", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -428,7 +428,7 @@ public class ReportDAO implements IDAOReport {
             }
             throw new DataOperationException("Error al actualizar observaciones del reporte.");
         }
-        return success;
+        return observationsUpdated;
     }
 
     /**
@@ -441,7 +441,7 @@ public class ReportDAO implements IDAOReport {
      */
     @Override
     public boolean updateActivityObservations(int reportId, List<ReportActivityProgress> activityProgressList) throws DataOperationException {
-        boolean success = false;
+        boolean activityObservationsUpdated = false;
         String query = "UPDATE reporte_actividad SET observaciones = ? WHERE id_reporte = ? AND id_actividad = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -452,7 +452,7 @@ public class ReportDAO implements IDAOReport {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-            success = true;
+            activityObservationsUpdated = true;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar observaciones de actividades del reporte", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -460,6 +460,6 @@ public class ReportDAO implements IDAOReport {
             }
             throw new DataOperationException("Error al actualizar observaciones de actividades del reporte.");
         }
-        return success;
+        return activityObservationsUpdated;
     }
 }

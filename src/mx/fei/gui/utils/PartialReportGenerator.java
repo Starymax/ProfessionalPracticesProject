@@ -16,17 +16,17 @@ public class PartialReportGenerator {
     private static final String TEMPLATE_PATH = "/templates/partialReport2.jasper";
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
-        boolean result = false;
+        boolean reportGenerated = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
                 LOGGER.log(Level.SEVERE, "No se encontró la plantilla: " + TEMPLATE_PATH);
             }
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
-            result = true;
+            reportGenerated = true;
         } catch (JRException | IOException e) {
             LOGGER.log(Level.SEVERE, "Error al generar el reporte parcial", e);
         }
-        return result;
+        return reportGenerated;
     }
 }

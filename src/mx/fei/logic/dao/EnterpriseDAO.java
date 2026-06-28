@@ -196,7 +196,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
             LOGGER.log(Level.WARNING, "La empresa es nula");
             throw new IllegalArgumentException("La empresa no puede ser nula");
         }
-        boolean updated = false;
+        boolean enterpriseUpdated = false;
         String query = "UPDATE organizacion_vinculada SET nombre_empresa=?, sector=?, telefono=?, correo=?, ciudad=?, usuarios_directos=?, usuarios_indirectos=?, estado_activo=?, pais=? WHERE id_empresa=?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
@@ -210,7 +210,7 @@ public class EnterpriseDAO implements IDAOEnterprise {
             preparedStatement.setBoolean(8, enterprise.isActiveStatus());
             preparedStatement.setString(9, enterprise.getCountry());
             preparedStatement.setInt(10, enterprise.getEnterpriseId());
-            updated = preparedStatement.executeUpdate() > 0;
+            enterpriseUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al modificar la organizacion vinculada", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -218,6 +218,6 @@ public class EnterpriseDAO implements IDAOEnterprise {
             }
             throw new DataOperationException("Error al modificar la organizacion vinculada");
         }
-        return updated;
+        return enterpriseUpdated;
     }
 }

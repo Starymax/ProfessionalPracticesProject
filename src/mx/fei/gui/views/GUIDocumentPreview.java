@@ -122,7 +122,7 @@ public class GUIDocumentPreview extends Application {
     }
 
     private boolean loadPreview(VBox pagesBox) {
-        boolean loaded = false;
+        boolean previewLoaded = false;
         try {
             List<Image> pages = PDFPreviewUtil.renderPages(document.getDirectory());
             if (pages.isEmpty()) {
@@ -134,12 +134,12 @@ public class GUIDocumentPreview extends Application {
                     imageView.setFitWidth(620);
                     pagesBox.getChildren().add(imageView);
                 }
-                loaded = true;
+                previewLoaded = true;
             }
         } catch (IOException e) {
             pagesBox.getChildren().add(new Label("No se pudo cargar la vista previa: " + e.getMessage()));
         }
-        return loaded;
+        return previewLoaded;
     }
 
     private String statusLabel(ValidationStatus status) {

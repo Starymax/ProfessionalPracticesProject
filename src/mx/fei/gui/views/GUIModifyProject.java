@@ -259,7 +259,7 @@ public class GUIModifyProject extends Application {
     }
 
     public boolean validateFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateShortText(textFieldName.getText(), "Nombre", errors);
         GUIUtils.validateLongText(textAreaDescription.getText(), "Descripción", errors);
@@ -288,9 +288,9 @@ public class GUIModifyProject extends Application {
         }
         if (!errors.isEmpty()) {
             GUIUtils.showErrors(errors);
-            validated = false;
+            fieldsValidated = false;
         }
-        return validated;
+        return fieldsValidated;
     }
 
     public void enableActivityPlanButton() {

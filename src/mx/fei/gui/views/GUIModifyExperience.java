@@ -152,7 +152,7 @@ public class GUIModifyExperience extends Application {
     }
 
     public boolean validateFields() {
-        boolean valid = false;
+        boolean fieldsValid = false;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNames(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);
@@ -169,11 +169,11 @@ public class GUIModifyExperience extends Application {
             GUIUtils.validatePeriod(selectedPeriod, errors);
         }
         if (errors.isEmpty()) {
-            valid = true;
+            fieldsValid = true;
         } else {
             GUIUtils.showErrors(errors);
         }
-        return valid;
+        return fieldsValid;
     }
 
     public void showError(String message) {

@@ -113,7 +113,7 @@ public class GUIRegisterEnterprise extends Application {
     }
 
     public  boolean validatedFields() {
-        boolean validated = true;
+        boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateShortText(textFieldName.getText(),"Nombre",errors);
         GUIUtils.validatePhone(textFieldPhone.getText(),"Telefono",errors);
@@ -124,10 +124,10 @@ public class GUIRegisterEnterprise extends Application {
         GUIUtils.validateComboBoxSelection(comboBoxCountry.getValue(),"Paises",errors);
         GUIUtils.validateComboBoxSelection(comboBoxCity.getValue(),"Ciudades",errors);
         if (!errors.isEmpty()){
-            validated = false;
+            fieldsValidated = false;
             GUIUtils.showErrors(errors);
         }
-        return validated;
+        return fieldsValidated;
     }
     public void showError(String message) {
         GUIUtils.showError(message);

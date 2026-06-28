@@ -15,17 +15,17 @@ public class SelfEvaluationGenerator {
     private static final String TEMPLATE_PATH = "/templates/selfEvaluation.jasper";
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
-        boolean result = false;
+        boolean reportGenerated = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
                 LOGGER.severe("No se encontró la plantilla selfEvaluation.jasper");
             }
             JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
             JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
-            result = true;
+            reportGenerated = true;
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error al generar autoevaluación", e);
         }
-        return result;
+        return reportGenerated;
     }
 }

@@ -52,14 +52,14 @@ public class DocumentDAO implements IDAODocument {
             LOGGER.log(Level.WARNING, "El periodo esta vacio");
             throw new IllegalArgumentException("El periodo no puede estar vacio");
         }
-        boolean result = false;
+        boolean expedientCreated = false;
         String query = "INSERT INTO expediente_practicas (carta_liberacion, oficio_aceptacion, plan_trabajo, horario, evaluacion_competencias, id_alumno, periodo) VALUES (FALSE, FALSE, FALSE, FALSE, FALSE, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             preparedStatement.setString(2, period);
             preparedStatement.executeUpdate();
-            result = true;
+            expedientCreated = true;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al crear el expediente", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -67,7 +67,7 @@ public class DocumentDAO implements IDAODocument {
             }
             throw new DataOperationException("Error al crear el expediente");
         }
-        return result;
+        return expedientCreated;
     }
 
     /**
@@ -508,13 +508,13 @@ public class DocumentDAO implements IDAODocument {
      * @throws DataOperationException if a database error occurs
      */
     private boolean updateValidationStatus(int documentId, ValidationStatus status) throws DataOperationException {
-        boolean updated = false;
+        boolean validationStatusUpdated = false;
         String query = "UPDATE documentos SET estado_validacion = ? WHERE id_documento = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, status.getValidationValue());
             preparedStatement.setInt(2, documentId);
-            updated = preparedStatement.executeUpdate() > 0;
+            validationStatusUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al actualizar el estado de validación del documento", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -522,7 +522,7 @@ public class DocumentDAO implements IDAODocument {
             }
             throw new DataOperationException("Error al actualizar el estado de validación del documento");
         }
-        return updated;
+        return validationStatusUpdated;
     }
 
 }
