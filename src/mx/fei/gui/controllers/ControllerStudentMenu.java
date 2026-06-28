@@ -36,7 +36,6 @@ public class ControllerStudentMenu {
     private final GUIStudentMenu guiStudentMenu;
     private final ProjectDAO projectDAO;
     private final PracticeDAO practiceDAO;
-    private final StudentDAO studentDAO;
     private final NotificationDAO notificationDAO;
     private final int MINIMUM_PROJECTS = 3;
     private static final Logger LOGGER = Logger.getLogger(ControllerStudentMenu.class.getName());
@@ -45,7 +44,6 @@ public class ControllerStudentMenu {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
         practiceDAO = new PracticeDAO();
-        studentDAO = new StudentDAO();
         notificationDAO = new NotificationDAO();
     }
 
@@ -70,13 +68,25 @@ public class ControllerStudentMenu {
                 openSelectProjects();
             }
             case "Generar Documentos" -> {
-                openGenerateDocuments();
+                if (!studentHadAssignedProject()) {
+                    guiStudentMenu.showError("No tiene proyecto asignado.");
+                } else {
+                    openGenerateDocuments();
+                }
             }
             case "Generar Reportes" -> {
-                openReports();
+                if (!studentHadAssignedProject()) {
+                    guiStudentMenu.showError("No tiene proyecto asignado.");
+                } else {
+                    openReports();
+                }
             }
             case "Registro de Avances" -> {
-                openRegisterAdvance();
+                if (!studentHadAssignedProject()) {
+                    guiStudentMenu.showError("No tiene proyecto asignado.");
+                } else {
+                    openRegisterAdvance();
+                }
             }
             case "Subir Documentos" -> {
                 openDocuments(guiStudentMenu.getStudent().getEnrollment());
@@ -115,24 +125,20 @@ public class ControllerStudentMenu {
     }
 
     private void openReports() {
-        if (guiStudentMenu.getStudent().getAssignedProject() == null) {
-            guiStudentMenu.showError("Aún no tiene un proyecto asignado. Intentelo más tarde");
-        } else {
-            try {
-                PracticeDAO practiceDAO = new PracticeDAO();
-                Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
-                if (practice == null) {
-                    guiStudentMenu.showError("No tiene ninguna practica asignada, intentelo mas tarde.");
-                } else {
-                    GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    guiGenerateReport.start(stage);
-                }
-            } catch (DataOperationException e) {
-                LOGGER.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e.getMessage());
-                guiStudentMenu.showError(e.getMessage());
+        try {
+            PracticeDAO practiceDAO = new PracticeDAO();
+            Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
+            if (practice == null) {
+                guiStudentMenu.showError("No tiene ninguna practica asignada, intentelo mas tarde.");
+            } else {
+                GUIGenerateReport guiGenerateReport = new GUIGenerateReport(practice);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiGenerateReport.start(stage);
             }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE,"Error al obtener el proyecto del estudiante", e.getMessage());
+            guiStudentMenu.showError(e.getMessage());
         }
     }
 
@@ -140,17 +146,13 @@ public class ControllerStudentMenu {
         if (guiStudentMenu.getStudent() == null) {
             guiStudentMenu.showError("No hay estudiante asignado.");
         } else {
-            if (guiStudentMenu.getStudent().getAssignedProject() == null) {
-                guiStudentMenu.showError("No hay proyecto asignado.");
-            } else {
-                try {
-                    GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    guiRegisterAdvance.start(stage);
-                } catch (IllegalStateException e) {
-                    guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
-                }
+            try {
+                GUIRegisterAdvance guiRegisterAdvance = new GUIRegisterAdvance(guiStudentMenu.getStudent());
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                guiRegisterAdvance.start(stage);
+            } catch (IllegalStateException e) {
+                guiStudentMenu.showError("No se pudo abrir el registro de avances: " + e.getMessage());
             }
         }
     }
@@ -212,16 +214,20 @@ public class ControllerStudentMenu {
     private void openGenerateDocuments() {
         try {
             Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
-            if (practice == null) {
-                guiStudentMenu.showError("No tiene ninguna practica asignada, intentelo mas tarde.");
-            } else {
-                GUIGenerateDocuments guiGenerateDocuments = new GUIGenerateDocuments(practice);
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                guiGenerateDocuments.start(stage);
-            }
+            GUIGenerateDocuments guiGenerateDocuments = new GUIGenerateDocuments(practice);
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            guiGenerateDocuments.start(stage);
         } catch (DataOperationException e) {
             guiStudentMenu.showError(e.getMessage());
         }
+    }
+
+    private boolean studentHadAssignedProject() {
+        boolean hadAssignedProject = true;
+        if (guiStudentMenu.getStudent().getAssignedProject() == null) {
+            hadAssignedProject = false;
+        }
+        return hadAssignedProject;
     }
 }

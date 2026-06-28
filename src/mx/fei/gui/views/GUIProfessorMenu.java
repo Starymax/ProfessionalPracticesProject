@@ -2,6 +2,7 @@ package mx.fei.gui.views;
 
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.controllers.ControllerProfessorMenu;
+import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Professor;
 
 import javafx.application.Application;
@@ -102,6 +103,10 @@ public class GUIProfessorMenu extends Application {
 
     public Stage getStage() {
         return stage;
+    }
+
+    public void showError(String message) {
+        GUIUtils.showError(message);
     }
 
     private Button createMenuButton(String text) {

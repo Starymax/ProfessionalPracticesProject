@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,24 +62,22 @@ public class ControllerUploadDocument {
             Practice practice = practiceDAO.getPracticeByEnrollment(guiUploadDocument.getStudentEnrollment());
             List<Document> uploaded = documentDAO.getDocumentsByPractice(practice);
             guiUploadDocument.setUploadedDocuments(uploaded);
-        } catch (NoSuchElementException e) {
-
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los documentos subidos.", e);
         }
     }
 
     private void handleSelect() {
-        String selectedTypeStr = guiUploadDocument.getSelectedType();
-        if (selectedTypeStr == null || selectedTypeStr.isEmpty()) {
+        String selectedDocumentType = guiUploadDocument.getSelectedType();
+        if (selectedDocumentType == null || selectedDocumentType.isEmpty()) {
             guiUploadDocument.showError("Por favor, selecciona una categoría y un tipo antes de buscar el archivo.");
         } else {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Seleccionar documento para: " + selectedTypeStr);
+            fileChooser.setTitle("Seleccionar documento para: " + selectedDocumentType);
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Archivos PDF", "*.pdf"));
             File selectedFile = fileChooser.showOpenDialog(stage);
             if (selectedFile != null) {
-                guiUploadDocument.processSingleFile(selectedFile, selectedTypeStr);
+                guiUploadDocument.processSingleFile(selectedFile, selectedDocumentType);
             }
         }
     }
@@ -115,7 +113,7 @@ public class ControllerUploadDocument {
             LOGGER.log(Level.SEVERE, "Error al obtener la práctica del estudiante.", e);
             guiUploadDocument.showError("Hubp un error al recuperar los datos de la práctica del estudiante.");
         }
-        return currentPractice;
+        return  currentPractice;
     }
 
     private void processDocuments(Map<DocumentType, Document> selectedDocuments, Practice currentPractice) {
@@ -163,16 +161,16 @@ public class ControllerUploadDocument {
     }
 
     private boolean uploadSingleDocument(Document document, Practice currentPractice, StringBuilder errors) {
-        boolean documentUploaded = false;
+        boolean succes = false;
         try {
             String targetPath = documentDAO.uploadDocument(guiUploadDocument.getStudentEnrollment(), document);
             document.setDirectory(targetPath);
             int newId = documentDAO.loadDocument(currentPractice, document);
-            if (newId <=0) {
+            if (newId <= 0) {
                 errors.append("- ").append(document.getName()).append(" (Error en BD\n)");
             } else {
                 guiUploadDocument.markAsUploaded(document.getDocumentType());
-                documentUploaded = true;
+                succes = true;
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error al subir el documento: " + document.getName(), e);
@@ -181,6 +179,6 @@ public class ControllerUploadDocument {
             LOGGER.log(Level.SEVERE, "Error de base de datos al guardar: " + document.getName(), e);
             errors.append("- ").append(document.getName()).append(" (Fallo BD\n)");
         }
-        return documentUploaded;
+        return succes;
     }
 }

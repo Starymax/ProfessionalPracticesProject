@@ -46,20 +46,23 @@ public class GUIUploadDocuments extends Application {
     private Button buttonUpload;
     private Button buttonCancel;
 
-    private static final Map<String, DocumentType> TYPE_MAP = Map.of(
-            "evaluacion_competencias", DocumentType.COMPETENCE_EVALUATION,
-            "carta_asignacion", DocumentType.ACCEPTANCE_LETTER,
-            "plan_trabajo", DocumentType.WORK_PLAN,
-            "horario", DocumentType.STUDENT_SCHEDULE,
-            "carta_liberacion", DocumentType.LETTER_OF_RELEASE,
-            "Parcial", DocumentType.PARTIAL_REPORT,
-            "Mensual", DocumentType.MONTHLY_REPORT,
-            "Final", DocumentType.FINAL_REPORT
+    private static final Map<String, DocumentType> TYPE_MAP = Map.ofEntries(
+            Map.entry("Evaluacion de competencias", DocumentType.COMPETENCE_EVALUATION),
+            Map.entry("Carta de asignacion", DocumentType.ACCEPTANCE_LETTER),
+            Map.entry("Plan de trabajo", DocumentType.WORK_PLAN),
+            Map.entry("Horario", DocumentType.STUDENT_SCHEDULE),
+            Map.entry("Carta de liberacion", DocumentType.LETTER_OF_RELEASE),
+            Map.entry("Parcial", DocumentType.PARTIAL_REPORT),
+            Map.entry("Mensual", DocumentType.MONTHLY_REPORT),
+            Map.entry("Final", DocumentType.FINAL_REPORT),
+            Map.entry("Acta de nacimiento", DocumentType.BIRTH_CERTIFICATE),
+            Map.entry("Curp", DocumentType.CURP),
+            Map.entry("Constancia de estudios", DocumentType.CERTIFICATE_OF_ENROLLMENT)
     );
 
     private final List<String> documentOptions = Arrays.asList(
-            "evaluacion_competencias", "carta_asignacion",
-            "plan_trabajo", "horario", "carta_liberacion"
+            "Evaluacion de competencias", "Carta de asignacion",
+            "Plan de trabajo", "Horario", "Carta de liberacion", "Acta de nacimiento", "Curp", "Constancia de estudios"
     );
     private final List<String> reportOptions = Arrays.asList("Parcial", "Mensual", "Final");
 
@@ -139,11 +142,11 @@ public class GUIUploadDocuments extends Application {
         return comboBoxType.getValue();
     }
 
-    public void processSingleFile(File file, String typeStr) {
-        DocumentType type = TYPE_MAP.get(typeStr);
-        if (type != null) {
-            Document document = new Document(file.getName(), file.getAbsolutePath(), type);
-            selectedDocuments.put(type, document);
+    public void processSingleFile(File file, String documentTypeString) {
+        DocumentType documentType = TYPE_MAP.get(documentTypeString);
+        if (documentType != null) {
+            Document document = new Document(file.getName(), file.getAbsolutePath(), documentType);
+            selectedDocuments.put(documentType, document);
             updateSelectedFilesView();
         } else {
             showError("Tipo de archivo no reconocido.");
@@ -162,9 +165,9 @@ public class GUIUploadDocuments extends Application {
         }
     }
 
-    public void markAsUploaded(DocumentType type) {
-        uploadedDocuments.add(type);
-        selectedDocuments.remove(type);
+    public void markAsUploaded(DocumentType documentType) {
+        uploadedDocuments.add(documentType);
+        selectedDocuments.remove(documentType);
         refreshStatusBox();
         updateSelectedFilesView();
     }
@@ -230,15 +233,16 @@ public class GUIUploadDocuments extends Application {
     }
 
     private void refreshStatusBox() {
-        if (statusBox == null) return;
-        statusBox.getChildren().clear();
-        for (Map.Entry<String, DocumentType> entry : TYPE_MAP.entrySet()) {
-            boolean uploaded = uploadedDocuments.contains(entry.getValue());
-            String statusText = uploaded ? " ✔ Subido" : " ✘ Pendiente";
-            String color = uploaded ? "#2e7d32" : "#b71c1c";
-            Label label = new Label(entry.getValue().getDocumentType() + ":" + statusText);
-            label.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px;");
-            statusBox.getChildren().add(label);
+        if (statusBox != null) {
+            statusBox.getChildren().clear();
+            for (Map.Entry<String, DocumentType> entry : TYPE_MAP.entrySet()) {
+                boolean uploaded = uploadedDocuments.contains(entry.getValue());
+                String statusText = uploaded ? " ✔ Subido" : " ✘ Pendiente";
+                String color = uploaded ? "#2e7d32" : "#b71c1c";
+                Label label = new Label(entry.getValue().getDocumentType() + ":" + statusText);
+                label.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12px;");
+                statusBox.getChildren().add(label);
+            }
         }
     }
 

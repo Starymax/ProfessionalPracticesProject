@@ -3,6 +3,7 @@ package mx.fei.gui.controllers;
 import mx.fei.gui.views.GUIEvaluateStudentSelection;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
+import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dao.UserDAO;
 
 import javafx.event.ActionEvent;
@@ -13,6 +14,7 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -20,7 +22,9 @@ import java.util.List;
 
 public class ControllerProfessorMenu {
     private GUIProfessorMenu guiProfessorMenu;
+    private EducationalExperienceDAO educationalExperienceDAO;
     public ControllerProfessorMenu(GUIProfessorMenu guiProfessorMenu) {
+        educationalExperienceDAO = new EducationalExperienceDAO();
         this.guiProfessorMenu = guiProfessorMenu;
     }
 
@@ -28,7 +32,11 @@ public class ControllerProfessorMenu {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Evaluar" -> {
-                openEvaluateStudent();
+                if (!professorHadAssignedExperiences()) {
+                    guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
+                } else {
+                    openEvaluateStudent();
+                }
             }
             case "Regresar" -> {
                 goBack();
@@ -69,5 +77,17 @@ public class ControllerProfessorMenu {
                 }
             }
         }
+    }
+
+    private boolean professorHadAssignedExperiences() {
+        boolean hadAssignedExperiences = true;
+        try {
+            if (educationalExperienceDAO.getEducationalExperiencesByProfessor(guiProfessorMenu.getProfessor().getUserId()).isEmpty()) {
+                hadAssignedExperiences = false;
+            }
+        } catch (DataOperationException e) {
+            guiProfessorMenu.showError("Error al obtener las experiencias educativas.");
+        }
+        return hadAssignedExperiences;
     }
 }

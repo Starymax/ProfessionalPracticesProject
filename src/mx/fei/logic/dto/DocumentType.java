@@ -9,7 +9,11 @@ public enum DocumentType {
     COMPETENCE_EVALUATION ("evaluacionDeCompetencias"),
     PARTIAL_REPORT ("reporteParcial"),
     MONTHLY_REPORT ("reporteMensual"),
-    FINAL_REPORT ("reporteFinal");
+    FINAL_REPORT ("reporteFinal"),
+    BIRTH_CERTIFICATE ("actaNacimiento"),
+    CURP ("CURP"),
+    CERTIFICATE_OF_ENROLLMENT ("constanciaDeEstudios"),
+    OFFICIAL_IDENTIFICATION("identificacionOficial");
     private final String documentType;
 
     public String getDocumentType() {
