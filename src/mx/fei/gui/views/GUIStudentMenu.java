@@ -31,6 +31,7 @@ public class GUIStudentMenu extends Application {
     private Button buttonReports;
     private Button buttonRegisterAdvance;
     private Button buttonDocuments;
+    private Button buttonProgress;
     private Button buttonNotifications;
     private Button buttonLogout;
     private Label labelUnreadCount;
@@ -57,8 +58,9 @@ public class GUIStudentMenu extends Application {
         buttonReports = buildMenuButton("Generar Reportes");
         buttonRegisterAdvance = buildMenuButton("Registro de Avances");
         buttonDocuments = buildMenuButton("Subir Documentos");
+        buttonProgress = buildMenuButton("Avance");
 
-        VBox centerButtons = new VBox(20, buttonSelectProjects, buttonGenerateDocuments, buttonReports, buttonRegisterAdvance, buttonDocuments);
+        VBox centerButtons = new VBox(20, buttonSelectProjects, buttonGenerateDocuments, buttonReports, buttonRegisterAdvance, buttonDocuments, buttonProgress);
         centerButtons.setAlignment(Pos.CENTER);
 
         buttonNotifications = new Button("🔔 Notificaciones");
@@ -92,6 +94,7 @@ public class GUIStudentMenu extends Application {
         buttonReports.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonRegisterAdvance.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
+        buttonProgress.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonNotifications.setOnAction(controllerStudentMenu::handleButtonsMenu);
         buttonLogout.setOnAction(controllerStudentMenu::handleButtonsMenu);
         this.controllerStudentMenu = controllerStudentMenu;
@@ -103,7 +106,7 @@ public class GUIStudentMenu extends Application {
         mainPanel.setBottom(bottomRow);
         BorderPane.setMargin(centerButtons, new Insets(20, 0, 20, 0));
 
-        Scene scene = new Scene(mainPanel, 680, 520);
+        Scene scene = new Scene(mainPanel, 680, 590);
         GUIStyle.apply(scene);
         stage.setTitle("Estudiante");
         stage.setResizable(false);
@@ -128,6 +131,7 @@ public class GUIStudentMenu extends Application {
             }
         }
     }
+
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -182,6 +186,10 @@ public class GUIStudentMenu extends Application {
 
     public Button getButtonGenerateDocuments() {
         return buttonGenerateDocuments;
+    }
+
+    public Button getButtonProgress() {
+        return buttonProgress;
     }
 
     public static void main(String[] args) {

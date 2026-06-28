@@ -17,6 +17,7 @@ import mx.fei.gui.views.GUIUploadDocuments;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIGenerateDocuments;
 import mx.fei.gui.views.GUINotifications;
+import mx.fei.gui.views.GUIStudentProgress;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -90,6 +91,9 @@ public class ControllerStudentMenu {
             }
             case "Subir Documentos" -> {
                 openDocuments(guiStudentMenu.getStudent().getEnrollment());
+            }
+            case "Avance" -> {
+                openProgress();
             }
             case "🔔 Notificaciones" -> {
                 openNotifications();
@@ -208,6 +212,23 @@ public class ControllerStudentMenu {
             Stage loginStage = new Stage();
             guiLogin.start(loginStage);
             guiStudentMenu.getStage().close();
+        }
+    }
+
+    private void openProgress() {
+        try {
+            Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
+            if (practice == null) {
+                guiStudentMenu.showError("No tiene ninguna práctica asignada. Intente más tarde.");
+            } else {
+                GUIStudentProgress gui = new GUIStudentProgress(practice);
+                Stage stage = new Stage();
+                stage.initModality(Modality.APPLICATION_MODAL);
+                gui.start(stage);
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al abrir Mi Avance", e.getMessage());
+            guiStudentMenu.showError(e.getMessage());
         }
     }
 
