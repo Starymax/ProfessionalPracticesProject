@@ -26,20 +26,27 @@ public class ControllerManageStudent {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Registrar estudiante" -> {
-                registerStudent();
+                openRegisterStudent();
             }
             case "Modificar estudiante" -> {
                 if (!existStudents()) {
                     guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
                 } else {
-                    modifyStudent();
+                    openModifyStudent();
                 }
             }
             case "Asignar proyecto" -> {
                 if (!existStudents()) {
                     guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
                 } else {
-                    assignProject();
+                    openAssignProject();
+                }
+            }
+            case "Consultar practicas" -> {
+                if (!existStudents()) {
+                    guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
+                } else {
+                    consultPractice();
                 }
             }
             case "Regresar" -> {
@@ -48,7 +55,7 @@ public class ControllerManageStudent {
         }
     }
 
-    private void registerStudent() {
+    private void openRegisterStudent() {
         GUIRegisterStudent guiRegisterStudent = new GUIRegisterStudent();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -56,15 +63,24 @@ public class ControllerManageStudent {
         stage.setTitle("Registrar estudiante");
     }
 
-    private void modifyStudent() {
+    private void openModifyStudent() {
         GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
+        guiChooseStudent.setToModifyStudent(true);
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Modificar estudiante");
         guiChooseStudent.start(stage);
     }
 
-    private void assignProject() {
+    private void consultPractice() {
+        GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Consultar prácticas");
+        guiChooseStudent.start(stage);
+    }
+
+    private void openAssignProject() {
         try {
             StudentDAO studentDAO = new StudentDAO();
             List<Student> studentList = studentDAO.getStudentsWithoutProject();

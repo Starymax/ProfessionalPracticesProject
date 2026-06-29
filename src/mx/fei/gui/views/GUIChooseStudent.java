@@ -31,6 +31,7 @@ public class GUIChooseStudent extends Application {
     private Button buttonBack;
     private List<Student> students;
     private List<Student> allStudents;
+    private boolean isToModifyStudent = false;
 
     public GUIChooseStudent() {
 
@@ -143,5 +144,13 @@ public class GUIChooseStudent extends Application {
 
     private String buildStudentLabel(Student student) {
         return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
+    }
+
+    public boolean isToModifyStudent() {
+        return isToModifyStudent;
+    }
+
+    public void setToModifyStudent(boolean toModifyStudent) {
+        isToModifyStudent = toModifyStudent;
     }
 }

@@ -13,6 +13,8 @@
     import java.sql.SQLException;
     import java.time.LocalDate;
     import java.time.format.DateTimeFormatter;
+    import java.util.ArrayList;
+    import java.util.List;
     import java.util.NoSuchElementException;
     import java.util.logging.Level;
     import java.util.logging.Logger;
@@ -34,7 +36,7 @@
          */
         @Override
         public Practice getPracticeById(int practiceId) throws DataOperationException {
-            String query = "SELECT * FROM practicas WHERE id_practica=?;";
+            String query = "SELECT * FROM practicas WHERE id_practica = ?;";
             int studentId = 0;
             String nrc = null;
             String period = null;
@@ -220,6 +222,40 @@
                 practice = new Practice(practiceId, student, educationalExperience, period != null ? period : "", grade);
             }
             return practice;
+        }
+
+        /**
+         * Retrieves all active students who have an assigned practice.
+         *
+         * @return a list of active students with a registered practice, empty if there are none
+         * @throws DataOperationException if a database error occurs
+         */
+        public List<Student> getStudentsWithPractice() throws DataOperationException {
+            List<Integer> studentIds = new ArrayList<>();
+            String query = "SELECT DISTINCT a.id_usuario FROM alumno a " +
+                            "INNER JOIN practicas p ON p.id_alumno = a.id_usuario " +
+                            "INNER JOIN usuario u ON u.id_usuario = a.id_usuario " +
+                            "WHERE u.estado_activo = true";
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query);
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    studentIds.add(resultSet.getInt("id_usuario"));
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error al obtener los estudiantes con práctica: " + e.getMessage());
+                throw new DataOperationException("Error al obtener los estudiantes con práctica");
+            }
+            List<Student> students = new ArrayList<>();
+            StudentDAO studentDAO = new StudentDAO();
+            for (int studentId : studentIds) {
+                try {
+                    students.add(studentDAO.getStudentById(studentId));
+                } catch (DataOperationException e) {
+                    LOGGER.log(Level.WARNING, "No se pudo cargar el estudiante con id: " + studentId);
+                }
+            }
+            return students;
         }
 
         /**

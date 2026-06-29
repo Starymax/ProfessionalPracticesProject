@@ -2,7 +2,10 @@ package mx.fei.gui.controllers;
 
 import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
+import mx.fei.gui.views.GUIPracticeInfo;
+import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
@@ -11,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,12 +22,14 @@ import java.util.logging.Logger;
 public class ControllerChooseStudent {
     private GUIChooseStudent guiChooseStudent;
     private StudentDAO studentDAO;
+    private PracticeDAO practiceDAO;
     private static final Logger LOGGER = Logger.getLogger(ControllerChooseStudent.class.getName());
     private final int NO_STUDENTS_SELECTED = 0;
 
     public ControllerChooseStudent(GUIChooseStudent guiChooseStudent) {
         this.guiChooseStudent = guiChooseStudent;
         this.studentDAO = new StudentDAO();
+        practiceDAO = new PracticeDAO();
         loadStudents();
     }
 
@@ -41,10 +47,13 @@ public class ControllerChooseStudent {
 
     private void loadStudents() {
         try {
-            List<Student> students = studentDAO.getStudents();
-            guiChooseStudent.setStudents(students);
+            if (guiChooseStudent.isToModifyStudent()) {
+                guiChooseStudent.setStudents(studentDAO.getStudents());
+            } else {
+                guiChooseStudent.setStudents(practiceDAO.getStudentsWithPractice());
+            }
         } catch (DataOperationException e) {
-            LOGGER.log(Level.SEVERE,"Error al cargar a los estudiantes", e);
+            LOGGER.log(Level.SEVERE, "Error al cargar a los estudiantes: " + e.getMessage());
             guiChooseStudent.showError(e.getMessage());
         }
     }
@@ -57,11 +66,25 @@ public class ControllerChooseStudent {
             if (selectedIndex < NO_STUDENTS_SELECTED) {
                 guiChooseStudent.showError("Seleccione un estudiante.");
             } else {
-                Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);
-                GUIModifyStudent guiModifyStudent = new GUIModifyStudent(studentSelected);
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                guiModifyStudent.start(stage);
+                if (guiChooseStudent.isToModifyStudent()) {
+                    Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);
+                    GUIModifyStudent guiModifyStudent = new GUIModifyStudent(studentSelected);
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    guiModifyStudent.start(stage);
+                }
+                else {
+                    try {
+                        Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);
+                        Practice practice = practiceDAO.getPracticeByEnrollment(studentSelected.getEnrollment());
+                        GUIPracticeInfo guiModifyStudent = new GUIPracticeInfo(practice);
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        guiModifyStudent.start(stage);
+                    } catch (DataOperationException e) {
+                        guiChooseStudent.showError("Error al cargar a los estudiantes");
+                    }
+                }
             }
         }
     }

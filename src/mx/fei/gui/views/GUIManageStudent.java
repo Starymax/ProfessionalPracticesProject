@@ -21,6 +21,7 @@ public class GUIManageStudent extends Application {
     private Button buttonRegisterStudent;
     private Button buttonModifyStudent;
     private Button buttonAssignProject;
+    private Button buttonConsultPractices;
     private Button buttonBack;
 
     public GUIManageStudent() {
@@ -42,8 +43,9 @@ public class GUIManageStudent extends Application {
         buttonRegisterStudent = createMenuButton("Registrar estudiante");
         buttonModifyStudent = createMenuButton("Modificar estudiante");
         buttonAssignProject = createMenuButton("Asignar proyecto");
+        buttonConsultPractices = createMenuButton("Consultar practicas");
         buttonBack = createMenuButton("Regresar");
-        VBox buttonsBox = new VBox(18, buttonRegisterStudent, buttonModifyStudent, buttonAssignProject, buttonBack);
+        VBox buttonsBox = new VBox(18, buttonRegisterStudent, buttonModifyStudent, buttonAssignProject, buttonConsultPractices, buttonBack);
         buttonsBox.setAlignment(Pos.CENTER);
         formPanel.getChildren().addAll(labelTitle, spacer, buttonsBox);
         StackPane mainPanel = new StackPane(formPanel);
@@ -53,6 +55,7 @@ public class GUIManageStudent extends Application {
         buttonModifyStudent.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         buttonAssignProject.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         buttonBack.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
+        buttonConsultPractices.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
         Scene scene = new Scene(mainPanel, 550, 500);
         GUIStyle.apply(scene);
         stage.setScene(scene);
