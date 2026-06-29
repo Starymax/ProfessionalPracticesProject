@@ -6,6 +6,7 @@ import mx.fei.gui.controllers.ControllerUploadDocument;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentType;
 import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.ValidationStatus;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -38,6 +39,7 @@ public class GUIUploadDocuments extends Application {
     private String studentEnrollment;
     private Map<DocumentType, Document> selectedDocuments;
     private Set<DocumentType> uploadedDocuments;
+    private Set<DocumentType> validatedDocuments;
     private ComboBox<String> comboBoxCategory;
     private ComboBox<String> comboBoxType;
     private VBox statusBox;
@@ -75,11 +77,13 @@ public class GUIUploadDocuments extends Application {
         this.studentEnrollment = practice.getStudent().getEnrollment();
         this.selectedDocuments = new HashMap<>();
         this.uploadedDocuments = new HashSet<>();
+        this.validatedDocuments = new HashSet<>();
     }
 
     public GUIUploadDocuments() {
         this.selectedDocuments = new HashMap<>();
         this.uploadedDocuments = new HashSet<>();
+        this.validatedDocuments = new HashSet<>();
     }
 
     @Override
@@ -109,6 +113,7 @@ public class GUIUploadDocuments extends Application {
             } else if ("Reporte".equals(comboBoxCategory.getValue())) {
                 comboBoxType.setItems(FXCollections.observableArrayList(reportOptions));
             }
+            comboBoxType.setValue(null);
         });
         HBox combosBox = new HBox(15, comboBoxCategory, comboBoxType);
         combosBox.setAlignment(Pos.CENTER);
@@ -136,10 +141,33 @@ public class GUIUploadDocuments extends Application {
 
     public void setUploadedDocuments(List<Document> documents) {
         uploadedDocuments.clear();
+        validatedDocuments.clear();
         for (Document document : documents) {
             uploadedDocuments.add(document.getDocumentType());
+            if (document.getValidationStatus() == ValidationStatus.VALIDATED) {
+                validatedDocuments.add(document.getDocumentType());
+            }
         }
+        refreshComboOptions();
         refreshStatusBox();
+    }
+
+    private void refreshComboOptions() {
+        Set<String> validatedNames = new HashSet<>();
+        for (Map.Entry<String, DocumentType> entry : TYPE_MAP.entrySet()) {
+            if (validatedDocuments.contains(entry.getValue()) && documentOptions.contains(entry.getKey())) {
+                validatedNames.add(entry.getKey());
+            }
+        }
+        comboBoxCategory.setOnAction(e -> {
+            if ("Documento".equals(comboBoxCategory.getValue())) {
+                List<String> filtered = documentOptions.stream().filter(name -> !validatedNames.contains(name)).toList();
+                comboBoxType.setItems(FXCollections.observableArrayList(filtered));
+            } else if ("Reporte".equals(comboBoxCategory.getValue())) {
+                comboBoxType.setItems(FXCollections.observableArrayList(reportOptions));
+            }
+            comboBoxType.setValue(null);
+        });
     }
 
     public String getSelectedType() {

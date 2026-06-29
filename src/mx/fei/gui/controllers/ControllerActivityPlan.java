@@ -71,8 +71,7 @@ public class ControllerActivityPlan {
             GUIUtils.showErrors(errors);
         } else {
             boolean userConfirmed = showSaveConfirmation();
-            if (userConfirmed) {
-                saveProject(project);
+            if (userConfirmed && saveProject(project)) {
                 saveActivities(guiActivityPlan.getActivities());
             }
         }
@@ -153,13 +152,18 @@ public class ControllerActivityPlan {
         }
     }
 
-    private void saveProject(Project project) {
-        try {
-            ProjectDAO projectDAO = new ProjectDAO();
-            project.setProjectId(projectDAO.registerProject(project));
-        } catch (DataOperationException dataOperationException) {
-            guiActivityPlan.showError(dataOperationException.getMessage());
+    private boolean saveProject(Project project) {
+        boolean isProjectSaved = project.getProjectId() > 0;
+        if (!isProjectSaved) {
+            try {
+                ProjectDAO projectDAO = new ProjectDAO();
+                project.setProjectId(projectDAO.registerProject(project));
+                isProjectSaved = project.getProjectId() > 0;
+            } catch (DataOperationException dataOperationException) {
+                guiActivityPlan.showError(dataOperationException.getMessage());
+            }
         }
+        return isProjectSaved;
     }
 
     private void saveActivities(List<Activity> activities) {

@@ -222,7 +222,7 @@ public class DocumentDAO implements IDAODocument {
             throw new IllegalArgumentException("La practica no puede ser nula");
         }
         List<Document> documents = new ArrayList<>();
-        String query = "SELECT id_documento, nombre, ruta, tipoDocumento FROM documentos WHERE id_practica = ?";
+        String query = "SELECT id_documento, nombre, ruta, tipoDocumento, estado_validacion FROM documentos WHERE id_practica = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
         PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, practice.getId());
@@ -235,6 +235,7 @@ public class DocumentDAO implements IDAODocument {
                     DocumentType documentType = DocumentType.valueOf(type);
                     Document document = new Document(name, path, documentType, practice);
                     document.setId(idDocument);
+                    document.setValidationStatus(ValidationStatus.fromValidationValue(resultSet.getString("estado_validacion")));
                     documents.add(document);
                 }
             }
