@@ -41,6 +41,7 @@ public class GUIGenerateSelfEvaluation extends Application {
     private final int ROWS = 10;
     private Button buttonPrint;
     private Button buttonBack;
+    private boolean locked = false;
 
     public GUIGenerateSelfEvaluation(Student student) {
         this.student = student;
@@ -123,11 +124,11 @@ public class GUIGenerateSelfEvaluation extends Application {
         GUIUtils.showSuccess(msg);
     }
 
-    public int getROWS() {
+    public int getRows() {
         return ROWS;
     }
 
-    public int getCOLUMNS() {
+    public int getColumns() {
         return COLUMNS;
     }
 
@@ -257,5 +258,16 @@ public class GUIGenerateSelfEvaluation extends Application {
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(18, 0, 0, 0));
         return box;
+    }
+
+    public void lockAnswers() {
+        locked = true;
+        for (ComboBox<Integer> combo : answerCombos) {
+            combo.setDisable(true);
+        }
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 }

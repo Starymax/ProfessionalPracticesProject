@@ -1,5 +1,6 @@
 package mx.fei.gui.controllers;
 
+import javafx.scene.control.ComboBox;
 import mx.fei.gui.views.GUIGenerateSelfEvaluation;
 import mx.fei.gui.utils.SelfEvaluationGenerator;
 import mx.fei.logic.dao.DocumentDAO;
@@ -59,12 +60,33 @@ public class ControllerGenerateSelfEvaluation {
                         guiGenerateSelfEvaluation.getLabelOrganization().setText(enterprise != null ? enterprise.getName() : "No especificada");
                         guiGenerateSelfEvaluation.getLabelResponsible().setText(manager != null ? manager.getName() : "No asignado");
                         guiGenerateSelfEvaluation.getLabelProject().setText(project.getNameProject() != null ? project.getNameProject() : "Sin nombre");
+                        checkExistingAnswers();
                     }
                 }
             } catch (DataOperationException e) {
-                LOGGER.log(Level.SEVERE, "Error cargando datos para autoevaluación", e);
+                LOGGER.log(Level.SEVERE, "Error cargando datos para autoevaluación: " + e.getMessage());
                 guiGenerateSelfEvaluation.showError("Error al cargar los datos: " + e.getMessage());
             }
+        }
+    }
+
+    private void checkExistingAnswers() {
+        try {
+            DocumentDAO documentDAO = new DocumentDAO();
+            List<Integer> previousAnswers = documentDAO.getSelfEvaluationAnswers(practice);
+            if (!previousAnswers.isEmpty()) {
+                loadPreviousAnswers(previousAnswers);
+                guiGenerateSelfEvaluation.lockAnswers();
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.WARNING, "No se pudieron verificar respuestas previas: " + e.getMessage());
+        }
+    }
+
+    private void loadPreviousAnswers(List<Integer> answers) {
+        List<ComboBox<Integer>> answerCombos = guiGenerateSelfEvaluation.getAnswerCombos();
+        for (int i = 0; i < answerCombos.size() && i < answers.size(); i++) {
+            answerCombos.get(i).setValue(answers.get(i));
         }
     }
 
@@ -78,60 +100,61 @@ public class ControllerGenerateSelfEvaluation {
                     printPDF();
                 }
             }
-            case "Regresar" -> guiGenerateSelfEvaluation.closeWindow();
+            case "Regresar" -> {
+                guiGenerateSelfEvaluation.closeWindow();
+            }
         }
     }
 
     private void printPDF() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Seleccionar carpeta para guardar la autoevaluación");
-        File directory = chooser.showDialog(stage);
+        DirectoryChooser filesChooser = new DirectoryChooser();
+        filesChooser.setTitle("Seleccionar carpeta para guardar la autoevaluación");
+        File directory = filesChooser.showDialog(stage);
         if (directory != null) {
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String fileName = String.format("Autoevaluacion_%s_%s.pdf", student.getEnrollment(), timestamp);
             String outputPath = new File(directory, fileName).getAbsolutePath();
-            if (saveAnswersToDatabase(outputPath)) {
-                Map<String, Object> params = buildParameters();
+            try {
+                if (!guiGenerateSelfEvaluation.isLocked()) {
+                    int documentId = registerDocumentInDatabase(outputPath);
+                    saveAnswers(documentId);
+                }
+                Map<String, Object> parameters = buildParameters();
                 SelfEvaluationGenerator generator = new SelfEvaluationGenerator();
-                boolean success = generator.generate(params, outputPath);
+                boolean success = generator.generate(parameters, outputPath);
                 if (success) {
                     guiGenerateSelfEvaluation.showSuccess("Autoevaluación generada exitosamente en:\n" + outputPath);
                     guiGenerateSelfEvaluation.closeWindow();
                 } else {
                     guiGenerateSelfEvaluation.showError("Error al generar el PDF.");
                 }
-            }
-            guiGenerateSelfEvaluation.closeWindow();
-        }
-    }
-
-    private boolean saveAnswersToDatabase(String outputPath) {
-        boolean answersSaved = false;
-        if (practice == null) {
-            LOGGER.log(Level.WARNING, "No hay práctica disponible para guardar la autoevaluación");
-            guiGenerateSelfEvaluation.showError("No hay práctica disponible para guardar la autoevaluación.");
-        } else {
-            try {
-                DocumentDAO documentDAO = new DocumentDAO();
-                Document document = new Document("Autoevaluacion_" + student.getEnrollment() + ".pdf", outputPath, DocumentType.SELF_EVALUATION);
-                int documentId = documentDAO.loadDocument(practice, document);
-                if (documentId <= 0) {
-                    LOGGER.log(Level.WARNING, "No se pudo registrar el documento de autoevaluación");
-                    guiGenerateSelfEvaluation.showError("No se pudo registrar el documento en la base de datos.");
-                } else {
-                    List<Integer> answers = new ArrayList<>();
-                    for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
-                        answers.add(guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue());
-                    }
-                    documentDAO.saveAnswersOfSelfEvaluation(documentId, answers);
-                    answersSaved = true;
-                }
             } catch (DataOperationException e) {
                 LOGGER.log(Level.SEVERE, "Error al guardar la autoevaluación en BD: " + e.getMessage());
                 guiGenerateSelfEvaluation.showError(e.getMessage());
             }
         }
-        return answersSaved;
+    }
+
+    private int registerDocumentInDatabase(String outputPath) throws DataOperationException {
+        if (practice == null) {
+            throw new DataOperationException("No hay practica disponible para guardar la autoevaluación.");
+        }
+        DocumentDAO documentDAO = new DocumentDAO();
+        Document document = new Document("Autoevaluacion_" + student.getEnrollment() + ".pdf", outputPath, DocumentType.SELF_EVALUATION);
+        int documentId = documentDAO.loadDocument(practice, document);
+        if (documentId <= 0) {
+            throw new DataOperationException("No se pudo registrar el documento de autoevaluación.");
+        }
+        return documentId;
+    }
+
+    private void saveAnswers(int documentId) throws DataOperationException {
+        List<Integer> answers = new ArrayList<>();
+        for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
+            answers.add(guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue());
+        }
+        DocumentDAO documentDAO = new DocumentDAO();
+        documentDAO.saveAnswersOfSelfEvaluation(documentId, answers);
     }
 
     private Map<String, Object> buildParameters() {
@@ -145,18 +168,18 @@ public class ControllerGenerateSelfEvaluation {
         parameters.put("logo", logoResource);
         for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
             int answer = guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
-            for (int col = 1; col <= guiGenerateSelfEvaluation.getCOLUMNS(); col++) {
-                String paramName = "quest" + (i+1) + "response" + col;
-                String value = (answer == col) ? "X" : "";
-                parameters.put(paramName, value);
+            for (int column = 1; column <= guiGenerateSelfEvaluation.getColumns(); column++) {
+                String parameterName = "quest" + (i+1) + "response" + column;
+                String value = (answer == column) ? "X" : "";
+                parameters.put(parameterName, value);
             }
         }
         int total = 0;
-        for (int i = 0; i < guiGenerateSelfEvaluation.getROWS(); i++) {
+        for (int i = 0; i < guiGenerateSelfEvaluation.getRows(); i++) {
             total += guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
         }
-        String totalStr = String.valueOf(total);
-        parameters.put("finalScore", totalStr);
+        String totalString = String.valueOf(total);
+        parameters.put("finalScore", totalString);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDateTime date = LocalDateTime.now();
         parameters.put("placeAndDate", "Xalapa.Ver "+date.format(formatter));

@@ -19,6 +19,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -308,8 +309,13 @@ public class ReportDAOTest {
     void getReportsByStudentEnrollment_StudentHasNoReports_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        List<Report> result = reportDAO.getReportsByStudentEnrollment("S000000");
-        assertTrue(result.isEmpty());
+        Student mockStudent = mock(Student.class);
+        List<Report> expectedList = Collections.emptyList();
+        try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
+                (mock, context) -> when(mock.getStudentByEnrollment("S000000")).thenReturn(mockStudent))) {
+            List<Report> result = reportDAO.getReportsByStudentEnrollment("S000000");
+            assertEquals(expectedList, result);
+        }
     }
 
     @Test

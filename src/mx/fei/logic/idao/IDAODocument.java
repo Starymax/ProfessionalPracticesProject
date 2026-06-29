@@ -17,4 +17,8 @@ public interface IDAODocument {
     String uploadDocument(String enrollment, Document document) throws IOException;
 
     List<Document> getDocumentsByPractice(Practice practice) throws DataOperationException;
+
+    boolean saveAnswersOfSelfEvaluation(int documentId, List<Integer> answers) throws DataOperationException;
+
+    List<Integer> getSelfEvaluationAnswers(Practice practice) throws DataOperationException;
 }

@@ -596,40 +596,15 @@ public class DocumentDAO implements IDAODocument {
     }
 
     /**
-     * Retrieves the stored answers of the self-evaluation for the given student.
+     * Saves the answers of a self-evaluation associated with the given document.
      *
-     * @param studentId the student's identifier
-     * @return a list of answers in order or an empty list if no self-evaluation was found for the student
+     * @param documentId the identifier of the document associated with the self-evaluation
+     * @param answers the list of self-evaluation answers, must contain exactly 10 responses
+     * @return true if the answers were saved successfully
+     * @throws IllegalArgumentException if the list of answers is null or does not contain exactly 10 responses
      * @throws DataOperationException if a database error occurs
      */
-    public List<Integer> getAnswersOfSelfEvaluation(int studentId) throws DataOperationException {
-        List<Integer> answers = new ArrayList<>();
-        String query = "SELECT a.respuesta1, a.respuesta2, a.respuesta3, a.respuesta4, a.respuesta5, " +
-                "a.respuesta6, a.respuesta7, a.respuesta8, a.respuesta9, a.respuesta10 " +
-                "FROM autoevaluacion a " +
-                "JOIN documentos d ON a.id_documento = d.id_documento " +
-                "JOIN practicas p ON d.id_practica = p.id_practica " +
-                "WHERE p.id_alumno = ?";
-        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, studentId);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    for (int i = 1; i <= MOUNT_OF_ANSWERS_OF_SELF_EVALUATION; i++) {
-                        answers.add(resultSet.getInt("respuesta" + i));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al obtener las respuestas de autoevaluación", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
-            }
-            throw new DataOperationException("Error al obtener las respuestas de la autoevaluación.");
-        }
-        return answers;
-    }
-
+    @Override
     public boolean saveAnswersOfSelfEvaluation(int documentId, List<Integer> answers) throws DataOperationException {
         if (answers == null || answers.size() != MOUNT_OF_ANSWERS_OF_SELF_EVALUATION) {
             LOGGER.log(Level.WARNING, "Las respuestas de la autoevaluación son inválidas");
@@ -648,8 +623,51 @@ public class DocumentDAO implements IDAODocument {
             answersSaved = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al guardar las respuestas de autoevaluación: " + e.getMessage());
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
             throw new DataOperationException("Error al guardar las respuestas de la autoevaluación");
         }
         return answersSaved;
+    }
+
+    /**
+     * Retrieves the answers of the self-evaluation associated with the given practice.
+     *
+     * @param practice the practice whose self-evaluation answers are to be retrieved, must not be null
+     * @return a list containing the self-evaluation answers, empty if no self-evaluation exists
+     * @throws IllegalArgumentException if the practice is null
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public List<Integer> getSelfEvaluationAnswers(Practice practice) throws DataOperationException {
+        if (practice == null) {
+            throw new IllegalArgumentException("La practica no puede ser nula");
+        }
+        List<Integer> answers = new ArrayList<>();
+        String query = "SELECT a.respuesta1, a.respuesta2, a.respuesta3, a.respuesta4, a.respuesta5, " +
+                "a.respuesta6, a.respuesta7, a.respuesta8, a.respuesta9, a.respuesta10 " +
+                "FROM autoevaluacion a " +
+                "INNER JOIN documentos d ON d.id_documento = a.id_documento " +
+                "WHERE d.id_practica = ? AND d.tipoDocumento = 'SELF_EVALUATION' " +
+                "LIMIT 1";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    for (int i = 1; i <= MOUNT_OF_ANSWERS_OF_SELF_EVALUATION; i++) {
+                        answers.add(resultSet.getInt("respuesta" + i));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener respuestas de autoevaluación: " + e.getMessage());
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al obtener las respuestas de la autoevaluación");
+        }
+        return answers;
     }
 }
