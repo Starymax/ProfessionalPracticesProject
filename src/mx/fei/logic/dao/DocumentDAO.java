@@ -38,6 +38,7 @@ import java.util.logging.Logger;
  */
 public class DocumentDAO implements IDAODocument {
     private static final Logger LOGGER = Logger.getLogger(DocumentDAO.class.getName());
+    public static final int MOUNT_OF_ANSWERS_OF_SELF_EVALUATION = 10;
 
     /**
      * Creates an empty practice expedient for a student in the given period.
@@ -594,4 +595,61 @@ public class DocumentDAO implements IDAODocument {
         return validationStatusUpdated;
     }
 
+    /**
+     * Retrieves the stored answers of the self-evaluation for the given student.
+     *
+     * @param studentId the student's identifier
+     * @return a list of answers in order or an empty list if no self-evaluation was found for the student
+     * @throws DataOperationException if a database error occurs
+     */
+    public List<Integer> getAnswersOfSelfEvaluation(int studentId) throws DataOperationException {
+        List<Integer> answers = new ArrayList<>();
+        String query = "SELECT a.respuesta1, a.respuesta2, a.respuesta3, a.respuesta4, a.respuesta5, " +
+                "a.respuesta6, a.respuesta7, a.respuesta8, a.respuesta9, a.respuesta10 " +
+                "FROM autoevaluacion a " +
+                "JOIN documentos d ON a.id_documento = d.id_documento " +
+                "JOIN practicas p ON d.id_practica = p.id_practica " +
+                "WHERE p.id_alumno = ?";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, studentId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    for (int i = 1; i <= MOUNT_OF_ANSWERS_OF_SELF_EVALUATION; i++) {
+                        answers.add(resultSet.getInt("respuesta" + i));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener las respuestas de autoevaluación", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al obtener las respuestas de la autoevaluación.");
+        }
+        return answers;
+    }
+
+    public boolean saveAnswersOfSelfEvaluation(int documentId, List<Integer> answers) throws DataOperationException {
+        if (answers == null || answers.size() != MOUNT_OF_ANSWERS_OF_SELF_EVALUATION) {
+            LOGGER.log(Level.WARNING, "Las respuestas de la autoevaluación son inválidas");
+            throw new IllegalArgumentException("Deben proporcionarse exactamente 10 respuestas");
+        }
+        String query = "INSERT INTO autoevaluacion (id_documento, respuesta1, respuesta2, respuesta3, " +
+                "respuesta4, respuesta5, respuesta6, respuesta7, respuesta8, respuesta9, respuesta10) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        boolean answersSaved = false;
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, documentId);
+            for (int i = 0; i < answers.size(); i++) {
+                preparedStatement.setInt(i + 2, answers.get(i));
+            }
+            answersSaved = preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al guardar las respuestas de autoevaluación: " + e.getMessage());
+            throw new DataOperationException("Error al guardar las respuestas de la autoevaluación");
+        }
+        return answersSaved;
+    }
 }

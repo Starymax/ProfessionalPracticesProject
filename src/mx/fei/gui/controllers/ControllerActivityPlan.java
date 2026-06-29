@@ -159,8 +159,8 @@ public class ControllerActivityPlan {
                 ProjectDAO projectDAO = new ProjectDAO();
                 project.setProjectId(projectDAO.registerProject(project));
                 isProjectSaved = project.getProjectId() > 0;
-            } catch (DataOperationException dataOperationException) {
-                guiActivityPlan.showError(dataOperationException.getMessage());
+            } catch (DataOperationException e) {
+                guiActivityPlan.showError(e.getMessage());
             }
         }
         return isProjectSaved;
@@ -174,8 +174,8 @@ public class ControllerActivityPlan {
                 activityDAO.insertActivity(activity, project, weeklyLogsMap.get(activity));
             }
             closeStageWithSuccess();
-        } catch (DataOperationException dataOperationException) {
-            guiActivityPlan.showError("Error al guardar: " + dataOperationException.getMessage());
+        } catch (DataOperationException e) {
+            guiActivityPlan.showError("Error al guardar: " + e.getMessage());
         }
     }
 

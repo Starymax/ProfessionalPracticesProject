@@ -8,6 +8,7 @@ module practicas.profesionales {
     requires java.logging;
     requires net.sf.jasperreports.core;
     requires org.apache.pdfbox;
+    requires mysql.connector.j;
 
     opens mx.fei.gui.views to javafx.fxml;
     opens mx.fei.gui.controllers to javafx.fxml;

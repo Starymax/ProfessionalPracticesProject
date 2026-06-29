@@ -132,7 +132,7 @@ public class ControllerCoordinatorMenu {
                 exists = false;
             }
         } catch (DataOperationException e) {
-            guiCoordinatorMenu.showError("Error al obtener la lista de la lista de las organizaciones");
+            guiCoordinatorMenu.showError(e.getMessage());
         }
         return exists;
     }

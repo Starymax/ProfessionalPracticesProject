@@ -60,7 +60,7 @@ public class ControllerStudentProgress {
             guiStudentProgress.updateHours((int) realized, (int) remaining, TOTAL_HOURS_GOAL);
         } catch (DataOperationException e) {
             LOGGER.log(Level.WARNING, "Error al cargar horas", e.getMessage());
-            guiStudentProgress.showError("No se pudieron cargar las horas. Intente más tarde.");
+            guiStudentProgress.showError(e.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class ControllerStudentProgress {
             guiStudentProgress.updateDocuments(nonReports);
         } catch (DataOperationException e) {
             LOGGER.log(Level.WARNING, "Error al cargar documentos", e.getMessage());
-            guiStudentProgress.showError("No se pudieron cargar los documentos. Intente más tarde.");
+            guiStudentProgress.showError(e.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class ControllerStudentProgress {
             guiStudentProgress.updateActivities(rows);
         } catch (DataOperationException e) {
             LOGGER.log(Level.WARNING, "Error al cargar actividades", e.getMessage());
-            guiStudentProgress.showError("No se pudieron cargar las actividades. Intente más tarde.");
+            guiStudentProgress.showError(e.getMessage());
         }
     }
 
@@ -125,7 +125,7 @@ public class ControllerStudentProgress {
             guiStudentProgress.updateReports(reports);
         } catch (DataOperationException e) {
             LOGGER.log(Level.WARNING, "Error al cargar reportes", e.getMessage());
-            guiStudentProgress.showError("No se pudieron cargar los reportes. Intente más tarde.");
+            guiStudentProgress.showError(e.getMessage());
         }
     }
 }

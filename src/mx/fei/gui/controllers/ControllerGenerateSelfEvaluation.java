@@ -2,12 +2,9 @@ package mx.fei.gui.controllers;
 
 import mx.fei.gui.views.GUIGenerateSelfEvaluation;
 import mx.fei.gui.utils.SelfEvaluationGenerator;
+import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.PracticeDAO;
-import mx.fei.logic.dto.Student;
-import mx.fei.logic.dto.Practice;
-import mx.fei.logic.dto.Project;
-import mx.fei.logic.dto.Enterprise;
-import mx.fei.logic.dto.ProjectManager;
+import mx.fei.logic.dto.*;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
@@ -20,9 +17,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -95,33 +90,65 @@ public class ControllerGenerateSelfEvaluation {
             String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             String fileName = String.format("Autoevaluacion_%s_%s.pdf", student.getEnrollment(), timestamp);
             String outputPath = new File(directory, fileName).getAbsolutePath();
-            Map<String, Object> params = buildParameters();
-            SelfEvaluationGenerator generator = new SelfEvaluationGenerator();
-            boolean success = generator.generate(params, outputPath);
-            if (success) {
-                guiGenerateSelfEvaluation.showSuccess("Autoevaluación generada exitosamente en:\n" + outputPath);
-                guiGenerateSelfEvaluation.closeWindow();
-            } else {
-                guiGenerateSelfEvaluation.showError("Error al generar el PDF.");
+            if (saveAnswersToDatabase(outputPath)) {
+                Map<String, Object> params = buildParameters();
+                SelfEvaluationGenerator generator = new SelfEvaluationGenerator();
+                boolean success = generator.generate(params, outputPath);
+                if (success) {
+                    guiGenerateSelfEvaluation.showSuccess("Autoevaluación generada exitosamente en:\n" + outputPath);
+                    guiGenerateSelfEvaluation.closeWindow();
+                } else {
+                    guiGenerateSelfEvaluation.showError("Error al generar el PDF.");
+                }
             }
+            guiGenerateSelfEvaluation.closeWindow();
         }
     }
 
+    private boolean saveAnswersToDatabase(String outputPath) {
+        boolean answersSaved = false;
+        if (practice == null) {
+            LOGGER.log(Level.WARNING, "No hay práctica disponible para guardar la autoevaluación");
+            guiGenerateSelfEvaluation.showError("No hay práctica disponible para guardar la autoevaluación.");
+        } else {
+            try {
+                DocumentDAO documentDAO = new DocumentDAO();
+                Document document = new Document("Autoevaluacion_" + student.getEnrollment() + ".pdf", outputPath, DocumentType.SELF_EVALUATION);
+                int documentId = documentDAO.loadDocument(practice, document);
+                if (documentId <= 0) {
+                    LOGGER.log(Level.WARNING, "No se pudo registrar el documento de autoevaluación");
+                    guiGenerateSelfEvaluation.showError("No se pudo registrar el documento en la base de datos.");
+                } else {
+                    List<Integer> answers = new ArrayList<>();
+                    for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
+                        answers.add(guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue());
+                    }
+                    documentDAO.saveAnswersOfSelfEvaluation(documentId, answers);
+                    answersSaved = true;
+                }
+            } catch (DataOperationException e) {
+                LOGGER.log(Level.SEVERE, "Error al guardar la autoevaluación en BD: " + e.getMessage());
+                guiGenerateSelfEvaluation.showError(e.getMessage());
+            }
+        }
+        return answersSaved;
+    }
+
     private Map<String, Object> buildParameters() {
-        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> parameters = new HashMap<>();
         URL logoResource = getClass().getResource("/images/selfEvaluation.png");
-        params.put("studentName", student.getName() + " " + student.getLastName());
-        params.put("studentEnrollment", student.getEnrollment());
-        params.put("enterprise", enterprise != null ? enterprise.getName() : "");
-        params.put("projectManager", manager != null ? manager.getName() : "");
-        params.put("projectName", project.getNameProject() != null ? project.getNameProject() : "");
-        params.put("logo", logoResource);
+        parameters.put("studentName", student.getName() + " " + student.getLastName());
+        parameters.put("studentEnrollment", student.getEnrollment());
+        parameters.put("enterprise", enterprise != null ? enterprise.getName() : "");
+        parameters.put("projectManager", manager != null ? manager.getName() : "");
+        parameters.put("projectName", project.getNameProject() != null ? project.getNameProject() : "");
+        parameters.put("logo", logoResource);
         for (int i = 0; i < guiGenerateSelfEvaluation.getAnswerCombos().size(); i++) {
             int answer = guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
             for (int col = 1; col <= guiGenerateSelfEvaluation.getCOLUMNS(); col++) {
                 String paramName = "quest" + (i+1) + "response" + col;
                 String value = (answer == col) ? "X" : "";
-                params.put(paramName, value);
+                parameters.put(paramName, value);
             }
         }
         int total = 0;
@@ -129,11 +156,11 @@ public class ControllerGenerateSelfEvaluation {
             total += guiGenerateSelfEvaluation.getAnswerCombos().get(i).getValue();
         }
         String totalStr = String.valueOf(total);
-        params.put("finalScore", totalStr);
+        parameters.put("finalScore", totalStr);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         LocalDateTime date = LocalDateTime.now();
-        params.put("placeAndDate", "Xalapa.Ver "+date.format(formatter));
-        return params;
+        parameters.put("placeAndDate", "Xalapa.Ver "+date.format(formatter));
+        return parameters;
     }
 
     private boolean validateAnswers() {

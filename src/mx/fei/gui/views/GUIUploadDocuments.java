@@ -49,6 +49,7 @@ public class GUIUploadDocuments extends Application {
     private Button buttonCancel;
 
     private static final Map<String, DocumentType> TYPE_MAP = Map.ofEntries(
+            Map.entry("Autoevaluacion", DocumentType.SELF_EVALUATION),
             Map.entry("Evaluacion de competencias", DocumentType.COMPETENCE_EVALUATION),
             Map.entry("Carta de asignacion", DocumentType.ACCEPTANCE_LETTER),
             Map.entry("Plan de trabajo", DocumentType.WORK_PLAN),
@@ -64,6 +65,7 @@ public class GUIUploadDocuments extends Application {
     );
 
     private final List<String> documentOptions = Arrays.asList(
+            "Autoevaluacion",
             "Evaluacion de competencias", "Carta de asignacion",
             "Plan de trabajo", "Horario", "Carta de liberacion",
             "Acta de nacimiento", "Curp", "Constancia de estudios",

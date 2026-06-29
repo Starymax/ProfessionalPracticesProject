@@ -105,6 +105,12 @@ public class GUIGenerateSelfEvaluation extends Application {
         return answerCombos;
     }
 
+    public void loadAnswers(List<Integer> answers) {
+        for (int i = 0; i < answers.size() && i < answerCombos.size(); i++) {
+            answerCombos.get(i).setValue(answers.get(i));
+        }
+    }
+
     public Label getLabelTotalScore() {
         return labelTotalScore;
     }

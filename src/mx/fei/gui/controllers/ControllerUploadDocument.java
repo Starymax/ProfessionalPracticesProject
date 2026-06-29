@@ -111,9 +111,9 @@ public class ControllerUploadDocument {
             }
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener la práctica del estudiante.", e);
-            guiUploadDocument.showError("Hubp un error al recuperar los datos de la práctica del estudiante.");
+            guiUploadDocument.showError(e.getMessage());
         }
-        return  currentPractice;
+        return currentPractice;
     }
 
     private void processDocuments(Map<DocumentType, Document> selectedDocuments, Practice currentPractice) {

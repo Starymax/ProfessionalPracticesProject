@@ -20,8 +20,12 @@ import javafx.stage.Window;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ControllerProfessorMenu {
+
+    private static final Logger LOGGER = Logger.getLogger(ControllerProfessorMenu.class.getName());
     private GUIProfessorMenu guiProfessorMenu;
     private EducationalExperienceDAO educationalExperienceDAO;
     public ControllerProfessorMenu(GUIProfessorMenu guiProfessorMenu) {
@@ -103,7 +107,7 @@ public class ControllerProfessorMenu {
                 hadAssignedExperiences = false;
             }
         } catch (DataOperationException e) {
-            guiProfessorMenu.showError("Error al obtener las experiencias educativas.");
+            LOGGER.log(Level.SEVERE, e.getMessage());
         }
         return hadAssignedExperiences;
     }

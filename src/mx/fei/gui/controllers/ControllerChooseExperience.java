@@ -33,7 +33,7 @@ public class ControllerChooseExperience {
                 handleSelectExperience();
             }
             case "Regresar" -> {
-                openMenuExperience();
+                guiChooseExperience.closeWindow();
             }
         }
     }
@@ -80,13 +80,5 @@ public class ControllerChooseExperience {
         } catch (IllegalStateException e) {
             guiChooseExperience.showError("Seleccione un experiencia.");
         }
-    }
-
-    private void openMenuExperience() {
-        GUIManageExperience guiManageExperience = new GUIManageExperience();
-        Stage stage = new Stage();
-        stage.setTitle("Seleccionar experiencia");
-        guiManageExperience.start(stage);
-        guiChooseExperience.closeWindow();
     }
 }

@@ -77,7 +77,7 @@ public class ControllerManageProjects {
                 projectsExist = false;
             }
         } catch (DataOperationException e) {
-            guiManageProjects.showError("Error al obtener la lista de proyectos.");
+            guiManageProjects.showError(e.getMessage());
         }
         return projectsExist;
     }

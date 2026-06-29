@@ -130,25 +130,25 @@ public class ControllerGenerateReport {
         if (student == null) {
             guiGenerateReport.showError("No hay estudiante seleccionado.");
         } else {
-        try {
-            float totalHours = calculateTotalRealizedHours(student.getUserId());
-            int generatedPartialReports = reportDAO.countReportsByTypeAndStudent(
-                    ReportType.PARTIAL_REPORT.getReportType(), student.getUserId());
-            if (generatedPartialReports >= MAX_PARTIAL_REPORTS) {
-                guiGenerateReport.showError("Ya generaste tu reporte parcial.");
-            } else if (totalHours < PARTIAL_REPORT_HOURS_THRESHOLD) {
-                guiGenerateReport.showError("Necesitas al menos " + PARTIAL_REPORT_HOURS_THRESHOLD
-                        + " horas de avance para generar el reporte parcial (llevas " + (int) totalHours + ").");
-            } else {
-                Stage stage = new Stage();
-                stage.initModality(Modality.APPLICATION_MODAL);
-                GUIGeneratePartialReport generatePartialReport = new GUIGeneratePartialReport(student);
-                generatePartialReport.start(stage);
+            try {
+                float totalHours = calculateTotalRealizedHours(student.getUserId());
+                int generatedPartialReports = reportDAO.countReportsByTypeAndStudent(
+                        ReportType.PARTIAL_REPORT.getReportType(), student.getUserId());
+                if (generatedPartialReports >= MAX_PARTIAL_REPORTS) {
+                    guiGenerateReport.showError("Ya generaste tu reporte parcial.");
+                } else if (totalHours < PARTIAL_REPORT_HOURS_THRESHOLD) {
+                    guiGenerateReport.showError("Necesitas al menos " + PARTIAL_REPORT_HOURS_THRESHOLD
+                            + " horas de avance para generar el reporte parcial (llevas " + (int) totalHours + ").");
+                } else {
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    GUIGeneratePartialReport generatePartialReport = new GUIGeneratePartialReport(student);
+                    generatePartialReport.start(stage);
+                }
+            } catch (DataOperationException e) {
+                LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte parcial", e);
+                guiGenerateReport.showError(e.getMessage());
             }
-        } catch (DataOperationException e) {
-            LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte parcial", e);
-            guiGenerateReport.showError(e.getMessage());
-        }
         }
     }
 

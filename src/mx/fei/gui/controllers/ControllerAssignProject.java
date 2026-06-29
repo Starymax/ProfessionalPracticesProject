@@ -39,12 +39,12 @@ public class ControllerAssignProject {
     }
 
     private void assignProject() {
-        Project selected = guiAssignProject.getSelectedProject();
+        Project selectedProject = guiAssignProject.getSelectedProject();
         Student student = guiAssignProject.getStudent();
-        if (selected == null) {
+        if (selectedProject == null) {
             guiAssignProject.showError("Seleccione un proyecto de la lista.");
-        } else if (selected.getAvailablePlaces() > NO_PLACES) {
-            confirmAssign(student, selected);
+        } else if (selectedProject.getAvailablePlaces() > NO_PLACES) {
+            confirmAssign(student, selectedProject);
         } else {
             guiAssignProject.showError("Proyecto lleno, seleccione otro.");
         }

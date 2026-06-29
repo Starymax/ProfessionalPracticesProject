@@ -198,7 +198,7 @@ public class ControllerStudentMenu {
                 }
             } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al abrir notificaciones: " + e.getMessage());
-            guiStudentMenu.showError("Error al cargar notificaciones. Intente más tarde.");
+            guiStudentMenu.showError(e.getMessage());
         }
     }
 

@@ -355,6 +355,8 @@ public class ReportDAO implements IDAOReport {
     @Override
     public List<Report> getReportsByStudentEnrollment(String enrollment) throws DataOperationException {
         List<Report> reports = new ArrayList<>();
+        StudentDAO studentDAO = new StudentDAO();
+        Student student = studentDAO.getStudentByEnrollment(enrollment);
         String query = "SELECT r.id_reporte, r.tipo_reporte, r.fecha_reporte, r.observaciones, r.resultados_obtenidos, r.nrc " +
                 "FROM reporte r JOIN alumno a ON r.id_alumno = a.id_usuario " +
                 "WHERE a.matricula = ? ORDER BY r.fecha_reporte DESC";
@@ -362,12 +364,7 @@ public class ReportDAO implements IDAOReport {
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, enrollment);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                Student student = null;
                 while (resultSet.next()) {
-                    if (student == null) {
-                        StudentDAO studentDAO = new StudentDAO();
-                        student = studentDAO.getStudentByEnrollment(enrollment);
-                    }
                     reports.add(buildReportFromResultSet(resultSet, student));
                 }
             }

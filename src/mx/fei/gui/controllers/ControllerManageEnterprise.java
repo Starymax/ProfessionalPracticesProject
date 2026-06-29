@@ -60,7 +60,7 @@ public class ControllerManageEnterprise {
                 enterprisesExist = false;
             }
         } catch (DataOperationException e) {
-            guiManageEnterprise.showError("Error al obtener la lista de la lista de las organizaciones");
+            guiManageEnterprise.showError(e.getMessage());
         }
         return enterprisesExist;
     }

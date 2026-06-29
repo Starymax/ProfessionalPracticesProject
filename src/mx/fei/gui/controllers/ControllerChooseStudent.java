@@ -93,7 +93,7 @@ public class ControllerChooseStudent {
                         guiPracticeInfo.start(stage);
                         guiChooseStudent.closeWindow();
                     } catch (DataOperationException e) {
-                        guiChooseStudent.showError("Error al cargar a los estudiantes");
+                        guiChooseStudent.showError(e.getMessage());
                     }
                 }
             }

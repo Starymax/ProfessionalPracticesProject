@@ -1,5 +1,6 @@
 package mx.fei.gui.controllers;
 
+import javafx.stage.Modality;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
@@ -53,17 +54,17 @@ public class ControllerManageExperience {
     private void openModifyExperience() {
         GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
         Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Modificar experiencia");
         guiChooseExperience.setToModify(true);
         guiChooseExperience.start(stage);
-        guiManageExperience.closeWindow();
     }
     private void fillExperience () {
         GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
         Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Dar de alta experiencia");
         guiChooseExperience.start(stage);
-        guiManageExperience.closeWindow();
     }
 
     private boolean existEducationalExperiences() {
@@ -74,7 +75,7 @@ public class ControllerManageExperience {
                 experiencesExist = false;
             }
         } catch (DataOperationException e) {
-            guiManageExperience.showError("Error al obtener la lista de la lista de las experiencias");
+            guiManageExperience.showError(e.getMessage());
         }
         return experiencesExist;
     }

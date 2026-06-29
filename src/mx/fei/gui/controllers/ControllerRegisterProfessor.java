@@ -57,7 +57,7 @@ public class ControllerRegisterProfessor {
                 }
             }
         } catch (IllegalArgumentException | IllegalStateException | DataOperationException e) {
-            guiRegisterProfessor.showError("Error al registrar el profesor");
+            guiRegisterProfessor.showError(e.getMessage());
         }
     }
 

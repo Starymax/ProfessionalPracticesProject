@@ -42,6 +42,7 @@ public class GUIActivityPlan extends Application {
     public static final int TOTAL_PLAN_HOURS = 420;
     public static final int TOTAL_WEEKS = 24;
     public static final int MAX_HOURS_PER_WEEK = 25;
+    public static final int COLUMNS = 6;
 
     private final List<Activity> activities = new ArrayList<>();
     private final Map<Activity, Map<Integer, Integer>> activityWeekHours = new IdentityHashMap<>();
@@ -95,8 +96,8 @@ public class GUIActivityPlan extends Application {
     public void refreshWeekGrid() {
         weekGrid.getChildren().clear();
         for (int week = 1; week <= TOTAL_WEEKS; week++) {
-            int columnIndex = (week - 1) % 6;
-            int rowIndex = (week - 1) / 6;
+            int columnIndex = (week - 1) % COLUMNS;
+            int rowIndex = (week - 1) / COLUMNS;
             weekGrid.add(buildWeekCell(week), columnIndex, rowIndex);
         }
     }
