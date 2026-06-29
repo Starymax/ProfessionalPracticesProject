@@ -187,7 +187,8 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("programa_educativo")).thenReturn("ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026");
         when(resultSet.getInt("id_profesor")).thenReturn(0);
-        EducationalExperience expectedExperience = new EducationalExperience("12345", "Pruebas de Software", "ISW", null, "FEB-JUN 2026");
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
+        EducationalExperience expectedExperience = new EducationalExperience("12345", "Pruebas de Software", "ISW", null, "FEB-JUN 2026", true);
         EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrc("12345");
         assertEquals(expectedExperience, result);
     }
@@ -235,8 +236,9 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("programa_educativo")).thenReturn("ISW", "ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026", "AGO-ENE 2026");
         when(resultSet.getObject("id_usuario")).thenReturn(null, null);
-        EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", null, "FEB-JUN 2026");
-        EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", null, "AGO-ENE 2026");
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
+        EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", null, "FEB-JUN 2026", true);
+        EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", null, "AGO-ENE 2026", true);
         List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiences();
         assertEquals(List.of(expectedExperience1, expectedExperience2), result);
     }
@@ -268,8 +270,9 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("nombre_experiencia")).thenReturn("Pruebas de Software", "Base de Datos");
         when(resultSet.getString("programa_educativo")).thenReturn("ISW", "ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026", "AGO-ENE 2026");
-        EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", professor, "FEB-JUN 2026");
-        EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", professor, "AGO-ENE 2026");
+        when(resultSet.getBoolean("estado_activo")).thenReturn(true);
+        EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", professor, "FEB-JUN 2026", true);
+        EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", professor, "AGO-ENE 2026", true);
         try (MockedConstruction<ProfessorDAO> mockedProfessorDAO = mockConstruction(ProfessorDAO.class,
                 (mock, context) -> when(mock.getProfessorById(professorId)).thenReturn(professor))) {
             List<EducationalExperience> result = educationalExperienceDAO.getEducationalExperiencesByProfessor(professorId);

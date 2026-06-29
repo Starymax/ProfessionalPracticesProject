@@ -33,7 +33,7 @@ public class GUIModifyStudent extends Application {
     private RadioButton radioButtonWoman;
     private RadioButton radioButtonSpeakIndigenousLanguage;
     private RadioButton radioButtonDontSpeakIndigenousLanguage;
-    private ToggleButton toggleState;
+    private ToggleButton toggleActiveState;
     private Button buttonUpdate;
     private Button buttonCancel;
 
@@ -86,15 +86,15 @@ public class GUIModifyStudent extends Application {
         ToggleGroup toggleGroupLanguage = new ToggleGroup();
         radioButtonSpeakIndigenousLanguage.setToggleGroup(toggleGroupLanguage);
         radioButtonDontSpeakIndigenousLanguage.setToggleGroup(toggleGroupLanguage);
-        HBox languageBox = new HBox(20, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
-        languageBox.setAlignment(Pos.CENTER_LEFT);
-        GridPane.setColumnSpan(languageBox, 3);
-        formGrid.add(languageBox, 1, 5);
+        HBox indigenousLanguageBox = new HBox(20, radioButtonSpeakIndigenousLanguage, radioButtonDontSpeakIndigenousLanguage);
+        indigenousLanguageBox.setAlignment(Pos.CENTER_LEFT);
+        GridPane.setColumnSpan(indigenousLanguageBox, 3);
+        formGrid.add(indigenousLanguageBox, 1, 5);
         formGrid.add(new Label("Estado:"), 0, 6);
-        toggleState = new ToggleButton("Inactivo");
-        toggleState.setPrefWidth(110);
-        toggleState.setOnAction(e -> toggleState.setText(toggleState.isSelected() ? "Activo" : "Inactivo"));
-        formGrid.add(toggleState, 1, 6);
+        toggleActiveState = new ToggleButton("Inactivo");
+        toggleActiveState.setPrefWidth(110);
+        toggleActiveState.setOnAction(e -> toggleActiveState.setText(toggleActiveState.isSelected() ? "Activo" : "Inactivo"));
+        formGrid.add(toggleActiveState, 1, 6);
         populateFields();
         buttonUpdate = new Button("Actualizar");
         buttonCancel = new Button("Cancelar");
@@ -186,8 +186,8 @@ public class GUIModifyStudent extends Application {
         return radioButtonDontSpeakIndigenousLanguage;
     }
 
-    public ToggleButton getToggleState() {
-        return toggleState;
+    public ToggleButton getToggleActiveState() {
+        return toggleActiveState;
     }
 
     public Button getButtonUpdate() {
@@ -214,8 +214,8 @@ public class GUIModifyStudent extends Application {
                 radioButtonDontSpeakIndigenousLanguage.setSelected(true);
             }
             textFieldGrade.setText(String.valueOf(student.getGrade()));
-            toggleState.setSelected(student.isActive());
-            toggleState.setText(student.isActive() ? "Activo" : "Inactivo");
+            toggleActiveState.setSelected(student.isActive());
+            toggleActiveState.setText(student.isActive() ? "Activo" : "Inactivo");
         }
     }
 }

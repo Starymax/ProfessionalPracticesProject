@@ -35,4 +35,6 @@ public interface IDAOEducationalExperience {
     List<EducationalExperience> getEducationalExperiences() throws DataOperationException;
 
     List<EducationalExperience> getEducationalExperiencesByProfessor(int professorId) throws DataOperationException;
+
+    List<EducationalExperience> getActiveEducationalExperiences() throws DataOperationException;
 }

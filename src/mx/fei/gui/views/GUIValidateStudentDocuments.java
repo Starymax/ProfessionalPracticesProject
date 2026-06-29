@@ -173,7 +173,7 @@ public class GUIValidateStudentDocuments extends Application {
                     setText(null);
                     setStyle("");
                 } else {
-                    setText(item.getDocumentType().getDocumentType() + "  —  " + statusLabel(item.getStatus()));
+                    setText(item.getDocumentType().getDocumentType() + "  —  " + changeStatusLabel(item.getStatus()));
                     setStyle("-fx-text-fill: " + statusColor(item.getStatus()) + ";");
                 }
             }
@@ -194,38 +194,42 @@ public class GUIValidateStudentDocuments extends Application {
         VBox.setVgrow(listViewDocuments, Priority.ALWAYS);
     }
 
-    private String statusLabel(ValidationStatus status) {
-        return switch (status) {
+    private String changeStatusLabel(ValidationStatus status) {
+        String statusLabel = "";
+         switch (status) {
             case VALIDATED -> {
-                yield "Validado";
+                 statusLabel = "Validado";
             }
             case REJECTED -> {
-                yield "Rechazado";
+                statusLabel = "Rechazado";
             }
             case NOT_UPLOADED -> {
-                yield "No subido";
+                statusLabel = "No subido";
             }
             default -> {
-                yield "Subido (sin revisión)";
+                statusLabel = "Subido (sin revisión)";
             }
         };
+         return statusLabel;
     }
 
     private String statusColor(ValidationStatus status) {
-        return switch (status) {
+        String statusColor = "";
+         switch (status) {
             case VALIDATED -> {
-                yield "#2e7d32";
+                statusColor = "#2e7d32";
             }
             case REJECTED -> {
-                yield "#b71c1c";
+                statusColor = "#b71c1c";
             }
             case NOT_UPLOADED -> {
-                yield "#757575";
+                statusColor = "#757575";
             }
             default -> {
-                yield "#e65100";
+                statusColor = "#e65100";
             }
         };
+         return statusColor;
     }
 
     private Button createButton(String text) {

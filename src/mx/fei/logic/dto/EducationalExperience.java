@@ -8,17 +8,19 @@ public class EducationalExperience {
     private String educationalProgram;
     private Professor professor;
     private String period;
+    private boolean activeStatus;
 
-    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor) {
-        this(nrc, name, educationalProgram, professor, "");
+    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor, boolean activeStatus) {
+        this(nrc, name, educationalProgram, professor, "", true);
     }
 
-    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor, String period) {
+    public EducationalExperience(String nrc, String name, String educationalProgram, Professor professor, String period, boolean activeStatus) {
         this.nrc = nrc;
         this.name = name;
         this.educationalProgram = educationalProgram;
         this.professor = professor;
         this.period = period;
+        this.activeStatus = activeStatus;
     }
 
     public EducationalExperience(String period, String name, String nrc) {
@@ -68,6 +70,14 @@ public class EducationalExperience {
 
     public void setPeriod(String period) {
         this.period = period;
+    }
+
+    public boolean isActiveStatus() {
+        return activeStatus;
+    }
+
+    public void setActiveStatus(boolean activeStatus) {
+        this.activeStatus = activeStatus;
     }
 
     @Override

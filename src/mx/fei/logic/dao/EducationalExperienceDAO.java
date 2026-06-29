@@ -104,7 +104,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
      */
     @Override
     public boolean insertEducationalExperience(EducationalExperience educationalExperience, String period) throws DataOperationException {
-        String query = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, periodo) values (?,?,?,?,?);";
+        String query = "INSERT INTO experiencia_educativa (NRC, nombre_experiencia, programa_educativo, id_profesor, periodo, estado_activo) values (?,?,?,?,?,?);";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, educationalExperience.getNrc());
@@ -112,6 +112,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             preparedStatement.setString(3, educationalExperience.getEducationalProgram());
             setProfessorParameter(preparedStatement, 4, educationalExperience.getProfessor());
             preparedStatement.setString(5, period);
+            preparedStatement.setBoolean(6, educationalExperience.isActiveStatus());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al registrar una experiencia educativa", e);
@@ -156,14 +157,15 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
             throw new IllegalArgumentException("El periodo de la experiencia educativa no puede estar vacío");
         }
         boolean experienceUpdated = false;
-        String queryModifyExperience = "UPDATE experiencia_educativa SET nombre_experiencia=?, programa_educativo=?, id_profesor=?, periodo=? WHERE nrc=?;";
+        String queryModifyExperience = "UPDATE experiencia_educativa SET nombre_experiencia=?, programa_educativo=?, id_profesor=?, periodo=?, estado_activo=? WHERE nrc=?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryModifyExperience)) {
             preparedStatement.setString(1, educationalExperience.getName());
             preparedStatement.setString(2, educationalExperience.getEducationalProgram());
             setProfessorParameter(preparedStatement, 3, educationalExperience.getProfessor());
             preparedStatement.setString(4, period);
-            preparedStatement.setString(5, educationalExperience.getNrc());
+            preparedStatement.setBoolean(5, educationalExperience.isActiveStatus());
+            preparedStatement.setString(6, educationalExperience.getNrc());
             experienceUpdated = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al modificar una experiencia: " + e.getMessage());
@@ -245,11 +247,12 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
         String name = resultSet.getString("nombre_experiencia");
         String career = resultSet.getString("programa_educativo");
         String period = resultSet.getString("periodo");
+        boolean activeStatus = resultSet.getBoolean("estado_activo");
         if (period == null) {
             period = "";
         }
         Professor professor = resolveProfessor(resultSet.getInt("id_profesor"));
-        return new EducationalExperience(nrcEE, name, career, professor, period);
+        return new EducationalExperience(nrcEE, name, career, professor, period, activeStatus);
     }
 
     /**
@@ -291,6 +294,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 String name = resultSet.getString("nombre_experiencia");
                 String educationalProgram = resultSet.getString("programa_educativo");
                 String period = resultSet.getString("periodo");
+                boolean activeStatus = resultSet.getBoolean("estado_activo");
                 if (period == null) {
                     period = "";
                 }
@@ -298,7 +302,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 if (resultSet.getObject("id_usuario") != null) {
                     professor = professorDAO.buildProfessorFromResultSet(resultSet);
                 }
-                educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period));
+                educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period, activeStatus));
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al obtener los datos de las experiencias", e);
@@ -321,7 +325,7 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
     public List<EducationalExperience> getEducationalExperiencesByProfessor(int professorId) throws DataOperationException {
         ArrayList<EducationalExperience> educationalExperiences = new ArrayList<>();
         Professor professor = new ProfessorDAO().getProfessorById(professorId);
-        String queryGetExperiencesByProfessor = "SELECT NRC, nombre_experiencia, programa_educativo, periodo FROM experiencia_educativa WHERE id_profesor = ?;";
+        String queryGetExperiencesByProfessor = "SELECT NRC, nombre_experiencia, programa_educativo, periodo, estado_activo FROM experiencia_educativa WHERE id_profesor = ?;";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(queryGetExperiencesByProfessor)) {
             preparedStatement.setInt(1, professorId);
@@ -331,10 +335,11 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                     String name = resultSet.getString("nombre_experiencia");
                     String educationalProgram = resultSet.getString("programa_educativo");
                     String period = resultSet.getString("periodo");
+                    boolean activeStatus = resultSet.getBoolean("estado_activo");
                     if (period == null) {
                         period = "";
                     }
-                    educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period));
+                    educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period, activeStatus));
                 }
             }
         } catch (SQLException e) {
@@ -343,6 +348,50 @@ public class EducationalExperienceDAO implements IDAOEducationalExperience {
                 throw new DataOperationException("Error de conexión. Intente más tarde.");
             }
             throw new DataOperationException("Error al obtener las experiencias educativas del profesor");
+        }
+        return educationalExperiences;
+    }
+
+    /**
+     * Retrieves all active educational experiences.
+     *
+     * @return a list of all active educational experiences, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
+    @Override
+    public List<EducationalExperience> getActiveEducationalExperiences() throws DataOperationException {
+        List<EducationalExperience> educationalExperiences = new ArrayList<>();
+        String query =
+                "SELECT e.NRC, e.nombre_experiencia, e.programa_educativo, e.periodo, e.estado_activo, " +
+                        "p.id_usuario, p.numero_de_personal, p.nombre, p.apellidos, p.correo, " +
+                        "p.contrasena, p.estado_activo AS estado_activo_profesor, p.genero, p.es_coordinador, p.es_administrador, p.turno " +
+                        "FROM experiencia_educativa e LEFT JOIN vw_profesor p ON e.id_profesor = p.id_usuario " +
+                        "WHERE e.estado_activo = true;";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            ProfessorDAO professorDAO = new ProfessorDAO();
+            while (resultSet.next()) {
+                String nrc = resultSet.getString("NRC");
+                String name = resultSet.getString("nombre_experiencia");
+                String educationalProgram = resultSet.getString("programa_educativo");
+                String period = resultSet.getString("periodo");
+                boolean activeStatus = resultSet.getBoolean("estado_activo");
+                if (period == null) {
+                    period = "";
+                }
+                Professor professor = null;
+                if (resultSet.getObject("id_usuario") != null) {
+                    professor = professorDAO.buildProfessorFromResultSet(resultSet);
+                }
+                educationalExperiences.add(new EducationalExperience(nrc, name, educationalProgram, professor, period, activeStatus));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error obteniendo las experiencias activas: " + e.getMessage());
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al obtener las experiencias educativas activas");
         }
         return educationalExperiences;
     }

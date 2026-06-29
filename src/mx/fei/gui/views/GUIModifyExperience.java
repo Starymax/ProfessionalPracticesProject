@@ -14,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -39,6 +40,7 @@ public class GUIModifyExperience extends Application {
     private ComboBox<String> comboBoxProfessors;
     private Button buttonUpdate;
     private Button buttonBack;
+    private ToggleButton toggleActiveState;
 
     public GUIModifyExperience(EducationalExperience experience) {
         this.experience = experience;
@@ -81,12 +83,16 @@ public class GUIModifyExperience extends Application {
         comboBoxYear.setPrefWidth(220);
         comboBoxYear.setPromptText("Seleccione año");
         formGrid.add(comboBoxYear, 1, 3);
-
         formGrid.add(new Label("Profesor actual:"), 0, 4);
         textFieldCurrentProfessor = new TextField();
         textFieldCurrentProfessor.setDisable(true);
         textFieldCurrentProfessor.setStyle("-fx-opacity: 1;");
         formGrid.add(textFieldCurrentProfessor, 1, 4);
+        formGrid.add(new Label("Estado:"), 0, 5);
+        toggleActiveState = new ToggleButton("Inactiva");
+        toggleActiveState.setPrefWidth(110);
+        toggleActiveState.setOnAction(event -> {toggleActiveState.setText(toggleActiveState.isSelected() ? "Activa" : "Inactiva");});
+        formGrid.add(toggleActiveState, 1, 5);
         populateFields();
         comboBoxProfessors = new ComboBox<>();
         comboBoxProfessors.setPrefWidth(180);
@@ -151,6 +157,10 @@ public class GUIModifyExperience extends Application {
         return String.format("%d-%s", year, month);
     }
 
+    public ToggleButton getToggleActiveState() {
+        return toggleActiveState;
+    }
+
     private void populateFields() {
         if (experience != null) {
             textFieldName.setText(experience.getName());
@@ -158,21 +168,21 @@ public class GUIModifyExperience extends Application {
             if (experience.getProfessor() != null) {
                 textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
             }
+            toggleActiveState.setSelected(experience.isActiveStatus());
+            toggleActiveState.setText(experience.isActiveStatus() ? "Activa" : "Inactiva");
             String period = experience.getPeriod();
             if (period != null && period.contains("-")) {
                 String[] parts = period.split("-");
-                if (parts.length >= 2) {
+                try {
                     int year = Integer.parseInt(parts[0]);
                     String month = parts[1];
+                    comboBoxYear.setValue(year);
                     if ("02".equals(month)) {
                         comboBoxSemester.setValue("Febrero - Julio");
                     } else if ("08".equals(month)) {
                         comboBoxSemester.setValue("Agosto - Enero");
                     }
-                    if (!comboBoxYear.getItems().contains(year)) {
-                        comboBoxYear.getItems().add(year);
-                    }
-                    comboBoxYear.setValue(year);
+                } catch (NumberFormatException ignored) {
                 }
             }
         }

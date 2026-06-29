@@ -60,7 +60,7 @@ public class ControllerModifyStudent {
     private Student buildStudent(Student original) {
         String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
-        boolean active = guiModifyStudent.getToggleState().isSelected();
+        boolean activeStatus = guiModifyStudent.getToggleActiveState().isSelected();
         float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
         return new Student(
                 original.getUserId(),
@@ -69,7 +69,7 @@ public class ControllerModifyStudent {
                 guiModifyStudent.getTextFieldMail().getText().trim(),
                 original.getPassword(),
                 gender,
-                active,
+                activeStatus,
                 original.getEnrollment(),
                 indigenousLanguage,
                 original.getAssignedProject(),

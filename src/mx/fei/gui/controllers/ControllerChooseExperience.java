@@ -38,7 +38,12 @@ public class ControllerChooseExperience {
 
     private void loadExperiences() {
         try {
-            List<EducationalExperience> experiences = educationalExperienceDAO.getEducationalExperiences();
+            List<EducationalExperience> experiences;
+            if (guiChooseExperience.isToModify()) {
+                experiences = educationalExperienceDAO.getEducationalExperiences();
+            } else {
+                experiences = educationalExperienceDAO.getActiveEducationalExperiences();
+            }
             guiChooseExperience.setExperiences(experiences);
         } catch (DataOperationException e) {
             guiChooseExperience.showError(e.getMessage());

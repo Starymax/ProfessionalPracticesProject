@@ -26,6 +26,15 @@ public class ControllerModifyExperience {
         loadProfessors();
     }
 
+    private void loadProfessors() {
+        try {
+            List<Professor> professors = professorDAO.getProfessors();
+            guiModifyExperience.setProfessors(professors);
+        } catch (DataOperationException e) {
+            guiModifyExperience.showError("Error al cargar la lista de profesores.");
+        }
+    }
+
     public void handleUpdateReturnButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
@@ -36,15 +45,6 @@ public class ControllerModifyExperience {
                 guiModifyExperience.closeWindow();
                 openChooseExperience();
             }
-        }
-    }
-
-    private void loadProfessors() {
-        try {
-            List<Professor> professors = professorDAO.getProfessors();
-            guiModifyExperience.setProfessors(professors);
-        } catch (DataOperationException e) {
-            guiModifyExperience.showError(e.getMessage());
         }
     }
 
@@ -66,19 +66,21 @@ public class ControllerModifyExperience {
                 } catch (IllegalArgumentException e) {
                     guiModifyExperience.showError(e.getMessage());
                 } catch (DataOperationException e) {
-                    guiModifyExperience.showError(e.getMessage());
+                    guiModifyExperience.showError("Error al actualizar. Intente más tarde.");
                 }
             }
         }
     }
 
     private EducationalExperience buildExperience(Professor professorToAssign) {
+        boolean activeStatus = guiModifyExperience.getToggleActiveState().isSelected();
         return new EducationalExperience(
                 guiModifyExperience.getExperience().getNrc(),
                 guiModifyExperience.getTextFieldName().getText().trim(),
                 guiModifyExperience.getTextFieldCareer().getText().trim(),
                 professorToAssign,
-                guiModifyExperience.getSelectedPeriod()
+                guiModifyExperience.getSelectedPeriod(),
+                activeStatus
         );
     }
 

@@ -58,7 +58,7 @@ public class ControllerRegisterEducationalExperience {
         String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
         String career = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
         String period = guiRegisterEducationalExperience.getSelectedPeriod();
-        return new EducationalExperience(nrc, name, career, null, period);
+        return new EducationalExperience(nrc, name, career, null, period, true);
     }
 
     private boolean nrcExists() {
