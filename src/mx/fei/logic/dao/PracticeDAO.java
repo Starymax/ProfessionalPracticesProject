@@ -230,6 +230,7 @@
          * @return a list of active students with a registered practice, empty if there are none
          * @throws DataOperationException if a database error occurs
          */
+        @Override
         public List<Student> getStudentsWithPractice() throws DataOperationException {
             List<Integer> studentIds = new ArrayList<>();
             String query = "SELECT DISTINCT a.id_usuario FROM alumno a " +
@@ -267,5 +268,48 @@
         public String getCurrentPeriod() {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
             return LocalDate.now().format(formatter);
+        }
+
+        /**
+         * Retrieves all active students enrolled in the educational experience identified by the given NRC.
+         *
+         * @param nrc the NRC of the educational experience, must not be null or blank
+         * @return a list of active students enrolled in the educational experience, empty if there are none
+         * @throws IllegalArgumentException if the NRC is null or blank
+         * @throws DataOperationException if a database error occurs
+         */
+        @Override
+        public List<Student> getStudentsByNrc(String nrc) throws DataOperationException {
+            if (nrc == null || nrc.isBlank()) {
+                LOGGER.log(Level.WARNING, "El NRC está vacío");
+                throw new IllegalArgumentException("El NRC no puede estar vacío");
+            }
+            List<Integer> studentIds = new ArrayList<>();
+            String query = "SELECT a.id_usuario FROM alumno a " +
+                    "INNER JOIN practicas p ON p.id_alumno = a.id_usuario " +
+                    "INNER JOIN usuario u ON u.id_usuario = a.id_usuario " +
+                    "WHERE p.nrc = ? AND u.estado_activo = true";
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, nrc);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        studentIds.add(resultSet.getInt("id_usuario"));
+                    }
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error al obtener los estudiantes por NRC: " + e.getMessage());
+                throw new DataOperationException("Error al obtener los estudiantes de la experiencia");
+            }
+            List<Student> students = new ArrayList<>();
+            StudentDAO studentDAO = new StudentDAO();
+            for (int studentId : studentIds) {
+                try {
+                    students.add(studentDAO.getStudentById(studentId));
+                } catch (DataOperationException e) {
+                    LOGGER.log(Level.WARNING, "No se pudo cargar el estudiante con id: " + studentId);
+                }
+            }
+            return students;
         }
     }

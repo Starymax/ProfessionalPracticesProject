@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import mx.fei.logic.dto.Professor;
 
 import java.util.List;
 
@@ -27,8 +28,10 @@ public class GUIChooseExperience extends Application {
     private Button buttonSelect;
     private Button buttonBack;
     private List<EducationalExperience> experiences;
-    private boolean toModify = false;
+    private boolean isToModify = false;
+    private boolean isToConsultStudent = false;
     private final int NO_EXPERIENCE_SELECTED = 0;
+    private Professor professor;
 
     public GUIChooseExperience() {
 
@@ -114,14 +117,30 @@ public class GUIChooseExperience extends Application {
     }
 
     public boolean isToModify() {
-        return toModify;
+        return isToModify;
     }
 
     public void setToModify(boolean toModify) {
-        this.toModify = toModify;
+        this.isToModify = toModify;
     }
 
     public List<EducationalExperience> getExperiences() {
         return experiences;
+    }
+
+    public boolean isToConsultStudent() {
+        return isToConsultStudent;
+    }
+
+    public void setToConsultStudent(boolean toConsultStudent) {
+        isToConsultStudent = toConsultStudent;
+    }
+
+    public Professor getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(Professor professor) {
+        this.professor = professor;
     }
 }

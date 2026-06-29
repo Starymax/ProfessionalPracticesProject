@@ -1,10 +1,12 @@
 package mx.fei.logic.idao;
 
 import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public interface IDAOPractice {
     Practice getPracticeById(int practiceId) throws DataOperationException;
@@ -23,5 +25,9 @@ public interface IDAOPractice {
 
     Practice buildPracticeFromRow(ResultSet resultSet, String enrollment) throws SQLException, DataOperationException;
 
+    List<Student> getStudentsWithPractice() throws DataOperationException;
+
     String getCurrentPeriod();
+
+    public List<Student> getStudentsByNrc(String nrc) throws DataOperationException;
 }

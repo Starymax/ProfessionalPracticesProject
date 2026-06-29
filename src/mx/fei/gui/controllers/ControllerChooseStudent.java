@@ -3,6 +3,7 @@ package mx.fei.gui.controllers;
 import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.gui.views.GUIPracticeInfo;
+import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Practice;
@@ -14,8 +15,6 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,12 +22,14 @@ public class ControllerChooseStudent {
     private GUIChooseStudent guiChooseStudent;
     private StudentDAO studentDAO;
     private PracticeDAO practiceDAO;
+    private EducationalExperienceDAO educationalExperienceDAO;
     private static final Logger LOGGER = Logger.getLogger(ControllerChooseStudent.class.getName());
     private final int NO_STUDENTS_SELECTED = 0;
 
     public ControllerChooseStudent(GUIChooseStudent guiChooseStudent) {
         this.guiChooseStudent = guiChooseStudent;
         this.studentDAO = new StudentDAO();
+        this.practiceDAO = new PracticeDAO();
         practiceDAO = new PracticeDAO();
         loadStudents();
     }
@@ -49,6 +50,8 @@ public class ControllerChooseStudent {
         try {
             if (guiChooseStudent.isToModifyStudent()) {
                 guiChooseStudent.setStudents(studentDAO.getStudents());
+            } else if (guiChooseStudent.isConsultByExperience()) {
+                guiChooseStudent.setStudents(practiceDAO.getStudentsByNrc(guiChooseStudent.getEducationalExperience().getNrc()));
             } else {
                 guiChooseStudent.setStudents(practiceDAO.getStudentsWithPractice());
             }

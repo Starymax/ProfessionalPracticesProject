@@ -4,6 +4,7 @@ import mx.fei.gui.controllers.ControllerPracticeInfo;
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.utils.GUIUtils;
 import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.Project;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -18,7 +19,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import mx.fei.logic.dto.Project;
 
 public class GUIPracticeInfo extends Application {
 

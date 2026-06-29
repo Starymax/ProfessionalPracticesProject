@@ -1,12 +1,9 @@
 package mx.fei.gui.controllers;
 
-import mx.fei.gui.views.GUIChooseExperience;
-import mx.fei.gui.views.GUIManageExperience;
-import mx.fei.gui.views.GUIModifyExperience;
+import mx.fei.gui.views.*;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
-import mx.fei.gui.views.GUIAddStudents;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -41,6 +38,8 @@ public class ControllerChooseExperience {
             List<EducationalExperience> experiences;
             if (guiChooseExperience.isToModify()) {
                 experiences = educationalExperienceDAO.getEducationalExperiences();
+            } else if (guiChooseExperience.isToConsultStudent()) {
+                experiences = educationalExperienceDAO.getEducationalExperiencesByProfessor(guiChooseExperience.getProfessor().getUserId());
             } else {
                 experiences = educationalExperienceDAO.getActiveEducationalExperiences();
             }
@@ -58,6 +57,13 @@ public class ControllerChooseExperience {
                 GUIModifyExperience guiModifyExperience = new GUIModifyExperience(selectedExperience);
                 Stage stage = new Stage();
                 guiModifyExperience.start(stage);
+                guiChooseExperience.closeWindow();
+            } else if (guiChooseExperience.isToConsultStudent()) {
+                GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
+                guiChooseStudent.setConsultByExperience(true);
+                guiChooseStudent.setEducationalExperience(selectedExperience);
+                Stage stage = new Stage();
+                guiChooseStudent.start(stage);
                 guiChooseExperience.closeWindow();
             } else {
                 GUIAddStudents guiAddStudents = new GUIAddStudents(selectedExperience);

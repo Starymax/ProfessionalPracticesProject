@@ -1,10 +1,12 @@
 package mx.fei.gui.controllers;
 
+import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIEvaluateStudentSelection;
 import mx.fei.gui.views.GUILogin;
 import mx.fei.gui.views.GUIProfessorMenu;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dao.UserDAO;
+import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -14,7 +16,6 @@ import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import mx.fei.logic.exceptions.DataOperationException;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -28,7 +29,7 @@ public class ControllerProfessorMenu {
         this.guiProfessorMenu = guiProfessorMenu;
     }
 
-    public void handleButtonsMenu(ActionEvent event) {
+    public void handleEvaluateConsultStudentsGoBack(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Evaluar" -> {
@@ -36,6 +37,13 @@ public class ControllerProfessorMenu {
                     guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
                 } else {
                     openEvaluateStudent();
+                }
+            }
+            case  "Consultar practica" -> {
+                if (!professorHadAssignedExperiences()) {
+                    guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
+                } else {
+                    openConsultStudent();
                 }
             }
             case "Regresar" -> {
@@ -52,6 +60,15 @@ public class ControllerProfessorMenu {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiEvaluateStudentSelection.start(stage);
+    }
+
+    private void openConsultStudent() {
+        GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
+        guiChooseExperience.setToConsultStudent(true);
+        guiChooseExperience.setProfessor(guiProfessorMenu.getProfessor());
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        guiChooseExperience.start(stage);
     }
 
     private void goBack() {

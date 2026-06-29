@@ -18,6 +18,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.mockConstruction;
 
 public class PracticeDAOTest {
     private PracticeDAO practiceDAO;
+
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
@@ -172,5 +174,40 @@ public class PracticeDAOTest {
         String expectedPeriod = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
         String result = practiceDAO.getCurrentPeriod();
         assertEquals(expectedPeriod, result);
+    }
+
+    @Test
+    void getStudentsWithPractice_MultipleStudentsExist_ReturnsListWithExpectedStudents() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(101, 102);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        Student expectedStudent1 = new Student(101,"Diego", "León", "S220011");
+        Student expectedStudent2 = new Student(102, "Ian", "Uziel", "S220012");
+        List<Student> expectedList = List.of(expectedStudent1, expectedStudent2);
+        try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> {
+            when(mock.getStudentById(101)).thenReturn(expectedStudent1);
+            when(mock.getStudentById(102)).thenReturn(expectedStudent2);
+        })) {
+            List<Student> studentList = practiceDAO.getStudentsWithPractice();
+            assertEquals(expectedList, studentList, "La lista de estudiantes recuperada no coincide con la esperada");
+        }
+    }
+
+    @Test
+    void getStudentsWithPractice_OneStudentFailsToLoad_ReturnsListWithOnlySuccessfulStudents() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getInt("id_usuario")).thenReturn(101, 102);
+        when(preparedStatement.executeQuery()).thenReturn(resultSet);
+        Student expectedStudent1 = new Student(101,"Diego", "León", "S220011");
+        List<Student> expectedList = List.of(expectedStudent1);
+        try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> {
+            when(mock.getStudentById(101)).thenReturn(expectedStudent1);
+            when(mock.getStudentById(102)).thenThrow(new DataOperationException("Error de carga simulado"));
+        })) {
+            List<Student> studentList = practiceDAO.getStudentsWithPractice();
+            assertEquals(expectedList, studentList, "La lista debería contener únicamente al estudiante cargado con éxito");
+        }
     }
 }

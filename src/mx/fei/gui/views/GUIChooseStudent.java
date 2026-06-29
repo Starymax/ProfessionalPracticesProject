@@ -3,6 +3,7 @@ package mx.fei.gui.views;
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.controllers.ControllerChooseStudent;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Student;
 
 import javafx.application.Application;
@@ -32,6 +33,8 @@ public class GUIChooseStudent extends Application {
     private List<Student> students;
     private List<Student> allStudents;
     private boolean isToModifyStudent = false;
+    private boolean isConsultByExperience = false;
+    private EducationalExperience educationalExperience;;
 
     public GUIChooseStudent() {
 
@@ -90,6 +93,22 @@ public class GUIChooseStudent extends Application {
         return students.get(selectedIndex);
     }
 
+    public boolean isToModifyStudent() {
+        return isToModifyStudent;
+    }
+
+    public void setToModifyStudent(boolean toModifyStudent) {
+        isToModifyStudent = toModifyStudent;
+    }
+
+    public boolean isConsultByExperience() {
+        return isConsultByExperience;
+    }
+
+    public void setConsultByExperience(boolean consultByExperience) {
+        isConsultByExperience = consultByExperience;
+    }
+
     public void showError(String message) {
         GUIUtils.showError(message);
     }
@@ -122,6 +141,14 @@ public class GUIChooseStudent extends Application {
         return students;
     }
 
+    public EducationalExperience getEducationalExperience() {
+        return educationalExperience;
+    }
+
+    public void setEducationalExperience(EducationalExperience educationalExperience) {
+        this.educationalExperience = educationalExperience;
+    }
+
     private void showStudents(List<Student> studentsToShow) {
         this.students = studentsToShow;
         ObservableList<String> items = FXCollections.observableArrayList();
@@ -144,13 +171,5 @@ public class GUIChooseStudent extends Application {
 
     private String buildStudentLabel(Student student) {
         return student.getEnrollment() + " - " + student.getName() + " " + student.getLastName();
-    }
-
-    public boolean isToModifyStudent() {
-        return isToModifyStudent;
-    }
-
-    public void setToModifyStudent(boolean toModifyStudent) {
-        isToModifyStudent = toModifyStudent;
     }
 }
