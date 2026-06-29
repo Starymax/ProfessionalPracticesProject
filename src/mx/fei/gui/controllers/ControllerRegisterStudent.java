@@ -2,6 +2,7 @@ package mx.fei.gui.controllers;
 
 import mx.fei.gui.views.GUIRegisterStudent;
 import mx.fei.logic.dao.StudentDAO;
+import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
@@ -31,6 +32,7 @@ public class ControllerRegisterStudent {
     }
 
     private void registerStudent() {
+        int studentIdDefault = 0;
         String names = guiRegisterStudent.getTextFieldNames().getText().trim();
         String lastNames = guiRegisterStudent.getTextFieldLastName().getText().trim();
         String mail = guiRegisterStudent.getTextFieldMail().getText().trim();
@@ -39,8 +41,21 @@ public class ControllerRegisterStudent {
         String enrollment = guiRegisterStudent.getTextFieldEnrollment().getText().trim();
         String gender = guiRegisterStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
-        boolean active = true;
-        Student student = new Student(0, names, lastNames, mail, hashedPassword, gender, active, enrollment, indigenousLanguage, null, 0);
+        boolean activeStatusDefault = true;
+        Project assignedProjectDefault = null;
+        float gradeDefault = 0;
+        Student student = new Student(
+                studentIdDefault,
+                names,
+                lastNames,
+                mail,
+                hashedPassword,
+                gender,
+                activeStatusDefault,
+                enrollment,
+                indigenousLanguage,
+                assignedProjectDefault,
+                gradeDefault);
         try {
             boolean registered = studentDAO.registerStudent(student);
             if (registered) {

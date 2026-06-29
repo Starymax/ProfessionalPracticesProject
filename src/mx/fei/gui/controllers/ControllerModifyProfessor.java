@@ -38,14 +38,14 @@ public class ControllerModifyProfessor {
 
     private void handleUpdate() {
         if (guiModifyProfessor.validateFields()) {
-            Professor original = guiModifyProfessor.getProfessor();
-            Professor updated = getProfessor(original);
+            Professor professorOriginal = guiModifyProfessor.getProfessor();
+            Professor professorUpdated = builProfessor(professorOriginal);
             try {
-                boolean existCoordinator = updated.isCoordinator() && !original.isCoordinator() && professorDAO.existsCoordinator();
+                boolean existCoordinator = professorUpdated.isCoordinator() && !professorOriginal.isCoordinator() && professorDAO.existsCoordinator();
                 if (!existCoordinator) {
-                    userDAO.updateUser(updated);
-                    boolean result = professorDAO.modifyProfessor(updated);
-                    if (result) {
+                    userDAO.updateUser(professorUpdated);
+                    boolean updated = professorDAO.modifyProfessor(professorUpdated);
+                    if (updated) {
                         guiModifyProfessor.showSuccess("Profesor actualizado exitosamente.");
                         guiModifyProfessor.closeWindow();
                     }
@@ -61,28 +61,31 @@ public class ControllerModifyProfessor {
         }
     }
 
-    private Professor getProfessor(Professor original) {
+    private Professor builProfessor(Professor original) {
+        int originalId = original.getUserId();
         String name = guiModifyProfessor.getTextFieldName().getText().trim();
         String lastName = guiModifyProfessor.getTextFieldLastName().getText().trim();
         String email = guiModifyProfessor.getTextFieldEmail().getText().trim();
+        String originalPassword = original.getPassword();
         String gender = guiModifyProfessor.getComboBoxGender().getValue();
         String shift = guiModifyProfessor.getComboBoxShift().getValue();
         boolean isCoordinator = guiModifyProfessor.getCheckBoxIsCoordinator().isSelected();
         boolean isAdministrator = guiModifyProfessor.getCheckBoxIsAdministrator().isSelected();
-        boolean active = guiModifyProfessor.getToggleState().isSelected();
-        Professor updated = new Professor(
-                original.getUserId(),
+        boolean activeStatus = guiModifyProfessor.getToggleState().isSelected();
+        int originalPersonalNumber = original.getPersonalNumber();
+        Professor professorUpdated = new Professor(
+                originalId,
                 name,
                 lastName,
                 email,
-                original.getPassword(),
+                originalPassword,
                 gender,
-                active,
-                original.getPersonalNumber(),
+                activeStatus,
+                originalPersonalNumber,
                 isCoordinator,
                 isAdministrator,
                 shift
         );
-        return updated;
+        return professorUpdated;
     }
 }

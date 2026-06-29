@@ -40,9 +40,9 @@ public class ControllerModifyEnterprise {
     private void handleUpdate() {
         if (guiModifyEnterprise.validateFields()) {
             try {
-                Enterprise updated = buildEnterprise();
-                boolean result = enterpriseDAO.modifyEnterprise(updated);
-                if (result) {
+                Enterprise enterpriseUpdated = buildEnterprise();
+                boolean updated = enterpriseDAO.modifyEnterprise(enterpriseUpdated);
+                if (updated) {
                     guiModifyEnterprise.showSuccess("Organización actualizada exitosamente.");
                 }
             } catch (NumberFormatException e) {
@@ -57,20 +57,27 @@ public class ControllerModifyEnterprise {
     }
 
     private Enterprise buildEnterprise() {
+        int enterpriseId = guiModifyEnterprise.getEnterprise().getEnterpriseId();
+        String name = guiModifyEnterprise.getTextFieldName().getText().trim();
+        String sector = guiModifyEnterprise.getComboBoxSector().getValue();
+        String phone = guiModifyEnterprise.getTextFieldPhone().getText().trim();
+        String mail = guiModifyEnterprise.getTextFieldMail().getText().trim();
+        String city = guiModifyEnterprise.getComboBoxCity().getValue();
+        String country = guiModifyEnterprise.getComboBoxCountry().getValue();
         long directUsers = Long.parseLong(guiModifyEnterprise.getTextFieldDirectUsers().getText().trim());
         long indirectUsers = Long.parseLong(guiModifyEnterprise.getTextFieldIndirectUsers().getText().trim());
         boolean active = guiModifyEnterprise.getToggleState().isSelected();
         return new Enterprise(
-                guiModifyEnterprise.getEnterprise().getEnterpriseId(),
-                guiModifyEnterprise.getTextFieldName().getText().trim(),
-                guiModifyEnterprise.getComboBoxSector().getValue(),
-                guiModifyEnterprise.getTextFieldPhone().getText().trim(),
-                guiModifyEnterprise.getTextFieldMail().getText().trim(),
-                guiModifyEnterprise.getComboBoxCity().getValue(),
+                enterpriseId,
+                name,
+                sector,
+                phone,
+                mail,
+                city,
                 directUsers,
                 indirectUsers,
                 active,
-                guiModifyEnterprise.getComboBoxCountry().getValue()
+                country
         );
     }
 

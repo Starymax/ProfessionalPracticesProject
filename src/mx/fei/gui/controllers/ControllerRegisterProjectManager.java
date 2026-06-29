@@ -42,12 +42,13 @@ public class ControllerRegisterProjectManager{
             Optional<ButtonType> result = confirmation.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 try {
+                    int projectMangerIdDefault = 0;
                     String name = guiRegisterProjectManager.getTextFieldName().getText();
                     String position = guiRegisterProjectManager.getTextFieldPosition().getText();
                     String phoneNumber = guiRegisterProjectManager.getTextFieldPhoneNumber().getText();
                     String email = guiRegisterProjectManager.getTextFieldEmail().getText();
                     int enterpriseId = guiRegisterProjectManager.getEnterprise().getEnterpriseId();
-                    ProjectManager projectManager = new ProjectManager(0, name, email, phoneNumber, position, enterpriseId);
+                    ProjectManager projectManager = new ProjectManager(projectMangerIdDefault, name, email, phoneNumber, position, enterpriseId);
                     ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
                     if (projectManagerDAO.registerProjectManager(projectManager)) {
                         guiRegisterProjectManager.showSuccess("Responsable registrado exitosamente.");

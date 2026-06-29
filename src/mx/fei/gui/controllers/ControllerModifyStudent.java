@@ -4,6 +4,7 @@ import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dao.UserDAO;
+import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
@@ -41,10 +42,10 @@ public class ControllerModifyStudent {
     private void handleUpdate() {
         if (guiModifyStudent.validateFields()) {
             try {
-                Student updated = buildStudent(guiModifyStudent.getStudent());
-                userDAO.updateUser(updated);
-                boolean result = studentDAO.modifyStudent(updated);
-                if (result) {
+                Student studentUpdated = buildStudent(guiModifyStudent.getStudent());
+                userDAO.updateUser(studentUpdated);
+                boolean updated = studentDAO.modifyStudent(studentUpdated);
+                if (updated) {
                     guiModifyStudent.showSuccess("Alumno actualizado exitosamente.");
                     guiModifyStudent.closeWindow();
                 }
@@ -57,22 +58,29 @@ public class ControllerModifyStudent {
         }
     }
 
-    private Student buildStudent(Student original) {
+    private Student buildStudent(Student originalStudent) {
+        int originalStudenId = originalStudent.getUserId();
+        String originalStudentPassword = originalStudent.getPassword();
+        String names = guiModifyStudent.getTextFieldNames().getText().trim();
+        String lastName =  guiModifyStudent.getTextFieldLastName().getText().trim();
+        String originalStudentEnrollment = originalStudent.getEnrollment();
+        String mail = guiModifyStudent.getTextFieldMail().getText().trim();
+        Project originalStudentProject = originalStudent.getAssignedProject();
         String gender = guiModifyStudent.getRadioButtonMan().isSelected() ? "Hombre" : "Mujer";
         boolean indigenousLanguage = guiModifyStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
         boolean activeStatus = guiModifyStudent.getToggleActiveState().isSelected();
         float grade = Float.parseFloat(guiModifyStudent.getTextFieldGrade().getText().trim());
         return new Student(
-                original.getUserId(),
-                guiModifyStudent.getTextFieldNames().getText().trim(),
-                guiModifyStudent.getTextFieldLastName().getText().trim(),
-                guiModifyStudent.getTextFieldMail().getText().trim(),
-                original.getPassword(),
+                originalStudenId,
+                names,
+                lastName,
+                mail,
+                originalStudentPassword,
                 gender,
                 activeStatus,
-                original.getEnrollment(),
+                originalStudentEnrollment,
                 indigenousLanguage,
-                original.getAssignedProject(),
+                originalStudentProject,
                 grade
         );
     }

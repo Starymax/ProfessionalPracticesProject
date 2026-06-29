@@ -62,6 +62,7 @@ public class ControllerRegisterProfessor {
     }
 
     private Professor getProfessor() {
+        int idUserDefault = 0;
         String name = guiRegisterProfessor.getTextFieldName().getText();
         String lastName = guiRegisterProfessor.getTextFieldLastName().getText();
         int personalNumber = Integer.parseInt(guiRegisterProfessor.getTextFieldPersonalNumber().getText().trim());
@@ -72,7 +73,19 @@ public class ControllerRegisterProfessor {
         String shift = guiRegisterProfessor.getComboBoxShift().getValue();
         boolean isCoordinator = guiRegisterProfessor.getCheckBoxIsCoordinator().isSelected();
         boolean isAdministrator = guiRegisterProfessor.getCheckBoxIsAdministrator().isSelected();
-        return new Professor(0, name, lastName, email, hashPassword, gender, true, personalNumber, isCoordinator, isAdministrator, shift);
+        boolean activeStatusDefault = true;
+        return new Professor(
+                idUserDefault,
+                name,
+                lastName,
+                email,
+                hashPassword,
+                gender,
+                activeStatusDefault,
+                personalNumber,
+                isCoordinator,
+                isAdministrator,
+                shift);
     }
 
     private void cancel() {

@@ -81,14 +81,14 @@ public class ControllerManageStudent {
 
     private boolean existStudents() {
         StudentDAO studentDAO = new StudentDAO();
-        boolean exists = true;
+        boolean studentsExist = true;
         try {
             if (studentDAO.getStudents().isEmpty()) {
-                exists = false;
+                studentsExist = false;
             }
         } catch (DataOperationException e) {
             guiManageStudent.showError("Error al obtener la lista de estudiantes.");
         }
-        return exists;
+        return studentsExist;
     }
 }

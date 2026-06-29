@@ -145,10 +145,24 @@ public class ControllerModifyProject {
         Date finalDate = Date.valueOf(guiModifyProject.getDatePickerFinalDate().getValue());
         String responsibilities = guiModifyProject.getTextAreaResponsibilities().getText();
         int availableSpots = Integer.parseInt(guiModifyProject.getTextFieldAvailablePlaces().getText().trim());
-        boolean isActive = guiModifyProject.isActiveSelected();
+        boolean activeStatus = guiModifyProject.isActiveSelected();
         Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
         ProjectManager projectManager = guiModifyProject.getComboBoxProjectManager().getValue();
-        return new Project(projectId, name, description, generalObjective, mediateObjectives, immediateObjectives, methodology, responsibilities, resources, startDate, finalDate, isActive, availableSpots, enterprise, projectManager);
+        return new Project(projectId,
+                name,
+                description,
+                generalObjective,
+                mediateObjectives,
+                immediateObjectives,
+                methodology,
+                responsibilities,
+                resources,
+                startDate,
+                finalDate,
+                activeStatus,
+                availableSpots,
+                enterprise,
+                projectManager);
     }
 
     private void cancel() {

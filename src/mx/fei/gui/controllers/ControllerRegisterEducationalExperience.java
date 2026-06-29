@@ -6,8 +6,6 @@ import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
 
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 
 import java.util.NoSuchElementException;
@@ -15,7 +13,6 @@ import java.util.NoSuchElementException;
 public class ControllerRegisterEducationalExperience {
     GUIRegisterEducationalExperience guiRegisterEducationalExperience;
     EducationalExperienceDAO educationalExperienceDAO;
-    Alert alertError = new Alert(AlertType.ERROR);
     public ControllerRegisterEducationalExperience(GUIRegisterEducationalExperience guiRegisterEducationalExperience) {
         this.guiRegisterEducationalExperience = guiRegisterEducationalExperience;
         educationalExperienceDAO = new EducationalExperienceDAO();

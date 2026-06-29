@@ -55,10 +55,10 @@ public class ControllerModifyExperience {
             if (professorToAssign == null) {
                 guiModifyExperience.showError("Debe seleccionar un profesor, la experiencia no tiene ninguno asignado.");
             } else  {
-                EducationalExperience updated = buildExperience(professorToAssign);
+                EducationalExperience educationalExperienceUpdated = buildExperience(professorToAssign);
                 try {
-                    boolean result = educationalExperienceDAO.modifyEducationalExperience(updated);
-                    if (result) {
+                    boolean updated = educationalExperienceDAO.modifyEducationalExperience(educationalExperienceUpdated);
+                    if (updated) {
                         guiModifyExperience.showSuccess("Experiencia actualizada exitosamente.");
                         guiModifyExperience.closeWindow();
                         openChooseExperience();
@@ -73,15 +73,12 @@ public class ControllerModifyExperience {
     }
 
     private EducationalExperience buildExperience(Professor professorToAssign) {
+        String nrc = guiModifyExperience.getExperience().getNrc();
+        String name = guiModifyExperience.getTextFieldName().getText().trim();
+        String career = guiModifyExperience.getTextFieldCareer().getText().trim();
+        String period = guiModifyExperience.getSelectedPeriod();
         boolean activeStatus = guiModifyExperience.getToggleActiveState().isSelected();
-        return new EducationalExperience(
-                guiModifyExperience.getExperience().getNrc(),
-                guiModifyExperience.getTextFieldName().getText().trim(),
-                guiModifyExperience.getTextFieldCareer().getText().trim(),
-                professorToAssign,
-                guiModifyExperience.getSelectedPeriod(),
-                activeStatus
-        );
+        return new EducationalExperience(nrc, name, career, professorToAssign, period, activeStatus);
     }
 
     private void openChooseExperience() {

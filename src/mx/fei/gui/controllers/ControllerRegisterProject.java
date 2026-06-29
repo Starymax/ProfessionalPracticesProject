@@ -139,6 +139,7 @@ import java.util.Optional;
         }
 
         private Project buildProject() {
+            int projectIdDefault = 0;
             String name = guiRegisterProject.getTextFieldName().getText();
             String description = guiRegisterProject.getTextAreaDescription().getText();
             String generalObjective = guiRegisterProject.getTextFieldGeneralObjective().getText();
@@ -152,8 +153,22 @@ import java.util.Optional;
             int availablePlaces = Integer.parseInt(guiRegisterProject.getTextFieldAvailablePlaces().getText());
             Enterprise enterprise = guiRegisterProject.getComboBoxEnterprise().getValue();
             ProjectManager projectManager = guiRegisterProject.getComboBoxProjectManager().getValue();
-            return new Project(0, name, description, generalObjective, mediatesObjectives, immediateObjectives,
-                    methodology, responsibilities, resources, initialDate, finalDate, true,
-                    availablePlaces, enterprise, projectManager);
+            boolean activeStatusDefault = true;
+            return new Project(
+                    projectIdDefault,
+                    name,
+                    description,
+                    generalObjective,
+                    mediatesObjectives,
+                    immediateObjectives,
+                    methodology,
+                    responsibilities,
+                    resources,
+                    initialDate,
+                    finalDate,
+                    activeStatusDefault,
+                    availablePlaces,
+                    enterprise,
+                    projectManager);
         }
     }

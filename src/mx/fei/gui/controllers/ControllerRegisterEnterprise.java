@@ -60,20 +60,26 @@ public class ControllerRegisterEnterprise {
     }
 
     private Enterprise getEnterprise() {
-        long directUsers = Long.getLong(guiRegisterEnterprise.getTextFieldDirectUsers().getText().trim());
+        int idDefault = 0;
+        String name = guiRegisterEnterprise.getTextFieldName().getText().trim();
+        String sector = guiRegisterEnterprise.getComboBoxSector().getValue();
+        String phone = guiRegisterEnterprise.getTextFieldPhone().getText().trim();
+        String mail = guiRegisterEnterprise.getTextFieldMail().getText().trim();
+        long directUsers = Long.parseLong(guiRegisterEnterprise.getTextFieldDirectUsers().getText().trim());
         long indirectUsers = Long.parseLong(guiRegisterEnterprise.getTextFieldIndirectUsers().getText().trim());
         String city = guiRegisterEnterprise.getComboBoxCity().getValue();
         String country = guiRegisterEnterprise.getComboBoxCountry().getValue();
+        boolean activeStatusDefault = true;
         Enterprise enterprise = new Enterprise(
-                0,
-                guiRegisterEnterprise.getTextFieldName().getText().trim(),
-                guiRegisterEnterprise.getComboBoxSector().getValue(),
-                guiRegisterEnterprise.getTextFieldPhone().getText().trim(),
-                guiRegisterEnterprise.getTextFieldMail().getText().trim(),
+                idDefault,
+                name,
+                sector,
+                phone,
+                mail,
                 city,
                 directUsers,
                 indirectUsers,
-                true,
+                activeStatusDefault,
                 country
         );
         return enterprise;
