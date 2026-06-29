@@ -452,6 +452,42 @@ public class DocumentDAO implements IDAODocument {
     }
 
     /**
+     * Checks whether the three final documents (self-evaluation, competence evaluation and
+     * letter of release) have all been validated for a practice.
+     *
+     * @param practice the practice to check, must not be null
+     * @return true if all three final documents are validated
+     * @throws IllegalArgumentException if practice is null
+     * @throws DataOperationException if a database error occurs
+     */
+    public boolean areFinalDocumentsValidated(Practice practice) throws DataOperationException {
+        if (practice == null) {
+            LOGGER.log(Level.WARNING, "La practica es nula");
+            throw new IllegalArgumentException("La practica no puede ser nula");
+        }
+        boolean finalDocumentsValidated = false;
+        String query = "SELECT COUNT(DISTINCT tipoDocumento) AS total FROM documentos " +
+                "WHERE id_practica = ? AND tipoDocumento IN ('SELF_EVALUATION', 'COMPETENCE_EVALUATION', 'LETTER_OF_RELEASE') " +
+                "AND estado_validacion = 'VALIDADO'";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    finalDocumentsValidated = resultSet.getInt("total") >= 3;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al verificar los documentos finales", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al verificar los documentos finales de la práctica");
+        }
+        return finalDocumentsValidated;
+    }
+
+    /**
      * Deletes a document record and, on success, removes its physical file from disk.
      *
      * @param document the document to delete, must not be null
@@ -464,12 +500,12 @@ public class DocumentDAO implements IDAODocument {
             LOGGER.log(Level.WARNING, "El documento es nulo");
             throw new IllegalArgumentException("El documento no puede ser nulo");
         }
-        boolean deleted = false;
+        boolean documentDeleted;
         String query = "DELETE FROM documentos WHERE id_documento = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, document.getId());
-            deleted = preparedStatement.executeUpdate() > 0;
+            documentDeleted = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al eliminar el documento", e);
             if (DAOUtils.isConnectionError(e)) {
@@ -477,10 +513,10 @@ public class DocumentDAO implements IDAODocument {
             }
             throw new DataOperationException("Error al eliminar el documento");
         }
-        if (deleted) {
+        if (documentDeleted) {
             deletePhysicalFile(document.getDirectory());
         }
-        return deleted;
+        return documentDeleted;
     }
 
     /**

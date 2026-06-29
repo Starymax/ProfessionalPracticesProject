@@ -149,6 +149,7 @@ public class GUIStudentMenu extends Application {
         }
         if (controllerStudentMenu != null) {
             controllerStudentMenu.loadUnreadCount();
+            controllerStudentMenu.loadPracticeStatus();
         }
     }
 

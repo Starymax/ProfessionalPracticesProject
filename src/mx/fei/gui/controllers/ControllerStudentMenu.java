@@ -1,5 +1,6 @@
 package mx.fei.gui.controllers;
 
+import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.ProjectDAO;
@@ -40,12 +41,32 @@ public class ControllerStudentMenu {
     private final NotificationDAO notificationDAO;
     private final int MINIMUM_PROJECTS = 3;
     private static final Logger LOGGER = Logger.getLogger(ControllerStudentMenu.class.getName());
+    private boolean isPracticeComplete = false;
 
     public ControllerStudentMenu(GUIStudentMenu guiStudentMenu) {
         this.guiStudentMenu = guiStudentMenu;
         projectDAO = new ProjectDAO();
         practiceDAO = new PracticeDAO();
         notificationDAO = new NotificationDAO();
+    }
+
+    public void loadPracticeStatus() {
+        if (guiStudentMenu.getStudent() == null) {
+            isPracticeComplete = false;
+        } else {
+            try {
+                Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
+                if (practice != null) {
+                    DocumentDAO documentDAO = new DocumentDAO();
+                    isPracticeComplete = documentDAO.areFinalDocumentsValidated(practice);
+                } else {
+                    isPracticeComplete = false;
+                }
+            } catch (DataOperationException e) {
+                LOGGER.log(Level.WARNING, "Error al verificar estado de práctica", e.getMessage());
+                isPracticeComplete = false;
+            }
+        }
     }
 
     public void loadUnreadCount() {
@@ -64,42 +85,47 @@ public class ControllerStudentMenu {
 
     public void handleButtonsMenu(ActionEvent event) {
         Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar Proyectos" -> {
-                openSelectProjects();
-            }
-            case "Generar Documentos" -> {
-                if (!studentHadAssignedProject()) {
-                    guiStudentMenu.showError("No tiene proyecto asignado.");
-                } else {
-                    openGenerateDocuments();
+        String buttonText = source.getText();
+        if (isPracticeComplete && !buttonText.equals("Avance") && !buttonText.equals("Cerrar Sesión") && !buttonText.equals("🔔 Notificaciones")) {
+            guiStudentMenu.showError("Tu práctica profesional ha concluido. Solo puedes consultar tu avance.");
+        } else {
+            switch (source.getText()) {
+                case "Seleccionar Proyectos" -> {
+                    openSelectProjects();
                 }
-            }
-            case "Generar Reportes" -> {
-                if (!studentHadAssignedProject()) {
-                    guiStudentMenu.showError("No tiene proyecto asignado.");
-                } else {
-                    openReports();
+                case "Generar Documentos" -> {
+                    if (!studentHadAssignedProject()) {
+                        guiStudentMenu.showError("No tiene proyecto asignado.");
+                    } else {
+                        openGenerateDocuments();
+                    }
                 }
-            }
-            case "Registro de Avances" -> {
-                if (!studentHadAssignedProject()) {
-                    guiStudentMenu.showError("No tiene proyecto asignado.");
-                } else {
-                    openRegisterAdvance();
+                case "Generar Reportes" -> {
+                    if (!studentHadAssignedProject()) {
+                        guiStudentMenu.showError("No tiene proyecto asignado.");
+                    } else {
+                        openReports();
+                    }
                 }
-            }
-            case "Subir Documentos" -> {
-                openDocuments(guiStudentMenu.getStudent().getEnrollment());
-            }
-            case "Avance" -> {
-                openProgress();
-            }
-            case "🔔 Notificaciones" -> {
-                openNotifications();
-            }
-            case "Cerrar Sesión" -> {
-                logout();
+                case "Registro de Avances" -> {
+                    if (!studentHadAssignedProject()) {
+                        guiStudentMenu.showError("No tiene proyecto asignado.");
+                    } else {
+                        openRegisterAdvance();
+                    }
+                }
+                case "Subir Documentos" -> {
+                    openDocuments(guiStudentMenu.getStudent().getEnrollment());
+                }
+                case "Avance" -> {
+                    openProgress();
+                }
+                case "🔔 Notificaciones" -> {
+                    openNotifications();
+                }
+                case "Cerrar Sesión" -> {
+                    logout();
+                }
             }
         }
     }

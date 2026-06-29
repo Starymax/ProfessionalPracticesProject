@@ -151,6 +151,33 @@ public class GUIModifyExperience extends Application {
         return String.format("%d-%s", year, month);
     }
 
+    private void populateFields() {
+        if (experience != null) {
+            textFieldName.setText(experience.getName());
+            textFieldCareer.setText(experience.getEducationalProgram());
+            if (experience.getProfessor() != null) {
+                textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
+            }
+            String period = experience.getPeriod();
+            if (period != null && period.contains("-")) {
+                String[] parts = period.split("-");
+                if (parts.length >= 2) {
+                    int year = Integer.parseInt(parts[0]);
+                    String month = parts[1];
+                    if ("02".equals(month)) {
+                        comboBoxSemester.setValue("Febrero - Julio");
+                    } else if ("08".equals(month)) {
+                        comboBoxSemester.setValue("Agosto - Enero");
+                    }
+                    if (!comboBoxYear.getItems().contains(year)) {
+                        comboBoxYear.getItems().add(year);
+                    }
+                    comboBoxYear.setValue(year);
+                }
+            }
+        }
+    }
+
     public boolean validateFields() {
         boolean fieldsValid = false;
         List<String> errors = new ArrayList<>();
@@ -214,15 +241,5 @@ public class GUIModifyExperience extends Application {
 
     public Button getButtonBack() {
         return buttonBack;
-    }
-
-    private void populateFields() {
-        if (experience != null) {
-            textFieldName.setText(experience.getName());
-            textFieldCareer.setText(experience.getEducationalProgram());
-            if (experience.getProfessor() != null) {
-                textFieldCurrentProfessor.setText(experience.getProfessor().getName() + " " + experience.getProfessor().getLastName());
-            }
-        }
     }
 }
