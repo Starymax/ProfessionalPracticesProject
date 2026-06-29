@@ -1,11 +1,14 @@
 package mx.fei.gui.controllers;
 
+import mx.fei.gui.views.GUIDocumentPreview;
 import mx.fei.gui.views.GUIEvaluateStudent;
 import mx.fei.gui.views.GUIReportPreview;
 import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentAdvanceDAO;
 import mx.fei.logic.dto.Document;
+import mx.fei.logic.dto.DocumentReviewItem;
+import mx.fei.logic.dto.DocumentType;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
@@ -45,6 +48,7 @@ public class ControllerEvaluateStudent {
             loadHours();
             loadPractice();
             loadReports();
+            loadDocuments();
         }
     }
 
@@ -63,11 +67,28 @@ public class ControllerEvaluateStudent {
         }
     }
 
+    public void loadDocuments() {
+        if (practice == null) {
+            guiEvaluateStudent.setDocuments(new ArrayList<>());
+        } else {
+            try {
+                List<DocumentReviewItem> items = buildReviewItems();
+                guiEvaluateStudent.setDocuments(items);
+            } catch (DataOperationException e) {
+                LOGGER.log(Level.SEVERE, "Error al obtener los documentos del alumno", e);
+                guiEvaluateStudent.showError(e.getMessage());
+            }
+        }
+    }
+
     public void handlePreviewCloseButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
             case "Vista previa" -> {
                 previewReport();
+            }
+            case "Ver documento" -> {
+                openDocumentPreview();
             }
             case "Cerrar" -> {
                 guiEvaluateStudent.getStage().close();
@@ -109,5 +130,44 @@ public class ControllerEvaluateStudent {
             stage.initModality(Modality.APPLICATION_MODAL);
             guiReportPreview.start(stage);
         }
+    }
+
+    private void openDocumentPreview() {
+        DocumentReviewItem item = guiEvaluateStudent.getSelectedDocument();
+        if (item == null) {
+            guiEvaluateStudent.showError("Seleccione un documento de la lista.");
+        } else if (!item.isUploaded()) {
+            guiEvaluateStudent.showError("Este documento no ha sido subido por el alumno.");
+        } else {
+            GUIDocumentPreview guiDocumentPreview = new GUIDocumentPreview(item.getDocument());
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setOnHidden(hiddenEvent -> loadDocuments());
+            guiDocumentPreview.start(stage);
+        }
+    }
+
+    private List<DocumentReviewItem> buildReviewItems() throws DataOperationException {
+        DocumentDAO documentDAO = new DocumentDAO();
+        List<Document> uploadedDocuments = documentDAO.getDocumentsForValidation(practice);
+        List<DocumentReviewItem> items = new ArrayList<>();
+        for (DocumentType documentType : DocumentType.values()) {
+            if (!documentType.isReport()) {
+                Document matchedDocument = findDocument(uploadedDocuments, documentType);
+                items.add(new DocumentReviewItem(documentType, matchedDocument));
+            }
+        }
+        return items;
+    }
+
+    private Document findDocument(List<Document> documents, DocumentType documentType) {
+        Document found = null;
+        for (Document document : documents) {
+            if (document.getDocumentType() == documentType) {
+                found = document;
+                break;
+            }
+        }
+        return found;
     }
 }
