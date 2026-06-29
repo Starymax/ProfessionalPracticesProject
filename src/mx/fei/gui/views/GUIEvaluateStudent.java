@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -35,9 +36,12 @@ public class GUIEvaluateStudent extends Application {
     private Label labelRemainingHours;
     private ListView<Document> listViewReports;
     private ListView<DocumentReviewItem> listViewDocuments;
+    private TextField textFieldGrade;
+    private Button buttonGrade;
     private Button buttonPreview;
     private Button buttonViewDocument;
     private Button buttonClose;
+    private Label labelGradeHint;
     private Stage stage;
     private ControllerEvaluateStudent controllerEvaluateStudent;
 
@@ -107,26 +111,40 @@ public class GUIEvaluateStudent extends Application {
         HBox documentsButtonRow = new HBox(buttonViewDocument);
         documentsButtonRow.setAlignment(Pos.CENTER_RIGHT);
 
+        Label labelGrade = new Label("Calificación (0-10):");
+        labelGrade.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
+        textFieldGrade = new TextField();
+        textFieldGrade.setPrefWidth(80);
+        buttonGrade = new Button("Calificar práctica");
+        buttonGrade.setPrefWidth(180);
+        HBox gradeRow = new HBox(10, labelGrade, textFieldGrade, buttonGrade);
+        gradeRow.setAlignment(Pos.CENTER_LEFT);
+        labelGradeHint = new Label();
+        labelGradeHint.getStyleClass().add("label-hint");
+        VBox gradeBox = new VBox(4, gradeRow, labelGradeHint);
+
         buttonClose = new Button("Cerrar");
         buttonClose.setPrefWidth(160);
-        HBox buttonsBox = new HBox(buttonClose);
-        buttonsBox.setAlignment(Pos.CENTER_RIGHT);
+        HBox closeRow = new HBox(buttonClose);
+        closeRow.setAlignment(Pos.CENTER_RIGHT);
 
         controllerEvaluateStudent = new ControllerEvaluateStudent(this, student);
         buttonPreview.setOnAction(controllerEvaluateStudent::handlePreviewCloseButtons);
         buttonViewDocument.setOnAction(controllerEvaluateStudent::handlePreviewCloseButtons);
+        buttonGrade.setOnAction(controllerEvaluateStudent::handleGradeButton);
         buttonClose.setOnAction(controllerEvaluateStudent::handlePreviewCloseButtons);
 
         VBox centerBox = new VBox(10, reportsTitle, listViewReports, reportsButtonRow, documentsTitle, listViewDocuments, documentsButtonRow);
         VBox topBox = new VBox(15, title, infoBox);
+        VBox bottomBox = new VBox(12, gradeBox, closeRow);
 
         BorderPane mainPanel = new BorderPane();
         mainPanel.setPadding(new Insets(28, 36, 28, 36));
         mainPanel.setTop(topBox);
         mainPanel.setCenter(centerBox);
-        mainPanel.setBottom(buttonsBox);
+        mainPanel.setBottom(bottomBox);
         BorderPane.setMargin(topBox, new Insets(0, 0, 15, 0));
-        BorderPane.setMargin(buttonsBox, new Insets(20, 0, 0, 0));
+        BorderPane.setMargin(bottomBox, new Insets(20, 0, 0, 0));
 
         Scene scene = new Scene(mainPanel, 680, 760);
         GUIStyle.apply(scene);
@@ -173,8 +191,33 @@ public class GUIEvaluateStudent extends Application {
         return listViewDocuments.getSelectionModel().getSelectedItem();
     }
 
+    public String getGradeText() {
+        return textFieldGrade.getText().trim();
+    }
+
+    public void setGradeValue(String text) {
+        textFieldGrade.setText(text);
+    }
+
+    public void setGradeEnabled(boolean enabled) {
+        textFieldGrade.setDisable(!enabled);
+        buttonGrade.setDisable(!enabled);
+    }
+
+    public void setGradeHint(String hint) {
+        labelGradeHint.setText(hint);
+    }
+
     public void showError(String message) {
         GUIUtils.showError(message);
+    }
+
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
+    }
+
+    public Button getButtonGrade() {
+        return buttonGrade;
     }
 
     public Button getButtonPreview() {

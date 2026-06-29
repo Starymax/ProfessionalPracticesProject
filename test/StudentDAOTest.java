@@ -525,19 +525,19 @@ public class StudentDAOTest {
 
     @Test
     void getStudentsByEducationalExperience_NrcIsNull_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> studentDAO.getStudentsByEducationalExperience(null));
+        assertThrows(IllegalArgumentException.class, () -> studentDAO.getStudentsByEducationalExperience(null, 1));
     }
 
     @Test
     void getStudentsByEducationalExperience_NrcIsBlank_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> studentDAO.getStudentsByEducationalExperience("   "));
+        assertThrows(IllegalArgumentException.class, () -> studentDAO.getStudentsByEducationalExperience("   ", 1));
     }
 
     @Test
     void getStudentsByEducationalExperience_NoStudentsEnrolled_ReturnsEmptyList() throws SQLException {
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
+        List<Student> result = studentDAO.getStudentsByEducationalExperience("88421", 1);
         assertTrue(result.isEmpty());
     }
 
@@ -558,7 +558,7 @@ public class StudentDAOTest {
         when(resultSet.getFloat("calificacion")).thenReturn(9.5f, 8.0f);
         Student expectedStudent1 = new Student(10, "Rosa", "Mora", "r@test.com", "pass", "F", true, "S21011010", false, null, 9.5f);
         Student expectedStudent2 = new Student(11, "Felix", "Diaz", "f@test.com", "pass", "M", true, "S21011011", false, null, 8.0f);
-        List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
+        List<Student> result = studentDAO.getStudentsByEducationalExperience("88421", 1);
         assertEquals(List.of(expectedStudent1, expectedStudent2), result);
     }
 
@@ -581,7 +581,7 @@ public class StudentDAOTest {
         Student expectedStudent3 = new Student(12, "Irene", "Salas", "i@test.com", "pass", "F", true, "S21011012", false, null, 8.7f);
         try (MockedConstruction<ProjectDAO> mockedProjectDAO = mockConstruction(ProjectDAO.class,
                 (mock, context) -> when(mock.getProjectById(2)).thenThrow(new DataOperationException("Error proyecto")))) {
-            List<Student> result = studentDAO.getStudentsByEducationalExperience("88421");
+            List<Student> result = studentDAO.getStudentsByEducationalExperience("88421", 1);
             assertEquals(List.of(expectedStudent2, expectedStudent3), result);
         }
     }
@@ -589,7 +589,7 @@ public class StudentDAOTest {
     @Test
     void getStudentsByEducationalExperience_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error de enlace"));
-        assertThrows(DataOperationException.class, () -> studentDAO.getStudentsByEducationalExperience("88421"));
+        assertThrows(DataOperationException.class, () -> studentDAO.getStudentsByEducationalExperience("88421", 1));
     }
 
     @Test

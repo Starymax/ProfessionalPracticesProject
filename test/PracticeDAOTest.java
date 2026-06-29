@@ -73,7 +73,7 @@ public class PracticeDAOTest {
         Practice expectedPractice = new Practice(student, educationalExperience, "FEB-JUN 2026", 9.0f);
         try (MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class, (mock, context) -> when(mock.getStudentById(idStudent)).thenReturn(student));
              MockedConstruction<EducationalExperienceDAO> mockedEducationalExperienceDAO = mockConstruction(EducationalExperienceDAO.class,
-                     (mock, context) -> when(mock.getEducationalExperienceByNrc(nrc)).thenReturn(educationalExperience))) {
+                     (mock, context) -> when(mock.getEducationalExperienceByNrcAndSection(nrc, 0)).thenReturn(educationalExperience))) {
             Practice result = practiceDAO.getPracticeById(1);
             assertEquals(expectedPractice, result);
         }
@@ -155,7 +155,7 @@ public class PracticeDAOTest {
         Student student = mock(Student.class);
         EducationalExperience educationalExperience = mock(EducationalExperience.class);
         Practice expectedPractice = new Practice(10, student, educationalExperience, "FEB-JUN 2026", 9.0f);
-        try (MockedConstruction<EducationalExperienceDAO> mockedEducationalExperienceDAO = mockConstruction(EducationalExperienceDAO.class, (mock, context) -> when(mock.getEducationalExperienceByNrc(nrc)).thenReturn(educationalExperience));
+        try (MockedConstruction<EducationalExperienceDAO> mockedEducationalExperienceDAO = mockConstruction(EducationalExperienceDAO.class, (mock, context) -> when(mock.getEducationalExperienceByNrcAndSection(nrc, 0)).thenReturn(educationalExperience));
              MockedConstruction<StudentDAO> mockedStudentDAO = mockConstruction(StudentDAO.class,
                      (mock, context) -> when(mock.getStudentByEnrollment(enrollment)).thenReturn(student))) {
             Practice result = practiceDAO.getPracticeByEnrollment(enrollment);

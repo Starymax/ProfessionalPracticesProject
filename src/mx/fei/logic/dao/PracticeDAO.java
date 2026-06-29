@@ -345,4 +345,30 @@
             }
             return studentIds;
         }
+
+        /**
+         * Updates the grade of a practice.
+         *
+         * @param practiceId the identifier of the practice to grade
+         * @param grade the grade to assign
+         * @return true if the practice grade was updated
+         * @throws DataOperationException if a database error occurs
+         */
+        public boolean updatePracticeGrade(int practiceId, float grade) throws DataOperationException {
+            boolean gradeUpdated = false;
+            String query = "UPDATE practicas SET calificacion = ? WHERE id_practica = ?";
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setFloat(1, grade);
+                preparedStatement.setInt(2, practiceId);
+                gradeUpdated = preparedStatement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error al actualizar la calificación de la práctica", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
+                throw new DataOperationException("Error al actualizar la calificación de la práctica");
+            }
+            return gradeUpdated;
+        }
     }

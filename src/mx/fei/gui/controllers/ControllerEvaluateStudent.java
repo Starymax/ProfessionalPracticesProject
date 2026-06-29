@@ -4,11 +4,13 @@ import mx.fei.gui.views.GUIDocumentPreview;
 import mx.fei.gui.views.GUIEvaluateStudent;
 import mx.fei.gui.views.GUIReportPreview;
 import mx.fei.logic.dao.DocumentDAO;
+import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentAdvanceDAO;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentReviewItem;
 import mx.fei.logic.dto.DocumentType;
+import mx.fei.logic.dto.Notification;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
@@ -49,7 +51,90 @@ public class ControllerEvaluateStudent {
             loadPractice();
             loadReports();
             loadDocuments();
+            configureGrading();
         }
+    }
+
+    public void handleGradeButton(ActionEvent event) {
+        if (practice == null) {
+            guiEvaluateStudent.showError("No hay una práctica registrada para calificar.");
+        } else {
+            Float grade = parseGrade(guiEvaluateStudent.getGradeText());
+            if (grade == null) {
+                guiEvaluateStudent.showError("Ingrese una calificación válida entre 0 y 10.");
+            } else {
+                gradePractice(grade);
+            }
+        }
+    }
+
+    private Float parseGrade(String text) {
+        Float grade = null;
+        try {
+            float value = Float.parseFloat(text);
+            if (value >= 0f && value <= 10f) {
+                grade = value;
+            }
+        } catch (NumberFormatException e) {
+            grade = null;
+        }
+        return grade;
+    }
+
+    private void gradePractice(float grade) {
+        try {
+            PracticeDAO practiceDAO = new PracticeDAO();
+            boolean graded = practiceDAO.updatePracticeGrade(practice.getId(), grade);
+            if (graded) {
+                practice.setGrade(grade);
+                notifyGrade(grade);
+                configureGrading();
+                guiEvaluateStudent.showSuccess("Práctica calificada. Se notificó al alumno.");
+            } else {
+                guiEvaluateStudent.showError("No se pudo registrar la calificación.");
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al calificar la práctica", e);
+            guiEvaluateStudent.showError(e.getMessage());
+        }
+    }
+
+    private void notifyGrade(float grade) throws DataOperationException {
+        Student practiceStudent = practice.getStudent();
+        if (practiceStudent != null) {
+            String message = String.format("Tu práctica profesional ha concluido. Calificación: %.1f.", grade);
+            NotificationDAO notificationDAO = new NotificationDAO();
+            Notification notification = new Notification(0, "Práctica calificada", message, null, false, practiceStudent);
+            notificationDAO.sendNotification(notification);
+        }
+    }
+
+    private void configureGrading() {
+        if (practice == null) {
+            guiEvaluateStudent.setGradeEnabled(false);
+            guiEvaluateStudent.setGradeHint("No hay una práctica registrada.");
+        } else if (practice.getGrade() > 0) {
+            guiEvaluateStudent.setGradeValue(String.format("%.1f", practice.getGrade()));
+            guiEvaluateStudent.setGradeEnabled(false);
+            guiEvaluateStudent.setGradeHint("La práctica ya fue calificada.");
+        } else if (isPracticeConcluded()) {
+            guiEvaluateStudent.setGradeEnabled(true);
+            guiEvaluateStudent.setGradeHint("La práctica está concluida. Asigne una calificación.");
+        } else {
+            guiEvaluateStudent.setGradeEnabled(false);
+            guiEvaluateStudent.setGradeHint("El alumno aún no concluye sus documentos finales.");
+        }
+    }
+
+    private boolean isPracticeConcluded() {
+        boolean concluded = false;
+        try {
+            concluded = new DocumentDAO().areFinalDocumentsValidated(practice);
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al verificar los documentos finales", e);
+            guiEvaluateStudent.showError(e.getMessage());
+        }
+        return concluded;
     }
 
     public void loadReports() {

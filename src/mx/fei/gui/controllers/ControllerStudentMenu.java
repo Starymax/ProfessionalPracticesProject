@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.ProjectDAO;
@@ -56,12 +55,7 @@ public class ControllerStudentMenu {
         } else {
             try {
                 Practice practice = practiceDAO.getPracticeByEnrollment(guiStudentMenu.getStudent().getEnrollment());
-                if (practice != null) {
-                    DocumentDAO documentDAO = new DocumentDAO();
-                    isPracticeComplete = documentDAO.areFinalDocumentsValidated(practice);
-                } else {
-                    isPracticeComplete = false;
-                }
+                isPracticeComplete = practice != null && practice.getGrade() > 0;
             } catch (DataOperationException e) {
                 LOGGER.log(Level.WARNING, "Error al verificar estado de práctica", e.getMessage());
                 isPracticeComplete = false;

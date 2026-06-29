@@ -12,6 +12,14 @@ public class DAOUtils {
 
     }
 
+    /**
+     * Converts a SQL exception into a DataOperationException, using a connection-error message
+     * when the failure is connection-related and the given default message otherwise.
+     *
+     * @param e the SQL exception to convert
+     * @param defaultMessage the message to use when the exception is not a connection error
+     * @return the resulting DataOperationException
+     */
     public static DataOperationException convertSQLExceptiontoDataOperationException(SQLException e, String defaultMessage) {
         String message = isConnectionError(e) ? "Error de conexión. Intente más tarde." : defaultMessage;
         return new DataOperationException(message);

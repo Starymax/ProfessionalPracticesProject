@@ -44,6 +44,7 @@ public class GUIStudentProgress {
     private Label labelRealizedHours;
     private Label labelRemainingHours;
     private Label labelGoalHours;
+    private Label labelGrade;
     private TableView<Document> tableViewDocuments;
     private TableView<Report> tableViewReports;
     private TableView<ActivityProgressRow> tableViewActivities;
@@ -124,16 +125,19 @@ public class GUIStudentProgress {
         labelRealizedHours = buildStatLabel("—");
         labelRemainingHours = buildStatLabel("—");
         labelGoalHours = buildStatLabel("420 hrs");
+        labelGrade = buildStatLabel("Pendiente");
 
         VBox cardRealized = buildStatCard("Horas realizadas", labelRealizedHours);
         VBox cardRemaining = buildStatCard("Horas restantes", labelRemainingHours);
         VBox cardGoal = buildStatCard("Meta total", labelGoalHours);
+        VBox cardGrade = buildStatCard("Calificación", labelGrade);
 
         HBox.setHgrow(cardRealized, Priority.ALWAYS);
         HBox.setHgrow(cardRemaining, Priority.ALWAYS);
         HBox.setHgrow(cardGoal, Priority.ALWAYS);
+        HBox.setHgrow(cardGrade, Priority.ALWAYS);
 
-        HBox cardsRow = new HBox(12, cardRealized, cardRemaining, cardGoal);
+        HBox cardsRow = new HBox(12, cardRealized, cardRemaining, cardGoal, cardGrade);
         return new VBox(8, labelTitle, cardsRow);
     }
 
@@ -275,6 +279,14 @@ public class GUIStudentProgress {
         labelRealizedHours.setText(realized + " hrs");
         labelRemainingHours.setText(remaining + " hrs");
         labelGoalHours.setText(goal + " hrs");
+    }
+
+    public void updateGrade(float grade) {
+        if (grade > 0) {
+            labelGrade.setText(String.format("%.1f", grade));
+        } else {
+            labelGrade.setText("Pendiente");
+        }
     }
 
     public void updateDocuments(List<Document> documents) {

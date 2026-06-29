@@ -50,6 +50,7 @@ public class ControllerStudentProgress {
         loadDocuments();
         loadReports();
         loadActivities();
+        guiStudentProgress.updateGrade(practice.getGrade());
     }
 
     private void loadHours() {

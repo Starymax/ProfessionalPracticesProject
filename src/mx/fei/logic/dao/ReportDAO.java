@@ -154,6 +154,14 @@ public class ReportDAO implements IDAOReport {
         return reportPersisted;
     }
 
+    /**
+     * Inserts the base report record and returns its generated identifier.
+     *
+     * @param connection the active connection participating in the transaction
+     * @param report the report to insert
+     * @return the generated report identifier, or 0 if none was generated
+     * @throws SQLException if a database error occurs
+     */
     private int insertReport(Connection connection, Report report) throws SQLException {
         int idGenerated = 0;
         String query = "INSERT INTO reporte (tipo_reporte, fecha_reporte, observaciones, resultados_obtenidos, id_alumno, nrc) VALUES (?,?,?,?,?,?)";

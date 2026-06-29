@@ -6,7 +6,6 @@ import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.Notification;
-import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
@@ -46,7 +45,6 @@ public class ControllerDocumentPreview {
             boolean validated = documentDAO.validateDocument(document.getId());
             if (validated) {
                 notifyStudent(document, "Documento validado", "Tu documento '" + document.getDocumentType().getDocumentType() + "' ha sido validado por el coordinador.");
-                notifyPracticeComplete(document, documentDAO);
                 guiDocumentPreview.showSuccess("Documento validado correctamente. Se notificó al alumno.");
                 guiDocumentPreview.closeWindow();
             } else {
@@ -54,16 +52,6 @@ public class ControllerDocumentPreview {
             }
         } catch (DataOperationException e) {
             guiDocumentPreview.showError(e.getMessage());
-        }
-    }
-
-    private void notifyPracticeComplete(Document document, DocumentDAO documentDAO) throws DataOperationException {
-        Practice practice = document.getPractice();
-        if (practice != null) {
-            boolean practiceComplete = documentDAO.areFinalDocumentsValidated(practice);
-            if (practiceComplete) {
-                notifyStudent(document, "Práctica concluida", "¡Felicidades! Tu práctica profesional ha concluido exitosamente.");
-            }
         }
     }
 

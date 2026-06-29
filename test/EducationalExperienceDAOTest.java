@@ -64,7 +64,7 @@ public class EducationalExperienceDAOTest {
     void registerEducationalExperience_NrcAlreadyExists_ThrowsIllegalStateException() throws DataOperationException {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("12345");
-        doReturn(new EducationalExperience()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("12345");
+        doReturn(new EducationalExperience()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrcAndSection("12345", 1);
         assertThrows(IllegalStateException.class, () -> spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience));
     }
 
@@ -73,7 +73,7 @@ public class EducationalExperienceDAOTest {
         EducationalExperience educationalExperience = new EducationalExperience();
         educationalExperience.setNrc("12345");
         educationalExperience.setPeriod("");
-        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("12345");
+        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrcAndSection("12345", 1);
         assertThrows(IllegalArgumentException.class, () -> spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience));
     }
 
@@ -87,7 +87,7 @@ public class EducationalExperienceDAOTest {
         Professor professor = mock(Professor.class);
         when(professor.getUserId()).thenReturn(99);
         educationalExperience.setProfessor(professor);
-        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("12345");
+        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrcAndSection("12345", 1);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience);
@@ -100,7 +100,7 @@ public class EducationalExperienceDAOTest {
         educationalExperience.setNrc("54321");
         educationalExperience.setPeriod("AGO-ENE 2026");
         educationalExperience.setProfessor(null);
-        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrc("54321");
+        doThrow(new NoSuchElementException()).when(spyEducationalExperienceDAO).getEducationalExperienceByNrcAndSection("54321", 1);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
         boolean result = spyEducationalExperienceDAO.registerEducationalExperience(educationalExperience);
@@ -166,7 +166,7 @@ public class EducationalExperienceDAOTest {
 
     @Test
     void getEducationalExperienceByNrc_NrcIsEmpty_ThrowsIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrc(""));
+        assertThrows(IllegalArgumentException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrcAndSection("", 1));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class EducationalExperienceDAOTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
-        assertThrows(NoSuchElementException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrc("99999"));
+        assertThrows(NoSuchElementException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrcAndSection("99999", 1));
     }
 
     @Test
@@ -187,9 +187,10 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("programa_educativo")).thenReturn("ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026");
         when(resultSet.getInt("id_profesor")).thenReturn(0);
+        when(resultSet.getInt("seccion")).thenReturn(1);
         when(resultSet.getBoolean("estado_activo")).thenReturn(true);
         EducationalExperience expectedExperience = new EducationalExperience("12345", "Pruebas de Software", "ISW", null, "FEB-JUN 2026", true);
-        EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrc("12345");
+        EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrcAndSection("12345", 1);
         assertEquals(expectedExperience, result);
     }
 
@@ -205,7 +206,7 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("nombre_experiencia")).thenReturn("Base de Datos");
         when(resultSet.getInt("id_profesor")).thenReturn(idProfessor);
         try (MockedConstruction<ProfessorDAO> mockedProfessorDAO = mockConstruction(ProfessorDAO.class, (mock, context) -> when(mock.getProfessorById(idProfessor)).thenReturn(professor))) {
-            EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+            EducationalExperience result = educationalExperienceDAO.getEducationalExperienceByNrcAndSection(nrc, 1);
             assertEquals(professor, result.getProfessor());
         }
     }
@@ -214,7 +215,7 @@ public class EducationalExperienceDAOTest {
     void getEducationalExperienceByNrc_SQLExceptionThrown_ThrowsDataOperationException() throws SQLException {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeQuery()).thenThrow(new SQLException("Error DB"));
-        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrc("123"));
+        assertThrows(DataOperationException.class, () -> educationalExperienceDAO.getEducationalExperienceByNrcAndSection("123", 1));
     }
 
     @Test
@@ -235,6 +236,7 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("nombre_experiencia")).thenReturn("Pruebas de Software", "Base de Datos");
         when(resultSet.getString("programa_educativo")).thenReturn("ISW", "ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026", "AGO-ENE 2026");
+        when(resultSet.getInt("seccion")).thenReturn(1);
         when(resultSet.getObject("id_usuario")).thenReturn(null, null);
         when(resultSet.getBoolean("estado_activo")).thenReturn(true);
         EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", null, "FEB-JUN 2026", true);
@@ -270,6 +272,7 @@ public class EducationalExperienceDAOTest {
         when(resultSet.getString("nombre_experiencia")).thenReturn("Pruebas de Software", "Base de Datos");
         when(resultSet.getString("programa_educativo")).thenReturn("ISW", "ISW");
         when(resultSet.getString("periodo")).thenReturn("FEB-JUN 2026", "AGO-ENE 2026");
+        when(resultSet.getInt("seccion")).thenReturn(1);
         when(resultSet.getBoolean("estado_activo")).thenReturn(true);
         EducationalExperience expectedExperience1 = new EducationalExperience("11111", "Pruebas de Software", "ISW", professor, "FEB-JUN 2026", true);
         EducationalExperience expectedExperience2 = new EducationalExperience("22222", "Base de Datos", "ISW", professor, "AGO-ENE 2026", true);
