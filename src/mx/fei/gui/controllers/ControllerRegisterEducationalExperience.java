@@ -8,7 +8,8 @@ import mx.fei.gui.views.GUIRegisterEducationalExperience;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ControllerRegisterEducationalExperience {
     GUIRegisterEducationalExperience guiRegisterEducationalExperience;
@@ -30,45 +31,51 @@ public class ControllerRegisterEducationalExperience {
         }
     }
 
+    public void handleNrcChanged() {
+        String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
+        try {
+            List<Integer> availableSections = computeAvailableSections(nrc);
+            guiRegisterEducationalExperience.setAvailableSections(availableSections);
+        } catch (DataOperationException e) {
+            guiRegisterEducationalExperience.showError(e.getMessage());
+        }
+    }
+
+    private List<Integer> computeAvailableSections(String nrc) throws DataOperationException {
+        List<Integer> usedSections = nrc.isBlank() ? new ArrayList<>() : educationalExperienceDAO.getUsedSectionsByNrc(nrc);
+        List<Integer> availableSections = new ArrayList<>();
+        for (int section = 1; section <= guiRegisterEducationalExperience.getMaxSections(); section++) {
+            if (!usedSections.contains(section)) {
+                availableSections.add(section);
+            }
+        }
+        return availableSections;
+    }
+
     private void handleRegisterButton() {
         if (guiRegisterEducationalExperience.validateFields()) {
-            if (nrcExists()) {
-                guiRegisterEducationalExperience.showError("NRC ya registrado");
-            } else {
-                try {
-                    boolean registered = educationalExperienceDAO.registerEducationalExperience(buildEducationalExperience());
-                    if (registered) {
-                        guiRegisterEducationalExperience.showSuccess("Experiencia educativa registrada exitosamente.");
-                        guiRegisterEducationalExperience.closeWindow();
-                    }
-                } catch (IllegalArgumentException e) {
-                    guiRegisterEducationalExperience.showError("Datos invalidos");
-                } catch (DataOperationException e) {
-                    guiRegisterEducationalExperience.showError(e.getMessage());
+            try {
+                boolean registered = educationalExperienceDAO.registerEducationalExperience(buildEducationalExperience());
+                if (registered) {
+                    guiRegisterEducationalExperience.showSuccess("Experiencia educativa registrada exitosamente.");
+                    guiRegisterEducationalExperience.closeWindow();
                 }
+            } catch (IllegalStateException e) {
+                guiRegisterEducationalExperience.showError(e.getMessage());
+            } catch (IllegalArgumentException e) {
+                guiRegisterEducationalExperience.showError("Datos invalidos");
+            } catch (DataOperationException e) {
+                guiRegisterEducationalExperience.showError(e.getMessage());
             }
         }
     }
 
     private EducationalExperience buildEducationalExperience() {
         String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
+        int section = guiRegisterEducationalExperience.getSelectedSection();
         String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
         String career = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
         String period = guiRegisterEducationalExperience.getSelectedPeriod();
-        return new EducationalExperience(nrc, name, career, null, period, true);
-    }
-
-    private boolean nrcExists() {
-        boolean nrcExists = false;
-        String nrc = guiRegisterEducationalExperience.getTextFieldNrc().getText().trim();
-        try {
-            educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
-            nrcExists = true;
-        } catch (NoSuchElementException e) {
-            nrcExists = false;
-        } catch (DataOperationException e) {
-            guiRegisterEducationalExperience.showError(e.getMessage());
-        }
-        return nrcExists;
+        return new EducationalExperience(nrc, section, name, career, null, period, true);
     }
 }

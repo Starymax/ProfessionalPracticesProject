@@ -14,7 +14,7 @@ public interface IDAOEducationalExperience {
 
     void requireEducationalExperience(EducationalExperience educationalExperience);
 
-    void ensureNrcAvailable(String nrc) throws DataOperationException;
+    void ensureSectionAvailable(String nrc, int section) throws DataOperationException;
 
     String requirePeriod(String period);
 
@@ -24,9 +24,9 @@ public interface IDAOEducationalExperience {
 
     boolean modifyEducationalExperience(EducationalExperience educationalExperience) throws DataOperationException;
 
-    EducationalExperience getEducationalExperienceByNrc(String nrc) throws DataOperationException;
+    EducationalExperience getEducationalExperienceByNrcAndSection(String nrc, int section) throws DataOperationException;
 
-    EducationalExperience searchExperienceByNrc(String nrc) throws DataOperationException;
+    EducationalExperience searchExperienceByNrcAndSection(String nrc, int section) throws DataOperationException;
 
     EducationalExperience buildExperienceFromResultSet(ResultSet resultSet) throws SQLException, DataOperationException;
 

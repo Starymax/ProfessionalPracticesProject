@@ -433,21 +433,23 @@ public class StudentDAO implements IDAOStudent {
      * Retrieves the students enrolled in the practice associated with a given educational experience.
      *
      * @param nrc the NRC of the educational experience, must not be null or blank
+     * @param section the section of the educational experience
      * @return a list of students for the educational experience, empty if there are none
      * @throws IllegalArgumentException if nrc is null or blank
      * @throws DataOperationException if a database error occurs
      */
     @Override
-    public List<Student> getStudentsByEducationalExperience(String nrc) throws DataOperationException {
+    public List<Student> getStudentsByEducationalExperience(String nrc, int section) throws DataOperationException {
         if (nrc == null || nrc.isBlank()) {
             LOGGER.log(Level.WARNING, "El nrc esta vacio");
             throw new IllegalArgumentException("El nrc no puede estar vacio");
         }
         List<Student> students = new ArrayList<>();
-        String query = "SELECT v.* FROM vw_alumnos v INNER JOIN practicas p ON v.id_usuario = p.id_alumno WHERE p.nrc = ?";
+        String query = "SELECT v.* FROM vw_alumnos v INNER JOIN practicas p ON v.id_usuario = p.id_alumno WHERE p.nrc = ? AND p.seccion = ?";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, nrc);
+            preparedStatement.setInt(2, section);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     students.add(buildStudentFromResultSet(resultSet));
@@ -566,12 +568,13 @@ public class StudentDAO implements IDAOStudent {
     @Override
     public boolean assignEducationalExperience(Practice practice) throws DataOperationException {
         boolean experienceAssigned = false;
-        String query = "INSERT INTO practicas (id_alumno, nrc, periodo) VALUES (?, ?, ?)";
+        String query = "INSERT INTO practicas (id_alumno, nrc, seccion, periodo) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setInt(1, practice.getStudent().getUserId());
             preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
-            preparedStatement.setString(3, practice.getEducationalExperience().getPeriod());
+            preparedStatement.setInt(3, practice.getEducationalExperience().getSection());
+            preparedStatement.setString(4, practice.getEducationalExperience().getPeriod());
             experienceAssigned = preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al asignar una experiencia educativa", e);

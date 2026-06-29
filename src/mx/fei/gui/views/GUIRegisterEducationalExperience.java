@@ -29,10 +29,12 @@ public class GUIRegisterEducationalExperience extends Application {
     private TextField textFieldNrc;
     private TextField textFieldName;
     private TextField textFieldCareer;
+    private ComboBox<Integer> comboBoxSection;
     private ComboBox<String> comboBoxSemester;
     private ComboBox<Integer> comboBoxYear;
     private Button buttonRegister;
     private Button buttonCancel;
+    private static final int MAX_SECTIONS = 3;
 
     @Override
     public void start(Stage stage) {
@@ -52,24 +54,34 @@ public class GUIRegisterEducationalExperience extends Application {
         textFieldNrc = new TextField();
         textFieldNrc.setPrefWidth(220);
         formGrid.add(textFieldNrc, 1, 1);
-        formGrid.add(new Label("Nombre:"), 0, 2);
+        formGrid.add(new Label("Sección:"), 0, 2);
+        comboBoxSection = new ComboBox<>();
+        comboBoxSection.setPrefWidth(220);
+        comboBoxSection.setPromptText("Seleccione sección");
+        formGrid.add(comboBoxSection, 1, 2);
+        formGrid.add(new Label("Nombre:"), 0, 3);
         textFieldName = new TextField();
-        formGrid.add(textFieldName, 1, 2);
-        formGrid.add(new Label("Carrera:"), 0, 3);
+        formGrid.add(textFieldName, 1, 3);
+        formGrid.add(new Label("Carrera:"), 0, 4);
         textFieldCareer = new TextField();
-        formGrid.add(textFieldCareer, 1, 3);
-        formGrid.add(new Label("Semestre:"), 0, 4);
+        formGrid.add(textFieldCareer, 1, 4);
+        formGrid.add(new Label("Semestre:"), 0, 5);
         comboBoxSemester = new ComboBox<>(FXCollections.observableArrayList("Febrero - Julio", "Agosto - Enero"));
         comboBoxSemester.setPrefWidth(220);
         comboBoxSemester.setPromptText("Seleccione semestre");
-        formGrid.add(comboBoxSemester, 1, 4);
-        formGrid.add(new Label("Año:"), 0, 5);
+        formGrid.add(comboBoxSemester, 1, 5);
+        formGrid.add(new Label("Año:"), 0, 6);
         int currentYear = LocalDate.now().getYear();
         comboBoxYear = new ComboBox<>(FXCollections.observableArrayList(currentYear, currentYear + 1));
         comboBoxYear.setPrefWidth(220);
         comboBoxYear.setPromptText("Seleccione año");
-        formGrid.add(comboBoxYear, 1, 5);
+        formGrid.add(comboBoxYear, 1, 6);
         ControllerRegisterEducationalExperience controller = new ControllerRegisterEducationalExperience(this);
+        textFieldNrc.focusedProperty().addListener((observable, wasFocused, isFocused) -> {
+            if (!isFocused) {
+                controller.handleNrcChanged();
+            }
+        });
         buttonRegister = new Button("Registrar");
         buttonCancel = new Button("Cancelar");
         buttonRegister.setPrefWidth(110);
@@ -81,7 +93,7 @@ public class GUIRegisterEducationalExperience extends Application {
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));
         GridPane.setColumnSpan(buttonsBox, 2);
         GridPane.setHalignment(buttonsBox, HPos.CENTER);
-        formGrid.add(buttonsBox, 0, 6);
+        formGrid.add(buttonsBox, 0, 7);
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
         Scene scene = new Scene(mainPanel);
@@ -91,29 +103,48 @@ public class GUIRegisterEducationalExperience extends Application {
     }
 
     public String getSelectedPeriod() {
-        if (comboBoxSemester == null || comboBoxYear == null) {
-            return "";
+        String period = "";
+        if (comboBoxSemester != null && comboBoxYear != null) {
+            Integer year = comboBoxYear.getValue();
+            String month = resolveMonth(comboBoxSemester.getValue());
+            if (year != null && !month.isEmpty()) {
+                period = String.format("%d-%s", year, month);
+            }
         }
-        String semester = comboBoxSemester.getValue();
-        Integer year = comboBoxYear.getValue();
-        if (semester == null || year == null) {
-            return "";
-        }
-        String month;
+        return period;
+    }
+
+    private String resolveMonth(String semester) {
+        String month = "";
         if ("Febrero - Julio".equals(semester)) {
             month = "02";
         } else if ("Agosto - Enero".equals(semester)) {
             month = "08";
-        } else {
-            return "";
         }
-        return String.format("%d-%s", year, month);
+        return month;
+    }
+
+    public void setAvailableSections(List<Integer> sections) {
+        Integer previousSelection = comboBoxSection.getValue();
+        comboBoxSection.setItems(FXCollections.observableArrayList(sections));
+        if (previousSelection != null && sections.contains(previousSelection)) {
+            comboBoxSection.setValue(previousSelection);
+        } else {
+            comboBoxSection.setValue(null);
+        }
+    }
+
+    public Integer getSelectedSection() {
+        return comboBoxSection.getValue();
     }
 
     public boolean validateFields() {
         boolean fieldsValidated = true;
         List<String> errors = new ArrayList<>();
         GUIUtils.validateNRC(textFieldNrc.getText().trim(), "NRC:", errors);
+        if (comboBoxSection.getValue() == null) {
+            errors.add("Seleccione la sección.");
+        }
         GUIUtils.validateShortText(textFieldName.getText().trim(), "Nombre", errors);
         GUIUtils.validateShortText(textFieldCareer.getText().trim(), "Carrera", errors);
         if (comboBoxSemester.getValue() == null || comboBoxSemester.getValue().isBlank()) {
@@ -153,6 +184,10 @@ public class GUIRegisterEducationalExperience extends Application {
 
     public TextField getTextFieldNrc() {
         return textFieldNrc;
+    }
+
+    public int getMaxSections() {
+        return MAX_SECTIONS;
     }
 
     public TextField getTextFieldName() {

@@ -138,23 +138,25 @@ public class GUIModifyExperience extends Application {
     }
 
     public String getSelectedPeriod() {
-        if (comboBoxSemester == null || comboBoxYear == null) {
-            return "";
+        String period = "";
+        if (comboBoxSemester != null && comboBoxYear != null) {
+            Integer year = comboBoxYear.getValue();
+            String month = resolveMonth(comboBoxSemester.getValue());
+            if (year != null && !month.isEmpty()) {
+                period = String.format("%d-%s", year, month);
+            }
         }
-        String semester = comboBoxSemester.getValue();
-        Integer year = comboBoxYear.getValue();
-        if (semester == null || year == null) {
-            return "";
-        }
-        String month;
+        return period;
+    }
+
+    private String resolveMonth(String semester) {
+        String month = "";
         if ("Febrero - Julio".equals(semester)) {
             month = "02";
         } else if ("Agosto - Enero".equals(semester)) {
             month = "08";
-        } else {
-            return "";
         }
-        return String.format("%d-%s", year, month);
+        return month;
     }
 
     public ToggleButton getToggleActiveState() {

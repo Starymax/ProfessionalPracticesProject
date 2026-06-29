@@ -196,7 +196,7 @@ public class GUIRegisterAdvance {
         listViewActivities = new ListView<>();
         listViewActivities.setPrefWidth(380);
         listViewActivities.setPrefHeight(420);
-        listViewActivities.setCellFactory(lv -> new ListCell<Activity>() {
+        listViewActivities.setCellFactory(listView -> new ListCell<Activity>() {
             @Override
             protected void updateItem(Activity item, boolean empty) {
                 super.updateItem(item, empty);

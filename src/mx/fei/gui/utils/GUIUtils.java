@@ -24,7 +24,7 @@ public class GUIUtils {
     public static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$");
     public static final Pattern PERIOD_PATTERN = Pattern.compile("^(19|20)\\d{2}-(0[1-9]|1[0-2])$");
     public static final Pattern NUMERIC_PATTERN = Pattern.compile("^\\d+$");
-    public static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^\\d{6,}$");
+    public static final Pattern ENROLLMENT_PATTERN = Pattern.compile("^[sS]\\d{8}$");
     public static final Pattern SEARCH_FORBIDDEN_PATTERN = Pattern.compile("[^\\p{L}\\d\\s-]");
     private static final int limitNumberPhone = 10;
     private static final int limitMail = 100;
@@ -107,7 +107,7 @@ public class GUIUtils {
         if (enrollment.isEmpty()) {
             errors.add("El campo de " + fieldName + " es obligatorio.");
         } else if (!ENROLLMENT_PATTERN.matcher(enrollment).matches()) {
-            errors.add(fieldName + " debe ser un número de al menos 6 dígitos.");
+            errors.add(fieldName + " debe comenzar con 's' seguido de exactamente 8 dígitos (ejemplo: s24013283).");
         }
     }
 

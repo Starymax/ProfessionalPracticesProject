@@ -80,7 +80,7 @@ public class GUIAddStudents extends Application {
         labelNameValue.getStyleClass().add("label-underline");
         labelCareerValue.getStyleClass().add("label-underline");
         if (experience != null) {
-            labelNrcValue.setText(experience.getNrc());
+            labelNrcValue.setText(experience.getNrc() + " (Sec. " + experience.getSection() + ")");
             labelNameValue.setText(experience.getName());
             labelCareerValue.setText(experience.getEducationalProgram());
         } else {

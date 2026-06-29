@@ -44,7 +44,7 @@ public interface IDAOStudent {
 
     List<Student> getActiveStudents() throws DataOperationException;
 
-    List<Student> getStudentsByEducationalExperience(String nrc) throws DataOperationException;
+    List<Student> getStudentsByEducationalExperience(String nrc, int section) throws DataOperationException;
 
     void saveSelectedProjects(List<Project> selectedProjects, Student student) throws DataOperationException;
 

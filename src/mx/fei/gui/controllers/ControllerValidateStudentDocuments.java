@@ -7,7 +7,9 @@ import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.dto.DocumentReviewItem;
 import mx.fei.logic.dto.DocumentType;
+import mx.fei.gui.utils.StudentStatusFilter;
 import mx.fei.logic.dto.Practice;
+import mx.fei.logic.dto.PracticeStatus;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.StudentValidationSummary;
 import mx.fei.logic.exceptions.DataOperationException;
@@ -18,12 +20,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ControllerValidateStudentDocuments {
 
     private final GUIValidateStudentDocuments guiValidateStudentDocuments;
     private Student currentStudent;
+    private List<StudentValidationSummary> loadedSummaries = new ArrayList<>();
+    private Set<Integer> concludedStudentIds = new HashSet<>();
+    private Set<Integer> enrolledStudentIds = new HashSet<>();
 
     public ControllerValidateStudentDocuments(GUIValidateStudentDocuments guiValidateStudentDocuments) {
         this.guiValidateStudentDocuments = guiValidateStudentDocuments;
@@ -32,11 +39,28 @@ public class ControllerValidateStudentDocuments {
     public void loadStudents() {
         try {
             DocumentDAO documentDAO = new DocumentDAO();
-            List<StudentValidationSummary> summaries = documentDAO.getStudentsWithUploadedDocuments();
-            guiValidateStudentDocuments.loadStudents(summaries);
+            loadedSummaries = documentDAO.getStudentsWithUploadedDocuments();
+            concludedStudentIds = documentDAO.getStudentIdsWithConcludedPractice();
+            enrolledStudentIds = new PracticeDAO().getEnrolledStudentIds();
+            applyStatusFilter();
         } catch (DataOperationException e) {
             guiValidateStudentDocuments.showError(e.getMessage());
         }
+    }
+
+    public void handleStatusFilter(ActionEvent event) {
+        applyStatusFilter();
+    }
+
+    private void applyStatusFilter() {
+        PracticeStatus status = PracticeStatus.fromLabel(guiValidateStudentDocuments.getSelectedStatusLabel());
+        List<StudentValidationSummary> filteredSummaries = new ArrayList<>();
+        for (StudentValidationSummary summary : loadedSummaries) {
+            if (status == null || StudentStatusFilter.resolveStatus(summary.getStudent(), concludedStudentIds, enrolledStudentIds) == status) {
+                filteredSummaries.add(summary);
+            }
+        }
+        guiValidateStudentDocuments.loadStudents(filteredSummaries);
     }
 
     public void onStudentSelected() {

@@ -3,6 +3,7 @@ package mx.fei.gui.controllers;
 import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.gui.views.GUIPracticeInfo;
+import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentDAO;
@@ -15,6 +16,8 @@ import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,13 +51,17 @@ public class ControllerChooseStudent {
 
     private void loadStudents() {
         try {
+            List<Student> students;
             if (guiChooseStudent.isToModifyStudent()) {
-                guiChooseStudent.setStudents(studentDAO.getStudents());
+                students = studentDAO.getStudents();
             } else if (guiChooseStudent.isConsultByExperience()) {
-                guiChooseStudent.setStudents(practiceDAO.getStudentsByNrc(guiChooseStudent.getEducationalExperience().getNrc()));
+                students = practiceDAO.getStudentsByNrc(guiChooseStudent.getEducationalExperience().getNrc());
             } else {
-                guiChooseStudent.setStudents(practiceDAO.getStudentsWithPractice());
+                students = practiceDAO.getStudentsWithPractice();
             }
+            Set<Integer> concludedStudentIds = new DocumentDAO().getStudentIdsWithConcludedPractice();
+            Set<Integer> enrolledStudentIds = practiceDAO.getEnrolledStudentIds();
+            guiChooseStudent.setStudents(students, concludedStudentIds, enrolledStudentIds);
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al cargar a los estudiantes: " + e.getMessage());
             guiChooseStudent.showError(e.getMessage());
@@ -80,10 +87,11 @@ public class ControllerChooseStudent {
                     try {
                         Student studentSelected = guiChooseStudent.getStudents().get(selectedIndex);
                         Practice practice = practiceDAO.getPracticeByEnrollment(studentSelected.getEnrollment());
-                        GUIPracticeInfo guiModifyStudent = new GUIPracticeInfo(practice);
+                        GUIPracticeInfo guiPracticeInfo = new GUIPracticeInfo(practice);
                         Stage stage = new Stage();
                         stage.initModality(Modality.APPLICATION_MODAL);
-                        guiModifyStudent.start(stage);
+                        guiPracticeInfo.start(stage);
+                        guiChooseStudent.closeWindow();
                     } catch (DataOperationException e) {
                         guiChooseStudent.showError("Error al cargar a los estudiantes");
                     }

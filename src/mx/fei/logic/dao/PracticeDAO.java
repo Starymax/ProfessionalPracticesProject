@@ -14,8 +14,10 @@
     import java.time.LocalDate;
     import java.time.format.DateTimeFormatter;
     import java.util.ArrayList;
+    import java.util.HashSet;
     import java.util.List;
     import java.util.NoSuchElementException;
+    import java.util.Set;
     import java.util.logging.Level;
     import java.util.logging.Logger;
 
@@ -39,6 +41,7 @@
             String query = "SELECT * FROM practicas WHERE id_practica = ?;";
             int studentId = 0;
             String nrc = null;
+            int section = 0;
             String period = null;
             float grade = 0;
             boolean practiceFound = false;
@@ -49,6 +52,7 @@
                     if (resultSet.next()) {
                         studentId = resultSet.getInt("id_alumno");
                         nrc = resultSet.getString("nrc");
+                        section = resultSet.getInt("seccion");
                         period = resultSet.getString("periodo");
                         grade = resultSet.getFloat("calificacion");
                         practiceFound = true;
@@ -68,7 +72,7 @@
             StudentDAO studentDAO = new StudentDAO();
             Student student = studentDAO.getStudentById(studentId);
             EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-            EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(nrc);
+            EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrcAndSection(nrc, section);
             return new Practice(student, educationalExperience, period, grade);
         }
 
@@ -131,13 +135,14 @@
          */
         @Override
         public boolean insertPractice(Practice practice, String period) throws DataOperationException {
-            String query = "INSERT INTO practicas (id_alumno, nrc, periodo, calificacion) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO practicas (id_alumno, nrc, seccion, periodo, calificacion) VALUES (?, ?, ?, ?, ?)";
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
                  PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, practice.getStudent().getUserId());
                 preparedStatement.setString(2, practice.getEducationalExperience().getNrc());
-                preparedStatement.setString(3, period);
-                preparedStatement.setFloat(4, practice.getGrade());
+                preparedStatement.setInt(3, practice.getEducationalExperience().getSection());
+                preparedStatement.setString(4, period);
+                preparedStatement.setFloat(5, practice.getGrade());
                 return preparedStatement.executeUpdate() > 0;
             } catch (SQLException e) {
                 LOGGER.log(Level.SEVERE, "Error al crear la practica", e);
@@ -156,10 +161,11 @@
         @Override
         public Practice getPracticeByEnrollment(String enrollment) throws DataOperationException {
             requireEnrollment(enrollment);
-            String query = "SELECT p.id_practica, p.periodo, p.nrc, p.calificacion FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
+            String query = "SELECT p.id_practica, p.periodo, p.nrc, p.seccion, p.calificacion FROM practicas p INNER JOIN alumno a ON p.id_alumno = a.id_usuario WHERE a.matricula = ? ORDER BY p.id_practica DESC LIMIT 1";
             int practiceId = 0;
             String period = null;
             String nrc = null;
+            int section = 0;
             float grade = 0;
             boolean practiceFound = false;
             try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
@@ -170,6 +176,7 @@
                         practiceId = resultSet.getInt("id_practica");
                         period = resultSet.getString("periodo");
                         nrc = resultSet.getString("nrc");
+                        section = resultSet.getInt("seccion");
                         grade = resultSet.getFloat("calificacion");
                         practiceFound = true;
                     }
@@ -181,7 +188,7 @@
             if (!practiceFound || nrc == null || nrc.isBlank()) {
                 return null;
             }
-            EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrc(nrc);
+            EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrcAndSection(nrc, section);
             Student student = new StudentDAO().getStudentByEnrollment(enrollment);
             return new Practice(practiceId, student, educationalExperience, period != null ? period : "", grade);
         }
@@ -214,10 +221,11 @@
             int practiceId = resultSet.getInt("id_practica");
             String period = resultSet.getString("periodo");
             String nrc = resultSet.getString("nrc");
+            int section = resultSet.getInt("seccion");
             float grade = resultSet.getFloat("calificacion");
             Practice practice = null;
             if (nrc != null && !nrc.isBlank()) {
-                EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrc(nrc);
+                EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrcAndSection(nrc, section);
                 Student student = new StudentDAO().getStudentByEnrollment(enrollment);
                 practice = new Practice(practiceId, student, educationalExperience, period != null ? period : "", grade);
             }
@@ -311,5 +319,30 @@
                 }
             }
             return students;
+        }
+
+        /**
+         * Retrieves the identifiers of the students who have at least one registered practice.
+         *
+         * @return a set of enrolled student identifiers, empty if there are none
+         * @throws DataOperationException if a database error occurs
+         */
+        public Set<Integer> getEnrolledStudentIds() throws DataOperationException {
+            Set<Integer> studentIds = new HashSet<>();
+            String query = "SELECT DISTINCT id_alumno FROM practicas";
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query);
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    studentIds.add(resultSet.getInt("id_alumno"));
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error al obtener los alumnos inscritos", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
+                throw new DataOperationException("Error al obtener los alumnos inscritos");
+            }
+            return studentIds;
         }
     }

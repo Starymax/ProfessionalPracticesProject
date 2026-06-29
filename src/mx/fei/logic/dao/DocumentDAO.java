@@ -24,8 +24,10 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -450,6 +452,37 @@ public class DocumentDAO implements IDAODocument {
             throw new DataOperationException("Error al verificar los prerrequisitos de los reportes");
         }
         return uploaded;
+    }
+
+    /**
+     * Retrieves the identifiers of the students who have concluded their practice,
+     * that is, whose three final documents (self-evaluation, competence evaluation and
+     * letter of release) are all validated.
+     *
+     * @return a set of student identifiers with a concluded practice, empty if there are none
+     * @throws DataOperationException if a database error occurs
+     */
+    public Set<Integer> getStudentIdsWithConcludedPractice() throws DataOperationException {
+        Set<Integer> studentIds = new HashSet<>();
+        String query = "SELECT p.id_alumno FROM practicas p " +
+                "INNER JOIN documentos d ON d.id_practica = p.id_practica " +
+                "WHERE d.tipoDocumento IN ('SELF_EVALUATION', 'COMPETENCE_EVALUATION', 'LETTER_OF_RELEASE') " +
+                "AND d.estado_validacion = 'VALIDADO' " +
+                "GROUP BY p.id_alumno HAVING COUNT(DISTINCT d.tipoDocumento) >= 3";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                studentIds.add(resultSet.getInt("id_alumno"));
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al obtener los alumnos con práctica concluida", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al obtener los alumnos con práctica concluida");
+        }
+        return studentIds;
     }
 
     /**

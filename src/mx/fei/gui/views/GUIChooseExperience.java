@@ -86,7 +86,7 @@ public class GUIChooseExperience extends Application {
         this.experiences = experiences;
         ObservableList<String> items = FXCollections.observableArrayList();
         for (EducationalExperience educationalExperience : experiences) {
-            items.add(educationalExperience.getNrc() + " - " + educationalExperience.getName());
+            items.add(educationalExperience.getNrc() + " (Sec. " + educationalExperience.getSection() + ") - " + educationalExperience.getName());
         }
         listViewExperiences.setItems(items);
     }

@@ -16,7 +16,6 @@ import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.EducationalExperience;
-import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.gui.utils.MonthlyReportGenerator;
 import mx.fei.gui.utils.GUIUtils;
@@ -341,8 +340,7 @@ public class ControllerGenerateMonthlyReport {
     private String getPeriod(Report report) {
         String period = "";
         try {
-            EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-            EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(report.getNrc());
+            EducationalExperience educationalExperience = resolveExperience(report);
             if (educationalExperience != null) {
                 period = educationalExperience.getPeriod();
             }
@@ -355,8 +353,7 @@ public class ControllerGenerateMonthlyReport {
     private String getProfessorName(Report report) {
         String professorName = "N/A";
         try {
-            EducationalExperienceDAO educationalExperienceDAO = new EducationalExperienceDAO();
-            EducationalExperience educationalExperience = educationalExperienceDAO.getEducationalExperienceByNrc(report.getNrc());
+            EducationalExperience educationalExperience = resolveExperience(report);
             if (educationalExperience != null && educationalExperience.getProfessor() != null) {
                 professorName = educationalExperience.getProfessor().getName();
             }
@@ -364,6 +361,17 @@ public class ControllerGenerateMonthlyReport {
             monthlyReportView.showError(e.getMessage());
         }
         return professorName;
+    }
+
+    private EducationalExperience resolveExperience(Report report) throws DataOperationException {
+        EducationalExperience educationalExperience = null;
+        if (report.getStudent() != null) {
+            Practice practice = new PracticeDAO().getPracticeByEnrollment(report.getStudent().getEnrollment());
+            if (practice != null) {
+                educationalExperience = practice.getEducationalExperience();
+            }
+        }
+        return educationalExperience;
     }
 
     private String getStudentName(Report report) {

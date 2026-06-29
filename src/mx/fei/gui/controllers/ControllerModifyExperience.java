@@ -74,11 +74,12 @@ public class ControllerModifyExperience {
 
     private EducationalExperience buildExperience(Professor professorToAssign) {
         String nrc = guiModifyExperience.getExperience().getNrc();
+        int section = guiModifyExperience.getExperience().getSection();
         String name = guiModifyExperience.getTextFieldName().getText().trim();
         String career = guiModifyExperience.getTextFieldCareer().getText().trim();
         String period = guiModifyExperience.getSelectedPeriod();
         boolean activeStatus = guiModifyExperience.getToggleActiveState().isSelected();
-        return new EducationalExperience(nrc, name, career, professorToAssign, period, activeStatus);
+        return new EducationalExperience(nrc, section, name, career, professorToAssign, period, activeStatus);
     }
 
     private void openChooseExperience() {

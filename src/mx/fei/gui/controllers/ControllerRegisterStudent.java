@@ -43,7 +43,7 @@ public class ControllerRegisterStudent {
         boolean indigenousLanguage = guiRegisterStudent.getRadioButtonSpeakIndigenousLanguage().isSelected();
         boolean activeStatusDefault = true;
         Project assignedProjectDefault = null;
-        float gradeDefault = 0;
+        float grade = Float.parseFloat(guiRegisterStudent.getTextFieldGrade().getText().trim());
         Student student = new Student(
                 studentIdDefault,
                 names,
@@ -55,7 +55,7 @@ public class ControllerRegisterStudent {
                 enrollment,
                 indigenousLanguage,
                 assignedProjectDefault,
-                gradeDefault);
+                grade);
         try {
             boolean registered = studentDAO.registerStudent(student);
             if (registered) {

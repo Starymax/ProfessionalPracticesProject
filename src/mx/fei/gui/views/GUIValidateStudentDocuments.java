@@ -3,6 +3,7 @@ package mx.fei.gui.views;
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.controllers.ControllerValidateStudentDocuments;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.gui.utils.StudentStatusFilter;
 import mx.fei.logic.dto.DocumentReviewItem;
 import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
@@ -10,10 +11,12 @@ import mx.fei.logic.dto.StudentValidationSummary;
 import mx.fei.logic.dto.ValidationStatus;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -31,6 +34,7 @@ import java.util.List;
 public class GUIValidateStudentDocuments extends Application {
 
     private ListView<StudentValidationSummary> listViewStudents;
+    private ComboBox<String> comboBoxStatusFilter;
     private ListView<DocumentReviewItem> listViewDocuments;
     private Label labelStudentName;
     private Label labelEnrollment;
@@ -67,7 +71,14 @@ public class GUIValidateStudentDocuments extends Application {
             }
         });
 
-        VBox studentsPanel = new VBox(10, labelStudentsTitle, listViewStudents);
+        comboBoxStatusFilter = new ComboBox<>(FXCollections.observableArrayList(StudentStatusFilter.filterLabels()));
+        comboBoxStatusFilter.setValue(StudentStatusFilter.ALL_LABEL);
+        comboBoxStatusFilter.setPrefWidth(180);
+        Label labelFilter = new Label("Estado:");
+        HBox filterBox = new HBox(10, labelFilter, comboBoxStatusFilter);
+        filterBox.setAlignment(Pos.CENTER_LEFT);
+
+        VBox studentsPanel = new VBox(10, labelStudentsTitle, filterBox, listViewStudents);
         studentsPanel.setPadding(new Insets(0, 16, 0, 0));
         VBox.setVgrow(listViewStudents, Priority.ALWAYS);
 
@@ -75,6 +86,7 @@ public class GUIValidateStudentDocuments extends Application {
 
         ControllerValidateStudentDocuments controller = new ControllerValidateStudentDocuments(this);
         listViewStudents.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> controller.onStudentSelected());
+        comboBoxStatusFilter.setOnAction(controller::handleStatusFilter);
         buttonReview.setOnAction(controller::handleReviewCloseButtons);
         buttonClose.setOnAction(controller::handleReviewCloseButtons);
 
@@ -114,6 +126,10 @@ public class GUIValidateStudentDocuments extends Application {
 
     public StudentValidationSummary getSelectedStudentSummary() {
         return listViewStudents.getSelectionModel().getSelectedItem();
+    }
+
+    public String getSelectedStatusLabel() {
+        return comboBoxStatusFilter.getValue();
     }
 
     public DocumentReviewItem getSelectedDocumentItem() {

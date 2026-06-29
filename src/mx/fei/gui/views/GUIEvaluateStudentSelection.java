@@ -3,9 +3,12 @@ package mx.fei.gui.views;
 import mx.fei.gui.utils.GUIStyle;
 import mx.fei.gui.controllers.ControllerEvaluateStudentSelection;
 import mx.fei.gui.utils.GUIUtils;
+import mx.fei.gui.utils.StudentStatusFilter;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.Student;
+
+import javafx.collections.FXCollections;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -17,6 +20,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -28,6 +32,7 @@ public class GUIEvaluateStudentSelection extends Application {
 
     private Professor professor;
     private ComboBox<EducationalExperience> comboBoxExperience;
+    private ComboBox<String> comboBoxStatusFilter;
     private ListView<Student> listViewStudent;
     private Button buttonEvaluate;
     private Button buttonCancel;
@@ -52,6 +57,10 @@ public class GUIEvaluateStudentSelection extends Application {
         comboBoxExperience.setButtonCell(buildExperienceCell());
         comboBoxExperience.setCellFactory(listView -> buildExperienceCell());
 
+        comboBoxStatusFilter = new ComboBox<>(FXCollections.observableArrayList(StudentStatusFilter.filterLabels()));
+        comboBoxStatusFilter.setValue(StudentStatusFilter.ALL_LABEL);
+        comboBoxStatusFilter.setPrefWidth(180);
+
         listViewStudent = new ListView<>();
         listViewStudent.setCellFactory(listView -> new ListCell<>() {
             @Override
@@ -74,10 +83,14 @@ public class GUIEvaluateStudentSelection extends Application {
 
         ControllerEvaluateStudentSelection controllerEvaluateStudentSelection = new ControllerEvaluateStudentSelection(this);
         comboBoxExperience.setOnAction(controllerEvaluateStudentSelection::handleExperienceSelection);
+        comboBoxStatusFilter.setOnAction(controllerEvaluateStudentSelection::handleStatusFilter);
         buttonEvaluate.setOnAction(controllerEvaluateStudentSelection::handleEvaluateCancelButtons);
         buttonCancel.setOnAction(controllerEvaluateStudentSelection::handleEvaluateCancelButtons);
 
-        VBox topBox = new VBox(15, title, comboBoxExperience);
+        Label labelFilter = new Label("Estado:");
+        HBox filterBox = new HBox(10, labelFilter, comboBoxStatusFilter);
+        filterBox.setAlignment(Pos.CENTER_LEFT);
+        VBox topBox = new VBox(15, title, comboBoxExperience, filterBox);
         VBox buttonPanel = new VBox(12, buttonEvaluate, buttonCancel);
         buttonPanel.setAlignment(Pos.BOTTOM_RIGHT);
 
@@ -109,6 +122,10 @@ public class GUIEvaluateStudentSelection extends Application {
 
     public EducationalExperience getSelectedExperience() {
         return comboBoxExperience.getValue();
+    }
+
+    public String getSelectedStatusLabel() {
+        return comboBoxStatusFilter.getValue();
     }
 
     public Student getSelectedStudent() {
@@ -152,7 +169,7 @@ public class GUIEvaluateStudentSelection extends Application {
                     setText(null);
                 } else {
                     String period = (experience.getPeriod() == null || experience.getPeriod().isBlank()) ? "Sin periodo" : experience.getPeriod();
-                    setText(experience.getName() + " (" + experience.getNrc() + ") - " + period);
+                    setText(experience.getName() + " (" + experience.getNrc() + " Sec. " + experience.getSection() + ") - " + period);
                 }
             }
         };
