@@ -3,7 +3,6 @@ package mx.fei.gui.controllers;
 import mx.fei.gui.views.GUIAddStudents;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIChooseStudent;
-import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIModifyExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;

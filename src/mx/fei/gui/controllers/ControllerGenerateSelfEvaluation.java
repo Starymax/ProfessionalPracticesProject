@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.scene.control.ComboBox;
 import mx.fei.gui.views.GUIGenerateSelfEvaluation;
 import mx.fei.gui.utils.SelfEvaluationGenerator;
 import mx.fei.logic.dao.DocumentDAO;
@@ -12,13 +11,18 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+import javafx.scene.control.ComboBox;
 
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -116,7 +120,7 @@ public class ControllerGenerateSelfEvaluation {
             String outputPath = new File(directory, fileName).getAbsolutePath();
             try {
                 if (!guiGenerateSelfEvaluation.isLocked()) {
-                    int documentId = registerDocumentInDatabase(outputPath);
+                    int documentId = registerSelfEvaluationInDatabase(outputPath);
                     saveAnswers(documentId);
                 }
                 Map<String, Object> parameters = buildParameters();
@@ -135,7 +139,7 @@ public class ControllerGenerateSelfEvaluation {
         }
     }
 
-    private int registerDocumentInDatabase(String outputPath) throws DataOperationException {
+    private int registerSelfEvaluationInDatabase(String outputPath) throws DataOperationException {
         if (practice == null) {
             throw new DataOperationException("No hay practica disponible para guardar la autoevaluación.");
         }

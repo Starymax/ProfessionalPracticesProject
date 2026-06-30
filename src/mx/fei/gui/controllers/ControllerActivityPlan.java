@@ -38,7 +38,7 @@ public class ControllerActivityPlan {
     public void handleAddActivityDeleteSaveCancelButtons(ActionEvent event) {
         Button button = (Button) event.getSource();
         switch (button.getText()) {
-            case "+ Nueva actividad" -> {
+            case "Nueva actividad" -> {
                 addNewActivity();
             }
             case "Eliminar" -> {

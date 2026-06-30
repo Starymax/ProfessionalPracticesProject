@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.stage.Modality;
 import mx.fei.gui.views.GUIChooseExperience;
 import mx.fei.gui.views.GUIManageExperience;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
@@ -10,6 +9,7 @@ import mx.fei.logic.exceptions.DataOperationException;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 
 public class ControllerManageExperience {
     private GUIManageExperience guiManageExperience;

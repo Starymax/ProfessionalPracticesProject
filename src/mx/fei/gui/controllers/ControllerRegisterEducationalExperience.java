@@ -76,6 +76,13 @@ public class ControllerRegisterEducationalExperience {
         String name = guiRegisterEducationalExperience.getTextFieldName().getText().trim();
         String career = guiRegisterEducationalExperience.getTextFieldCareer().getText().trim();
         String period = guiRegisterEducationalExperience.getSelectedPeriod();
-        return new EducationalExperience(nrc, section, name, career, null, period, true);
+        return new EducationalExperience(
+                nrc,
+                section,
+                name,
+                career,
+                null,
+                period,
+                true);
     }
 }

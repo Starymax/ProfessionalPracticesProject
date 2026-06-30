@@ -167,8 +167,7 @@ public class ControllerGenerateReport {
                 if (generatedFinalReports >= MAX_FINAL_REPORTS) {
                     guiGenerateReport.showError("Ya generaste tu reporte final.");
                 } else if (totalHours < FINAL_REPORT_HOURS_THRESHOLD) {
-                    guiGenerateReport.showError("Necesitas al menos " + FINAL_REPORT_HOURS_THRESHOLD
-                            + " horas de avance para generar el reporte final (llevas " + (int) totalHours + ").");
+                    guiGenerateReport.showError("Necesitas al menos " + FINAL_REPORT_HOURS_THRESHOLD + " horas de avance para generar el reporte final (llevas " + (int) totalHours + ").");
                 } else {
                     Stage stage = new Stage();
                     stage.initModality(Modality.APPLICATION_MODAL);

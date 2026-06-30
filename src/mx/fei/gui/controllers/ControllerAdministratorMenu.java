@@ -70,8 +70,8 @@ public class ControllerAdministratorMenu {
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
         confirm.setContentText("¿Seguro que desea cerrar sesión?");
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        Optional<ButtonType> resultConfirmation = confirm.showAndWait();
+        if (resultConfirmation.isPresent() && resultConfirmation.get() == ButtonType.OK) {
             UserDAO userDAO = new UserDAO();
             userDAO.logout();
             GUILogin guiLogin = new GUILogin();

@@ -68,75 +68,6 @@ public class ControllerEvaluateStudent {
         }
     }
 
-    private Float parseGrade(String text) {
-        Float grade = null;
-        try {
-            float value = Float.parseFloat(text);
-            if (value >= 0f && value <= 10f) {
-                grade = value;
-            }
-        } catch (NumberFormatException e) {
-            grade = null;
-        }
-        return grade;
-    }
-
-    private void gradePractice(float grade) {
-        try {
-            PracticeDAO practiceDAO = new PracticeDAO();
-            boolean graded = practiceDAO.updatePracticeGrade(practice.getId(), grade);
-            if (graded) {
-                practice.setGrade(grade);
-                notifyGrade(grade);
-                configureGrading();
-                guiEvaluateStudent.showSuccess("Práctica calificada. Se notificó al alumno.");
-            } else {
-                guiEvaluateStudent.showError("No se pudo registrar la calificación.");
-            }
-        } catch (DataOperationException e) {
-            LOGGER.log(Level.SEVERE, "Error al calificar la práctica", e);
-            guiEvaluateStudent.showError(e.getMessage());
-        }
-    }
-
-    private void notifyGrade(float grade) throws DataOperationException {
-        Student practiceStudent = practice.getStudent();
-        if (practiceStudent != null) {
-            String message = String.format("Tu práctica profesional ha concluido. Calificación: %.1f.", grade);
-            NotificationDAO notificationDAO = new NotificationDAO();
-            Notification notification = new Notification(0, "Práctica calificada", message, null, false, practiceStudent);
-            notificationDAO.sendNotification(notification);
-        }
-    }
-
-    private void configureGrading() {
-        if (practice == null) {
-            guiEvaluateStudent.setGradeEnabled(false);
-            guiEvaluateStudent.setGradeHint("No hay una práctica registrada.");
-        } else if (practice.getGrade() > 0) {
-            guiEvaluateStudent.setGradeValue(String.format("%.1f", practice.getGrade()));
-            guiEvaluateStudent.setGradeEnabled(false);
-            guiEvaluateStudent.setGradeHint("La práctica ya fue calificada.");
-        } else if (isPracticeConcluded()) {
-            guiEvaluateStudent.setGradeEnabled(true);
-            guiEvaluateStudent.setGradeHint("La práctica está concluida. Asigne una calificación.");
-        } else {
-            guiEvaluateStudent.setGradeEnabled(false);
-            guiEvaluateStudent.setGradeHint("El alumno aún no concluye sus documentos finales.");
-        }
-    }
-
-    private boolean isPracticeConcluded() {
-        boolean concluded = false;
-        try {
-            concluded = new DocumentDAO().areFinalDocumentsValidated(practice);
-        } catch (DataOperationException e) {
-            LOGGER.log(Level.SEVERE, "Error al verificar los documentos finales", e);
-            guiEvaluateStudent.showError(e.getMessage());
-        }
-        return concluded;
-    }
-
     public void loadReports() {
         if (practice == null) {
             guiEvaluateStudent.setReports(new ArrayList<>());
@@ -218,13 +149,13 @@ public class ControllerEvaluateStudent {
     }
 
     private void openDocumentPreview() {
-        DocumentReviewItem item = guiEvaluateStudent.getSelectedDocument();
-        if (item == null) {
+        DocumentReviewItem document = guiEvaluateStudent.getSelectedDocument();
+        if (document == null) {
             guiEvaluateStudent.showError("Seleccione un documento de la lista.");
-        } else if (!item.isUploaded()) {
+        } else if (!document.isUploaded()) {
             guiEvaluateStudent.showError("Este documento no ha sido subido por el alumno.");
         } else {
-            GUIDocumentPreview guiDocumentPreview = new GUIDocumentPreview(item.getDocument());
+            GUIDocumentPreview guiDocumentPreview = new GUIDocumentPreview(document.getDocument());
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setOnHidden(hiddenEvent -> loadDocuments());
@@ -235,14 +166,14 @@ public class ControllerEvaluateStudent {
     private List<DocumentReviewItem> buildReviewItems() throws DataOperationException {
         DocumentDAO documentDAO = new DocumentDAO();
         List<Document> uploadedDocuments = documentDAO.getDocumentsForValidation(practice);
-        List<DocumentReviewItem> items = new ArrayList<>();
+        List<DocumentReviewItem> documentReviewItems = new ArrayList<>();
         for (DocumentType documentType : DocumentType.values()) {
             if (!documentType.isReport()) {
                 Document matchedDocument = findDocument(uploadedDocuments, documentType);
-                items.add(new DocumentReviewItem(documentType, matchedDocument));
+                documentReviewItems.add(new DocumentReviewItem(documentType, matchedDocument));
             }
         }
-        return items;
+        return documentReviewItems;
     }
 
     private Document findDocument(List<Document> documents, DocumentType documentType) {
@@ -254,5 +185,74 @@ public class ControllerEvaluateStudent {
             }
         }
         return found;
+    }
+
+    private Float parseGrade(String text) {
+        Float grade = null;
+        try {
+            float gradeValue = Float.parseFloat(text);
+            if (gradeValue >= 0f && gradeValue <= 10f) {
+                grade = gradeValue;
+            }
+        } catch (NumberFormatException e) {
+            grade = null;
+        }
+        return grade;
+    }
+
+    private void gradePractice(float grade) {
+        try {
+            PracticeDAO practiceDAO = new PracticeDAO();
+            boolean graded = practiceDAO.updatePracticeGrade(practice.getId(), grade);
+            if (graded) {
+                practice.setGrade(grade);
+                notifyGrade(grade);
+                configureGrading();
+                guiEvaluateStudent.showSuccess("Práctica calificada. Se notificó al alumno.");
+            } else {
+                guiEvaluateStudent.showError("No se pudo registrar la calificación.");
+            }
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al calificar la práctica", e);
+            guiEvaluateStudent.showError(e.getMessage());
+        }
+    }
+
+    private void notifyGrade(float grade) throws DataOperationException {
+        Student practiceStudent = practice.getStudent();
+        if (practiceStudent != null) {
+            String message = String.format("Tu práctica profesional ha concluido. Calificación: %.1f.", grade);
+            NotificationDAO notificationDAO = new NotificationDAO();
+            Notification notification = new Notification(0, "Práctica calificada", message, null, false, practiceStudent);
+            notificationDAO.sendNotification(notification);
+        }
+    }
+
+    private void configureGrading() {
+        if (practice == null) {
+            guiEvaluateStudent.setGradeEnabled(false);
+            guiEvaluateStudent.setGradeHint("No hay una práctica registrada.");
+        } else if (practice.getGrade() > 0) {
+            guiEvaluateStudent.setGradeValue(String.format("%.1f", practice.getGrade()));
+            guiEvaluateStudent.setGradeEnabled(false);
+            guiEvaluateStudent.setGradeHint("La práctica ya fue calificada.");
+        } else if (isPracticeConcluded()) {
+            guiEvaluateStudent.setGradeEnabled(true);
+            guiEvaluateStudent.setGradeHint("La práctica está concluida. Asigne una calificación.");
+        } else {
+            guiEvaluateStudent.setGradeEnabled(false);
+            guiEvaluateStudent.setGradeHint("El alumno aún no concluye sus documentos finales.");
+        }
+    }
+
+    private boolean isPracticeConcluded() {
+        boolean concluded = false;
+        try {
+            concluded = new DocumentDAO().areFinalDocumentsValidated(practice);
+        } catch (DataOperationException e) {
+            LOGGER.log(Level.SEVERE, "Error al verificar los documentos finales", e);
+            guiEvaluateStudent.showError(e.getMessage());
+        }
+        return concluded;
     }
 }

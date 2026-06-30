@@ -88,8 +88,8 @@ public class ControllerValidateStudentDocuments {
             try {
                 PracticeDAO practiceDAO = new PracticeDAO();
                 Practice practice = practiceDAO.getPracticeByEnrollment(currentStudent.getEnrollment());
-                List<DocumentReviewItem> items = buildReviewItems(practice);
-                guiValidateStudentDocuments.showStudentDetail(currentStudent, currentStudent.getAssignedProject(), items);
+                List<DocumentReviewItem> documentReviewItems = buildReviewItems(practice);
+                guiValidateStudentDocuments.showStudentDetail(currentStudent, currentStudent.getAssignedProject(), documentReviewItems);
             } catch (DataOperationException e) {
                 guiValidateStudentDocuments.showError(e.getMessage());
             }
@@ -124,14 +124,14 @@ public class ControllerValidateStudentDocuments {
     }
 
     private void openDocumentPreview() {
-        DocumentReviewItem item = guiValidateStudentDocuments.getSelectedDocumentItem();
-        if (item == null) {
+        DocumentReviewItem documentReviewItem = guiValidateStudentDocuments.getSelectedDocumentItem();
+        if (documentReviewItem == null) {
             guiValidateStudentDocuments.showError("Seleccione un documento de la lista.");
         } else {
-            if (!item.isUploaded()) {
+            if (!documentReviewItem.isUploaded()) {
                 guiValidateStudentDocuments.showError("Este documento no ha sido subido por el alumno.");
             } else {
-                GUIDocumentPreview guiDocumentPreview = new GUIDocumentPreview(item.getDocument());
+                GUIDocumentPreview guiDocumentPreview = new GUIDocumentPreview(documentReviewItem.getDocument());
                 Stage stage = new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.setOnHidden(hiddenEvent -> {

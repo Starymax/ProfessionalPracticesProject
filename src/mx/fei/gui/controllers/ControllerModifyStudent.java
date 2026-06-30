@@ -18,7 +18,6 @@ public class ControllerModifyStudent {
     private GUIModifyStudent guiModifyStudent;
     private StudentDAO studentDAO;
     private UserDAO userDAO;
-    private GUIChooseStudent guiChooseStudent = new GUIChooseStudent();
     private static final Logger LOGGER = Logger.getLogger(ControllerModifyStudent.class.getName());
 
     public ControllerModifyStudent(GUIModifyStudent guiModifyStudent) {

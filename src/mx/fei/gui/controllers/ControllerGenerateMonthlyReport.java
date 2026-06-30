@@ -108,7 +108,6 @@ public class ControllerGenerateMonthlyReport {
                 List<Activity> activities = activityDAO.getActivitiesByProjectId(student.getAssignedProject().getProjectId());
                 List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(student.getUserId());
                 Map<Integer, Float> hoursWorkedByLog = getHoursWorkedByLog(advances);
-
                 List<ReportActivityProgress> reportActivityProgressList = new ArrayList<>();
                 ObservableList<ActivityRow> activityRows = FXCollections.observableArrayList();
                 for (Activity activity : activities) {

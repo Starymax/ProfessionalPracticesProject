@@ -60,8 +60,8 @@ public class ControllerUploadDocument {
         try {
             PracticeDAO practiceDAO = new PracticeDAO();
             Practice practice = practiceDAO.getPracticeByEnrollment(guiUploadDocument.getStudentEnrollment());
-            List<Document> uploaded = documentDAO.getDocumentsByPractice(practice);
-            guiUploadDocument.setUploadedDocuments(uploaded);
+            List<Document> documents = documentDAO.getDocumentsByPractice(practice);
+            guiUploadDocument.setUploadedDocuments(documents);
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al cargar los documentos subidos.", e);
         }

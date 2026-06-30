@@ -58,12 +58,6 @@ public class ControllerEvaluateStudentSelection {
         applyStatusFilter();
     }
 
-    private void applyStatusFilter() {
-        PracticeStatus status = PracticeStatus.fromLabel(guiEvaluateStudentSelection.getSelectedStatusLabel());
-        List<Student> filteredStudents = StudentStatusFilter.filterByStatus(loadedStudents, status, concludedStudentIds, enrolledStudentIds);
-        guiEvaluateStudentSelection.loadStudents(filteredStudents);
-    }
-
     public void handleEvaluateCancelButtons(ActionEvent event) {
         Button source = (Button) event.getSource();
         switch (source.getText()) {
@@ -104,5 +98,11 @@ public class ControllerEvaluateStudentSelection {
             guiEvaluateStudent.loadData();
             guiEvaluateStudentSelection.getStage().close();
         }
+    }
+
+    private void applyStatusFilter() {
+        PracticeStatus status = PracticeStatus.fromLabel(guiEvaluateStudentSelection.getSelectedStatusLabel());
+        List<Student> filteredStudents = StudentStatusFilter.filterByStatus(loadedStudents, status, concludedStudentIds, enrolledStudentIds);
+        guiEvaluateStudentSelection.loadStudents(filteredStudents);
     }
 }

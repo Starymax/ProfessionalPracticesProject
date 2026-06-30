@@ -19,12 +19,10 @@ import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.util.NoSuchElementException;
-import java.util.logging.Logger;
 
 public class ControllerLogin {
     private final GUILogin guiLogin;
     private final UserDAO userDAO;
-    private static final Logger LOGGER = Logger.getLogger(ControllerLogin.class.getName());
 
     public ControllerLogin(GUILogin guiLogin) {
         this.guiLogin = guiLogin;

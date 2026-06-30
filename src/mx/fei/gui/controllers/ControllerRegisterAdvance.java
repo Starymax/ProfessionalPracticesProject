@@ -323,8 +323,8 @@ public class ControllerRegisterAdvance {
             if (totalHoursBeforeSave < PARTIAL_REPORT_HOURS_THRESHOLD && totalAfter >= PARTIAL_REPORT_HOURS_THRESHOLD) {
                 int generated = reportDAO.countReportsByTypeAndStudent(ReportType.PARTIAL_REPORT.getReportType(), guiRegisterAdvance.getStudent().getUserId());
                 if (generated == 0) {
-                    String msg = "Has alcanzado " + (int) totalAfter + " horas de avance. Ya puedes generar tu reporte parcial.";
-                    notificationDAO.sendNotification(new Notification(0, "Reporte parcial disponible", msg, new Date(), false, guiRegisterAdvance.getStudent()));
+                    String message = "Has alcanzado " + (int) totalAfter + " horas de avance. Ya puedes generar tu reporte parcial.";
+                    notificationDAO.sendNotification(new Notification(0, "Reporte parcial disponible", message, new Date(), false, guiRegisterAdvance.getStudent()));
                 }
             }
         } catch (DataOperationException e) {
@@ -338,8 +338,8 @@ public class ControllerRegisterAdvance {
             if (totalHoursBeforeSave < FINAL_REPORT_HOURS_THRESHOLD && totalAfter >= FINAL_REPORT_HOURS_THRESHOLD) {
                 int generated = reportDAO.countReportsByTypeAndStudent(ReportType.FINAL_REPORT.getReportType(), guiRegisterAdvance.getStudent().getUserId());
                 if (generated == 0) {
-                    String msg = "Has alcanzado " + (int) totalAfter + " horas de avance. Ya puedes generar tu reporte final.";
-                    notificationDAO.sendNotification(new Notification(0, "Reporte final disponible", msg, new Date(), false, guiRegisterAdvance.getStudent()));
+                    String message = "Has alcanzado " + (int) totalAfter + " horas de avance. Ya puedes generar tu reporte final.";
+                    notificationDAO.sendNotification(new Notification(0, "Reporte final disponible", message, new Date(), false, guiRegisterAdvance.getStudent()));
                 }
             }
         } catch (DataOperationException e) {

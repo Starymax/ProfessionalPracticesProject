@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import javafx.scene.control.Button;
 import mx.fei.gui.views.GUIModifyProject;
 import mx.fei.gui.views.GUIRegisterProjectManager;
 import mx.fei.logic.dao.ActivityDAO;
@@ -19,6 +18,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.sql.Date;

@@ -224,7 +224,7 @@ public class GUIActivityPlan extends Application {
         scrollActivities.setPrefHeight(380);
         scrollActivities.getStyleClass().add("scroll-pane");
 
-        Button buttonNewActivity = new Button("+ Nueva actividad");
+        Button buttonNewActivity = new Button("Nueva actividad");
         buttonNewActivity.setMaxWidth(Double.MAX_VALUE);
         buttonNewActivity.setOnAction(controller::handleAddActivityDeleteSaveCancelButtons);
 
@@ -265,7 +265,7 @@ public class GUIActivityPlan extends Application {
         weekGrid = new GridPane();
         weekGrid.setHgap(5);
         weekGrid.setVgap(5);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < COLUMNS; i++) {
             ColumnConstraints weekColumn = new ColumnConstraints(95, 95, 95);
             weekGrid.getColumnConstraints().add(weekColumn);
         }

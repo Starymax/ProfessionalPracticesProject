@@ -241,10 +241,10 @@ public class ControllerStudentMenu {
             if (practice == null) {
                 guiStudentMenu.showError("No tiene ninguna práctica asignada. Intente más tarde.");
             } else {
-                GUIStudentProgress gui = new GUIStudentProgress(practice);
+                GUIStudentProgress guiStudentProgress = new GUIStudentProgress(practice);
                 Stage stage = new Stage();
                 stage.initModality(Modality.APPLICATION_MODAL);
-                gui.start(stage);
+                guiStudentProgress.start(stage);
             }
         } catch (DataOperationException e) {
             LOGGER.log(Level.SEVERE, "Error al abrir Mi Avance", e.getMessage());

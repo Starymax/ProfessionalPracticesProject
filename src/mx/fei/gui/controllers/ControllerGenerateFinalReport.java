@@ -37,6 +37,7 @@ import java.util.logging.Logger;
 public class ControllerGenerateFinalReport {
 
     private static final Logger LOGGER = Logger.getLogger(ControllerGenerateFinalReport.class.getName());
+    public static final int LIMIT_ROWS = 9;
     private final GUIGenerateFinalReport finalReportView;
     private final Stage stage;
     private final ReportDAO reportDAO;
@@ -146,7 +147,6 @@ public class ControllerGenerateFinalReport {
                 LOGGER.log(Level.WARNING, "No se pudo cargar la información de actividades para el reporte final", e);
             }
         }
-
         fillBlankFinalReportRows(rows);
         return rows;
     }
@@ -164,7 +164,7 @@ public class ControllerGenerateFinalReport {
     }
 
     private void fillBlankFinalReportRows(List<FinalReportRow> rows) {
-        while (rows.size() < 9) {
+        while (rows.size() < LIMIT_ROWS) {
             rows.add(new FinalReportRow("", "", "", "", "", ""));
         }
     }

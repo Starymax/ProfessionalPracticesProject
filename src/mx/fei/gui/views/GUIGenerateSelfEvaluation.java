@@ -116,12 +116,12 @@ public class GUIGenerateSelfEvaluation extends Application {
         return labelTotalScore;
     }
 
-    public void showError(String msg) {
-        GUIUtils.showError(msg);
+    public void showError(String message) {
+        GUIUtils.showError(message);
     }
 
-    public void showSuccess(String msg) {
-        GUIUtils.showSuccess(msg);
+    public void showSuccess(String message) {
+        GUIUtils.showSuccess(message);
     }
 
     public int getRows() {

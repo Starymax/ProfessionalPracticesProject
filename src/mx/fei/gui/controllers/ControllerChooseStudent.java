@@ -4,7 +4,6 @@ import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.gui.views.GUIPracticeInfo;
 import mx.fei.logic.dao.DocumentDAO;
-import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Practice;
@@ -25,14 +24,12 @@ public class ControllerChooseStudent {
     private GUIChooseStudent guiChooseStudent;
     private StudentDAO studentDAO;
     private PracticeDAO practiceDAO;
-    private EducationalExperienceDAO educationalExperienceDAO;
     private static final Logger LOGGER = Logger.getLogger(ControllerChooseStudent.class.getName());
     private final int NO_STUDENTS_SELECTED = 0;
 
     public ControllerChooseStudent(GUIChooseStudent guiChooseStudent) {
         this.guiChooseStudent = guiChooseStudent;
         this.studentDAO = new StudentDAO();
-        this.practiceDAO = new PracticeDAO();
         practiceDAO = new PracticeDAO();
         loadStudents();
     }
