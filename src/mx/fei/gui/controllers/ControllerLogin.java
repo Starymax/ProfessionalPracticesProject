@@ -35,20 +35,25 @@ public class ControllerLogin {
             defaultSession();
             try {
                 User user = userDAO.getUserByEmail(mail);
-                if (user.isActive() && BCrypt.checkpw(rawPassword, user.getPassword())) {
-                    if (user instanceof Student) {
-                        studentLogin(user);
-                    } else if (user instanceof Professor professor) {
-                        if (professor.isCoordinator()) {
-                            coordinatorLogin(professor);
-                        } else if (professor.isAdmin()) {
-                            adminLogin(professor);
-                        } else {
-                            professorLogin(professor);
-                        }
-                    }
+                if (!user.isActive()) {
+                    guiLogin.showError("Su usuario está inhabilitado por el momento. Intene mas tarde.");
                 } else {
-                    guiLogin.showError("Correo o contraseña incorrectos.");
+                    System.out.println(user.isActive());
+                    if (BCrypt.checkpw(rawPassword, user.getPassword())) {
+                        if (user instanceof Student) {
+                            studentLogin(user);
+                        } else if (user instanceof Professor professor) {
+                            if (professor.isCoordinator()) {
+                                coordinatorLogin(professor);
+                            } else if (professor.isAdmin()) {
+                                adminLogin(professor);
+                            } else {
+                                professorLogin(professor);
+                            }
+                        }
+                    } else {
+                        guiLogin.showError("Correo o contraseña incorrectos.");
+                    }
                 }
             } catch (NoSuchElementException e) {
                 guiLogin.showError("Correo o contraseña incorrectos.");

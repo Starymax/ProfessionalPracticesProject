@@ -90,14 +90,14 @@ public class ControllerValidateStudentDocuments {
             DocumentDAO documentDAO = new DocumentDAO();
             uploadedDocuments = documentDAO.getDocumentsForValidation(practice);
         }
-        List<DocumentReviewItem> items = new ArrayList<>();
+        List<DocumentReviewItem> documentReviewItems = new ArrayList<>();
         for (DocumentType documentType : DocumentType.values()) {
             if (!documentType.isReport()) {
                 Document matchedDocument = findDocument(uploadedDocuments, documentType);
-                items.add(new DocumentReviewItem(documentType, matchedDocument));
+                documentReviewItems.add(new DocumentReviewItem(documentType, matchedDocument));
             }
         }
-        return items;
+        return documentReviewItems;
     }
 
     private Document findDocument(List<Document> documents, DocumentType documentType) {

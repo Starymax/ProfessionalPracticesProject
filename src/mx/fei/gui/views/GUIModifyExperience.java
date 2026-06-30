@@ -123,7 +123,9 @@ public class GUIModifyExperience extends Application {
         this.professors = professors;
         ObservableList<String> items = FXCollections.observableArrayList();
         for (Professor professor : professors) {
-            items.add(professor.getName() + " " + professor.getLastName());
+            if (professor.isActive()) {
+                items.add(professor.getName() + " " + professor.getLastName());
+            }
         }
         comboBoxProfessors.setItems(items);
     }

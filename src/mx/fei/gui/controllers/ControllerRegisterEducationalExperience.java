@@ -5,7 +5,6 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
