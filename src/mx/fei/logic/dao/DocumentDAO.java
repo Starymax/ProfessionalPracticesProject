@@ -523,6 +523,42 @@ public class DocumentDAO implements IDAODocument {
     }
 
     /**
+     * Checks whether a specific document type has already been validated for a practice.
+     *
+     * @param practice the practice to check, must not be null
+     * @param documentType the document type to check, must not be null
+     * @return true if a document of the given type is validated for the practice
+     * @throws IllegalArgumentException if practice or documentType is null
+     * @throws DataOperationException if a database error occurs
+     */
+    public boolean isDocumentValidated(Practice practice, DocumentType documentType) throws DataOperationException {
+        if (practice == null || documentType == null) {
+            LOGGER.log(Level.WARNING, "La practica o el tipo de documento es nulo");
+            throw new IllegalArgumentException("La practica y el tipo de documento no pueden ser nulos");
+        }
+        boolean documentValidated = false;
+        String query = "SELECT COUNT(*) AS total FROM documentos " +
+                "WHERE id_practica = ? AND tipoDocumento = ? AND estado_validacion = 'VALIDADO'";
+        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, practice.getId());
+            preparedStatement.setString(2, documentType.name());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    documentValidated = resultSet.getInt("total") > 0;
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al verificar la validación del documento", e);
+            if (DAOUtils.isConnectionError(e)) {
+                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            }
+            throw new DataOperationException("Error al verificar la validación del documento");
+        }
+        return documentValidated;
+    }
+
+    /**
      * Deletes a document record and, on success, removes its physical file from disk.
      *
      * @param document the document to delete, must not be null
