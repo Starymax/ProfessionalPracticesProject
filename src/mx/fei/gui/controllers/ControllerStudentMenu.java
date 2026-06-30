@@ -21,10 +21,8 @@ import mx.fei.gui.views.GUIStudentProgress;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.List;
@@ -67,61 +65,77 @@ public class ControllerStudentMenu {
         try {
             if (guiStudentMenu.getStudent() == null) {
                 guiStudentMenu.updateUnreadCount(0);
-                return;
+            } else {
+                int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
+                guiStudentMenu.updateUnreadCount(unread);
             }
-            int unread = notificationDAO.countUnreadNotifications(guiStudentMenu.getStudent().getUserId());
-            guiStudentMenu.updateUnreadCount(unread);
         } catch (DataOperationException e) {
             LOGGER.log(Level.WARNING, "Error al cargar notificaciones no leídas:", e.getMessage());
             guiStudentMenu.updateUnreadCount(0);
         }
     }
 
-    public void handleButtonsMenu(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        String buttonText = source.getText();
-        if (isPracticeComplete && !buttonText.equals("Avance") && !buttonText.equals("Cerrar Sesión") && !buttonText.equals("🔔 Notificaciones")) {
-            guiStudentMenu.showError("Tu práctica profesional ha concluido. Solo puedes consultar tu avance.");
-        } else {
-            switch (source.getText()) {
-                case "Seleccionar Proyectos" -> {
-                    openSelectProjects();
-                }
-                case "Generar Documentos" -> {
-                    if (!studentHadAssignedProject()) {
-                        guiStudentMenu.showError("No tiene proyecto asignado.");
-                    } else {
-                        openGenerateDocuments();
-                    }
-                }
-                case "Generar Reportes" -> {
-                    if (!studentHadAssignedProject()) {
-                        guiStudentMenu.showError("No tiene proyecto asignado.");
-                    } else {
-                        openReports();
-                    }
-                }
-                case "Registro de Avances" -> {
-                    if (!studentHadAssignedProject()) {
-                        guiStudentMenu.showError("No tiene proyecto asignado.");
-                    } else {
-                        openRegisterAdvance();
-                    }
-                }
-                case "Subir Documentos" -> {
-                    openDocuments(guiStudentMenu.getStudent().getEnrollment());
-                }
-                case "Avance" -> {
-                    openProgress();
-                }
-                case "🔔 Notificaciones" -> {
-                    openNotifications();
-                }
-                case "Cerrar Sesión" -> {
-                    logout();
-                }
+    public void handleSelectProjectsButtonAction() {
+        if (!isPracticeBlocked()) {
+            openSelectProjects();
+        }
+    }
+
+    public void handleGenerateDocumentsButtonAction() {
+        if (!isPracticeBlocked()) {
+            if (!studentHadAssignedProject()) {
+                guiStudentMenu.showError("No tiene proyecto asignado.");
+            } else {
+                openGenerateDocuments();
             }
         }
+    }
+
+    public void handleReportsButtonAction() {
+        if (!isPracticeBlocked()) {
+            if (!studentHadAssignedProject()) {
+                guiStudentMenu.showError("No tiene proyecto asignado.");
+            } else {
+                openReports();
+            }
+        }
+    }
+
+    public void handleRegisterAdvanceButtonAction() {
+        if (!isPracticeBlocked()) {
+            if (!studentHadAssignedProject()) {
+                guiStudentMenu.showError("No tiene proyecto asignado.");
+            } else {
+                openRegisterAdvance();
+            }
+        }
+    }
+
+    public void handleDocumentsButtonAction() {
+        if (!isPracticeBlocked()) {
+            openDocuments(guiStudentMenu.getStudent().getEnrollment());
+        }
+    }
+
+    public void handleProgressButtonAction() {
+        openProgress();
+    }
+
+    public void handleNotificationsButtonAction() {
+        openNotifications();
+    }
+
+    public void handleLogoutButtonAction() {
+        logout();
+    }
+
+    private boolean isPracticeBlocked() {
+        boolean blocked = false;
+        if (isPracticeComplete) {
+            guiStudentMenu.showError("Tu práctica profesional ha concluido. Solo puedes consultar tu avance.");
+            blocked = true;
+        }
+        return blocked;
     }
 
     private void openSelectProjects() {

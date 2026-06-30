@@ -104,9 +104,9 @@ public class GUIAddStudents extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerAddStudents controllerAddStudents = new ControllerAddStudents(this, stage);
-        buttonAdd.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
-        buttonConfirm.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
-        buttonBack.setOnAction(controllerAddStudents::handleAddConfirmReturnButtons);
+        buttonAdd.setOnAction(event -> controllerAddStudents.handleAdd());
+        buttonConfirm.setOnAction(event -> controllerAddStudents.handleConfirm());
+        buttonBack.setOnAction(event -> controllerAddStudents.handleBack());
         Scene scene = new Scene(mainPanel, 560, 360);
         GUIStyle.apply(scene);
         stage.setScene(scene);

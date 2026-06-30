@@ -9,8 +9,6 @@ import mx.fei.logic.dto.Notification;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -23,22 +21,7 @@ public class ControllerDocumentPreview {
         this.guiDocumentPreview = guiDocumentPreview;
     }
 
-    public void handleValidateRejectCloseButtons(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        switch (button.getText()) {
-            case "Validar" -> {
-                validateDocument();
-            }
-            case "Rechazar" -> {
-                rejectDocument();
-            }
-            case "Cerrar" -> {
-                guiDocumentPreview.closeWindow();
-            }
-        }
-    }
-
-    private void validateDocument() {
+    public void validateDocument() {
         Document document = guiDocumentPreview.getDocument();
         try {
             DocumentDAO documentDAO = new DocumentDAO();
@@ -55,7 +38,7 @@ public class ControllerDocumentPreview {
         }
     }
 
-    private void rejectDocument() {
+    public void rejectDocument() {
         Document document = guiDocumentPreview.getDocument();
         GUICustomNotification guiCustomNotification = new GUICustomNotification(document, guiDocumentPreview);
         Stage stage = new Stage();

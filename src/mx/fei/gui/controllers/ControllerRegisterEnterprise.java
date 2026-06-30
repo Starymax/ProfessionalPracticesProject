@@ -6,8 +6,6 @@ import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.util.logging.Level;
@@ -23,20 +21,7 @@ public class ControllerRegisterEnterprise {
         this.enterpriseDAO = new EnterpriseDAO();
     }
 
-    public void handleRegisterCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar" -> {
-                handleRegister();
-            }
-            case "Cancelar" -> {
-                openManageEnterprise();
-                guiRegisterEnterprise.closeWindow();
-            }
-        }
-    }
-
-    private void handleRegister() {
+    public void handleRegister() {
         if (guiRegisterEnterprise.validatedFields()) {
             try {
                 Enterprise enterprise = getEnterprise();
@@ -90,4 +75,10 @@ public class ControllerRegisterEnterprise {
         Stage stage = new Stage();
         guiManageEnterprise.start(stage);
     }
+
+    public void handleCancelButtonAction() {
+        openManageEnterprise();
+        guiRegisterEnterprise.closeWindow();
+    }
+
 }

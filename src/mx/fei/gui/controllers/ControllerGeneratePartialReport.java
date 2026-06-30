@@ -20,8 +20,6 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -65,17 +63,7 @@ public class ControllerGeneratePartialReport {
         }
     }
 
-    public void handlePartialReportButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Exportar PDF" -> {
-                exportPDF();
-            }
-            case "Cancelar" -> {
-                guiGeneratePartialReport.closeWindow();
-            }
-        }
-    }
+    
 
     private String resolveStudentData() {
         String errorMessage = null;
@@ -188,7 +176,7 @@ public class ControllerGeneratePartialReport {
         );
     }
 
-    private void exportPDF() {
+    public void exportPDF() {
         String results = guiGeneratePartialReport.getResultsObtained();
         if (practice == null || educationalExperience == null) {
             guiGeneratePartialReport.showError("No hay datos suficientes para generar el PDF.");
@@ -290,66 +278,30 @@ public class ControllerGeneratePartialReport {
     }
 
     private String getPlanValue(PartialActivityRow row, int week) {
-        switch (week) {
-            case 1 -> {
-                return row.getWeek1Plan();
-            }
-            case 2 -> {
-                return row.getWeek2Plan();
-            }
-            case 3 -> {
-                return row.getWeek3Plan();
-            }
-            case 4 -> {
-                return row.getWeek4Plan();
-            }
-            case 5 -> {
-                return row.getWeek5Plan();
-            }
-            case 6 -> {
-                return row.getWeek6Plan();
-            }
-            case 7 -> {
-                return row.getWeek7Plan();
-            }
-            case 8 -> {
-                return row.getWeek8Plan();
-            }
-            default -> {
-                return "0";
-            }
-        }
+        return switch (week) {
+            case 1 -> row.getWeek1Plan();
+            case 2 -> row.getWeek2Plan();
+            case 3 -> row.getWeek3Plan();
+            case 4 -> row.getWeek4Plan();
+            case 5 -> row.getWeek5Plan();
+            case 6 -> row.getWeek6Plan();
+            case 7 -> row.getWeek7Plan();
+            case 8 -> row.getWeek8Plan();
+            default -> "0";
+        };
     }
     private String getRealValue(PartialActivityRow row, int week) {
-        switch (week) {
-            case 1 -> {
-                return row.getWeek1Real();
-            }
-            case 2 -> {
-                return row.getWeek2Real();
-            }
-            case 3 -> {
-                return row.getWeek3Real();
-            }
-            case 4 -> {
-                return row.getWeek4Real();
-            }
-            case 5 -> {
-                return row.getWeek5Real();
-            }
-            case 6 -> {
-                return row.getWeek6Real();
-            }
-            case 7 -> {
-                return row.getWeek7Real();
-            }
-            case 8 -> {
-                return row.getWeek8Real();
-            }
-            default -> {
-                return "0";
-            }
-        }
+        return switch (week) {
+            case 1 -> row.getWeek1Real();
+            case 2 -> row.getWeek2Real();
+            case 3 -> row.getWeek3Real();
+            case 4 -> row.getWeek4Real();
+            case 5 -> row.getWeek5Real();
+            case 6 -> row.getWeek6Real();
+            case 7 -> row.getWeek7Real();
+            case 8 -> row.getWeek8Real();
+            default -> "0";
+        };
     }
 
     private boolean savePartialReport() {

@@ -6,8 +6,6 @@ import mx.fei.logic.dto.Notification;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.logic.dao.NotificationDAO;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,19 +23,7 @@ public class ControllerSendNotificationOfAssign {
         this.notificationDAO = new NotificationDAO();
     }
 
-    public void handleSendCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Enviar" -> {
-                send();
-            }
-            case "Cancelar" -> {
-                guiSendNotificationOfAssign.close();
-            }
-        }
-    }
-
-    private void send() {
+    public void send() {
         String title = guiSendNotificationOfAssign.getTitleText() == null ? "" : guiSendNotificationOfAssign.getTitleText().trim();
         String message = guiSendNotificationOfAssign.getMessageText() == null ? "" : guiSendNotificationOfAssign.getMessageText().trim();
         ArrayList<String> errors = new ArrayList<>();

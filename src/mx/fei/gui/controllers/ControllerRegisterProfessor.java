@@ -6,10 +6,8 @@ import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import org.mindrot.jbcrypt.BCrypt;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
@@ -20,20 +18,6 @@ public class ControllerRegisterProfessor {
 
     public ControllerRegisterProfessor(GUIRegisterProfessor guiRegisterProfessor) {
         this.guiRegisterProfessor = guiRegisterProfessor;
-    }
-
-    public void handleRegisterCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar" -> {
-                if (guiRegisterProfessor.validateFields()) {
-                    register();
-                }
-            }
-            case "Cancelar" -> {
-                cancel();
-            }
-        }
     }
 
     private void register() {
@@ -88,7 +72,7 @@ public class ControllerRegisterProfessor {
                 shift);
     }
 
-    private void cancel() {
+    public void cancel() {
         Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar registro");
         confirm.setHeaderText(null);
@@ -98,4 +82,11 @@ public class ControllerRegisterProfessor {
             guiRegisterProfessor.getStage().close();
         }
     }
+
+    public void handleRegisterButtonAction() {
+        if (guiRegisterProfessor.validateFields()) {
+        register();
+        }
+    }
+
 }

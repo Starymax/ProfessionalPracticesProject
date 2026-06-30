@@ -378,12 +378,12 @@ public class GUIGenerateFinalReport extends Application {
         buttonExportPdf = new Button("Exportar PDF");
         buttonExportPdf.setPrefWidth(120);
         buttonExportPdf.setId("buttonExportPdf");
-        buttonExportPdf.setOnAction(controllerGenerateFinalReport::handleFinalReportButtons);
+        buttonExportPdf.setOnAction(event -> controllerGenerateFinalReport.handleExportPDF());
 
         buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(120);
         buttonCancel.setId("buttonCancel");
-        buttonCancel.setOnAction(controllerGenerateFinalReport::handleFinalReportButtons);
+        buttonCancel.setOnAction(event -> controllerGenerateFinalReport.handleCancel());
 
         HBox buttonRow = new HBox(12, buttonExportPdf, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);

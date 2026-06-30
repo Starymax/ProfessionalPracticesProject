@@ -5,7 +5,6 @@ import mx.fei.logic.dao.NotificationDAO;
 import mx.fei.logic.dto.Notification;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -32,7 +31,7 @@ public class ControllerNotifications {
         }
     }
 
-    public void handleClose(ActionEvent event) {
+    public void handleClose() {
         guiNotifications.getStage().close();
     }
 

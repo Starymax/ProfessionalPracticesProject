@@ -82,10 +82,10 @@ public class GUIEvaluateStudentSelection extends Application {
         buttonCancel.setPrefWidth(160);
 
         ControllerEvaluateStudentSelection controllerEvaluateStudentSelection = new ControllerEvaluateStudentSelection(this);
-        comboBoxExperience.setOnAction(controllerEvaluateStudentSelection::handleExperienceSelection);
-        comboBoxStatusFilter.setOnAction(controllerEvaluateStudentSelection::handleStatusFilter);
-        buttonEvaluate.setOnAction(controllerEvaluateStudentSelection::handleEvaluateCancelButtons);
-        buttonCancel.setOnAction(controllerEvaluateStudentSelection::handleEvaluateCancelButtons);
+        comboBoxExperience.setOnAction(event -> controllerEvaluateStudentSelection.handleExperienceSelection());
+        comboBoxStatusFilter.setOnAction(event -> controllerEvaluateStudentSelection.handleStatusFilter());
+        buttonEvaluate.setOnAction(event -> controllerEvaluateStudentSelection.evaluateStudent());
+        buttonCancel.setOnAction(event -> getStage().close());
 
         Label labelFilter = new Label("Estado:");
         HBox filterBox = new HBox(10, labelFilter, comboBoxStatusFilter);

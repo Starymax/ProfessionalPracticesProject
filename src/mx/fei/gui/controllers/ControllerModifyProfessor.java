@@ -6,8 +6,6 @@ import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,19 +22,7 @@ public class ControllerModifyProfessor {
         this.userDAO = new UserDAO();
     }
 
-    public void handleUpdateCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Actualizar" -> {
-                handleUpdate();
-            }
-            case "Cancelar" -> {
-                guiModifyProfessor.closeWindow();
-            }
-        }
-    }
-
-    private void handleUpdate() {
+    public void handleUpdate() {
         if (guiModifyProfessor.validateFields()) {
             Professor professorOriginal = guiModifyProfessor.getProfessor();
             Professor professorUpdated = builProfessor(professorOriginal);

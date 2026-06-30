@@ -1,6 +1,5 @@
 package mx.fei.gui.controllers;
 
-import mx.fei.gui.views.GUIChooseStudent;
 import mx.fei.gui.views.GUIModifyStudent;
 import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dao.UserDAO;
@@ -8,8 +7,6 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,19 +23,7 @@ public class ControllerModifyStudent {
         this.userDAO = new UserDAO();
     }
 
-    public void handleUpdateCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Actualizar" -> {
-                handleUpdate();
-            }
-            case "Cancelar" -> {
-                guiModifyStudent.closeWindow();
-            }
-        }
-    }
-
-    private void handleUpdate() {
+    public void handleUpdate() {
         if (guiModifyStudent.validateFields()) {
             try {
                 Student studentUpdated = buildStudent(guiModifyStudent.getStudent());

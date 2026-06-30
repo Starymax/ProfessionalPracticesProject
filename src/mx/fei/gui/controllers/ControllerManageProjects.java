@@ -7,9 +7,7 @@ import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dao.ProjectDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 
 public class ControllerManageProjects {
@@ -20,26 +18,7 @@ public class ControllerManageProjects {
         this.guiManageProjects = guiManageProjects;
     }
 
-    public void handleRegisterModifyReturnButtons(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        switch (button.getText()) {
-            case "Registrar proyecto" -> {
-                openRegisterProject();
-            }
-            case "Gestionar proyecto" -> {
-                if (!existProjects()){
-                    guiManageProjects.showError("No existen proyectos disponibles por el momento.");
-                } else {
-                    openModifyProject();
-                }
-            }
-            case "Regresar" -> {
-                goBack();
-            }
-        }
-    }
-
-    private void openRegisterProject() {
+    public void openRegisterProject() {
         GUIRegisterProject guiRegisterProject = new GUIRegisterProject();
         Stage newStage = new Stage();
         newStage.initModality(Modality.APPLICATION_MODAL);
@@ -82,7 +61,16 @@ public class ControllerManageProjects {
         return projectsExist;
     }
 
-    private void goBack() {
+    public void goBack() {
         guiManageProjects.getStage().close();
     }
+
+    public void handleManageProjectButtonAction() {
+        if (!existProjects()){
+        guiManageProjects.showError("No existen proyectos disponibles por el momento.");
+        } else {
+        openModifyProject();
+        }
+    }
+
 }

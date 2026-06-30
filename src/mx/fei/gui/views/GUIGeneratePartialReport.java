@@ -392,67 +392,31 @@ public class GUIGeneratePartialReport extends Application {
     }
 
     private StringProperty getPlanProperty(PartialActivityRow row, int week) {
-        switch (week) {
-            case 1 -> {
-                return row.week1PlanProperty();
-            }
-            case 2 -> {
-                return row.week2PlanProperty();
-            }
-            case 3 -> {
-                return row.week3PlanProperty();
-            }
-            case 4 -> {
-                return row.week4PlanProperty();
-            }
-            case 5 -> {
-                return row.week5PlanProperty();
-            }
-            case 6 -> {
-                return row.week6PlanProperty();
-            }
-            case 7 -> {
-                return row.week7PlanProperty();
-            }
-            case 8 -> {
-                return row.week8PlanProperty();
-            }
-            default -> {
-                return new SimpleStringProperty("");
-            }
-        }
+        return switch (week) {
+            case 1 -> row.week1PlanProperty();
+            case 2 -> row.week2PlanProperty();
+            case 3 -> row.week3PlanProperty();
+            case 4 -> row.week4PlanProperty();
+            case 5 -> row.week5PlanProperty();
+            case 6 -> row.week6PlanProperty();
+            case 7 -> row.week7PlanProperty();
+            case 8 -> row.week8PlanProperty();
+            default -> new SimpleStringProperty("");
+        };
     }
 
     private StringProperty getRealProperty(PartialActivityRow row, int week) {
-        switch (week) {
-            case 1 -> {
-                return row.week1RealProperty();
-            }
-            case 2 -> {
-                return row.week2RealProperty();
-            }
-            case 3 -> {
-                return row.week3RealProperty();
-            }
-            case 4 -> {
-                return row.week4RealProperty();
-            }
-            case 5 -> {
-                return row.week5RealProperty();
-            }
-            case 6 -> {
-                return row.week6RealProperty();
-            }
-            case 7 -> {
-                return row.week7RealProperty();
-            }
-            case 8 -> {
-                return row.week8RealProperty();
-            }
-            default -> {
-                return new SimpleStringProperty("");
-            }
-        }
+        return switch (week) {
+            case 1 -> row.week1RealProperty();
+            case 2 -> row.week2RealProperty();
+            case 3 -> row.week3RealProperty();
+            case 4 -> row.week4RealProperty();
+            case 5 -> row.week5RealProperty();
+            case 6 -> row.week6RealProperty();
+            case 7 -> row.week7RealProperty();
+            case 8 -> row.week8RealProperty();
+            default -> new SimpleStringProperty("");
+        };
     }
 
     private VBox createResultsSection() {
@@ -478,8 +442,8 @@ public class GUIGeneratePartialReport extends Application {
         buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(120);
         buttonCancel.setId("buttonCancel");
-        buttonExportPDF.setOnAction(controller::handlePartialReportButtons);
-        buttonCancel.setOnAction(controller::handlePartialReportButtons);
+        buttonExportPDF.setOnAction(event -> controller.exportPDF());
+        buttonCancel.setOnAction(event -> closeWindow());
         HBox box = new HBox(12, buttonExportPDF, buttonCancel);
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(18, 0, 0, 0));

@@ -89,8 +89,8 @@ public class GUISelectProjects extends Application {
         buttonCancel.setPrefWidth(140);
 
         ControllerSelectProjects controllerSelectProjects = new ControllerSelectProjects(this);
-        buttonSelect.setOnAction(controllerSelectProjects::handleSelectCancelButtons);
-        buttonCancel.setOnAction(controllerSelectProjects::handleSelectCancelButtons);
+        buttonSelect.setOnAction(event -> controllerSelectProjects.handleSelectButtonAction());
+        buttonCancel.setOnAction(event -> controllerSelectProjects.cancel());
 
         HBox buttonRow = new HBox(40, buttonSelect, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER);

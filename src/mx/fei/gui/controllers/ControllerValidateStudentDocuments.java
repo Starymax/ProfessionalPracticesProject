@@ -14,8 +14,6 @@ import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.StudentValidationSummary;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -48,7 +46,7 @@ public class ControllerValidateStudentDocuments {
         }
     }
 
-    public void handleStatusFilter(ActionEvent event) {
+    public void handleStatusFilter() {
         applyStatusFilter();
     }
 
@@ -71,17 +69,7 @@ public class ControllerValidateStudentDocuments {
         }
     }
 
-    public void handleReviewCloseButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Ver / Revisar documento" -> {
-                openDocumentPreview();
-            }
-            case "Cerrar" -> {
-                guiValidateStudentDocuments.closeWindow();
-            }
-        }
-    }
+    
 
     private void refreshStudentDetail() {
         if (currentStudent != null) {
@@ -123,7 +111,7 @@ public class ControllerValidateStudentDocuments {
         return found;
     }
 
-    private void openDocumentPreview() {
+    public void openDocumentPreview() {
         DocumentReviewItem documentReviewItem = guiValidateStudentDocuments.getSelectedDocumentItem();
         if (documentReviewItem == null) {
             guiValidateStudentDocuments.showError("Seleccione un documento de la lista.");

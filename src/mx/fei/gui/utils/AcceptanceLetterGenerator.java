@@ -17,17 +17,18 @@ public class AcceptanceLetterGenerator {
     private static final String TEMPLATE_PATH = "/templates/aceptation_card.jasper";
 
     public boolean generate(Map<String, Object> parameters, String outputPath) {
+        boolean reportGenerated = false;
         try (InputStream templateStream = getClass().getResourceAsStream(TEMPLATE_PATH)) {
             if (templateStream == null) {
                 LOGGER.severe("No se encontró la plantilla: " + TEMPLATE_PATH);
-                return false;
+            } else {
+                JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
+                JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
+                reportGenerated = true;
             }
-            JasperPrint jasperPrint = JasperFillManager.fillReport(templateStream, parameters, new JREmptyDataSource());
-            JasperExportManager.exportReportToPdfFile(jasperPrint, outputPath);
-            return true;
         } catch (JRException | IOException e) {
             LOGGER.log(Level.SEVERE, "Error al generar la carta de aceptación", e);
-            return false;
         }
+        return reportGenerated;
     }
 }

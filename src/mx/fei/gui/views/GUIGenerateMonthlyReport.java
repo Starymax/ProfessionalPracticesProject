@@ -205,11 +205,11 @@ public class GUIGenerateMonthlyReport extends Application {
         buttonExportPDF = new Button("Exportar PDF");
         buttonExportPDF.setPrefWidth(120);
         buttonExportPDF.setId("buttonExportPdf");
-        buttonExportPDF.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
+        buttonExportPDF.setOnAction(event -> controllerGenerateMonthlyReport.handleExportPDF());
         buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(120);
         buttonCancel.setId("buttonCancel");
-        buttonCancel.setOnAction(controllerGenerateMonthlyReport::handleMonthlyReportButtons);
+        buttonCancel.setOnAction(event -> controllerGenerateMonthlyReport.handleCancel());
         HBox buttonRow = new HBox(12, buttonExportPDF, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);
         buttonRow.setPadding(new Insets(18, 0, 0, 0));

@@ -86,8 +86,8 @@ public class GUIRegisterEducationalExperience extends Application {
         buttonCancel = new Button("Cancelar");
         buttonRegister.setPrefWidth(110);
         buttonCancel.setPrefWidth(110);
-        buttonRegister.setOnAction(controller::handleRegisterCancelButtons);
-        buttonCancel.setOnAction(controller::handleRegisterCancelButtons);
+        buttonRegister.setOnAction(event -> controller.handleRegisterButton());
+        buttonCancel.setOnAction(event -> controller.handleCancelButtonAction());
         HBox buttonsBox = new HBox(30, buttonRegister, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);
         buttonsBox.setPadding(new Insets(15, 0, 5, 0));

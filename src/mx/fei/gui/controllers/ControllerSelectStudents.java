@@ -5,8 +5,6 @@ import mx.fei.logic.dao.StudentDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -26,18 +24,6 @@ public class ControllerSelectStudents {
         loadStudents();
     }
 
-    public void handleSelectGoBackButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                handleSelect();
-            }
-            case "Regresar" -> {
-                guiSelectStudents.closeWindow();
-            }
-        }
-    }
-
     private void loadStudents() {
         try {
             List<Student> students = studentDAO.getStudentsWithoutEducationalExperience();
@@ -49,7 +35,7 @@ public class ControllerSelectStudents {
         }
     }
 
-    private void handleSelect() {
+    public void handleSelect() {
         List<Student> checkedStudents = guiSelectStudents.getCheckedStudents();
         if (checkedStudents.isEmpty()) {
             guiSelectStudents.showError("Selecciona al menos un alumno.");

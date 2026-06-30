@@ -108,8 +108,8 @@ public class GUIModifyStudent extends Application {
         GridPane.setColumnSpan(buttonsBox, 4);
         formGrid.add(buttonsBox,0,8);
         ControllerModifyStudent controllerModifyStudent = new ControllerModifyStudent(this);
-        buttonUpdate.setOnAction(controllerModifyStudent::handleUpdateCancelButtons);
-        buttonCancel.setOnAction(controllerModifyStudent::handleUpdateCancelButtons);
+        buttonUpdate.setOnAction(event -> controllerModifyStudent.handleUpdate());
+        buttonCancel.setOnAction(event -> closeWindow());
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));
         Scene scene = new Scene(mainPanel, 430, 380);

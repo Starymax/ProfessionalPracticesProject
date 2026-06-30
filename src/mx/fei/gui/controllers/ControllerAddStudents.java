@@ -10,8 +10,6 @@ import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -32,22 +30,7 @@ public class ControllerAddStudents {
         this.stage = stage;
     }
 
-    public void handleAddConfirmReturnButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Agregar" -> {
-                handleAdd();
-            }
-            case "Confirmar" -> {
-                handleConfirm();
-            }
-            case "Regresar" -> {
-                handleBack();
-            }
-        }
-    }
-
-    private void handleAdd() {
+    public void handleAdd() {
         try {
             List<Student> activeStudents = studentDAO.getActiveStudents();
             if (activeStudents.isEmpty()) {
@@ -64,7 +47,7 @@ public class ControllerAddStudents {
         }
     }
 
-    private void handleConfirm() {
+    public void handleConfirm() {
         List<Student> studentsToAdd = guiAddStudents.getStudentsToAdd();
         EducationalExperience experience = guiAddStudents.getExperience();
         String currentPeriod = experience.getPeriod();
@@ -101,7 +84,7 @@ public class ControllerAddStudents {
         }
     }
 
-    private void handleBack() {
+    public void handleBack() {
         if (guiAddStudents.showConfirmation("¿Seguro desea cancelar? Se perderán los cambios realizados.")) {
             GUIChooseExperience guiChooseExperience = new GUIChooseExperience();
             Stage stage = new Stage();

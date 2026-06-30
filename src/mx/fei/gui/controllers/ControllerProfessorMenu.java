@@ -8,8 +8,6 @@ import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dao.UserDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -33,32 +31,6 @@ public class ControllerProfessorMenu {
         this.guiProfessorMenu = guiProfessorMenu;
     }
 
-    public void handleEvaluateConsultStudentsGoBack(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Evaluar" -> {
-                if (!professorHadAssignedExperiences()) {
-                    guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
-                } else {
-                    openEvaluateStudent();
-                }
-            }
-            case  "Consultar practica" -> {
-                if (!professorHadAssignedExperiences()) {
-                    guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
-                } else {
-                    openConsultStudent();
-                }
-            }
-            case "Regresar" -> {
-                goBack();
-            }
-            case "Cerrar Sesión" -> {
-                logout();
-            }
-        }
-    }
-
     private void openEvaluateStudent() {
         GUIEvaluateStudentSelection guiEvaluateStudentSelection = new GUIEvaluateStudentSelection(guiProfessorMenu.getProfessor());
         Stage stage = new Stage();
@@ -75,11 +47,11 @@ public class ControllerProfessorMenu {
         guiChooseExperience.start(stage);
     }
 
-    private void goBack() {
+    public void goBack() {
         guiProfessorMenu.getStage().close();
     }
 
-    private void logout() {
+    public void logout() {
         Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
@@ -111,4 +83,21 @@ public class ControllerProfessorMenu {
         }
         return hadAssignedExperiences;
     }
+
+    public void handleEvaluateReportsButtonAction() {
+        if (!professorHadAssignedExperiences()) {
+        guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
+        } else {
+        openEvaluateStudent();
+        }
+    }
+
+    public void handleConsultStudentsButtonAction() {
+        if (!professorHadAssignedExperiences()) {
+        guiProfessorMenu.showError("No tiene ninguna experiencia asignada.");
+        } else {
+        openConsultStudent();
+        }
+    }
+
 }

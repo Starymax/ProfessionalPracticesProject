@@ -12,8 +12,6 @@ import mx.fei.logic.dto.Student;
 import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -42,24 +40,6 @@ public class ControllerGenerateReport {
         this.documentDAO = new DocumentDAO();
     }
 
-    public void handleMensualPartialFinalBackButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch(source.getText()) {
-            case "Mensual" -> {
-                openMonthlyReport();
-            }
-            case "Parcial" -> {
-                openPartialReport();
-            }
-            case "Final" -> {
-                openFinalReport();
-            }
-            case "Regresar" -> {
-                guiGenerateReport.closeWindow();
-            }
-        }
-    }
-
     private boolean arePrerequisitesMet() {
         boolean prerequisitesMet = false;
         try {
@@ -74,30 +54,29 @@ public class ControllerGenerateReport {
         return prerequisitesMet;
     }
 
-    private void openMonthlyReport() {
-        if (!arePrerequisitesMet()) {
-            return;
-        }
-        Student student = guiGenerateReport.getPractice().getStudent();
-        if (student == null) {
-            guiGenerateReport.showError("No hay estudiante seleccionado.");
-        } else {
-            try {
-                int maxSavedWeek = resolveMaxSavedWeek(student.getUserId());
-                int completedBlocks = maxSavedWeek / WEEKS_PER_MONTH;
-                int generatedReports = reportDAO.countReportsByTypeAndStudent(ReportType.MONTHLY_REPORT.getReportType(), student.getUserId());
-                if (completedBlocks <= generatedReports) {
-                    int weeksNeeded = (generatedReports + 1) * WEEKS_PER_MONTH;
-                    guiGenerateReport.showError("Aún no puedes generar el reporte mensual " + (generatedReports + 1) + "\nNecesitas completar hasta la semana " + weeksNeeded + " (actualmente en semana " + maxSavedWeek + ").");
-                } else {
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    GUIGenerateMonthlyReport generateMonthlyReport = new GUIGenerateMonthlyReport(student);
-                    generateMonthlyReport.start(stage);
+    public void openMonthlyReport() {
+        if (arePrerequisitesMet()) {
+            Student student = guiGenerateReport.getPractice().getStudent();
+            if (student == null) {
+                guiGenerateReport.showError("No hay estudiante seleccionado.");
+            } else {
+                try {
+                    int maxSavedWeek = resolveMaxSavedWeek(student.getUserId());
+                    int completedBlocks = maxSavedWeek / WEEKS_PER_MONTH;
+                    int generatedReports = reportDAO.countReportsByTypeAndStudent(ReportType.MONTHLY_REPORT.getReportType(), student.getUserId());
+                    if (completedBlocks <= generatedReports) {
+                        int weeksNeeded = (generatedReports + 1) * WEEKS_PER_MONTH;
+                        guiGenerateReport.showError("Aún no puedes generar el reporte mensual " + (generatedReports + 1) + "\nNecesitas completar hasta la semana " + weeksNeeded + " (actualmente en semana " + maxSavedWeek + ").");
+                    } else {
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        GUIGenerateMonthlyReport generateMonthlyReport = new GUIGenerateMonthlyReport(student);
+                        generateMonthlyReport.start(stage);
+                    }
+                } catch (DataOperationException e) {
+                    LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte mensual", e);
+                    guiGenerateReport.showError(e.getMessage());
                 }
-            } catch (DataOperationException e) {
-                LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte mensual", e);
-                guiGenerateReport.showError(e.getMessage());
             }
         }
     }
@@ -122,61 +101,59 @@ public class ControllerGenerateReport {
         return total;
     }
 
-    private void openPartialReport() {
-        if (!arePrerequisitesMet()) {
-            return;
-        }
-        Student student = guiGenerateReport.getPractice().getStudent();
-        if (student == null) {
-            guiGenerateReport.showError("No hay estudiante seleccionado.");
-        } else {
-            try {
-                float totalHours = calculateTotalRealizedHours(student.getUserId());
-                int generatedPartialReports = reportDAO.countReportsByTypeAndStudent(
-                        ReportType.PARTIAL_REPORT.getReportType(), student.getUserId());
-                if (generatedPartialReports >= MAX_PARTIAL_REPORTS) {
-                    guiGenerateReport.showError("Ya generaste tu reporte parcial.");
-                } else if (totalHours < PARTIAL_REPORT_HOURS_THRESHOLD) {
-                    guiGenerateReport.showError("Necesitas al menos " + PARTIAL_REPORT_HOURS_THRESHOLD
-                            + " horas de avance para generar el reporte parcial (llevas " + (int) totalHours + ").");
-                } else {
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    GUIGeneratePartialReport generatePartialReport = new GUIGeneratePartialReport(student);
-                    generatePartialReport.start(stage);
+    public void openPartialReport() {
+        if (arePrerequisitesMet()) {
+            Student student = guiGenerateReport.getPractice().getStudent();
+            if (student == null) {
+                guiGenerateReport.showError("No hay estudiante seleccionado.");
+            } else {
+                try {
+                    float totalHours = calculateTotalRealizedHours(student.getUserId());
+                    int generatedPartialReports = reportDAO.countReportsByTypeAndStudent(
+                            ReportType.PARTIAL_REPORT.getReportType(), student.getUserId());
+                    if (generatedPartialReports >= MAX_PARTIAL_REPORTS) {
+                        guiGenerateReport.showError("Ya generaste tu reporte parcial.");
+                    } else if (totalHours < PARTIAL_REPORT_HOURS_THRESHOLD) {
+                        guiGenerateReport.showError("Necesitas al menos " + PARTIAL_REPORT_HOURS_THRESHOLD
+                                + " horas de avance para generar el reporte parcial (llevas " + (int) totalHours + ").");
+                    } else {
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        GUIGeneratePartialReport generatePartialReport = new GUIGeneratePartialReport(student);
+                        generatePartialReport.start(stage);
+                    }
+                } catch (DataOperationException e) {
+                    LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte parcial", e);
+                    guiGenerateReport.showError(e.getMessage());
                 }
-            } catch (DataOperationException e) {
-                LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte parcial", e);
-                guiGenerateReport.showError(e.getMessage());
             }
         }
     }
 
-    private void openFinalReport() {
-        if (!arePrerequisitesMet()) {
-            return;
-        }
-        Student student = guiGenerateReport.getPractice().getStudent();
-        if (student == null) {
-            guiGenerateReport.showError("No hay estudiante seleccionado.");
-        } else {
-            try {
-                float totalHours = calculateTotalRealizedHours(student.getUserId());
-                int generatedFinalReports = reportDAO.countReportsByTypeAndStudent(
-                        ReportType.FINAL_REPORT.getReportType(), student.getUserId());
-                if (generatedFinalReports >= MAX_FINAL_REPORTS) {
-                    guiGenerateReport.showError("Ya generaste tu reporte final.");
-                } else if (totalHours < FINAL_REPORT_HOURS_THRESHOLD) {
-                    guiGenerateReport.showError("Necesitas al menos " + FINAL_REPORT_HOURS_THRESHOLD + " horas de avance para generar el reporte final (llevas " + (int) totalHours + ").");
-                } else {
-                    Stage stage = new Stage();
-                    stage.initModality(Modality.APPLICATION_MODAL);
-                    GUIGenerateFinalReport generateFinalReport = new GUIGenerateFinalReport(student, guiGenerateReport.getPractice());
-                    generateFinalReport.start(stage);
+    public void openFinalReport() {
+        if (arePrerequisitesMet()) {
+            Student student = guiGenerateReport.getPractice().getStudent();
+            if (student == null) {
+                guiGenerateReport.showError("No hay estudiante seleccionado.");
+            } else {
+                try {
+                    float totalHours = calculateTotalRealizedHours(student.getUserId());
+                    int generatedFinalReports = reportDAO.countReportsByTypeAndStudent(
+                            ReportType.FINAL_REPORT.getReportType(), student.getUserId());
+                    if (generatedFinalReports >= MAX_FINAL_REPORTS) {
+                        guiGenerateReport.showError("Ya generaste tu reporte final.");
+                    } else if (totalHours < FINAL_REPORT_HOURS_THRESHOLD) {
+                        guiGenerateReport.showError("Necesitas al menos " + FINAL_REPORT_HOURS_THRESHOLD + " horas de avance para generar el reporte final (llevas " + (int) totalHours + ").");
+                    } else {
+                        Stage stage = new Stage();
+                        stage.initModality(Modality.APPLICATION_MODAL);
+                        GUIGenerateFinalReport generateFinalReport = new GUIGenerateFinalReport(student, guiGenerateReport.getPractice());
+                        generateFinalReport.start(stage);
+                    }
+                } catch (DataOperationException e) {
+                    LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte final", e);
+                    guiGenerateReport.showError(e.getMessage());
                 }
-            } catch (DataOperationException e) {
-                LOGGER.log(Level.SEVERE, "Error al verificar disponibilidad del reporte final", e);
-                guiGenerateReport.showError(e.getMessage());
             }
         }
     }

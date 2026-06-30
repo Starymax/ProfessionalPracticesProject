@@ -64,10 +64,10 @@ public class GUIProfessorMenu extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerProfessorMenu controllerProfessorMenu = new ControllerProfessorMenu(this);
-        buttonEvaluateReports.setOnAction(controllerProfessorMenu::handleEvaluateConsultStudentsGoBack);
-        buttonConsultStudents.setOnAction(controllerProfessorMenu::handleEvaluateConsultStudentsGoBack);
-        buttonGoBack.setOnAction(controllerProfessorMenu::handleEvaluateConsultStudentsGoBack);
-        buttonLogout.setOnAction(controllerProfessorMenu::handleEvaluateConsultStudentsGoBack);
+        buttonEvaluateReports.setOnAction(event -> controllerProfessorMenu.handleEvaluateReportsButtonAction());
+        buttonConsultStudents.setOnAction(event -> controllerProfessorMenu.handleConsultStudentsButtonAction());
+        buttonGoBack.setOnAction(event -> controllerProfessorMenu.goBack());
+        buttonLogout.setOnAction(event -> controllerProfessorMenu.logout());
         Scene scene = new Scene(mainPanel, 500, 420);
         GUIStyle.apply(scene);
         stage.setScene(scene);

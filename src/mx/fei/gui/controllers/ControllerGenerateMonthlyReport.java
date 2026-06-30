@@ -24,8 +24,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.io.File;
 import java.net.URL;
@@ -67,18 +65,6 @@ public class ControllerGenerateMonthlyReport {
         this.practiceDAO = new PracticeDAO();
         this.student = student;
         initialize();
-    }
-
-    public void handleMonthlyReportButtons(ActionEvent event) {
-        Button sourceButton = (Button) event.getSource();
-        switch (sourceButton.getText()) {
-            case "Exportar PDF" -> {
-                handleExportPDF();
-            }
-            case "Cancelar" -> {
-                handleCancel();
-            }
-        }
     }
 
     private void initialize() {
@@ -254,7 +240,7 @@ public class ControllerGenerateMonthlyReport {
         }
     }
 
-    private void handleCancel() {
+    public void handleCancel() {
         monthlyReportView.closeWindow();
     }
 

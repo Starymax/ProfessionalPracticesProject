@@ -93,8 +93,8 @@ public class GUIAssignProject extends Application {
         buttonCancel.setPrefWidth(160);
 
         ControllerAssignProject controllerAssignProject = new ControllerAssignProject(this);
-        buttonAssign.setOnAction(controllerAssignProject::handleAssignCancelButtons);
-        buttonCancel.setOnAction(controllerAssignProject::handleAssignCancelButtons);
+        buttonAssign.setOnAction(event -> controllerAssignProject.assignProject());
+        buttonCancel.setOnAction(event -> controllerAssignProject.cancel());
 
         VBox buttonPanel = new VBox(12, buttonAssign, buttonCancel);
         buttonPanel.setAlignment(Pos.BOTTOM_RIGHT);

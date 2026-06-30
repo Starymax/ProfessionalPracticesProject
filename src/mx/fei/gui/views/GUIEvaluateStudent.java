@@ -58,30 +58,11 @@ public class GUIEvaluateStudent extends Application {
         Label title = new Label("Evaluación del alumno");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 16));
 
-        labelEnrollment = buildInfoLabel("Matrícula: ");
-        labelName = buildInfoLabel("Nombre: ");
-        labelProject = buildInfoLabel("Proyecto: ");
-        labelRealizedHours = buildInfoLabel("Horas realizadas: ");
-        labelRemainingHours = buildInfoLabel("Horas faltantes: ");
-        VBox infoBox = new VBox(8, labelEnrollment, labelName, labelProject, labelRealizedHours, labelRemainingHours);
-        infoBox.setPadding(new Insets(0, 0, 10, 0));
+        VBox infoBox = buildInfoBox();
 
         Label reportsTitle = new Label("Reportes subidos por el alumno:");
         reportsTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        listViewReports = new ListView<>();
-        listViewReports.setCellFactory(listView -> new ListCell<>() {
-            @Override
-            protected void updateItem(Document report, boolean empty) {
-                super.updateItem(report, empty);
-                if (empty || report == null) {
-                    setText(null);
-                } else {
-                    String status = report.isAccepted() ? "✔ Aceptado" : "✘ Pendiente";
-                    setText(report.getDocumentType().getDocumentType() + " - " + report.getName() + "   [" + status + "]");
-                }
-            }
-        });
-        listViewReports.setPrefHeight(180);
+        configureReportsListView();
 
         buttonPreview = new Button("Vista previa");
         buttonPreview.setPrefWidth(160);
@@ -90,21 +71,7 @@ public class GUIEvaluateStudent extends Application {
 
         Label documentsTitle = new Label("Documentos del alumno:");
         documentsTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 14));
-        listViewDocuments = new ListView<>();
-        listViewDocuments.setCellFactory(listView -> new ListCell<>() {
-            @Override
-            protected void updateItem(DocumentReviewItem item, boolean isEmpty) {
-                super.updateItem(item, isEmpty);
-                if (isEmpty || item == null) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    setText(item.getDocumentType().getDocumentType() + "   [" + statusLabel(item.getStatus()) + "]");
-                    setStyle("-fx-text-fill: " + statusColor(item.getStatus()) + ";");
-                }
-            }
-        });
-        listViewDocuments.setPrefHeight(180);
+        configureDocumentsListView();
 
         buttonViewDocument = new Button("Ver documento");
         buttonViewDocument.setPrefWidth(160);
@@ -129,10 +96,10 @@ public class GUIEvaluateStudent extends Application {
         closeRow.setAlignment(Pos.CENTER_RIGHT);
 
         controllerEvaluateStudent = new ControllerEvaluateStudent(this, student);
-        buttonPreview.setOnAction(controllerEvaluateStudent::handlePreviewCloseButtons);
-        buttonViewDocument.setOnAction(controllerEvaluateStudent::handlePreviewCloseButtons);
-        buttonGrade.setOnAction(controllerEvaluateStudent::handleGradeButton);
-        buttonClose.setOnAction(controllerEvaluateStudent::handlePreviewCloseButtons);
+        buttonPreview.setOnAction(event -> controllerEvaluateStudent.previewReport());
+        buttonViewDocument.setOnAction(event -> controllerEvaluateStudent.openDocumentPreview());
+        buttonGrade.setOnAction(event -> controllerEvaluateStudent.handleGradeButton());
+        buttonClose.setOnAction(event -> getStage().close());
 
         VBox centerBox = new VBox(10, reportsTitle, listViewReports, reportsButtonRow, documentsTitle, listViewDocuments, documentsButtonRow);
         VBox topBox = new VBox(15, title, infoBox);
@@ -152,6 +119,52 @@ public class GUIEvaluateStudent extends Application {
         stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+    }
+
+    private VBox buildInfoBox() {
+        labelEnrollment = buildInfoLabel("Matrícula: ");
+        labelName = buildInfoLabel("Nombre: ");
+        labelProject = buildInfoLabel("Proyecto: ");
+        labelRealizedHours = buildInfoLabel("Horas realizadas: ");
+        labelRemainingHours = buildInfoLabel("Horas faltantes: ");
+        VBox infoBox = new VBox(8, labelEnrollment, labelName, labelProject, labelRealizedHours, labelRemainingHours);
+        infoBox.setPadding(new Insets(0, 0, 10, 0));
+        return infoBox;
+    }
+
+    private void configureReportsListView() {
+        listViewReports = new ListView<>();
+        listViewReports.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(Document report, boolean empty) {
+                super.updateItem(report, empty);
+                if (empty || report == null) {
+                    setText(null);
+                } else {
+                    String status = report.isAccepted() ? "✔ Aceptado" : "✘ Pendiente";
+                    setText(report.getDocumentType().getDocumentType() + " - " + report.getName() + "   [" + status + "]");
+                }
+            }
+        });
+        listViewReports.setPrefHeight(180);
+    }
+
+    private void configureDocumentsListView() {
+        listViewDocuments = new ListView<>();
+        listViewDocuments.setCellFactory(listView -> new ListCell<>() {
+            @Override
+            protected void updateItem(DocumentReviewItem item, boolean isEmpty) {
+                super.updateItem(item, isEmpty);
+                if (isEmpty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    setText(item.getDocumentType().getDocumentType() + "   [" + statusLabel(item.getStatus()) + "]");
+                    setStyle("-fx-text-fill: " + statusColor(item.getStatus()) + ";");
+                }
+            }
+        });
+        listViewDocuments.setPrefHeight(180);
     }
 
     public void loadData() {
@@ -249,18 +262,10 @@ public class GUIEvaluateStudent extends Application {
     private String statusLabel(ValidationStatus status) {
         String statusString;
         switch (status) {
-            case VALIDATED -> {
-                statusString = "Validado";
-            }
-            case REJECTED -> {
-                statusString = "Rechazado";
-            }
-            case NOT_UPLOADED -> {
-                statusString = "No subido";
-            }
-            default -> {
-                statusString = "Subido (sin revisión)";
-            }
+            case VALIDATED -> statusString = "Validado";
+            case REJECTED -> statusString = "Rechazado";
+            case NOT_UPLOADED -> statusString = "No subido";
+            default -> statusString = "Subido (sin revisión)";
         };
         return statusString;
     }
@@ -268,18 +273,10 @@ public class GUIEvaluateStudent extends Application {
     private String statusColor(ValidationStatus status) {
         String statusColor;
         switch (status) {
-            case VALIDATED -> {
-                statusColor = "#2e7d32";
-            }
-            case REJECTED -> {
-                statusColor = "#b71c1c";
-            }
-            case NOT_UPLOADED -> {
-                statusColor = "#757575";
-            }
-            default -> {
-                statusColor = "#e65100";
-            }
+            case VALIDATED -> statusColor = "#2e7d32";
+            case REJECTED -> statusColor = "#b71c1c";
+            case NOT_UPLOADED -> statusColor = "#757575";
+            default -> statusColor = "#e65100";
         };
         return statusColor;
     }

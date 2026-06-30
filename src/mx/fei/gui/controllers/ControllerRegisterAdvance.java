@@ -13,8 +13,6 @@ import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,17 +103,7 @@ public class ControllerRegisterAdvance {
         }
     }
 
-    public void handleSaveCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Guardar" -> {
-                save();
-            }
-            case "Cancelar" -> {
-                guiRegisterAdvance.closeWindow();
-            }
-        }
-    }
+    
 
     private void buildActivityMap(List<Activity> allActivities, int maxWeek) {
         Map<Integer, Activity> activityIndex = new HashMap<>();
@@ -158,7 +146,7 @@ public class ControllerRegisterAdvance {
         return completed;
     }
     
-    private void save() {
+    public void save() {
         Map<Integer, String> pendingHours = guiRegisterAdvance.getPendingHoursByActivityId();
         if (pendingHours.isEmpty()) {
             guiRegisterAdvance.showError("No hay horas nuevas ingresadas para ninguna actividad.");

@@ -18,8 +18,6 @@ import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 
@@ -47,7 +45,6 @@ public class ControllerGenerateFinalReport {
     private final Practice practice;
     private Report currentReport;
     private FinalReport finalReportData;
-    private final int MOUNT_OF_ROWS = 9;
 
     public ControllerGenerateFinalReport(GUIGenerateFinalReport finalReportView, Stage stage, Student student, Practice practice) {
         this.finalReportView = finalReportView;
@@ -58,18 +55,6 @@ public class ControllerGenerateFinalReport {
         this.student = student;
         this.practice = practice;
         initialize();
-    }
-
-    public void handleFinalReportButtons(ActionEvent event) {
-        Button sourceButton = (Button) event.getSource();
-        switch (sourceButton.getText()) {
-            case "Exportar PDF" -> {
-                handleExportPDF();
-            }
-            case "Cancelar" -> {
-                handleCancel();
-            }
-        }
     }
 
     private void initialize() {
@@ -130,7 +115,6 @@ public class ControllerGenerateFinalReport {
                 List<Activity> activities = activityDAO.getActivitiesByProjectId(student.getAssignedProject().getProjectId());
                 List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(student.getUserId());
                 Map<Integer, Float> workedHoursByLog = getHoursWorkedByLog(advances);
-
                 for (Activity activity : activities) {
                     List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
                     float totalPlanned = 0f;
@@ -186,25 +170,14 @@ public class ControllerGenerateFinalReport {
         finalReportData.setFinalReportRows(new ArrayList<>(finalReportView.getFinalReportRows()));
         if (currentReport != null) {
             currentReport.setObservations(finalReportData.getObservations());
-        }
-        try {
             currentReport.setWorkedHours(getRealizedHours());
             currentReport.setAccumulatedHours(currentReport.getWorkedHours());
-        } catch (RuntimeException e) {
-            currentReport.setWorkedHours(0f);
-            currentReport.setAccumulatedHours(0f);
         }
     }
 
-    private void handleExportPDF() {
-        try {
-            finalReportView.commitTableEdits();
-            syncFinalReportDataFromGui();
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.WARNING, "Error al sincronizar los datos del reporte final", e);
-            finalReportView.showError("Error en la tabla de actividades. Verifica los datos y vuelve a intentarlo.");
-            return;
-        }
+    public void handleExportPDF() {
+        finalReportView.commitTableEdits();
+        syncFinalReportDataFromGui();
         if (validateFinalReport()) {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Selecciona dónde guardar el reporte final");
@@ -266,7 +239,7 @@ public class ControllerGenerateFinalReport {
     }
 
     private void fillReportRows(Map<String, Object> parameters, List<FinalReportRow> rows) {
-        for (int i = 0; i < MOUNT_OF_ROWS; i++) {
+        for (int i = 0; i < LIMIT_ROWS; i++) {
             String index = String.valueOf(i + 1);
             FinalReportRow row = i < rows.size() ? rows.get(i) : new FinalReportRow("", "", "", "", "", "");
             parameters.put("Activity" + index, row.getActivity() != null ? row.getActivity() : "");
@@ -327,7 +300,7 @@ public class ControllerGenerateFinalReport {
         return value != null && !value.isBlank();
     }
 
-    private void handleCancel() {
+    public void handleCancel() {
         finalReportView.closeWindow();
     }
 

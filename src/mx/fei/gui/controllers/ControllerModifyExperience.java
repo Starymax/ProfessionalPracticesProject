@@ -8,8 +8,6 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -35,20 +33,7 @@ public class ControllerModifyExperience {
         }
     }
 
-    public void handleUpdateReturnButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Actualizar" -> {
-                handleUpdate();
-            }
-            case "Regresar" -> {
-                guiModifyExperience.closeWindow();
-                openChooseExperience();
-            }
-        }
-    }
-
-    private void handleUpdate() {
+    public void handleUpdate() {
         if (guiModifyExperience.validateFields()) {
             Professor selectedProfessor = guiModifyExperience.getSelectedProfessor();
             Professor professorToAssign = selectedProfessor != null ? selectedProfessor : guiModifyExperience.getExperience().getProfessor();
@@ -88,4 +73,10 @@ public class ControllerModifyExperience {
         guiChooseExperience.setToModify(true);
         guiChooseExperience.start(stage);
     }
+
+    public void handleBackButtonAction() {
+        guiModifyExperience.closeWindow();
+        openChooseExperience();
+    }
+
 }

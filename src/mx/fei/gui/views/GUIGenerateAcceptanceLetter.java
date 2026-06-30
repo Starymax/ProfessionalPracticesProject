@@ -190,8 +190,8 @@ public class GUIGenerateAcceptanceLetter extends Application {
         buttonBack = new Button("Regresar");
         buttonBack.setPrefWidth(120);
         buttonBack.setId("buttonBack");
-        buttonPrint.setOnAction(controllerGenerateAcceptanceLetter::handleAcceptanceLetterButtons);
-        buttonBack.setOnAction(controllerGenerateAcceptanceLetter::handleAcceptanceLetterButtons);
+        buttonPrint.setOnAction(event -> controllerGenerateAcceptanceLetter.printPDF());
+        buttonBack.setOnAction(event -> closeWindow());
         HBox box = new HBox(12, buttonPrint, buttonBack);
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(18, 0, 0, 0));

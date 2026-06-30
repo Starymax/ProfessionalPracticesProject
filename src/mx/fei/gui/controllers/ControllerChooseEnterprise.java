@@ -6,8 +6,6 @@ import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -26,18 +24,6 @@ public class ControllerChooseEnterprise {
         loadEnterprises();
     }
 
-    public void handleSelectReturn(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                handleSelect();
-            }
-            case "Regresar" -> {
-                guiChooseEnterprise.closeWindow();
-            }
-        }
-    }
-
     private void loadEnterprises() {
         try {
             List<Enterprise> enterprises = enterpriseDAO.getEnterprises();
@@ -52,7 +38,7 @@ public class ControllerChooseEnterprise {
         }
     }
 
-    private void handleSelect() {
+    public void handleSelect() {
         Enterprise selected = guiChooseEnterprise.getSelectedEnterprise();
         if (selected != null) {
             openModifyEnterprise();

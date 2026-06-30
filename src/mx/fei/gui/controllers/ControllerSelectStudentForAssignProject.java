@@ -9,30 +9,15 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 public class ControllerSelectStudentForAssignProject {
-
     private final GUISelectStudentForAssignProject guiSelectStudentForAssignProject;
 
     public ControllerSelectStudentForAssignProject(GUISelectStudentForAssignProject guiSelectStudentForAssignProject) {
         this.guiSelectStudentForAssignProject = guiSelectStudentForAssignProject;
     }
 
-    public void handleSelectCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                selectStudent();
-            }
-            case "Cancelar" -> {
-                cancel();
-            }
-        }
-    }
-
-    private void selectStudent() {
+    public void selectStudent() {
         Student studentSelected = guiSelectStudentForAssignProject.getSelectedStudent();
         if (studentSelected != null) {
             try {
@@ -53,7 +38,7 @@ public class ControllerSelectStudentForAssignProject {
         }
     }
 
-    private void cancel() {
+    public void cancel() {
         guiSelectStudentForAssignProject.getStage().close();
     }
 }

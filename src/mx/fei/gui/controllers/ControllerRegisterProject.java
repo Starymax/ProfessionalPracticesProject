@@ -12,10 +12,8 @@ import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -26,7 +24,6 @@ import java.util.List;
 import java.util.Optional;
 
     public class ControllerRegisterProject {
-
         private final GUIRegisterProject guiRegisterProject;
         private Project savedProject = null;
 
@@ -34,29 +31,7 @@ import java.util.Optional;
             this.guiRegisterProject = guiRegisterProject;
         }
 
-        public void handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox(ActionEvent event) {
-            if (!(event.getSource() instanceof Button)) {
-                updateProjectManagers();
-                return;
-            }
-            Button source = (Button) event.getSource();
-            switch (source.getText()) {
-                case "Añadir Responsable" -> {
-                    addProjectManager();
-                }
-                case "Guardar" -> {
-                    saveProject();
-                }
-                case "Plan de Actividades" -> {
-                    openActivityPlan();
-                }
-                case "Cancelar" -> {
-                    cancel();
-                }
-            }
-        }
-
-        private void saveProject() {
+        public void saveProject() {
             if (guiRegisterProject.validateFields()) {
                 Project project = buildProject();
                 try {
@@ -72,7 +47,7 @@ import java.util.Optional;
             }
         }
 
-        private void openActivityPlan() {
+        public void openActivityPlan() {
             try {
                 ActivityDAO activityDAO = new ActivityDAO();
                 boolean hasActivities = !activityDAO.getActivitiesByProjectId(savedProject.getProjectId()).isEmpty();
@@ -91,7 +66,7 @@ import java.util.Optional;
             }
         }
 
-        private void updateProjectManagers() {
+        public void updateProjectManagers() {
             Enterprise enterprise = guiRegisterProject.getComboBoxEnterprise().getValue();
             ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
             List<ProjectManager> projectManagers = new ArrayList<>();
@@ -103,7 +78,7 @@ import java.util.Optional;
             guiRegisterProject.getComboBoxProjectManager().setItems(FXCollections.observableArrayList(projectManagers));
         }
 
-        private void addProjectManager() {
+        public void addProjectManager() {
             if (guiRegisterProject.getComboBoxEnterprise().getValue() != null) {
                 GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
                 ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
@@ -127,7 +102,7 @@ import java.util.Optional;
             }
         }
 
-        private void cancel() {
+        public void cancel() {
             Alert confirm = new Alert(AlertType.CONFIRMATION);
             confirm.setTitle("Cancelar");
             confirm.setHeaderText(null);

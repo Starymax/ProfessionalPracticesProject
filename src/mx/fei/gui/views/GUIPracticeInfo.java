@@ -72,7 +72,7 @@ public class GUIPracticeInfo extends Application {
         StackPane mainPanel = new StackPane(scrollPane);
         mainPanel.setPadding(new Insets(20));
         ControllerPracticeInfo controller = new ControllerPracticeInfo(this);
-        buttonBack.setOnAction(controller::handleBackButton);
+        buttonBack.setOnAction(event -> controller.handleBackButton());
         Scene scene = new Scene(mainPanel, 560, 620);
         GUIStyle.apply(scene);
         stage.setScene(scene);
@@ -166,35 +166,34 @@ public class GUIPracticeInfo extends Application {
     }
 
     private void populateFields() {
-        if (practice == null) {
-            return;
-        }
-        if (practice.getStudent() != null) {
-            labelEnrollment.setText(practice.getStudent().getEnrollment());
-            labelStudentName.setText(practice.getStudent().getName() + " " + practice.getStudent().getLastName());
-            labelEmail.setText(practice.getStudent().getEmail());
-            labelActiveStatus.setText(practice.getStudent().isActive() ? "Activo" : "Inactivo");
-        }
-        if (practice.getStudent() != null && practice.getStudent().getAssignedProject() != null) {
-            Project project = practice.getStudent().getAssignedProject();
-            labelEnterprise.setText(project.getEnterprise() != null ? project.getEnterprise().getName() : "-");
-            labelProjectName.setText(project.getNameProject());
-            labelProjectManager.setText(project.getProjectManager() != null ? project.getProjectManager().getName() : "-");
-            labelStartDate.setText(project.getStartDate() != null ? project.getStartDate().toString() : "-");
-            labelFinalDate.setText(project.getFinalDate() != null ? project.getFinalDate().toString() : "-");
-        } else {
-            labelEnterprise.setText("Sin proyecto asignado");
-            labelProjectName.setText("-");
-            labelProjectManager.setText("-");
-            labelStartDate.setText("-");
-            labelFinalDate.setText("-");
-        }
-        labelGrade.setText(practice.getGrade() > 0 ? String.valueOf(practice.getGrade()) : "Sin calificación");
-        if (practice.getEducationalExperience() != null) {
-            labelExperienceName.setText(practice.getEducationalExperience().getName());
-            labelNrc.setText(practice.getEducationalExperience().getNrc());
-            labelCareer.setText(practice.getEducationalExperience().getEducationalProgram());
-            labelPeriod.setText(practice.getEducationalExperience().getPeriod());
+        if (practice != null) {
+            if (practice.getStudent() != null) {
+                labelEnrollment.setText(practice.getStudent().getEnrollment());
+                labelStudentName.setText(practice.getStudent().getName() + " " + practice.getStudent().getLastName());
+                labelEmail.setText(practice.getStudent().getEmail());
+                labelActiveStatus.setText(practice.getStudent().isActive() ? "Activo" : "Inactivo");
+            }
+            if (practice.getStudent() != null && practice.getStudent().getAssignedProject() != null) {
+                Project project = practice.getStudent().getAssignedProject();
+                labelEnterprise.setText(project.getEnterprise() != null ? project.getEnterprise().getName() : "-");
+                labelProjectName.setText(project.getNameProject());
+                labelProjectManager.setText(project.getProjectManager() != null ? project.getProjectManager().getName() : "-");
+                labelStartDate.setText(project.getStartDate() != null ? project.getStartDate().toString() : "-");
+                labelFinalDate.setText(project.getFinalDate() != null ? project.getFinalDate().toString() : "-");
+            } else {
+                labelEnterprise.setText("Sin proyecto asignado");
+                labelProjectName.setText("-");
+                labelProjectManager.setText("-");
+                labelStartDate.setText("-");
+                labelFinalDate.setText("-");
+            }
+            labelGrade.setText(practice.getGrade() > 0 ? String.valueOf(practice.getGrade()) : "Sin calificación");
+            if (practice.getEducationalExperience() != null) {
+                labelExperienceName.setText(practice.getEducationalExperience().getName());
+                labelNrc.setText(practice.getEducationalExperience().getNrc());
+                labelCareer.setText(practice.getEducationalExperience().getEducationalProgram());
+                labelPeriod.setText(practice.getEducationalExperience().getPeriod());
+            }
         }
     }
 

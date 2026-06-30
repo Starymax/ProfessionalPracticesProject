@@ -56,8 +56,12 @@ public class GUILogin extends Application {
         if (isAnotherInstanceRunning()) {
             GUIUtils.showError("La aplicación ya está abierta. Cierra la instancia actual antes de abrir una nueva.");
             Platform.exit();
-            return;
+        } else {
+            showLoginWindow(stage);
         }
+    }
+
+    private void showLoginWindow(Stage stage) {
         stage.setTitle("Inicio de sesión");
         stage.setResizable(false);
 
@@ -87,8 +91,8 @@ public class GUILogin extends Application {
         buttonLogin.setPrefWidth(110);
         buttonCancel.setPrefWidth(110);
         ControllerLogin controllerLogin = new ControllerLogin(this);
-        buttonLogin.setOnAction(controllerLogin::handleLoginCancelButtons);
-        buttonCancel.setOnAction(controllerLogin::handleLoginCancelButtons);
+        buttonLogin.setOnAction(event -> controllerLogin.handleLogin());
+        buttonCancel.setOnAction(event -> closeWindow());
 
         HBox buttonsBox = new HBox(30, buttonLogin, buttonCancel);
         buttonsBox.setAlignment(Pos.CENTER);

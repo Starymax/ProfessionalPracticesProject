@@ -8,29 +8,13 @@ import mx.fei.logic.dto.Notification;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 public class ControllerCustomNotification {
-
     private static final int MAX_MESSAGE_LENGTH = 1000;
     private final GUICustomNotification guiCustomNotification;
 
     public ControllerCustomNotification(GUICustomNotification guiCustomNotification) {
         this.guiCustomNotification = guiCustomNotification;
-    }
-
-    public void handleSendCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Enviar y eliminar" -> {
-                rejectDocument();
-            }
-            case "Cancelar" -> {
-                guiCustomNotification.closeWindow();
-            }
-
-        }
     }
 
     private boolean validateNotificationFields() {
@@ -70,20 +54,19 @@ public class ControllerCustomNotification {
         }
     }
 
-    private void rejectDocument() {
-        if (!validateNotificationFields()) {
-            return;
-        }
-        Document document = guiCustomNotification.getDocument();
-        Student student = document.getPractice() != null ? document.getPractice().getStudent() : null;
-        try {
-            deleteDocument(document);
-            sendNotification(student);
-            guiCustomNotification.showSuccess("Documento rechazado y eliminado. Se notificó al alumno.");
-            guiCustomNotification.closeWindow();
-            guiCustomNotification.closeParentPreview();
-        } catch (DataOperationException e) {
-            guiCustomNotification.showError(e.getMessage());
+    public void rejectDocument() {
+        if (validateNotificationFields()) {
+            Document document = guiCustomNotification.getDocument();
+            Student student = document.getPractice() != null ? document.getPractice().getStudent() : null;
+            try {
+                deleteDocument(document);
+                sendNotification(student);
+                guiCustomNotification.showSuccess("Documento rechazado y eliminado. Se notificó al alumno.");
+                guiCustomNotification.closeWindow();
+                guiCustomNotification.closeParentPreview();
+            } catch (DataOperationException e) {
+                guiCustomNotification.showError(e.getMessage());
+            }
         }
     }
 }

@@ -13,8 +13,6 @@ import mx.fei.logic.dto.Professor;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -38,7 +36,7 @@ public class ControllerEvaluateStudentSelection {
         loadExperiences();
     }
 
-    public void handleExperienceSelection(ActionEvent event) {
+    public void handleExperienceSelection() {
         EducationalExperience experience = guiEvaluateStudentSelection.getSelectedExperience();
         if (experience != null) {
             try {
@@ -54,20 +52,8 @@ public class ControllerEvaluateStudentSelection {
         }
     }
 
-    public void handleStatusFilter(ActionEvent event) {
+    public void handleStatusFilter() {
         applyStatusFilter();
-    }
-
-    public void handleEvaluateCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Evaluar" -> {
-                evaluateStudent();
-            }
-            case "Cancelar" -> {
-                guiEvaluateStudentSelection.getStage().close();
-            }
-        }
     }
 
     private void loadExperiences() {
@@ -86,7 +72,7 @@ public class ControllerEvaluateStudentSelection {
         }
     }
 
-    private void evaluateStudent() {
+    public void evaluateStudent() {
         Student selectedStudent = guiEvaluateStudentSelection.getSelectedStudent();
         if (selectedStudent == null) {
             guiEvaluateStudentSelection.showError("Seleccione un alumno de la lista.");

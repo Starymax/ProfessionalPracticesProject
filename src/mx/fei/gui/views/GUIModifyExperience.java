@@ -111,8 +111,8 @@ public class GUIModifyExperience extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerModifyExperience controller = new ControllerModifyExperience(this);
-        buttonUpdate.setOnAction(controller::handleUpdateReturnButtons);
-        buttonBack.setOnAction(controller::handleUpdateReturnButtons);
+        buttonUpdate.setOnAction(event -> controller.handleUpdate());
+        buttonBack.setOnAction(event -> controller.handleBackButtonAction());
         Scene scene = new Scene(mainPanel, 580, 370);
         GUIStyle.apply(scene);
         stage.setScene(scene);

@@ -79,8 +79,8 @@ public class GUISelectStudents extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerSelectStudents controllerSelectStudents = new ControllerSelectStudents(this, stage);
-        buttonSelect.setOnAction(controllerSelectStudents::handleSelectGoBackButtons);
-        buttonBack.setOnAction(controllerSelectStudents::handleSelectGoBackButtons);
+        buttonSelect.setOnAction(event -> controllerSelectStudents.handleSelect());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 620, 390);
         GUIStyle.apply(scene);
         stage.setScene(scene);

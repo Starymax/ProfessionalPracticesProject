@@ -239,34 +239,33 @@ public class ProjectDAO implements IDAOProject {
      * @throws DataOperationException if a database error occurs
      */
     public List<Project> getProjectsByIds(List<Integer> projectIds) throws DataOperationException {
-        if (projectIds == null || projectIds.isEmpty()) {
-            return new ArrayList<>();
-        }
-        StringBuilder placeholders = new StringBuilder();
-        for (int i = 0; i < projectIds.size(); i++) {
-            if (i > 0) {
-                placeholders.append(", ");
-            }
-            placeholders.append("?");
-        }
-        String query = BASE_JOIN_QUERY + " WHERE p.id_proyecto IN (" + placeholders.toString() + ")";
         List<Project> projects = new ArrayList<>();
-        try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+        if (projectIds != null && !projectIds.isEmpty()) {
+            StringBuilder placeholders = new StringBuilder();
             for (int i = 0; i < projectIds.size(); i++) {
-                preparedStatement.setInt(i + 1, projectIds.get(i));
-            }
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                while (resultSet.next()) {
-                    projects.add(buildProjectFromResultSet(resultSet));
+                if (i > 0) {
+                    placeholders.append(", ");
                 }
+                placeholders.append("?");
             }
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error obteniendo proyectos por ids", e);
-            if (DAOUtils.isConnectionError(e)) {
-                throw new DataOperationException("Error de conexión. Intente más tarde.");
+            String query = BASE_JOIN_QUERY + " WHERE p.id_proyecto IN (" + placeholders.toString() + ")";
+            try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
+                 PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                for (int i = 0; i < projectIds.size(); i++) {
+                    preparedStatement.setInt(i + 1, projectIds.get(i));
+                }
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    while (resultSet.next()) {
+                        projects.add(buildProjectFromResultSet(resultSet));
+                    }
+                }
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error obteniendo proyectos por ids", e);
+                if (DAOUtils.isConnectionError(e)) {
+                    throw new DataOperationException("Error de conexión. Intente más tarde.");
+                }
+                throw new DataOperationException("Error al obtener los proyectos");
             }
-            throw new DataOperationException("Error al obtener los proyectos");
         }
         return projects;
     }

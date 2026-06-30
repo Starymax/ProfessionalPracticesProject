@@ -8,9 +8,7 @@ import mx.fei.logic.dao.UserDAO;
 import mx.fei.gui.views.GUIRegisterProfessor;
 
 import javafx.stage.Modality;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
@@ -25,39 +23,21 @@ public class ControllerAdministratorMenu {
         this.guiAdministratorMenu = guiAdministratorMenu;
     }
 
-    public void handleRegisterModifyProfessorViewCancelButtons(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        switch(button.getText()) {
-            case "Registrar Profesor" -> {
-                openRegisterProfessor();
-            }
-            case "Modificar Profesor" -> {
-                openModifyProfessor();
-            }
-            case "Vista de Profesor" -> {
-                openProfessorView();
-            }
-            case "Cerrar Sesión" -> {
-                logout();
-            }
-        }
-    }
-
-    private void openRegisterProfessor() {
+    public void openRegisterProfessor() {
         GUIRegisterProfessor guiRegisterProfessor = new GUIRegisterProfessor();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiRegisterProfessor.start(stage);
     }
 
-    private void openModifyProfessor() {
+    public void openModifyProfessor() {
         GUIChooseProfessor guiChooseProfessor = new GUIChooseProfessor();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         guiChooseProfessor.start(stage);
     }
 
-    private void openProfessorView() {
+    public void openProfessorView() {
         GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -65,7 +45,7 @@ public class ControllerAdministratorMenu {
         guiProfessorMenu.setProfessorInfo(guiAdministratorMenu.getProfessor());
     }
 
-    private void logout() {
+    public void logout() {
         Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);

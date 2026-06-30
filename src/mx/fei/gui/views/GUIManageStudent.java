@@ -51,11 +51,11 @@ public class GUIManageStudent extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerManageStudent controllerManageStudent = new ControllerManageStudent(this);
-        buttonRegisterStudent.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
-        buttonModifyStudent.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
-        buttonAssignProject.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
-        buttonBack.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
-        buttonConsultPractices.setOnAction(controllerManageStudent::handleRegisterModifyAssignButtons);
+        buttonRegisterStudent.setOnAction(event -> controllerManageStudent.openRegisterStudent());
+        buttonModifyStudent.setOnAction(event -> controllerManageStudent.handleModifyStudentButtonAction());
+        buttonAssignProject.setOnAction(event -> controllerManageStudent.handleAssignProjectButtonAction());
+        buttonBack.setOnAction(event -> closeWindow());
+        buttonConsultPractices.setOnAction(event -> controllerManageStudent.handleConsultPracticesButtonAction());
         Scene scene = new Scene(mainPanel, 550, 500);
         GUIStyle.apply(scene);
         stage.setScene(scene);

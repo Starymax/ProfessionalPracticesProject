@@ -6,8 +6,6 @@ import mx.fei.logic.dao.ProfessorDAO;
 import mx.fei.logic.dto.Professor;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -26,18 +24,6 @@ public class ControllerChooseProfessor {
         loadProfessors();
     }
 
-    public void handleSelectReturnButtons(ActionEvent actionEvent) {
-        Button button = (Button) actionEvent.getSource();
-        switch (button.getText()) {
-            case "Seleccionar" -> {
-                handleSelectProfessor();
-            }
-            case "Regresar" -> {
-                guiChooseProfessor.closeWindow();
-            }
-        }
-    }
-
     private void loadProfessors() {
         try {
             List<Professor> professors = professorDAO.getProfessors();
@@ -48,7 +34,7 @@ public class ControllerChooseProfessor {
         }
     }
 
-    private void handleSelectProfessor() {
+    public void handleSelectProfessor() {
         Professor professorSelected;
         try {
             professorSelected = guiChooseProfessor.getSelectedProfessor();

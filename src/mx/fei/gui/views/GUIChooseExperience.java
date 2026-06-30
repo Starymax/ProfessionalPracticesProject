@@ -66,8 +66,8 @@ public class GUIChooseExperience extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerChooseExperience controllerChooseExperience = new ControllerChooseExperience(this);
-        buttonSelect.setOnAction(controllerChooseExperience::handleSelectReturnButtons);
-        buttonBack.setOnAction(controllerChooseExperience::handleSelectReturnButtons);
+        buttonSelect.setOnAction(event -> controllerChooseExperience.handleSelectExperience());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 680, 420);
         GUIStyle.apply(scene);
         stage.setScene(scene);

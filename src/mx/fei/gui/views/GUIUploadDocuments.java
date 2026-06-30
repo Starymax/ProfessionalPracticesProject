@@ -132,9 +132,9 @@ public class GUIUploadDocuments extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerUploadDocument controllerUploadDocument = new ControllerUploadDocument(this, stage);
-        buttonSelect.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
-        buttonUpload.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
-        buttonCancel.setOnAction(controllerUploadDocument::handleSelectUploadCancelButtons);
+        buttonSelect.setOnAction(event -> controllerUploadDocument.handleSelect());
+        buttonUpload.setOnAction(event -> controllerUploadDocument.handleUpload());
+        buttonCancel.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 560, 560);
         GUIStyle.apply(scene);
         stage.setScene(scene);

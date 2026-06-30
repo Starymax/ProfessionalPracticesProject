@@ -48,9 +48,9 @@ public class GUIManageEnterprise extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerManageEnterprise controllerManageEnterprise = new ControllerManageEnterprise(this);
-        buttonRegisterEnterprise.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
-        buttonModifyEnterprise.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
-        buttonBack.setOnAction(controllerManageEnterprise::handleRegisterModifyReturnButtons);
+        buttonRegisterEnterprise.setOnAction(event -> controllerManageEnterprise.handleRegisterEnterpriseButtonAction());
+        buttonModifyEnterprise.setOnAction(event -> controllerManageEnterprise.handleModifyEnterprise());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 600, 480);
         GUIStyle.apply(scene);
         stage.setScene(scene);

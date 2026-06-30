@@ -89,14 +89,14 @@ public class GUIStudentMenu extends Application {
         bottomRow.setAlignment(Pos.BOTTOM_RIGHT);
 
         ControllerStudentMenu controllerStudentMenu = new ControllerStudentMenu(this);
-        buttonSelectProjects.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonGenerateDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonReports.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonRegisterAdvance.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonDocuments.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonProgress.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonNotifications.setOnAction(controllerStudentMenu::handleButtonsMenu);
-        buttonLogout.setOnAction(controllerStudentMenu::handleButtonsMenu);
+        buttonSelectProjects.setOnAction(event -> controllerStudentMenu.handleSelectProjectsButtonAction());
+        buttonGenerateDocuments.setOnAction(event -> controllerStudentMenu.handleGenerateDocumentsButtonAction());
+        buttonReports.setOnAction(event -> controllerStudentMenu.handleReportsButtonAction());
+        buttonRegisterAdvance.setOnAction(event -> controllerStudentMenu.handleRegisterAdvanceButtonAction());
+        buttonDocuments.setOnAction(event -> controllerStudentMenu.handleDocumentsButtonAction());
+        buttonProgress.setOnAction(event -> controllerStudentMenu.handleProgressButtonAction());
+        buttonNotifications.setOnAction(event -> controllerStudentMenu.handleNotificationsButtonAction());
+        buttonLogout.setOnAction(event -> controllerStudentMenu.handleLogoutButtonAction());
         this.controllerStudentMenu = controllerStudentMenu;
 
         BorderPane mainPanel = new BorderPane();

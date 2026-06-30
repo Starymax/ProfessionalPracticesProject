@@ -8,8 +8,6 @@ import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -23,18 +21,6 @@ public class ControllerChooseExperience {
         this.guiChooseExperience = guiChooseExperience;
         this.educationalExperienceDAO = new EducationalExperienceDAO();
         loadExperiences();
-    }
-
-    public void handleSelectReturnButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                handleSelectExperience();
-            }
-            case "Regresar" -> {
-                guiChooseExperience.closeWindow();
-            }
-        }
     }
 
     private void loadExperiences() {
@@ -53,7 +39,7 @@ public class ControllerChooseExperience {
         }
     }
 
-    private void handleSelectExperience() {
+    public void handleSelectExperience() {
         EducationalExperience selectedExperience;
         try {
             selectedExperience = guiChooseExperience.getSelectedExperience();

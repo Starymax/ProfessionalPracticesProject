@@ -5,8 +5,6 @@ import mx.fei.logic.dto.EducationalExperience;
 import mx.fei.logic.exceptions.DataOperationException;
 import mx.fei.gui.views.GUIRegisterEducationalExperience;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +15,6 @@ public class ControllerRegisterEducationalExperience {
     public ControllerRegisterEducationalExperience(GUIRegisterEducationalExperience guiRegisterEducationalExperience) {
         this.guiRegisterEducationalExperience = guiRegisterEducationalExperience;
         educationalExperienceDAO = new EducationalExperienceDAO();
-    }
-
-    public void handleRegisterCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar" -> {
-                handleRegisterButton();
-            }
-            case "Cancelar" -> {
-                guiRegisterEducationalExperience.closeWindow();
-            }
-        }
     }
 
     public void handleNrcChanged() {
@@ -52,7 +38,7 @@ public class ControllerRegisterEducationalExperience {
         return availableSections;
     }
 
-    private void handleRegisterButton() {
+    public void handleRegisterButton() {
         if (guiRegisterEducationalExperience.validateFields()) {
             try {
                 boolean registered = educationalExperienceDAO.registerEducationalExperience(buildEducationalExperience());
@@ -85,4 +71,9 @@ public class ControllerRegisterEducationalExperience {
                 period,
                 true);
     }
+
+    public void handleCancelButtonAction() {
+        guiRegisterEducationalExperience.closeWindow();
+    }
+
 }

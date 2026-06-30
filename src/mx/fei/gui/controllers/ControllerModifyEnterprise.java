@@ -6,8 +6,6 @@ import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.dto.Enterprise;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -24,20 +22,7 @@ public class ControllerModifyEnterprise {
         this.enterpriseDAO = new EnterpriseDAO();
     }
 
-    public void handleAcceptCancel(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Aceptar" -> {
-                handleUpdate();
-            }
-            case "Cancelar" -> {
-                openSelectEnterprise();
-                guiModifyEnterprise.closeWindow();
-            }
-        }
-    }
-
-    private void handleUpdate() {
+    public void handleUpdate() {
         if (guiModifyEnterprise.validateFields()) {
             try {
                 Enterprise enterpriseUpdated = buildEnterprise();
@@ -87,4 +72,10 @@ public class ControllerModifyEnterprise {
         stage.initModality(Modality.APPLICATION_MODAL);
         guiChooseEnterprise.start(stage);
     }
+
+    public void handleCancelButtonAction() {
+        openSelectEnterprise();
+        guiModifyEnterprise.closeWindow();
+    }
+
 }

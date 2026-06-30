@@ -11,9 +11,7 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
@@ -34,22 +32,6 @@ public class ControllerSelectProjects {
     public ControllerSelectProjects(GUISelectProjects guiSelectProjects) {
         this.guiSelectProjects = guiSelectProjects;
         studentDAO = new StudentDAO();
-    }
-
-    public void handleSelectCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                if (guiSelectProjects.isModify()) {
-                    chooseProjectToModify();
-                } else {
-                    selectProjectsToAssign();
-                }
-            }
-            case "Cancelar" -> {
-                cancel();
-            }
-        }
     }
 
     public void chooseProjectToModify() {
@@ -117,7 +99,7 @@ public class ControllerSelectProjects {
         }
     }
 
-    private void cancel() {
+    public void cancel() {
         Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar");
         confirm.setHeaderText(null);
@@ -136,4 +118,13 @@ public class ControllerSelectProjects {
             guiModifyProject.showError(e.getMessage());
         }
     }
+
+    public void handleSelectButtonAction() {
+        if (guiSelectProjects.isModify()) {
+        chooseProjectToModify();
+        } else {
+        selectProjectsToAssign();
+        }
+    }
+
 }

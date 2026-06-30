@@ -114,8 +114,8 @@ public class GUIModifyEnterprise extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerModifyEnterprise controllerModifyEnterprise = new ControllerModifyEnterprise(this);
-        buttonUpdate.setOnAction(controllerModifyEnterprise::handleAcceptCancel);
-        buttonCancel.setOnAction(controllerModifyEnterprise::handleAcceptCancel);
+        buttonUpdate.setOnAction(event -> controllerModifyEnterprise.handleUpdate());
+        buttonCancel.setOnAction(event -> controllerModifyEnterprise.handleCancelButtonAction());
         Scene scene = new Scene(mainPanel, 520, 540);
         GUIStyle.apply(scene);
         stage.setScene(scene);

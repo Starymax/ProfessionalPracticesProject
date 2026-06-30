@@ -10,8 +10,6 @@ import mx.fei.logic.dto.Practice;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -34,18 +32,6 @@ public class ControllerChooseStudent {
         loadStudents();
     }
 
-    public void handleSelectAndReturnButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                handleSelectStudent();
-            }
-            case "Regresar" -> {
-                guiChooseStudent.closeWindow();
-            }
-        }
-    }
-
     private void loadStudents() {
         try {
             List<Student> students;
@@ -65,7 +51,7 @@ public class ControllerChooseStudent {
         }
     }
 
-    private void handleSelectStudent() {
+    public void handleSelectStudent() {
         if (guiChooseStudent.getStudents() == null || guiChooseStudent.getStudents().isEmpty()) {
             guiChooseStudent.showError("No hay estudiantes disponibles para modificar.");
         } else {

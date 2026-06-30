@@ -85,14 +85,15 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             }
             throw new DataOperationException("Error al obtener el avance del alumno");
         }
-        if (!advanceFound) {
-            return null;
+        StudentAdvance advance = null;
+        if (advanceFound) {
+            ActivityDAO activityDAO = new ActivityDAO();
+            WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(weeklyLogId);
+            StudentDAO studentDAO = new StudentDAO();
+            Student student = studentDAO.getStudentById(studentId);
+            advance = new StudentAdvance(advanceId, realizedHours, weeklyLog, student);
         }
-        ActivityDAO activityDAO = new ActivityDAO();
-        WeeklyLog weeklyLog = activityDAO.getWeeklyLogById(weeklyLogId);
-        StudentDAO studentDAO = new StudentDAO();
-        Student student = studentDAO.getStudentById(studentId);
-        return new StudentAdvance(advanceId, realizedHours, weeklyLog, student);
+        return advance;
     }
 
     /**
@@ -255,12 +256,13 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
     @Override
     public float getTotalHoursByIdStudent(int studentId) throws DataOperationException {
         String query = "SELECT SUM(horas_realizadas) FROM avance_alumno WHERE id_alumno = ?";
+        float totalHours = 0f;
         try (Connection connection = DatabaseConnectionManager.getInstance().getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, studentId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getFloat(1);
+                totalHours = resultSet.getFloat(1);
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error al sumar horas del estudiante", e);
@@ -269,6 +271,6 @@ public class StudentAdvanceDAO implements IDAOStudentAdvance {
             }
             throw new DataOperationException("Error al obtener horas totales");
         }
-        return 0f;
+        return totalHours;
     }
 }

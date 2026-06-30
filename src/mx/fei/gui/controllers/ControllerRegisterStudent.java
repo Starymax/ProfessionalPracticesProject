@@ -6,8 +6,6 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class ControllerRegisterStudent {
@@ -17,18 +15,6 @@ public class ControllerRegisterStudent {
     public ControllerRegisterStudent(GUIRegisterStudent guiRegisterStudent) {
         this.guiRegisterStudent = guiRegisterStudent;
         studentDAO = new StudentDAO();
-    }
-
-    public void handleConfirmCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Confirmar" -> {
-                if (guiRegisterStudent.validateFields()) {
-                    registerStudent();
-                }
-            }
-            case "Cancelar" -> cancel();
-        }
     }
 
     private void registerStudent() {
@@ -71,7 +57,14 @@ public class ControllerRegisterStudent {
         }
     }
 
-    private void cancel() {
+    public void cancel() {
         guiRegisterStudent.closeWindow();
     }
+
+    public void handleConfirmButtonAction() {
+        if (guiRegisterStudent.validateFields()) {
+        registerStudent();
+        }
+    }
+
 }

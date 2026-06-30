@@ -5,10 +5,8 @@ import mx.fei.logic.dao.ProjectManagerDAO;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.Optional;
@@ -21,19 +19,7 @@ public class ControllerRegisterProjectManager{
         this.guiRegisterProjectManager = guiRegisterProjectManager;
     }
 
-    public void handleRegisterCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar" -> {
-                register();
-            }
-            case "Cancelar" ->{
-                cancel();
-            }
-        }
-    }
-
-    private void register() {
+    public void register() {
         if (guiRegisterProjectManager.validateFields()) {
             Alert confirmation = new Alert(AlertType.CONFIRMATION);
             confirmation.setTitle("Confirmar registro");
@@ -61,7 +47,7 @@ public class ControllerRegisterProjectManager{
         }
     }
 
-    private void cancel() {
+    public void cancel() {
         Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Cancelar registro");
         confirmation.setHeaderText(null);

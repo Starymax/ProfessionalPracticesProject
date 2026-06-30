@@ -70,7 +70,7 @@ public class GUIStudentProgress {
 
         mainPanel.setBottom(buildBottomPanel());
         BorderPane.setMargin(mainPanel.getBottom(), new Insets(12, 0, 0, 0));
-        buttonBack.setOnAction(controllerStudentProgress::handleBackButton);
+        buttonBack.setOnAction(event -> controllerStudentProgress.handleBackButton());
 
         Scene scene = new Scene(mainPanel, 680, 700);
         GUIStyle.apply(scene);
@@ -251,18 +251,10 @@ public class GUIStudentProgress {
     private String documentStatusLabel(ValidationStatus status) {
         String statusText;
         switch (status) {
-            case VALIDATED -> {
-                statusText = "Aceptado";
-            }
-            case REJECTED -> {
-                statusText = "Rechazado — resubir";
-            }
-            case PENDING -> {
-                statusText = "Pendiente";
-            }
-            default -> {
-                statusText = "No subido";
-            }
+            case VALIDATED -> statusText = "Aceptado";
+            case REJECTED -> statusText = "Rechazado — resubir";
+            case PENDING -> statusText = "Pendiente";
+            default -> statusText = "No subido";
         }
         return statusText;
     }

@@ -57,13 +57,13 @@ public class GUIActivityPlan extends Application {
 
     private Project project;
     private Stage stage;
-    private ControllerActivityPlan controller;
+    private ControllerActivityPlan controllerActivityPlan;
 
     @Override
     public void start(Stage stage) {
         this.stage = stage;
-        controller = new ControllerActivityPlan(this);
-        controller.setProject(project);
+        controllerActivityPlan = new ControllerActivityPlan(this);
+        controllerActivityPlan.setProject(project);
 
         Label labelTitle = new Label("Plan de Actividades");
         labelTitle.getStyleClass().add("title-label");
@@ -76,8 +76,8 @@ public class GUIActivityPlan extends Application {
 
         Button buttonCancel = new Button("Cancelar");
         Button buttonSave = new Button("Guardar plan");
-        buttonCancel.setOnAction(controller::handleAddActivityDeleteSaveCancelButtons);
-        buttonSave.setOnAction(controller::handleAddActivityDeleteSaveCancelButtons);
+        buttonCancel.setOnAction(event -> controllerActivityPlan.cancel());
+        buttonSave.setOnAction(event -> controllerActivityPlan.savePlan());
 
         HBox bottomBox = new HBox(8, buttonCancel, buttonSave);
         bottomBox.setAlignment(Pos.CENTER_RIGHT);
@@ -226,7 +226,7 @@ public class GUIActivityPlan extends Application {
 
         Button buttonNewActivity = new Button("Nueva actividad");
         buttonNewActivity.setMaxWidth(Double.MAX_VALUE);
-        buttonNewActivity.setOnAction(controller::handleAddActivityDeleteSaveCancelButtons);
+        buttonNewActivity.setOnAction(event -> controllerActivityPlan.addNewActivity());
 
         VBox leftPanel = new VBox(6, labelActivitiesHeader, scrollActivities, buttonNewActivity);
         leftPanel.setPrefWidth(200);
@@ -275,7 +275,7 @@ public class GUIActivityPlan extends Application {
 
         buttonDelete = new Button("Eliminar");
         buttonDelete.getStyleClass().add("button-danger");
-        buttonDelete.setOnAction(controller::handleAddActivityDeleteSaveCancelButtons);
+        buttonDelete.setOnAction(event -> controllerActivityPlan.deleteSelectedActivity());
         buttonDelete.setDisable(true);
 
         Region panelBottomSpacer = new Region();

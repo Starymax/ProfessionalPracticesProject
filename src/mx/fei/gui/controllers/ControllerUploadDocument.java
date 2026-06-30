@@ -8,8 +8,6 @@ import mx.fei.logic.dto.DocumentType;
 import mx.fei.logic.dto.Practice;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -41,21 +39,6 @@ public class ControllerUploadDocument {
         loadUploadedDocument();
     }
 
-    public void handleSelectUploadCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Seleccionar" -> {
-                handleSelect();
-            }
-            case "Subir" -> {
-                handleUpload();
-            }
-            case "Cancelar" -> {
-                guiUploadDocument.closeWindow();
-            }
-        }
-    }
-
     private void loadUploadedDocument() {
         try {
             PracticeDAO practiceDAO = new PracticeDAO();
@@ -67,7 +50,7 @@ public class ControllerUploadDocument {
         }
     }
 
-    private void handleSelect() {
+    public void handleSelect() {
         String selectedDocumentType = guiUploadDocument.getSelectedType();
         if (selectedDocumentType == null || selectedDocumentType.isEmpty()) {
             guiUploadDocument.showError("Por favor, selecciona una categoría y un tipo antes de buscar el archivo.");
@@ -82,7 +65,7 @@ public class ControllerUploadDocument {
         }
     }
 
-    private void handleUpload() {
+    public void handleUpload() {
         Map<DocumentType, Document> selectedDocuments = guiUploadDocument.getSelectedDocuments();
         boolean proceed = true;
         if (selectedDocuments.isEmpty()) {

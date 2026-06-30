@@ -10,8 +10,6 @@ import mx.fei.logic.exceptions.DataOperationException;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.List;
 
@@ -22,40 +20,9 @@ public class ControllerManageStudent {
         this.guiManageStudent = guiManageStudent;
     }
 
-    public void handleRegisterModifyAssignButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar estudiante" -> {
-                openRegisterStudent();
-            }
-            case "Modificar estudiante" -> {
-                if (!existStudents()) {
-                    guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
-                } else {
-                    openModifyStudent();
-                }
-            }
-            case "Asignar proyecto" -> {
-                if (!existStudents()) {
-                    guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
-                } else {
-                    openAssignProject();
-                }
-            }
-            case "Consultar practicas" -> {
-                if (!existStudents()) {
-                    guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
-                } else {
-                    consultPractice();
-                }
-            }
-            case "Regresar" -> {
-                guiManageStudent.closeWindow();
-            }
-        }
-    }
+    
 
-    private void openRegisterStudent() {
+    public void openRegisterStudent() {
         GUIRegisterStudent guiRegisterStudent = new GUIRegisterStudent();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -107,4 +74,29 @@ public class ControllerManageStudent {
         }
         return studentsExist;
     }
+
+    public void handleModifyStudentButtonAction() {
+        if (!existStudents()) {
+        guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
+        } else {
+        openModifyStudent();
+        }
+    }
+
+    public void handleAssignProjectButtonAction() {
+        if (!existStudents()) {
+        guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
+        } else {
+        openAssignProject();
+        }
+    }
+
+    public void handleConsultPracticesButtonAction() {
+        if (!existStudents()) {
+        guiManageStudent.showError("No existen estudiantes disponibles por el momento.");
+        } else {
+        consultPractice();
+        }
+    }
+
 }

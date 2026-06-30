@@ -68,8 +68,8 @@ public class GUIReportPreview extends Application {
         buttonAccept.setDisable(report.isAccepted());
 
         ControllerReportPreview controllerReportPreview = new ControllerReportPreview(this);
-        buttonAccept.setOnAction(controllerReportPreview::handleAcceptCloseButtons);
-        buttonClose.setOnAction(controllerReportPreview::handleAcceptCloseButtons);
+        buttonAccept.setOnAction(event -> controllerReportPreview.acceptReport());
+        buttonClose.setOnAction(event -> getStage().close());
 
         HBox topBar = new HBox(15, buttonAccept, buttonClose, labelStatus);
         topBar.setAlignment(Pos.CENTER_LEFT);

@@ -16,8 +16,6 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -30,6 +28,8 @@ import java.util.logging.Logger;
 public class ControllerEvaluateStudent {
 
     private static final float REQUIRED_PRACTICE_HOURS = 420f;
+    private static final float MIN_GRADE = 0f;
+    private static final float MAX_GRADE = 10f;
     private final GUIEvaluateStudent guiEvaluateStudent;
     private final Student student;
     private Practice practice;
@@ -55,13 +55,13 @@ public class ControllerEvaluateStudent {
         }
     }
 
-    public void handleGradeButton(ActionEvent event) {
+    public void handleGradeButton() {
         if (practice == null) {
             guiEvaluateStudent.showError("No hay una práctica registrada para calificar.");
         } else {
             Float grade = parseGrade(guiEvaluateStudent.getGradeText());
             if (grade == null) {
-                guiEvaluateStudent.showError("Ingrese una calificación válida entre 0 y 10.");
+                guiEvaluateStudent.showError("Ingrese una calificación válida entre " + (int) MIN_GRADE + " y " + (int) MAX_GRADE + ".");
             } else {
                 gradePractice(grade);
             }
@@ -97,21 +97,6 @@ public class ControllerEvaluateStudent {
         }
     }
 
-    public void handlePreviewCloseButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Vista previa" -> {
-                previewReport();
-            }
-            case "Ver documento" -> {
-                openDocumentPreview();
-            }
-            case "Cerrar" -> {
-                guiEvaluateStudent.getStage().close();
-            }
-        }
-    }
-
     private void loadHours() {
         try {
             StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
@@ -134,7 +119,7 @@ public class ControllerEvaluateStudent {
         }
     }
 
-    private void previewReport() {
+    public void previewReport() {
         Document selectedReport = guiEvaluateStudent.getSelectedReport();
         if (selectedReport == null) {
             guiEvaluateStudent.showError("Seleccione un reporte de la lista.");
@@ -148,7 +133,7 @@ public class ControllerEvaluateStudent {
         }
     }
 
-    private void openDocumentPreview() {
+    public void openDocumentPreview() {
         DocumentReviewItem document = guiEvaluateStudent.getSelectedDocument();
         if (document == null) {
             guiEvaluateStudent.showError("Seleccione un documento de la lista.");
@@ -191,7 +176,7 @@ public class ControllerEvaluateStudent {
         Float grade = null;
         try {
             float gradeValue = Float.parseFloat(text);
-            if (gradeValue >= 0f && gradeValue <= 10f) {
+            if (gradeValue >= MIN_GRADE && gradeValue <= MAX_GRADE) {
                 grade = gradeValue;
             }
         } catch (NumberFormatException e) {

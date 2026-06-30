@@ -185,12 +185,13 @@
                 LOGGER.log(Level.SEVERE, "Error al obtener la practica por matricula", e);
                 throw DAOUtils.convertSQLExceptiontoDataOperationException(e, "Error al obtener la practica");
             }
-            if (!practiceFound || nrc == null || nrc.isBlank()) {
-                return null;
+            Practice practice = null;
+            if (practiceFound && nrc != null && !nrc.isBlank()) {
+                EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrcAndSection(nrc, section);
+                Student student = new StudentDAO().getStudentByEnrollment(enrollment);
+                practice = new Practice(practiceId, student, educationalExperience, period != null ? period : "", grade);
             }
-            EducationalExperience educationalExperience = new EducationalExperienceDAO().getEducationalExperienceByNrcAndSection(nrc, section);
-            Student student = new StudentDAO().getStudentByEnrollment(enrollment);
-            return new Practice(practiceId, student, educationalExperience, period != null ? period : "", grade);
+            return practice;
         }
 
         /**

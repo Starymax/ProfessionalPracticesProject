@@ -2,7 +2,6 @@ package mx.fei.gui.controllers;
 
 import mx.fei.gui.views.GUIPracticeInfo;
 
-import javafx.event.ActionEvent;
 
 public class ControllerPracticeInfo {
 
@@ -12,7 +11,7 @@ public class ControllerPracticeInfo {
         this.guiPracticeInfo = guiPracticeInfo;
     }
 
-    public void handleBackButton(ActionEvent event) {
+    public void handleBackButton() {
         guiPracticeInfo.closeWindow();
     }
 }

@@ -75,6 +75,28 @@ public class GUIModifyProject extends Application {
         Label labelTitle = new Label("Datos del proyecto:");
         labelTitle.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
 
+        createFormFields();
+        configureEnterpriseAndManagerComboBoxes();
+        buildFormGrid();
+
+        ControllerModifyProject controllerModifyProject = new ControllerModifyProject(this);
+        BorderPane buttonPanel = buildButtonPanel(controllerModifyProject);
+
+        VBox mainPanel = new VBox(16, labelTitle, formGrid, buttonPanel);
+        mainPanel.setPadding(new Insets(24, 32, 24, 32));
+
+        ScrollPane scrollPane = new ScrollPane(mainPanel);
+        scrollPane.setFitToWidth(true);
+
+        Scene scene = new Scene(scrollPane, 720, 790);
+        GUIStyle.apply(scene);
+        stage.setTitle("Modificar Proyecto");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void createFormFields() {
         textFieldName = new TextField();
         textAreaDescription = new TextArea();
         textFieldGeneralObjective = new TextField();
@@ -111,7 +133,9 @@ public class GUIModifyProject extends Application {
         GUIUtils.bindDatePickersToPeriodSelection(comboBoxPeriod, datePickerStartDate, datePickerFinalDate);
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxProjectManager.setMaxWidth(Double.MAX_VALUE);
+    }
 
+    private void configureEnterpriseAndManagerComboBoxes() {
         comboBoxEnterprise.setCellFactory(listView -> new ListCell<>() {
             @Override protected void updateItem(Enterprise enterprise, boolean empty) {
                 super.updateItem(enterprise, empty);
@@ -137,7 +161,9 @@ public class GUIModifyProject extends Application {
                 setText(empty || projectManager == null ? null : projectManager.getName());
             }
         });
+    }
 
+    private void buildFormGrid() {
         formGrid = new GridPane();
         formGrid.setHgap(10);
         formGrid.setVgap(10);
@@ -191,19 +217,19 @@ public class GUIModifyProject extends Application {
         HBox statusRow = new HBox(32, radioButtonActive, radioButtonInactive);
         statusRow.setAlignment(Pos.CENTER_LEFT);
         formGrid.add(statusRow, 0, row++, 2, 1);
+    }
 
+    private BorderPane buildButtonPanel(ControllerModifyProject controllerModifyProject) {
         buttonAddProjectManager = new Button("Añadir Responsable");
         buttonActivityPlan = new Button("Plan de Actividades");
         buttonContinue = new Button("Continuar");
         buttonCancel = new Button("Cancelar");
 
-
-        ControllerModifyProject controllerModifyProject = new ControllerModifyProject(this);
-        buttonAddProjectManager.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
-        buttonActivityPlan.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
-        buttonContinue.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
-        buttonCancel.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
-        comboBoxEnterprise.setOnAction(controllerModifyProject::handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox);
+        buttonAddProjectManager.setOnAction(event -> controllerModifyProject.addProjectManager());
+        buttonActivityPlan.setOnAction(event -> controllerModifyProject.openActivityPlan());
+        buttonContinue.setOnAction(event -> controllerModifyProject.saveChanges());
+        buttonCancel.setOnAction(event -> controllerModifyProject.cancel());
+        comboBoxEnterprise.setOnAction(event -> controllerModifyProject.updateProjectManagers());
 
         HBox buttonLeftPanel = new HBox(12, buttonAddProjectManager, buttonActivityPlan);
         buttonLeftPanel.setAlignment(Pos.CENTER_LEFT);
@@ -213,19 +239,7 @@ public class GUIModifyProject extends Application {
         BorderPane buttonPanel = new BorderPane();
         buttonPanel.setLeft(buttonLeftPanel);
         buttonPanel.setRight(buttonRightPanel);
-
-        VBox mainPanel = new VBox(16, labelTitle, formGrid, buttonPanel);
-        mainPanel.setPadding(new Insets(24, 32, 24, 32));
-
-        ScrollPane scrollPane = new ScrollPane(mainPanel);
-        scrollPane.setFitToWidth(true);
-
-        Scene scene = new Scene(scrollPane, 720, 790);
-        GUIStyle.apply(scene);
-        stage.setTitle("Modificar Proyecto");
-        stage.setResizable(false);
-        stage.setScene(scene);
-        stage.show();
+        return buttonPanel;
     }
 
     public void loadProject(Project project) {

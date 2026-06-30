@@ -9,10 +9,8 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 
 import java.util.ArrayList;
@@ -22,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public class ControllerActivityPlan {
-
     private final GUIActivityPlan guiActivityPlan;
     private Project project;
     private final int NO_HOURS = 0;
@@ -33,24 +30,6 @@ public class ControllerActivityPlan {
 
     public void setProject(Project project) {
         this.project = project;
-    }
-
-    public void handleAddActivityDeleteSaveCancelButtons(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        switch (button.getText()) {
-            case "Nueva actividad" -> {
-                addNewActivity();
-            }
-            case "Eliminar" -> {
-                deleteSelectedActivity();
-            }
-            case "Guardar plan" -> {
-                savePlan();
-            }
-            case "Cancelar" -> {
-                cancel();
-            }
-        }
     }
 
     public void addNewActivity() {

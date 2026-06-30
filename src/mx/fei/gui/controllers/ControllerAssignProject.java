@@ -9,8 +9,6 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -26,19 +24,7 @@ public class ControllerAssignProject {
         this.guiAssignProject = guiAssignProject;
     }
 
-    public void handleAssignCancelButtons(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        switch (button.getText()) {
-            case "Asignar" -> {
-                assignProject();
-            }
-            case "Cancelar" -> {
-                cancel();
-            }
-        }
-    }
-
-    private void assignProject() {
+    public void assignProject() {
         Project selectedProject = guiAssignProject.getSelectedProject();
         Student student = guiAssignProject.getStudent();
         if (selectedProject == null) {
@@ -88,7 +74,7 @@ public class ControllerAssignProject {
         }
     }
 
-    private void cancel() {
+    public void cancel() {
         Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cancelar");
         confirm.setHeaderText(null);

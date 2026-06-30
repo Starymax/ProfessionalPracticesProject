@@ -82,7 +82,7 @@ public class GUINotifications extends Application {
         bottomRow.setPadding(new Insets(12, 0, 0, 0));
 
         ControllerNotifications controller = new ControllerNotifications(this);
-        buttonClose.setOnAction(controller::handleClose);
+        buttonClose.setOnAction(event -> controller.handleClose());
         HBox contentRow = new HBox(listViewNotifications, detailPanel);
         HBox.setHgrow(detailPanel, Priority.ALWAYS);
 

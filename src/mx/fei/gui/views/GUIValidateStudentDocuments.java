@@ -86,9 +86,9 @@ public class GUIValidateStudentDocuments extends Application {
 
         ControllerValidateStudentDocuments controller = new ControllerValidateStudentDocuments(this);
         listViewStudents.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> controller.onStudentSelected());
-        comboBoxStatusFilter.setOnAction(controller::handleStatusFilter);
-        buttonReview.setOnAction(controller::handleReviewCloseButtons);
-        buttonClose.setOnAction(controller::handleReviewCloseButtons);
+        comboBoxStatusFilter.setOnAction(event -> controller.handleStatusFilter());
+        buttonReview.setOnAction(event -> controller.openDocumentPreview());
+        buttonClose.setOnAction(event -> closeWindow());
 
         BorderPane contentPane = new BorderPane();
         contentPane.setLeft(studentsPanel);
@@ -213,18 +213,10 @@ public class GUIValidateStudentDocuments extends Application {
     private String changeStatusLabel(ValidationStatus status) {
         String statusLabel = "";
          switch (status) {
-            case VALIDATED -> {
-                 statusLabel = "Validado";
-            }
-            case REJECTED -> {
-                statusLabel = "Rechazado";
-            }
-            case NOT_UPLOADED -> {
-                statusLabel = "No subido";
-            }
-            default -> {
-                statusLabel = "Subido (sin revisión)";
-            }
+            case VALIDATED -> statusLabel = "Validado";
+            case REJECTED -> statusLabel = "Rechazado";
+            case NOT_UPLOADED -> statusLabel = "No subido";
+            default -> statusLabel = "Subido (sin revisión)";
         };
          return statusLabel;
     }
@@ -232,18 +224,10 @@ public class GUIValidateStudentDocuments extends Application {
     private String statusColor(ValidationStatus status) {
         String statusColor = "";
          switch (status) {
-            case VALIDATED -> {
-                statusColor = "#2e7d32";
-            }
-            case REJECTED -> {
-                statusColor = "#b71c1c";
-            }
-            case NOT_UPLOADED -> {
-                statusColor = "#757575";
-            }
-            default -> {
-                statusColor = "#e65100";
-            }
+            case VALIDATED -> statusColor = "#2e7d32";
+            case REJECTED -> statusColor = "#b71c1c";
+            case NOT_UPLOADED -> statusColor = "#757575";
+            default -> statusColor = "#e65100";
         };
          return statusColor;
     }

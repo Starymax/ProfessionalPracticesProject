@@ -277,13 +277,13 @@ public class GUIRegisterAdvance {
         buttonSave.setPrefWidth(180);
         buttonSave.setPrefHeight(44);
         buttonSave.setFont(Font.font(15));
-        buttonSave.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
+        buttonSave.setOnAction(event -> controllerRegisterAdvance.save());
 
         Button buttonCancel = new Button("Cancelar");
         buttonCancel.setPrefWidth(180);
         buttonCancel.setPrefHeight(44);
         buttonCancel.setFont(Font.font(15));
-        buttonCancel.setOnAction(controllerRegisterAdvance::handleSaveCancelButtons);
+        buttonCancel.setOnAction(event -> closeWindow());
 
         VBox right = new VBox(16,
                 rowMes, rowSemana,

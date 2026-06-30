@@ -13,12 +13,10 @@ import mx.fei.gui.views.GUIActivityPlan;
 
 import javafx.collections.FXCollections;
 import javafx.stage.Modality;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
 
 import java.util.ArrayList;
 import java.sql.Date;
@@ -26,36 +24,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class ControllerModifyProject {
-
     private final GUIModifyProject guiModifyProject;
 
     public ControllerModifyProject(GUIModifyProject guiModifyProject) {
         this.guiModifyProject = guiModifyProject;
     }
 
-    public void handleAddProjectManagerContinueCancelButtonsAndEnterpriseComboBox(ActionEvent event) {
-        if (!(event.getSource() instanceof Button)) {
-            updateProjectManagers();
-        } else {
-            Button source = (Button) event.getSource();
-            switch (source.getText()) {
-                case "Añadir Responsable" -> {
-                    addProjectManager();
-                }
-                case "Plan de Actividades" -> {
-                    openActivityPlan();
-                }
-                case "Continuar" -> {
-                    saveChanges();
-                }
-                case "Cancelar" -> {
-                    cancel();
-                }
-            }
-        }
-    }
-
-    private void updateProjectManagers() {
+    public void updateProjectManagers() {
         Enterprise enterprise = guiModifyProject.getComboBoxEnterprise().getValue();
         ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
         List<ProjectManager> projectManagers = new ArrayList<>();
@@ -67,7 +42,7 @@ public class ControllerModifyProject {
         guiModifyProject.getComboBoxProjectManager().setItems(FXCollections.observableArrayList(projectManagers));
     }
 
-    private void addProjectManager() {
+    public void addProjectManager() {
         if (guiModifyProject.getComboBoxEnterprise().getValue() != null) {
             GUIRegisterProjectManager guiRegisterProjectManager = new GUIRegisterProjectManager();
             ProjectManagerDAO projectManagerDAO = new ProjectManagerDAO();
@@ -83,7 +58,7 @@ public class ControllerModifyProject {
         }
     }
 
-    private void openActivityPlan() {
+    public void openActivityPlan() {
         try {
             ActivityDAO activityDAO = new ActivityDAO();
             boolean hasActivities = !activityDAO.getActivitiesByProjectId(guiModifyProject.getProject().getProjectId()).isEmpty();
@@ -110,7 +85,7 @@ public class ControllerModifyProject {
         }
     }
 
-    private void saveChanges() {
+    public void saveChanges() {
         if (guiModifyProject.validateFields() && confirmChanges()) {
             try {
                 ProjectDAO projectDAO = new ProjectDAO();
@@ -165,7 +140,7 @@ public class ControllerModifyProject {
                 projectManager);
     }
 
-    private void cancel() {
+    public void cancel() {
         Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Cancelar");
         confirmation.setHeaderText(null);

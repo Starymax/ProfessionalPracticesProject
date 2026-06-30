@@ -9,8 +9,6 @@ import mx.fei.logic.dto.Project;
 import mx.fei.logic.dto.ProjectManager;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import java.io.File;
@@ -40,18 +38,6 @@ public class ControllerGenerateAcceptanceLetter {
         String errorMessage = resolveLetterData();
         if (errorMessage != null) {
             guiGenerateAcceptanceLetter.showError(errorMessage);
-        }
-    }
-
-    public void handleAcceptanceLetterButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Imprimir" -> {
-                printPDF();
-            }
-            case "Regresar" -> {
-                guiGenerateAcceptanceLetter.closeWindow();
-            }
         }
     }
 
@@ -107,7 +93,7 @@ public class ControllerGenerateAcceptanceLetter {
         }
     }
 
-    private void printPDF() {
+    public void printPDF() {
         if (practice == null || project == null) {
             guiGenerateAcceptanceLetter.showError("No hay datos suficientes para generar la carta.");
         }

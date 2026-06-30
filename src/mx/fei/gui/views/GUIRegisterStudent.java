@@ -114,8 +114,8 @@ public class GUIRegisterStudent extends Application {
         formGrid.add(buttonsBox, 0, 11);
 
         ControllerRegisterStudent controllerRegisterStudent = new ControllerRegisterStudent(this);
-        buttonConfirm.setOnAction(controllerRegisterStudent::handleConfirmCancelButtons);
-        buttonCancel.setOnAction(controllerRegisterStudent::handleConfirmCancelButtons);
+        buttonConfirm.setOnAction(event -> controllerRegisterStudent.handleConfirmButtonAction());
+        buttonCancel.setOnAction(event -> controllerRegisterStudent.cancel());
 
         StackPane mainPanel = new StackPane(formGrid);
         mainPanel.setPadding(new Insets(20));

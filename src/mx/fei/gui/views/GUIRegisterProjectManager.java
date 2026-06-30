@@ -79,8 +79,8 @@ public class GUIRegisterProjectManager extends Application {
         buttonCancel.setPrefWidth(120);
 
         ControllerRegisterProjectManager controllerRegisterProjectManager = new ControllerRegisterProjectManager(this);
-        buttonRegister.setOnAction(controllerRegisterProjectManager::handleRegisterCancelButtons);
-        buttonCancel.setOnAction(controllerRegisterProjectManager::handleRegisterCancelButtons);
+        buttonRegister.setOnAction(event -> controllerRegisterProjectManager.register());
+        buttonCancel.setOnAction(event -> controllerRegisterProjectManager.cancel());
 
         FlowPane buttonPanel = new FlowPane(10, 0, buttonRegister, buttonCancel);
         buttonPanel.setAlignment(Pos.CENTER_RIGHT);

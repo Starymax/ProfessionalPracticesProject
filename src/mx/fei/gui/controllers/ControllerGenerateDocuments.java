@@ -7,8 +7,6 @@ import mx.fei.logic.dao.StudentAdvanceDAO;
 import mx.fei.logic.dto.Student;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -20,22 +18,7 @@ public class ControllerGenerateDocuments {
         this.guiGenerateDocuments = guiGenerateDocuments;
     }
 
-    public void handleButtonsGenerateDocuments(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Generar oficio de aceptación" -> {
-                handleAcceptanceLetter();
-            }
-            case "Generar autoevaluación" -> {
-                handleSelfEvaluation();
-            }
-            case "Regresar" -> {
-                guiGenerateDocuments.closeWindow();
-            }
-        }
-    }
-
-    private void handleAcceptanceLetter() {
+    public void handleAcceptanceLetter() {
         Student student = guiGenerateDocuments.getPractice().getStudent();
         if(student == null) {
             guiGenerateDocuments.showError("El estudiante no puede ser nulo");
@@ -47,12 +30,12 @@ public class ControllerGenerateDocuments {
         }
     }
 
-    private void handleSelfEvaluation() {
+    public void handleSelfEvaluation() {
         try {
             StudentAdvanceDAO studentAdvanceDAO = new StudentAdvanceDAO();
             float totalHours = studentAdvanceDAO.getTotalHoursByIdStudent(guiGenerateDocuments.getPractice().getStudent().getUserId());
             if (totalHours < HOURS_OBJECTIVE) {
-                guiGenerateDocuments.showError("No puedes generar la autoevaluación porque aún no has completado las 420 horas requeridas. Llevas " + totalHours + " horas.");
+                guiGenerateDocuments.showError("No puedes generar la autoevaluación porque aún no has completado las " + HOURS_OBJECTIVE + " horas requeridas. Llevas " + totalHours + " horas.");
             } else {
                 Stage stage = new Stage();
                 GUIGenerateSelfEvaluation guiGenerateSelfEvaluation = new GUIGenerateSelfEvaluation(guiGenerateDocuments.getPractice().getStudent());

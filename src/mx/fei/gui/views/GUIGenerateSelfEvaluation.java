@@ -252,8 +252,8 @@ public class GUIGenerateSelfEvaluation extends Application {
         buttonPrint.setPrefWidth(120);
         buttonBack = new Button("Regresar");
         buttonBack.setPrefWidth(120);
-        buttonPrint.setOnAction(controller::handleSelfEvaluationButtons);
-        buttonBack.setOnAction(controller::handleSelfEvaluationButtons);
+        buttonPrint.setOnAction(event -> controller.handlePrintButtonAction());
+        buttonBack.setOnAction(event -> closeWindow());
         HBox box = new HBox(12, buttonPrint, buttonBack);
         box.setAlignment(Pos.CENTER_RIGHT);
         box.setPadding(new Insets(18, 0, 0, 0));

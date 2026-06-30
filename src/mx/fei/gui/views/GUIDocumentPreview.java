@@ -63,9 +63,9 @@ public class GUIDocumentPreview extends Application {
         buttonReject.setDisable(!reviewable);
 
         ControllerDocumentPreview controllerDocumentPreview = new ControllerDocumentPreview(this);
-        buttonValidate.setOnAction(controllerDocumentPreview::handleValidateRejectCloseButtons);
-        buttonReject.setOnAction(controllerDocumentPreview::handleValidateRejectCloseButtons);
-        buttonClose.setOnAction(controllerDocumentPreview::handleValidateRejectCloseButtons);
+        buttonValidate.setOnAction(event -> controllerDocumentPreview.validateDocument());
+        buttonReject.setOnAction(event -> controllerDocumentPreview.rejectDocument());
+        buttonClose.setOnAction(event -> closeWindow());
 
         Label labelStatus = new Label("Estado actual: " + statusLabel(document.getValidationStatus()));
         labelStatus.setFont(Font.font("SansSerif", 13));

@@ -54,9 +54,9 @@ public class GUIGenerateDocuments extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerGenerateDocuments controllerGenerateDocuments = new ControllerGenerateDocuments(this);
-        buttonGenerateAcceptanceLetter.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
-        buttonGenerateSelfEvaluation.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
-        buttonBack.setOnAction(controllerGenerateDocuments::handleButtonsGenerateDocuments);
+        buttonGenerateAcceptanceLetter.setOnAction(event -> controllerGenerateDocuments.handleAcceptanceLetter());
+        buttonGenerateSelfEvaluation.setOnAction(event -> controllerGenerateDocuments.handleSelfEvaluation());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 560, 500);
         GUIStyle.apply(scene);
         stage.setScene(scene);

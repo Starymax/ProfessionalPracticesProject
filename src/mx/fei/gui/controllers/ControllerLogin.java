@@ -14,8 +14,6 @@ import mx.fei.logic.dto.UserRole;
 import mx.fei.logic.exceptions.DataOperationException;
 
 import org.mindrot.jbcrypt.BCrypt;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
 import java.util.NoSuchElementException;
@@ -30,19 +28,7 @@ public class ControllerLogin {
         defaultSession();
     }
 
-    public void handleLoginCancelButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Ingresar" -> {
-                handleLogin();
-            }
-            case "Cancelar" -> {
-                guiLogin.closeWindow();
-            }
-        }
-    }
-
-    private void handleLogin() {
+    public void handleLogin() {
         if (validateFields()) {
             String mail = guiLogin.getTextFieldMail().getText().trim();
             String rawPassword = guiLogin.getTextFieldPassword().getText();

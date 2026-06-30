@@ -68,8 +68,8 @@ public class GUICustomNotification extends Application {
         buttonCancel = createButton("Cancelar");
 
         ControllerCustomNotification controller = new ControllerCustomNotification(this);
-        buttonSend.setOnAction(controller::handleSendCancelButtons);
-        buttonCancel.setOnAction(controller::handleSendCancelButtons);
+        buttonSend.setOnAction(event -> controller.rejectDocument());
+        buttonCancel.setOnAction(event -> closeWindow());
 
         HBox buttonRow = new HBox(12, buttonSend, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_RIGHT);

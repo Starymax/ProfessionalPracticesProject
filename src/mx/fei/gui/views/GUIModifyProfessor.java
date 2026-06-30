@@ -98,8 +98,8 @@ public class GUIModifyProfessor extends Application {
         buttonUpdate = new Button("Actualizar");
         buttonCancel = new Button("Cancelar");
         ControllerModifyProfessor controllerModifyProfessor = new ControllerModifyProfessor(this);
-        buttonUpdate.setOnAction(controllerModifyProfessor::handleUpdateCancelButtons);
-        buttonCancel.setOnAction(controllerModifyProfessor::handleUpdateCancelButtons);
+        buttonUpdate.setOnAction(event -> controllerModifyProfessor.handleUpdate());
+        buttonCancel.setOnAction(event -> closeWindow());
         HBox buttonPanel = new HBox(10, buttonUpdate, buttonCancel);
         buttonPanel.setAlignment(Pos.CENTER_RIGHT);
         HBox leftControls = new HBox(20, checkBoxPanel, toggleState);

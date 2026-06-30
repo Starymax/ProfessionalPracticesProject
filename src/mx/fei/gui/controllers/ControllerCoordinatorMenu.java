@@ -11,10 +11,8 @@ import mx.fei.gui.views.GUICoordinatorMenu;
 import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dao.UserDAO;
 
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,38 +27,7 @@ public class ControllerCoordinatorMenu {
         this.guiCoordinatorMenu = guiCoordinatorMenu;
     }
 
-    public void handleButtonsMenu(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Gestionar alumnos" -> {
-                manageStudents();
-            }
-            case "Gestionar proyectos" -> {
-                manageProjects();
-            }
-            case "Gestionar organizaciones" -> {
-                manageEnterprises();
-            }
-            case "Gestionar experiencia educativa" -> {
-                manageEducationalExperience();
-            }
-            case "Validar documentos" -> {
-                if (!existStudentsWithUploadedDocuments()) {
-                    guiCoordinatorMenu.showError("No hay estudiantes con documentos pendientes por el momento.");
-                } else {
-                    ValidateDocuments();
-                }
-            }
-            case "Consultar profesor" -> {
-                ConsultProfessor();
-            }
-            case "Cerrar Sesión" -> {
-                logout();
-            }
-        }
-    }
-
-    private void ConsultProfessor() {
+    public void ConsultProfessor() {
         GUIProfessorMenu guiProfessorMenu = new GUIProfessorMenu();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -76,7 +43,7 @@ public class ControllerCoordinatorMenu {
         guiValidateStudentDocuments.start(stage);
     }
 
-    private void manageEducationalExperience() {
+    public void manageEducationalExperience() {
         GUIManageExperience guiManageExperience = new GUIManageExperience();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -84,7 +51,7 @@ public class ControllerCoordinatorMenu {
         guiManageExperience.start(stage);
     }
 
-    private void manageEnterprises() {
+    public void manageEnterprises() {
         GUIManageEnterprise guiManageEnterprise = new GUIManageEnterprise();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -92,7 +59,7 @@ public class ControllerCoordinatorMenu {
         guiManageEnterprise.start(stage);
     }
 
-    private void manageProjects() {
+    public void manageProjects() {
         GUIManageProjects guiManageProjects = new GUIManageProjects();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -100,7 +67,7 @@ public class ControllerCoordinatorMenu {
         guiManageProjects.start(stage);
     }
 
-    private void manageStudents() {
+    public void manageStudents() {
         GUIManageStudent guiManageStudent = new GUIManageStudent();
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
@@ -108,7 +75,7 @@ public class ControllerCoordinatorMenu {
         guiManageStudent.start(stage);
     }
 
-    private void logout() {
+    public void logout() {
         Alert confirm = new Alert(AlertType.CONFIRMATION);
         confirm.setTitle("Cerrar Sesión");
         confirm.setHeaderText(null);
@@ -136,4 +103,13 @@ public class ControllerCoordinatorMenu {
         }
         return exists;
     }
+
+    public void handleValidateDocumentsButtonAction() {
+        if (!existStudentsWithUploadedDocuments()) {
+        guiCoordinatorMenu.showError("No hay estudiantes con documentos pendientes por el momento.");
+        } else {
+        ValidateDocuments();
+        }
+    }
+
 }

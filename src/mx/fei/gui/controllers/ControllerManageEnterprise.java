@@ -6,8 +6,6 @@ import mx.fei.gui.views.GUIRegisterEnterprise;
 import mx.fei.logic.dao.EnterpriseDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -18,23 +16,13 @@ public class ControllerManageEnterprise {
         this.guiManageEnterprise = guiManageEnterprise;
     }
 
-    public void handleRegisterModifyReturnButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar organización vinculada" -> {
-                guiManageEnterprise.closeWindow();
-                openRegisterEnterprise();
-            }
-            case "Modificar organización vinculada" -> {
-                if (!existEnterprises()) {
-                    guiManageEnterprise.showError("No existen organizaciones disponibles por el momento.");
-                } else {
-                    openSelectEnterprise();
-                }
-            }
-            case "Regresar" -> {
-                guiManageEnterprise.closeWindow();
-            }
+    
+
+    public void handleModifyEnterprise() {
+        if (!existEnterprises()) {
+            guiManageEnterprise.showError("No existen organizaciones disponibles por el momento.");
+        } else {
+            openSelectEnterprise();
         }
     }
 
@@ -64,4 +52,10 @@ public class ControllerManageEnterprise {
         }
         return enterprisesExist;
     }
+
+    public void handleRegisterEnterpriseButtonAction() {
+        guiManageEnterprise.closeWindow();
+        openRegisterEnterprise();
+    }
+
 }

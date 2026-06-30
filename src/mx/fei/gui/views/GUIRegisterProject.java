@@ -64,6 +64,28 @@ public class GUIRegisterProject extends Application {
         Label title = new Label("Datos del proyecto:");
         title.setFont(Font.font("SansSerif", FontWeight.BOLD, 15));
 
+        createFormFields();
+        configureEnterpriseAndManagerComboBoxes();
+        buildFormGrid();
+
+        ControllerRegisterProject controllerRegisterProject = new ControllerRegisterProject(this);
+        HBox buttonRow = buildButtonRow(controllerRegisterProject);
+
+        VBox mainPanel = new VBox(16, title, form, buttonRow);
+        mainPanel.setPadding(new Insets(24, 32, 24, 32));
+
+        ScrollPane scrollPane = new ScrollPane(mainPanel);
+        scrollPane.setFitToWidth(true);
+
+        Scene scene = new Scene(scrollPane, 680, 710);
+        GUIStyle.apply(scene);
+        stage.setTitle("Registrar Proyecto");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    private void createFormFields() {
         textFieldName = new TextField();
         textAreaDescription = new TextArea();
         textFieldGeneralObjective = new TextField();
@@ -97,7 +119,9 @@ public class GUIRegisterProject extends Application {
         datePickerStartDate.setPromptText("dd/mm/aaaa");
         datePickerFinalDate.setPromptText("dd/mm/aaaa");
         GUIUtils.bindDatePickersToPeriodSelection(comboBoxPeriod, datePickerStartDate, datePickerFinalDate);
+    }
 
+    private void configureEnterpriseAndManagerComboBoxes() {
         comboBoxEnterprise.setMaxWidth(Double.MAX_VALUE);
         comboBoxEnterprise.setCellFactory(listView -> new ListCell<>() {
             @Override
@@ -129,7 +153,9 @@ public class GUIRegisterProject extends Application {
                 setText(empty || projectManager == null ? null : projectManager.getName());
             }
         });
+    }
 
+    private void buildFormGrid() {
         form = new GridPane();
         form.setHgap(10);
         form.setVgap(10);
@@ -158,37 +184,25 @@ public class GUIRegisterProject extends Application {
         addAvailablePlacesRow(row++);
         addEnterpriseRow(row++);
         addProjectManagerRow(row);
+    }
 
+    private HBox buildButtonRow(ControllerRegisterProject controllerRegisterProject) {
         buttonAddProjectManager = new Button("Añadir Responsable");
         buttonSave = new Button("Guardar");
         buttonActivityPlan = new Button("Plan de Actividades");
         buttonCancel = new Button("Cancelar");
 
-
-        ControllerRegisterProject controllerRegisterProject = new ControllerRegisterProject(this);
-        buttonAddProjectManager.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
-        buttonSave.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
-        buttonActivityPlan.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
-        buttonCancel.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
-        comboBoxEnterprise.setOnAction(controllerRegisterProject::handleAddProjectManagerContinueActivityPlanButtonsAndEnterpriseComboBox);
+        buttonAddProjectManager.setOnAction(event -> controllerRegisterProject.addProjectManager());
+        buttonSave.setOnAction(event -> controllerRegisterProject.saveProject());
+        buttonActivityPlan.setOnAction(event -> controllerRegisterProject.openActivityPlan());
+        buttonCancel.setOnAction(event -> controllerRegisterProject.cancel());
+        comboBoxEnterprise.setOnAction(event -> controllerRegisterProject.updateProjectManagers());
 
         buttonActivityPlan.setDisable(true);
 
         HBox buttonRow = new HBox(12, buttonAddProjectManager, buttonSave, buttonActivityPlan, buttonCancel);
         buttonRow.setAlignment(Pos.CENTER_LEFT);
-
-        VBox mainPanel = new VBox(16, title, form, buttonRow);
-        mainPanel.setPadding(new Insets(24, 32, 24, 32));
-
-        ScrollPane scrollPane = new ScrollPane(mainPanel);
-        scrollPane.setFitToWidth(true);
-
-        Scene scene = new Scene(scrollPane, 680, 710);
-        GUIStyle.apply(scene);
-        stage.setTitle("Registrar Proyecto");
-        stage.setResizable(false);
-        stage.setScene(scene);
-        stage.show();
+        return buttonRow;
     }
 
     public boolean validateFields() {

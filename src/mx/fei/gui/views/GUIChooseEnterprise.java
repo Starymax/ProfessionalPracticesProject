@@ -60,8 +60,8 @@ public class GUIChooseEnterprise extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerChooseEnterprise controllerChooseEnterprise = new ControllerChooseEnterprise(this);
-        buttonSelect.setOnAction(controllerChooseEnterprise::handleSelectReturn);
-        buttonBack.setOnAction(controllerChooseEnterprise::handleSelectReturn);
+        buttonSelect.setOnAction(event -> controllerChooseEnterprise.handleSelect());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 660, 430);
         GUIStyle.apply(scene);
         stage.setScene(scene);

@@ -14,7 +14,6 @@ import mx.fei.logic.dto.StudentAdvance;
 import mx.fei.logic.dto.WeeklyLog;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -41,7 +40,7 @@ public class ControllerStudentProgress {
         activityDAO = new ActivityDAO();
     }
 
-    public void handleBackButton(ActionEvent event) {
+    public void handleBackButton() {
         guiStudentProgress.closeWindow();
     }
 
@@ -76,34 +75,33 @@ public class ControllerStudentProgress {
     }
 
     private void loadActivities() {
-        if (practice.getStudent().getAssignedProject() == null) {
-            return;
-        }
-        try {
-            int projectId = practice.getStudent().getAssignedProject().getProjectId();
-            int studentId = practice.getStudent().getUserId();
-            List<Activity> activities = activityDAO.getActivitiesByProjectId(projectId);
-            List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(studentId);
-            List<ActivityProgressRow> rows = new java.util.ArrayList<>();
-            for (Activity activity : activities) {
-                List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
-                int totalPlanned = 0;
-                int totalRealized = 0;
-                for (WeeklyLog log : weeklyLogs) {
-                    totalPlanned += log.getPlannedHours();
-                    for (StudentAdvance advance : advances) {
-                        if (advance.getWeeklyLog().getWeeklyLogId() == log.getWeeklyLogId()) {
-                            totalRealized += advance.getRealizedHours();
+        if (practice.getStudent().getAssignedProject() != null) {
+            try {
+                int projectId = practice.getStudent().getAssignedProject().getProjectId();
+                int studentId = practice.getStudent().getUserId();
+                List<Activity> activities = activityDAO.getActivitiesByProjectId(projectId);
+                List<StudentAdvance> advances = studentAdvanceDAO.getAdvancesByStudentId(studentId);
+                List<ActivityProgressRow> rows = new java.util.ArrayList<>();
+                for (Activity activity : activities) {
+                    List<WeeklyLog> weeklyLogs = activityDAO.getWeeklyLogsByActivityId(activity.getActivityId());
+                    int totalPlanned = 0;
+                    int totalRealized = 0;
+                    for (WeeklyLog log : weeklyLogs) {
+                        totalPlanned += log.getPlannedHours();
+                        for (StudentAdvance advance : advances) {
+                            if (advance.getWeeklyLog().getWeeklyLogId() == log.getWeeklyLogId()) {
+                                totalRealized += advance.getRealizedHours();
+                            }
                         }
                     }
+                    String status = activityStatus(totalPlanned, totalRealized);
+                    rows.add(new ActivityProgressRow(activity.getName(), String.valueOf(totalPlanned), String.valueOf(totalRealized), status));
                 }
-                String status = activityStatus(totalPlanned, totalRealized);
-                rows.add(new ActivityProgressRow(activity.getName(), String.valueOf(totalPlanned), String.valueOf(totalRealized), status));
+                guiStudentProgress.updateActivities(rows);
+            } catch (DataOperationException e) {
+                LOGGER.log(Level.WARNING, "Error al cargar actividades", e.getMessage());
+                guiStudentProgress.showError(e.getMessage());
             }
-            guiStudentProgress.updateActivities(rows);
-        } catch (DataOperationException e) {
-            LOGGER.log(Level.WARNING, "Error al cargar actividades", e.getMessage());
-            guiStudentProgress.showError(e.getMessage());
         }
     }
 

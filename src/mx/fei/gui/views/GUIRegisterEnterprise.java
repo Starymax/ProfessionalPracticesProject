@@ -104,8 +104,8 @@ public class GUIRegisterEnterprise extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerRegisterEnterprise controllerRegisterEnterprise = new ControllerRegisterEnterprise(this);
-        buttonRegister.setOnAction(controllerRegisterEnterprise::handleRegisterCancelButtons);
-        buttonCancel.setOnAction(controllerRegisterEnterprise::handleRegisterCancelButtons);
+        buttonRegister.setOnAction(event -> controllerRegisterEnterprise.handleRegister());
+        buttonCancel.setOnAction(event -> controllerRegisterEnterprise.handleCancelButtonAction());
         Scene scene = new Scene(mainPanel, 560, 460);
         GUIStyle.apply(scene);
         stage.setScene(scene);

@@ -5,8 +5,6 @@ import mx.fei.logic.dao.DocumentDAO;
 import mx.fei.logic.dto.Document;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,19 +18,7 @@ public class ControllerReportPreview {
         this.guiReportPreview = guiReportPreview;
     }
 
-    public void handleAcceptCloseButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Aceptar reporte" -> {
-                acceptReport();
-            }
-            case "Cerrar" -> {
-                guiReportPreview.getStage().close();
-            }
-        }
-    }
-
-    private void acceptReport() {
+    public void acceptReport() {
         Document report = guiReportPreview.getReport();
         try {
             DocumentDAO documentDAO = new DocumentDAO();

@@ -6,8 +6,6 @@ import mx.fei.gui.views.GUIRegisterEducationalExperience;
 import mx.fei.logic.dao.EducationalExperienceDAO;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
 
@@ -18,32 +16,7 @@ public class ControllerManageExperience {
         this.guiManageExperience = guiManageExperience;
     }
 
-    public void handleRegisterModifyButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Registrar nueva experiencia" -> {
-                openRegisterExperience();
-            }
-            case "Modificar experiencia" -> {
-                if (!existEducationalExperiences()){
-                    guiManageExperience.showError("No existen experiencias disponibles por el momento.");
-                } else {
-                    openModifyExperience();
-                }
-            }
-            case "Dar de alta experiencia" -> {
-                if (!existEducationalExperiences()){
-                    guiManageExperience.showError("No existen experiencias disponibles por el momento.");
-                } else {
-                    fillExperience();
-                }
-            }
-            case "Regresar" -> {
-                guiManageExperience.closeWindow();
-            }
-        }
-    }
-    private void openRegisterExperience() {
+    public void openRegisterExperience() {
         GUIRegisterEducationalExperience guiRegisterEducationalExperience = new GUIRegisterEducationalExperience();
         Stage stage = new Stage();
         stage.setTitle("Registrar experiencia");
@@ -79,4 +52,21 @@ public class ControllerManageExperience {
         }
         return experiencesExist;
     }
+
+    public void handleModifyExperienceButtonAction() {
+        if (!existEducationalExperiences()){
+        guiManageExperience.showError("No existen experiencias disponibles por el momento.");
+        } else {
+        openModifyExperience();
+        }
+    }
+
+    public void handleActivateExperienceButtonAction() {
+        if (!existEducationalExperiences()){
+        guiManageExperience.showError("No existen experiencias disponibles por el momento.");
+        } else {
+        fillExperience();
+        }
+    }
+
 }

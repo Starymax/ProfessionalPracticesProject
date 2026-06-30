@@ -78,10 +78,10 @@ public class GUIGenerateReport extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerGenerateReport controllerGenerateReport = new ControllerGenerateReport(this);
-        buttonPartial.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
-        buttonMonthly.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
-        buttonFinal.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
-        buttonBack.setOnAction(controllerGenerateReport::handleMensualPartialFinalBackButtons);
+        buttonPartial.setOnAction(event -> controllerGenerateReport.openPartialReport());
+        buttonMonthly.setOnAction(event -> controllerGenerateReport.openMonthlyReport());
+        buttonFinal.setOnAction(event -> controllerGenerateReport.openFinalReport());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 700, 380);
         GUIStyle.apply(scene);
         stage.setScene(scene);

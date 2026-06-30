@@ -7,8 +7,6 @@ import mx.fei.logic.dao.PracticeDAO;
 import mx.fei.logic.dto.*;
 import mx.fei.logic.exceptions.DataOperationException;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import javafx.scene.control.ComboBox;
@@ -94,21 +92,7 @@ public class ControllerGenerateSelfEvaluation {
         }
     }
 
-    public void handleSelfEvaluationButtons(ActionEvent event) {
-        Button source = (Button) event.getSource();
-        switch (source.getText()) {
-            case "Imprimir" -> {
-                if (!validateAnswers()) {
-                    guiGenerateSelfEvaluation.showError("Las respuestas incluidas no son validas.");
-                } else {
-                    printPDF();
-                }
-            }
-            case "Regresar" -> {
-                guiGenerateSelfEvaluation.closeWindow();
-            }
-        }
-    }
+    
 
     private void printPDF() {
         DirectoryChooser filesChooser = new DirectoryChooser();
@@ -201,4 +185,13 @@ public class ControllerGenerateSelfEvaluation {
         }
         return answersValid;
     }
+
+    public void handlePrintButtonAction() {
+        if (!validateAnswers()) {
+        guiGenerateSelfEvaluation.showError("Las respuestas incluidas no son validas.");
+        } else {
+        printPDF();
+        }
+    }
+
 }

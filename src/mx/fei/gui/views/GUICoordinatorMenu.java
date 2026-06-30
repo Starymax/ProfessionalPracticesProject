@@ -35,7 +35,6 @@ public class GUICoordinatorMenu extends Application {
         this.coordinator = coordinator;
     }
     public GUICoordinatorMenu() {
-
     }
 
     @Override
@@ -69,13 +68,13 @@ public class GUICoordinatorMenu extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerCoordinatorMenu controllerCoordinatorMenu = new ControllerCoordinatorMenu(this);
-        buttonManageStudents.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonManageProjects.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonManageOrganizations.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonManageEducationalExperience.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonValidateDocuments.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonConsultProfessor.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
-        buttonLogOut.setOnAction(controllerCoordinatorMenu::handleButtonsMenu);
+        buttonManageStudents.setOnAction(event -> controllerCoordinatorMenu.manageStudents());
+        buttonManageProjects.setOnAction(event -> controllerCoordinatorMenu.manageProjects());
+        buttonManageOrganizations.setOnAction(event -> controllerCoordinatorMenu.manageEnterprises());
+        buttonManageEducationalExperience.setOnAction(event -> controllerCoordinatorMenu.manageEducationalExperience());
+        buttonValidateDocuments.setOnAction(event -> controllerCoordinatorMenu.handleValidateDocumentsButtonAction());
+        buttonConsultProfessor.setOnAction(event -> controllerCoordinatorMenu.ConsultProfessor());
+        buttonLogOut.setOnAction(event -> controllerCoordinatorMenu.logout());
         Scene scene = new Scene(mainPanel, 500, 520);
         GUIStyle.apply(scene);
         stage.setScene(scene);

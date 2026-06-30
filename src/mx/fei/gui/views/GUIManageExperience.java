@@ -49,10 +49,10 @@ public class GUIManageExperience extends Application {
         StackPane mainPanel = new StackPane(formPanel);
         mainPanel.setPadding(new Insets(20));
         ControllerManageExperience controllerManageExperience = new ControllerManageExperience(this);
-        buttonRegisterExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
-        buttonModifyExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
-        buttonActivateExperience.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
-        buttonBack.setOnAction(controllerManageExperience::handleRegisterModifyButtons);
+        buttonRegisterExperience.setOnAction(event -> controllerManageExperience.openRegisterExperience());
+        buttonModifyExperience.setOnAction(event -> controllerManageExperience.handleModifyExperienceButtonAction());
+        buttonActivateExperience.setOnAction(event -> controllerManageExperience.handleActivateExperienceButtonAction());
+        buttonBack.setOnAction(event -> closeWindow());
         Scene scene = new Scene(mainPanel, 600, 500);
         GUIStyle.apply(scene);
         stage.setScene(scene);
